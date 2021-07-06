@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Vocaby</string>
     <string name="app_logo">Vocaby Logo</string>
-    <string name="app_header">VOCABY DICT</string>
+    <string name="app_header">VOCABY DICTIONARY</string>
     <string name="search_hint">Look up a word&#8230;</string>
     <string name="gradient_bg">Gradient Background</string>
 </resources>
