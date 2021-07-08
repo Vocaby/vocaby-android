@@ -10,8 +10,6 @@
         android:screenOrientation="sensorPortrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.VocabyAndroid">
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".SavesActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
