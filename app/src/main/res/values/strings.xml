@@ -3,5 +3,9 @@
     <string name="app_logo">Vocaby Logo</string>
     <string name="app_header">VOCABY DICTIONARY</string>
     <string name="search_hint">Look up a word&#8230;</string>
+    <string name="search_saves_hint">Search for your word&#8230;</string>
     <string name="gradient_bg">Gradient Background</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_saves">Saves</string>
+    <string name="nav_profile">Profile</string>
 </resources>

@@ -2,6 +2,7 @@ package com.example.vocaby;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,33 +10,33 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_profile);
+
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
-        bottomNav.setSelectedItemId(R.id.search);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SearchFragment()).commit();
+        bottomNav.setSelectedItemId(R.id.profile);
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
             item -> {
                 switch(item.getItemId()) {
-                    case R.id.search:
+                    case R.id.profile:
                         return true;
                     case R.id.saves:
                         startActivity(new Intent(getApplicationContext(), SavesActivity.class));
                         overridePendingTransition(0, 0);
-                        break;
-                    case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                        return true;
+                    case R.id.search:
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         overridePendingTransition(0, 0);
-                        break;
+                        return true;
                 }
 
-                return true;
+                return false;
             };
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SavesActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
@@ -73,7 +73,7 @@
                 android:elevation="8dp"
                 android:ems="10"
                 android:fontFamily="@font/sourcesanspro_regular"
-                android:hint="@string/search_hint"
+                android:hint="@string/search_saves_hint"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:paddingLeft="15dp"
@@ -96,14 +96,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SAVES ACTIVITY"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header">
-    </FrameLayout>
-
+        app:layout_constraintTop_toBottomOf="@+id/header" />
 </androidx.constraintlayout.widget.ConstraintLayout>
