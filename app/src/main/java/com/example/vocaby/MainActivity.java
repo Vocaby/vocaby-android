@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         EditText search = findViewById(R.id.search_bar);
         search.setOnFocusChangeListener(searchListener);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
+        bottomNav.setOnItemSelectedListener(navListener);
         bottomNav.setSelectedItemId(R.id.search);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SearchFragment()).commit();
     }
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
+    private NavigationBarView.OnItemSelectedListener navListener =
             item -> {
                 switch(item.getItemId()) {
                     case R.id.search:

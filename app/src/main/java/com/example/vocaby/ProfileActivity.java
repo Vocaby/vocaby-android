@@ -18,11 +18,11 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
+        bottomNav.setOnItemSelectedListener(navListener);
         bottomNav.setSelectedItemId(R.id.profile);
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
+    private BottomNavigationView.OnItemSelectedListener navListener =
             item -> {
                 switch(item.getItemId()) {
                     case R.id.profile:

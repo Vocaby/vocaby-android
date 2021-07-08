@@ -23,7 +23,7 @@ public class SavesActivity extends AppCompatActivity {
         EditText search = findViewById(R.id.search_bar);
         search.setOnFocusChangeListener(searchListener);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
+        bottomNav.setOnItemSelectedListener(navListener);
         bottomNav.setSelectedItemId(R.id.saves);
     }
 
@@ -34,7 +34,7 @@ public class SavesActivity extends AppCompatActivity {
         }
     };
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
+    private BottomNavigationView.OnItemSelectedListener navListener =
             item -> {
                 switch(item.getItemId()) {
                     case R.id.saves:
