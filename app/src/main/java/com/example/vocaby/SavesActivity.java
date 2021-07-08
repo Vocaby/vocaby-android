@@ -21,13 +21,13 @@ public class SavesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saves);
         EditText search = findViewById(R.id.search_bar);
-        search.setOnFocusChangeListener(searchListener);
+        search.setOnFocusChangeListener(searchFocusListener);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(navListener);
         bottomNav.setSelectedItemId(R.id.saves);
     }
 
-    private View.OnFocusChangeListener searchListener = (v, hasFocus) -> {
+    private View.OnFocusChangeListener searchFocusListener = (v, hasFocus) -> {
         if(!hasFocus) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
