@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment"
     android:clickable="true"
+    android:focusable="true"
     android:focusableInTouchMode="true">
 
 
@@ -57,7 +58,6 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
                 android:layout_marginTop="15dp"
                 android:contentDescription="@string/app_logo"
                 app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +71,6 @@
                 android:layout_margin="10dp"
                 android:background="@drawable/edittext"
                 android:drawableStart="@drawable/search_icon"
-                android:drawableLeft="@drawable/search_icon"
                 android:drawablePadding="12dp"
                 android:elevation="8dp"
                 android:ems="10"
@@ -96,9 +95,27 @@
     <FrameLayout
         android:id="@+id/search_fragment_container"
         android:layout_width="0dp"
-        android:layout_height="400dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header"></FrameLayout>
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_percent="0.92">
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/search_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/colorPrimary_header"
+        android:scaleY="1.2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        app:layout_constraintVertical_bias="0.25" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -48,6 +48,7 @@ public class SearchResultsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search_results, container, false);
         header = view.findViewById(R.id.word_header);
         header.setText(mWord);
+
         return view;
     }
 }

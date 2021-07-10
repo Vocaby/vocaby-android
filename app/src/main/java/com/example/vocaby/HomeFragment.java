@@ -13,44 +13,41 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+
 public class HomeFragment extends Fragment {
     private EditText search;
     private InputMethodManager imm;
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
+    private Context ctx;
+    private ProgressBar progressBar;
+    private FrameLayout fragmentContainer;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+        ctx = getActivity().getApplicationContext();
     }
 
     @Override
@@ -58,6 +55,9 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        progressBar = view.findViewById(R.id.search_progress);
+        fragmentContainer = view.findViewById(R.id.search_fragment_container);
+        progressBar.setVisibility(View.INVISIBLE);
         search = view.findViewById(R.id.search_bar);
         search.setOnFocusChangeListener(searchFocusListener);
         search.setOnEditorActionListener(searchEditorListener);
@@ -65,7 +65,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
+    private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         v.clearFocus();
@@ -74,20 +74,71 @@ public class HomeFragment extends Fragment {
             if(search != null) {
                 String word = search.getText().toString().trim();
                 if(!word.isEmpty()) {
-                    SearchResultsFragment fragment = SearchResultsFragment.newInstance(word);
-                    FragmentManager fm = getActivity().getSupportFragmentManager();
-                    FragmentTransaction transaction = fm.beginTransaction();
-                    transaction.addToBackStack(null);
-                    transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
+                    fragmentContainer.setVisibility(View.INVISIBLE);
+                    progressBar.setVisibility(View.VISIBLE);
+
+                    String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
+
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    Fragment fragment = SearchResultsFragment.newInstance(word);
+                                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                                    FragmentTransaction transaction = fm.beginTransaction();
+                                    transaction.addToBackStack(null);
+                                    transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
+
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                    fragmentContainer.setVisibility(View.VISIBLE);
+
+                                    Toast.makeText(ctx, response.toString(), Toast.LENGTH_SHORT).show();
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                    fragmentContainer.setVisibility(View.VISIBLE);
+                                    String responseBody;
+                                    if(error.networkResponse.data != null) {
+                                        try {
+                                            responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                                            JSONObject res = new JSONObject(responseBody);
+                                            String message = res.getString("error").toLowerCase();
+                                            if(message.contains("no entry found")) {
+                                                Toast.makeText(ctx, "Word not found!!!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } catch (JSONException e) {
+                                            Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    // Change to "Something went wrong" fragment
+                                    Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                    {
+                        @Override
+                        public Map<String, String> getHeaders() {
+                            Map<String, String> m = new HashMap<>();
+                            m.put("app_id", getResources().getString(R.string.app_id));
+                            m.put("app_key", getResources().getString(R.string.app_key));
+
+                            return m;
+                        }
+                    };
+
+                    VolleySingleton.getInstance().addToRequestQueue(jsonObjectRequest);
                     return true;
                 }
             }
-        };
+        }
 
         return false;
     };
 
-    private View.OnFocusChangeListener searchFocusListener = (v, hasFocus) -> {
+    private final View.OnFocusChangeListener searchFocusListener = (v, hasFocus) -> {
         if(!hasFocus) {
             imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
