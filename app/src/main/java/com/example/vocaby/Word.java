@@ -27,6 +27,8 @@ public class Word implements Serializable {
 
     public String getPronunciation() { return this.pronunciation; }
 
+    public String getWord() { return word; }
+
     public void addDefinition(String pos, String definition) {
         if(mDefinitions.containsKey(pos)) {
             List<String> definitions = mDefinitions.get(pos);

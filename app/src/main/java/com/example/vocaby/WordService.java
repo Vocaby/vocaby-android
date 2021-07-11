@@ -44,7 +44,7 @@ public class WordService {
 
             success = true;
         } catch (JSONException e) {
-            success = true;
+            success = false;
         }
     }
 
