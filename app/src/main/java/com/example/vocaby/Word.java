@@ -1,0 +1,64 @@
+package com.example.vocaby;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+public class Word implements Serializable {
+    private String word;
+    private String pronunciation;
+    private Map<String, List<String>> mDefinitions;
+    private Map<String, List<String>> mSentences;
+    private List<String> allowedPos;
+
+    public Word(String word) {
+        this.word = word;
+        allowedPos = new ArrayList<>();
+        mDefinitions = new HashMap<>();
+        mSentences = new HashMap<>();
+    }
+
+    public void setPronunciation(String pronunciation) {
+        this.pronunciation = pronunciation;
+    }
+
+    public String getPronunciation() { return this.pronunciation; }
+
+    public void addDefinition(String pos, String definition) {
+        if(mDefinitions.containsKey(pos)) {
+            List<String> definitions = mDefinitions.get(pos);
+            definitions.add(definition);
+        } else {
+            allowedPos.add(pos);
+            List<String> definitions = new LinkedList<>();
+            definitions.add(definition);
+            mDefinitions.put(pos, definitions);
+        }
+    }
+
+    public void addSentence(String pos, String sentence) {
+        if(mSentences.containsKey(pos)) {
+            List<String> definitions = mSentences.get(pos);
+            definitions.add(sentence);
+        } else {
+            List<String> definitions = new LinkedList<>();
+            definitions.add(sentence);
+            mSentences.put(pos, definitions);
+        }
+    }
+
+    public String[] getAllowedPos() {
+        return allowedPos.toArray(new String[0]);
+    }
+
+    public String[] getDefinitions(String pos) {
+        return mDefinitions.get(pos).toArray(new String[0]);
+    }
+
+    public String[] getSentences(String pos) {
+        return mSentences.get(pos).toArray(new String[0]);
+    }
+}

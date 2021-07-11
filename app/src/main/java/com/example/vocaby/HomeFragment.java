@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +41,7 @@ public class HomeFragment extends Fragment {
     private Context ctx;
     private ProgressBar progressBar;
     private FrameLayout fragmentContainer;
+    private RecyclerView recyclerView;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -78,22 +82,32 @@ public class HomeFragment extends Fragment {
                     progressBar.setVisibility(View.VISIBLE);
 
                     String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
-
+                    RequestQueue q = Volley.newRequestQueue(ctx);
                     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                             (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                                 @Override
                                 public void onResponse(JSONObject response) {
-                                    Fragment fragment = SearchResultsFragment.newInstance(word);
-                                    FragmentManager fm = getActivity().getSupportFragmentManager();
-                                    FragmentTransaction transaction = fm.beginTransaction();
-                                    transaction.addToBackStack(null);
-                                    transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
+                                    // Parse the data
+                                    try {
+                                        WordService service = new WordService(word, response);
+                                        service.parse();
+                                        if(service.wasSuccessful()) {
+                                            Word wordData = service.getWordData();
+                                            Fragment fragment = SearchResultsFragment.newInstance(word, wordData);
+                                            FragmentManager fm = getActivity().getSupportFragmentManager();
+                                            FragmentTransaction transaction = fm.beginTransaction();
+                                            transaction.addToBackStack(null);
+                                            transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
+                                        } else {
+                                            throw new IllegalStateException();
+                                        }
+                                    } catch (IllegalStateException e) {
+                                        Toast.makeText(ctx, "Something went wrong when parsing...", Toast.LENGTH_SHORT).show();
+                                    }
 
                                     progressBar.setVisibility(View.INVISIBLE);
                                     fragmentContainer.setVisibility(View.VISIBLE);
-
-                                    Toast.makeText(ctx, response.toString(), Toast.LENGTH_SHORT).show();
                                 }
                             }, new Response.ErrorListener() {
                                 @Override
@@ -129,7 +143,7 @@ public class HomeFragment extends Fragment {
                         }
                     };
 
-                    VolleySingleton.getInstance().addToRequestQueue(jsonObjectRequest);
+                    q.add(jsonObjectRequest);
                     return true;
                 }
             }
