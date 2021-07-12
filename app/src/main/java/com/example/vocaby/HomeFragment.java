@@ -24,18 +24,21 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements Serializable {
     private static final String DATA_MANAGER = "dm";
+    private static final String WORD = "word";
 
     private EditText search;
     private InputMethodManager imm;
@@ -44,18 +47,24 @@ public class HomeFragment extends Fragment {
     private FrameLayout fragmentContainer;
     private DataManager dataManager;
     private String searchedText;
+    private String sentText;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance(DataManager dataManager) {
+    public static HomeFragment newInstance(DataManager dataManager, String word) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putSerializable(DATA_MANAGER, dataManager);
+        args.putSerializable(WORD, word);
         fragment.setArguments(args);
 
         return fragment;
+    }
+
+    public void resetSearch() {
+        searchedText = "";
     }
 
     @Override
@@ -63,6 +72,7 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             dataManager = (DataManager) getArguments().getSerializable(DATA_MANAGER);
+            sentText = getArguments().getString(WORD);
         }
 
         ctx = getActivity().getApplicationContext();
@@ -81,7 +91,44 @@ public class HomeFragment extends Fragment {
         search.setOnFocusChangeListener(searchFocusListener);
         search.setOnEditorActionListener(searchEditorListener);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, new SearchFragment()).commit();
+
+        if(sentText.length() > 0) {
+            search.setText(sentText);
+            BottomNavigationView navView = getActivity().findViewById(R.id.bottom_navigation);
+            navView.getMenu().findItem(R.id.search).setChecked(true);
+            search();
+        }
+
         return view;
+    }
+
+    private void search() {
+        if(search != null) {
+            String word = search.getText().toString().toLowerCase().trim();
+            if(!word.isEmpty() && !searchedText.equals(word)) {
+                searchedText = word;
+                fragmentContainer.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+
+                // check if data exists already
+                if(dataManager.hasWord(word)) {
+                    Word wordData = dataManager.getData(word);
+                    Fragment fragment = SearchResultsFragment.newInstance(word, wordData, dataManager);
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.addToBackStack(null);
+                    transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
+                    progressBar.setVisibility(View.INVISIBLE);
+                    fragmentContainer.setVisibility(View.VISIBLE);
+                } else {
+                    String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
+                    RequestQueue q = Volley.newRequestQueue(ctx);
+                    JsonObjectRequest jsonObjectRequest = makeRequest(url, word);
+                    Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
+                    q.add(jsonObjectRequest);
+                }
+            }
+        }
     }
 
     private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
@@ -90,35 +137,8 @@ public class HomeFragment extends Fragment {
         v.clearFocus();
 
         if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-            if(search != null) {
-                String word = search.getText().toString().trim();
-                if(!word.isEmpty() && !searchedText.equals(word)) {
-                    searchedText = word;
-                    fragmentContainer.setVisibility(View.INVISIBLE);
-                    progressBar.setVisibility(View.VISIBLE);
-
-                    // check if data exists already
-                    if(dataManager.hasWord(word)) {
-                        Word wordData = dataManager.getData(word);
-                        Fragment fragment = SearchResultsFragment.newInstance(word, wordData);
-                        FragmentManager fm = getActivity().getSupportFragmentManager();
-                        FragmentTransaction transaction = fm.beginTransaction();
-                        transaction.addToBackStack(null);
-                        transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
-                        Toast.makeText(ctx, "Getting data from storage", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.INVISIBLE);
-                        fragmentContainer.setVisibility(View.VISIBLE);
-                    } else {
-                        String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
-                        RequestQueue q = Volley.newRequestQueue(ctx);
-                        JsonObjectRequest jsonObjectRequest = makeRequest(url, word);
-                        Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
-                        q.add(jsonObjectRequest);
-                    }
-
-                    return true;
-                }
-            }
+            search();
+            return true;
         }
 
         return false;
@@ -138,7 +158,7 @@ public class HomeFragment extends Fragment {
                                 Word wordData = service.getWordData();
                                 try {
                                     dataManager.writeData(wordData);
-                                    Fragment fragment = SearchResultsFragment.newInstance(word, wordData);
+                                    Fragment fragment = SearchResultsFragment.newInstance(word, wordData, dataManager);
                                     FragmentManager fm = getActivity().getSupportFragmentManager();
                                     FragmentTransaction transaction = fm.beginTransaction();
                                     transaction.addToBackStack(null);

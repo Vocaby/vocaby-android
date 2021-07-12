@@ -11,4 +11,6 @@
     <string name="button_save">Save</string>
     <string name="search_results">SEARCH RESULTS</string>
     <string name="pronunciation">pronunciation</string>
+    <string name="save_button_unsaved">SAVE</string>
+    <string name="save_button_saved">SAVED</string>
 </resources>

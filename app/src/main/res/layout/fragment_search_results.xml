@@ -21,7 +21,7 @@
             android:id="@+id/word_header"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="18dp"
             android:fontFamily="@font/uchen"
             android:text="@string/search_results"
             android:textAllCaps="true"
@@ -35,14 +35,31 @@
             android:id="@+id/pronunciation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="14dp"
             android:text="@string/pronunciation"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/word_header" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/save_button"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_bookmark_unsaved"
+            android:text="@string/save_button_unsaved"
+            android:textColor="@color/colorPrimary_header"
+            android:textSize="12sp"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:background="@drawable/save_button"
+            android:padding="8dp"
+            style="?android:attr/borderlessButtonStyle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pronunciation"
+            tools:ignore="SmallSp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -56,4 +73,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/word_box"
         app:layout_constraintVertical_bias="1.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

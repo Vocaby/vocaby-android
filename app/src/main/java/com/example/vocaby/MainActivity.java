@@ -22,6 +22,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
     private HomeFragment home;
+    private SavesFragment saves;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +31,15 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(navListener);
         DataManager dataManager = DataManager.getInstance(this);
-        home = HomeFragment.newInstance(dataManager);
+        home = HomeFragment.newInstance(dataManager, "");
+        saves = SavesFragment.newInstance(dataManager);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, home).commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        home.resetSearch();
     }
 
     private NavigationBarView.OnItemSelectedListener navListener =
@@ -42,11 +50,14 @@ public class MainActivity extends AppCompatActivity {
                 if(id == R.id.search) {
                     selected = home;
                 } else if(id == R.id.saves) {
-                    selected = new SavesFragment();
+                    selected = saves;
                 } else if(id == R.id.profile) {
                     selected = new ProfileFragment();
                 }
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selected).commit();
+
+                FragmentManager fm = getSupportFragmentManager();
+                fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fm.beginTransaction().replace(R.id.fragment_container, selected).commit();
                 return true;
             };
 }
