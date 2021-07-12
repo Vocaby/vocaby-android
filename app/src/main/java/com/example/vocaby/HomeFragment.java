@@ -124,7 +124,7 @@ public class HomeFragment extends Fragment implements Serializable {
                     String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
                     RequestQueue q = Volley.newRequestQueue(ctx);
                     JsonObjectRequest jsonObjectRequest = makeRequest(url, word);
-                    Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
                     q.add(jsonObjectRequest);
                 }
             }

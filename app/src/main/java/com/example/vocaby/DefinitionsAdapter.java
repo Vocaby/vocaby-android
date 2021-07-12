@@ -39,24 +39,25 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
         String[] definitions = wordData.getDefinitions(selectedPos);
         String[] sentences = wordData.getSentences(selectedPos);
         holder.pos.setText(selectedPos);
-        int counter = 0;
 
         LayoutInflater inflater = LayoutInflater.from(ctx);
         for(int i = 0; i < definitions.length; i++) {
             String def = definitions[i];
             String sen = sentences[i];
+            CardView card;
+            TextView definition;
             if(sen.length() > 0) {
-                CardView card = (CardView) inflater.inflate(R.layout.definition_row, null);
-                if(counter % 2 == 0) {
-                    card.setCardBackgroundColor(ctx.getColor(R.color.light_gray));
-                }
-                TextView definition = card.findViewById(R.id.definition);
+                card = (CardView) inflater.inflate(R.layout.definition_row, null);
+                definition = card.findViewById(R.id.definition);
                 TextView sentence = card.findViewById(R.id.sentence);
-                definition.setText(def);
                 sentence.setText(sen);
-                holder.definitionContainer.addView(card);
-                counter++;
+            } else {
+                card = (CardView) inflater.inflate(R.layout.definition_row_no_sentence, null);
+                definition = card.findViewById(R.id.definition);
             }
+
+            definition.setText(def);
+            holder.definitionContainer.addView(card);
         }
     }
 
