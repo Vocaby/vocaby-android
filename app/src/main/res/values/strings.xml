@@ -13,4 +13,7 @@
     <string name="pronunciation">pronunciation</string>
     <string name="save_button_unsaved">SAVE</string>
     <string name="save_button_saved">SAVED</string>
+    <string name="app_header_saves">VOCABY SAVES</string>
+    <string name="history_empty">No Recent Searches</string>
+    <string name="history_header">RECENT SEARCHES</string>
 </resources>

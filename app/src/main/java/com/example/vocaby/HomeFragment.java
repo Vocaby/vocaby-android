@@ -90,13 +90,14 @@ public class HomeFragment extends Fragment implements Serializable {
         search = view.findViewById(R.id.search_bar);
         search.setOnFocusChangeListener(searchFocusListener);
         search.setOnEditorActionListener(searchEditorListener);
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, new SearchFragment()).commit();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, SearchFragment.newInstance(dataManager)).commit();
 
         if(sentText.length() > 0) {
             search.setText(sentText);
             BottomNavigationView navView = getActivity().findViewById(R.id.bottom_navigation);
             navView.getMenu().findItem(R.id.search).setChecked(true);
             search();
+            sentText = "";
         }
 
         return view;
@@ -106,6 +107,10 @@ public class HomeFragment extends Fragment implements Serializable {
         if(search != null) {
             String word = search.getText().toString().toLowerCase().trim();
             if(!word.isEmpty() && !searchedText.equals(word)) {
+                if(sentText.length() == 0) {
+                    dataManager.writeHistory(word);
+                }
+
                 searchedText = word;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 progressBar.setVisibility(View.VISIBLE);
@@ -116,6 +121,7 @@ public class HomeFragment extends Fragment implements Serializable {
                     Fragment fragment = SearchResultsFragment.newInstance(word, wordData, dataManager);
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.search_fragment_container, SearchFragment.newInstance(dataManager));
                     transaction.addToBackStack(null);
                     transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
                     progressBar.setVisibility(View.INVISIBLE);
@@ -161,6 +167,7 @@ public class HomeFragment extends Fragment implements Serializable {
                                     Fragment fragment = SearchResultsFragment.newInstance(word, wordData, dataManager);
                                     FragmentManager fm = getActivity().getSupportFragmentManager();
                                     FragmentTransaction transaction = fm.beginTransaction();
+                                    transaction.replace(R.id.search_fragment_container, SearchFragment.newInstance(dataManager));
                                     transaction.addToBackStack(null);
                                     transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
                                 } catch(IOException e) {

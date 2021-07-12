@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
         android:layout_width="0dp"
-        android:layout_height="140dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="0dp"
-            android:layout_height="95dp"
+            android:layout_height="75dp"
             android:contentDescription="@string/gradient_bg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,11 +30,12 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
-            android:layout_height="120dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="65dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="@+id/imageView2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintWidth_percent="0.92">
 
 
@@ -44,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/sourcesanspro_semibold"
-                android:text="@string/app_header"
+                android:text="@string/app_header_saves"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -63,32 +64,9 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/logo_boxed" />
 
-            <EditText
-                android:id="@+id/search_bar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/edittext"
-                android:drawableStart="@drawable/search_icon"
-                android:drawablePadding="12dp"
-                android:elevation="8dp"
-                android:ems="10"
-                android:fontFamily="@font/sourcesanspro_regular"
-                android:hint="@string/search_saves_hint"
-                android:importantForAutofill="no"
-                android:inputType="text"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:textSize="16sp"
-                android:singleLine="true"
-                android:imeOptions="actionDone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/saves_container"
         android:layout_width="0dp"
@@ -99,5 +77,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header"
+        app:layout_constraintVertical_bias="1.0"
         app:layout_constraintWidth_percent="0.92" />
 </androidx.constraintlayout.widget.ConstraintLayout>

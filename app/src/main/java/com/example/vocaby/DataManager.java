@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +21,10 @@ public class DataManager implements Serializable {
     private static Context ctx;
     private static final String WORD_DATA_FILE_NAME = "dVocaby";
     private static final String SAVE_DATA_FILE_NAME = "sVocaby";
+    private static final String HISTORY_DATA_FILE_NAME = "hVocaby";
     private static Map<String, Word> wordMap;
     private static List<String> saves;
+    private static List<String> history;
 
     private DataManager(Context context) {
         ctx = context.getApplicationContext();
@@ -69,8 +72,43 @@ public class DataManager implements Serializable {
             }
         }
 
+        File historyFile = new File(ctx.getFilesDir(), HISTORY_DATA_FILE_NAME);
+        if(historyFile.exists()) {
+            try(FileInputStream fis = ctx.openFileInput(HISTORY_DATA_FILE_NAME)) {
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                history = (List<String>) ois.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                Log.d("DataManager", "Something went wrong in getInstance");
+            }
+        } else {
+            history = new LinkedList<>();
+            try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(history);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         return dataManager;
     }
+
+    public void writeHistory(String word) {
+        history.add(0, word);
+        if(history.size() > 3) {
+            history.remove(3);
+        }
+        try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(history);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public List<String> getHistory() {
+        return history;
+    }
+
 
     public void writeSave(String word) throws IOException {
         saves.add(word);
