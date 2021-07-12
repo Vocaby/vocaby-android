@@ -80,11 +80,13 @@ public class DataManager implements Serializable {
         }
     }
 
-    public void deleteSave(String word) throws IOException {
+    public void deleteSave(String word) {
         saves.remove(word);
         try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(saves);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

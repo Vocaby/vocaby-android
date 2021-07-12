@@ -13,18 +13,28 @@
             android:id="@+id/save_item"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="0dp"
             android:layout_marginStart="12dp"
-            android:text=""
+            android:layout_marginTop="6dp"
             android:fontFamily="@font/uchen"
+            android:text=""
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary_header"
             android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/unsave_button"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/unsave_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_bookmark_saved"
+            android:contentDescription="unsave"
+            android:layout_marginEnd="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

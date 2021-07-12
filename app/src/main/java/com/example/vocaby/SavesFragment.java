@@ -1,31 +1,20 @@
 package com.example.vocaby;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import java.io.Serializable;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SavesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchListener {
     private static final String SAVE_DATA = "saves";
 
@@ -61,7 +50,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         List<String> saves = dataManager.getSaves();
 
         RecyclerView recyclerView = view.findViewById(R.id.saves_container);
-        SavesAdapter adapter = new SavesAdapter(ctx, saves, this);
+        SavesAdapter adapter = new SavesAdapter(ctx, saves, this, dataManager, getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
 
