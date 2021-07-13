@@ -16,4 +16,5 @@
     <string name="app_header_saves">VOCABY SAVES</string>
     <string name="history_empty">No Recent Searches</string>
     <string name="history_header">RECENT SEARCHES</string>
+    <string name="widget_empty">You don\'t have any saved words</string>
 </resources>

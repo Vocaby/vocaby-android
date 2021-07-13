@@ -50,10 +50,10 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         List<String> history = dataManager.getHistory();
         TextView historyAlert = view.findViewById(R.id.history_alert);
+        RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
+        SearchAdapter searchAdapter = new SearchAdapter(ctx, dataManager.getHistory());
         if(history.size() > 0) {
             historyAlert.setVisibility(View.INVISIBLE);
-            RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
-            SearchAdapter searchAdapter = new SearchAdapter(ctx, dataManager.getHistory());
             historyContainer.setAdapter(searchAdapter);
             historyContainer.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
             historyContainer.setLayoutManager(new LinearLayoutManager(ctx) {
