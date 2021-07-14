@@ -52,9 +52,9 @@ public class SearchFragment extends Fragment {
         TextView historyAlert = view.findViewById(R.id.history_alert);
         RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
         SearchAdapter searchAdapter = new SearchAdapter(ctx, dataManager.getHistory());
+        historyContainer.setAdapter(searchAdapter);
         if(history.size() > 0) {
             historyAlert.setVisibility(View.INVISIBLE);
-            historyContainer.setAdapter(searchAdapter);
             historyContainer.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
             historyContainer.setLayoutManager(new LinearLayoutManager(ctx) {
                 @Override

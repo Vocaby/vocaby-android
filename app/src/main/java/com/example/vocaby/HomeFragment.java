@@ -3,6 +3,8 @@ package com.example.vocaby;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -14,6 +16,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,11 +94,19 @@ public class HomeFragment extends Fragment implements Serializable {
         search = view.findViewById(R.id.search_bar);
         search.setOnFocusChangeListener(searchFocusListener);
         search.setOnEditorActionListener(searchEditorListener);
+        ImageButton navButton = view.findViewById(R.id.nav_button);
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = getActivity().findViewById(R.id.drawer);
+                drawer.openDrawer(GravityCompat.END);
+            }
+        });
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, SearchFragment.newInstance(dataManager)).commit();
 
         if(sentText.length() > 0) {
             search.setText(sentText);
-            BottomNavigationView navView = getActivity().findViewById(R.id.bottom_navigation);
+            NavigationView navView = getActivity().findViewById(R.id.navigation_view);
             navView.getMenu().findItem(R.id.search).setChecked(true);
             search();
             sentText = "";

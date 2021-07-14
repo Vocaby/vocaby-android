@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/search"
+            android:icon="@drawable/ic_dict"
+            android:title="@string/nav_search"
+            android:checked="true"/>
+
+        <item
+            android:id="@+id/saves"
+            android:icon="@drawable/ic_saved_unopen"
+            android:title="@string/nav_saves" />
+
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/nav_settings" />
+    </group>
+</menu>

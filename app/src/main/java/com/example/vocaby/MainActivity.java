@@ -1,27 +1,28 @@
 package com.example.vocaby;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
     private HomeFragment home;
     private SavesFragment saves;
-    private SearchAdapter searchAdapter;
+    private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        bottomNav.setOnItemSelectedListener(navListener);
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        drawer = findViewById(R.id.drawer);
+        navigationView.setNavigationItemSelectedListener(navListener);
+        navigationView.bringToFront();
         DataManager dataManager = DataManager.getInstance(this);
-        searchAdapter = new SearchAdapter(MainActivity.this, dataManager.getHistory());
         home = HomeFragment.newInstance(dataManager, "");
         saves = SavesFragment.newInstance(dataManager);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, home).commit();
@@ -33,9 +34,10 @@ public class MainActivity extends AppCompatActivity {
         home.resetSearch();
     }
 
-    private NavigationBarView.OnItemSelectedListener navListener =
+    private NavigationView.OnNavigationItemSelectedListener navListener =
             item -> {
                 int id = item.getItemId();
+                drawer.closeDrawers();
                 Fragment selected = null;
                 FragmentManager fm = getSupportFragmentManager();
                 fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -46,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
                     home.resetSearch();
                 } else if(id == R.id.saves) {
                     selected = saves;
-                } else if(id == R.id.profile) {
-                    selected = new ProfileFragment();
+                } else if(id == R.id.settings) {
+                    selected = new SettingsFragment();
                 }
 
 

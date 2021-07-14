@@ -3,6 +3,8 @@ package com.example.vocaby;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import java.util.List;
 
@@ -48,6 +51,14 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
         List<String> saves = dataManager.getSaves();
+        ImageButton navButton = view.findViewById(R.id.nav_button);
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = getActivity().findViewById(R.id.drawer);
+                drawer.openDrawer(GravityCompat.END);
+            }
+        });
 
         RecyclerView recyclerView = view.findViewById(R.id.saves_container);
         SavesAdapter adapter = new SavesAdapter(ctx, saves, this, dataManager, getActivity());
