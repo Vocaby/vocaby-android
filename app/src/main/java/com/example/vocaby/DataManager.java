@@ -111,7 +111,7 @@ public class DataManager implements Serializable {
 
 
     public void writeSave(String word) throws IOException {
-        saves.add(word);
+        saves.add(0, word);
         try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(saves);

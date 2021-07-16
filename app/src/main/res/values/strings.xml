@@ -20,4 +20,6 @@
     <string name="nav_settings">Settings</string>
     <string name="app_header_settings">VOCABY SETTINGS</string>
     <string name="unsave_button_desc">unsave</string>
+    <string name="no_definition_found">No definition found</string>
+    <string name="navigation_button">navigation button</string>
 </resources>

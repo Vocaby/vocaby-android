@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".SettingsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,7 +62,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/logo_boxed" />
             <ImageButton
-
+                android:contentDescription="@string/navigation_button"
                 android:id="@+id/nav_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -53,15 +53,16 @@ public class SearchFragment extends Fragment {
         RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
         SearchAdapter searchAdapter = new SearchAdapter(ctx, dataManager.getHistory());
         historyContainer.setAdapter(searchAdapter);
+        historyContainer.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
+        historyContainer.setLayoutManager(new LinearLayoutManager(ctx) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        });
+
         if(history.size() > 0) {
             historyAlert.setVisibility(View.INVISIBLE);
-            historyContainer.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
-            historyContainer.setLayoutManager(new LinearLayoutManager(ctx) {
-                @Override
-                public boolean canScrollVertically() {
-                    return false;
-                }
-            });
         }
 
         return view;

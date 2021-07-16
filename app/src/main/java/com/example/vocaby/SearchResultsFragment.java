@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -62,32 +63,37 @@ public class SearchResultsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view;
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_search_results, container, false);
-        TextView header = view.findViewById(R.id.word_header);
-        header.setText(mWord);
-        saveButton = view.findViewById(R.id.save_button);
-        saveButton.setOnClickListener(saveListener);
-        TextView pronunciation = view.findViewById(R.id.pronunciation);
-        pronunciation.setText(mWordData.getPronunciation());
-
-        Drawable icon;
-        if(dataManager.hasSave(mWord)) {
-            icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
-            saveButton.setText(ctx.getString(R.string.save_button_saved));
+        if (mWordData == null) {
+            view = inflater.inflate(R.layout.fragment_search_results_no_def, container, false);
         } else {
-            icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
-            saveButton.setText(getResources().getString(R.string.save_button_unsaved));
-        }
-        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+            view = inflater.inflate(R.layout.fragment_search_results, container, false);
+            TextView header = view.findViewById(R.id.word_header);
+            header.setText(mWord);
+            saveButton = view.findViewById(R.id.save_button);
+            saveButton.setOnClickListener(saveListener);
+            TextView pronunciation = view.findViewById(R.id.pronunciation);
+            pronunciation.setText(mWordData.getPronunciation());
 
-        RecyclerView recyclerView = view.findViewById(R.id.definitions_recycler_container);
-        DefinitionsAdapter adapter = new DefinitionsAdapter(ctx, mWordData);
-        recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
-        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+            Drawable icon;
+            if(dataManager.hasSave(mWord)) {
+                icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
+                saveButton.setText(ctx.getString(R.string.save_button_saved));
+            } else {
+                icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
+                saveButton.setText(getResources().getString(R.string.save_button_unsaved));
+            }
+            saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+
+            RecyclerView recyclerView = view.findViewById(R.id.definitions_recycler_container);
+            DefinitionsAdapter adapter = new DefinitionsAdapter(ctx, mWordData);
+            recyclerView.setAdapter(adapter);
+            recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
+            recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+        }
 
         return view;
     }

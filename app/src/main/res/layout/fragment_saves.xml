@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SavesFragment"
-    android:clickable="true"
-    android:focusableInTouchMode="true"
-    android:focusable="true">
+    android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
@@ -64,7 +62,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/logo_boxed" />
             <ImageButton
-
+                android:contentDescription="@string/navigation_button"
                 android:id="@+id/nav_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

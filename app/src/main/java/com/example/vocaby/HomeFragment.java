@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class HomeFragment extends Fragment implements Serializable {
+public class HomeFragment extends Fragment {
     private static final String DATA_MANAGER = "dm";
     private static final String WORD = "word";
 
@@ -102,10 +102,13 @@ public class HomeFragment extends Fragment implements Serializable {
                 drawer.openDrawer(GravityCompat.END);
             }
         });
+
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, SearchFragment.newInstance(dataManager)).commit();
 
+        // Coming from the saves fragment
         if(sentText.length() > 0) {
             search.setText(sentText);
+            // When the user clicks on a saved item, the nav should check dictionary
             NavigationView navView = getActivity().findViewById(R.id.navigation_view);
             navView.getMenu().findItem(R.id.search).setChecked(true);
             search();
@@ -130,12 +133,7 @@ public class HomeFragment extends Fragment implements Serializable {
                 // check if data exists already
                 if(dataManager.hasWord(word)) {
                     Word wordData = dataManager.getData(word);
-                    Fragment fragment = SearchResultsFragment.newInstance(word, wordData, dataManager);
-                    FragmentManager fm = getActivity().getSupportFragmentManager();
-                    FragmentTransaction transaction = fm.beginTransaction();
-                    transaction.replace(R.id.search_fragment_container, SearchFragment.newInstance(dataManager));
-                    transaction.addToBackStack(null);
-                    transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
+                    switchToResultsFragment(word, wordData);
                     progressBar.setVisibility(View.INVISIBLE);
                     fragmentContainer.setVisibility(View.VISIBLE);
                 } else {
@@ -147,6 +145,14 @@ public class HomeFragment extends Fragment implements Serializable {
                 }
             }
         }
+    }
+
+    private void switchToResultsFragment(String word, Word wordData) {
+        Fragment fragment = SearchResultsFragment.newInstance(word, wordData, dataManager);
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.addToBackStack(null);
+        transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
     }
 
     private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
@@ -168,7 +174,6 @@ public class HomeFragment extends Fragment implements Serializable {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        // Parse the data
                         try {
                             WordService service = new WordService(word, response);
                             service.parse();
@@ -176,12 +181,7 @@ public class HomeFragment extends Fragment implements Serializable {
                                 Word wordData = service.getWordData();
                                 try {
                                     dataManager.writeData(wordData);
-                                    Fragment fragment = SearchResultsFragment.newInstance(word, wordData, dataManager);
-                                    FragmentManager fm = getActivity().getSupportFragmentManager();
-                                    FragmentTransaction transaction = fm.beginTransaction();
-                                    transaction.replace(R.id.search_fragment_container, SearchFragment.newInstance(dataManager));
-                                    transaction.addToBackStack(null);
-                                    transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
+                                    switchToResultsFragment(word, wordData);
                                 } catch(IOException e) {
                                     Toast.makeText(ctx, "Something went wrong while storing data", Toast.LENGTH_SHORT).show();
                                 }
@@ -207,15 +207,12 @@ public class HomeFragment extends Fragment implements Serializable {
                                 JSONObject res = new JSONObject(responseBody);
                                 String message = res.getString("error").toLowerCase();
                                 if(message.contains("no entry found")) {
-                                    Toast.makeText(ctx, "Word not found!!!", Toast.LENGTH_SHORT).show();
+                                    switchToResultsFragment(word, null);
                                 }
                             } catch (JSONException e) {
                                 Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
                             }
                         }
-
-                        // Change to "Something went wrong" fragment
-                        Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
                     }
                 })
         {
