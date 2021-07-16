@@ -28,17 +28,19 @@ public class WordService {
 
                 JSONArray definitionData = data.getJSONArray("senses");
                 for(int j = 0; j < definitionData.length(); j++) {
-                    String definition = definitionData.getJSONObject(j).getJSONArray("shortDefinitions").getString(0);
-                    JSONObject defObj = definitionData.getJSONObject(j);
-                    String sentence;
-                    if(defObj.has("examples")) {
-                        sentence = defObj.getJSONArray("examples").getJSONObject(0).getString("text");
-                    } else {
-                        sentence = "";
-                    }
+                    if(definitionData.getJSONObject(j).has("definitions")) {
+                        String definition = definitionData.getJSONObject(j).getJSONArray("definitions").getString(0);
+                        JSONObject defObj = definitionData.getJSONObject(j);
+                        String sentence;
+                        if(defObj.has("examples")) {
+                            sentence = defObj.getJSONArray("examples").getJSONObject(0).getString("text");
+                        } else {
+                            sentence = "";
+                        }
 
-                    word.addDefinition(pos, definition);
-                    word.addSentence(pos, sentence);
+                        word.addDefinition(pos, definition);
+                        word.addSentence(pos, sentence);
+                    }
                 }
             }
 
