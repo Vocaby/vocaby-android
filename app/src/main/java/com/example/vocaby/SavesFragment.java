@@ -19,8 +19,6 @@ import java.util.List;
 
 
 public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchListener {
-    private static final String SAVE_DATA = "saves";
-
     private DataManager dataManager;
     private Context ctx;
 
@@ -28,22 +26,12 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         // Required empty public constructor
     }
 
-    public static SavesFragment newInstance(DataManager dataManager) {
-        SavesFragment fragment = new SavesFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(SAVE_DATA, dataManager);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            dataManager = (DataManager) getArguments().getSerializable(SAVE_DATA);
-        }
 
-        ctx = getActivity().getApplicationContext();
+        ctx = requireActivity().getApplicationContext();
+        dataManager = DataManager.getInstance(ctx);
     }
 
     @Override
@@ -55,13 +43,13 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         navButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DrawerLayout drawer = getActivity().findViewById(R.id.drawer);
+                DrawerLayout drawer = requireActivity().findViewById(R.id.drawer);
                 drawer.openDrawer(GravityCompat.END);
             }
         });
 
         RecyclerView recyclerView = view.findViewById(R.id.saves_container);
-        SavesAdapter adapter = new SavesAdapter(ctx, saves, this, dataManager, getActivity());
+        SavesAdapter adapter = new SavesAdapter(ctx, saves, this, getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
 
@@ -71,8 +59,8 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     @Override
     public void onItemTouch(int position) {
         String search = dataManager.getSaves().get(position);
-        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentManager fm = requireActivity().getSupportFragmentManager();
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fm.beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(dataManager, search)).commit();
+        fm.beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(search), "HOME").commit();
     }
 }

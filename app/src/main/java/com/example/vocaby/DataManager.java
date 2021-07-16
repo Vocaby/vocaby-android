@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class DataManager implements Serializable {
+public class DataManager {
     private static DataManager dataManager = null;
     private static Context ctx;
     private static final String WORD_DATA_FILE_NAME = "dVocaby";
@@ -28,13 +28,6 @@ public class DataManager implements Serializable {
 
     private DataManager(Context context) {
         ctx = context.getApplicationContext();
-    }
-
-
-    public static DataManager getInstance(Context context) {
-        if(dataManager == null) {
-            dataManager = new DataManager(context);
-        }
 
         File dataFile = new File(ctx.getFilesDir(), WORD_DATA_FILE_NAME);
         if(dataFile.exists()) {
@@ -88,6 +81,13 @@ public class DataManager implements Serializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+
+    public static DataManager getInstance(Context context) {
+        if(dataManager == null) {
+            dataManager = new DataManager(context);
         }
 
         return dataManager;

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,34 +53,30 @@ public class HomeFragment extends Fragment {
     private DataManager dataManager;
     private String searchedText;
     private String sentText;
+    private int stackCount;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance(DataManager dataManager, String word) {
+    public static HomeFragment newInstance(String word) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
-        args.putSerializable(DATA_MANAGER, dataManager);
         args.putSerializable(WORD, word);
         fragment.setArguments(args);
 
         return fragment;
     }
 
-    public void resetSearch() {
-        searchedText = "";
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            dataManager = (DataManager) getArguments().getSerializable(DATA_MANAGER);
             sentText = getArguments().getString(WORD);
         }
 
-        ctx = getActivity().getApplicationContext();
+        ctx = requireActivity().getApplicationContext();
+        dataManager = DataManager.getInstance(ctx);
     }
 
     @Override
@@ -103,7 +100,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, SearchFragment.newInstance(dataManager)).commit();
+        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, SearchFragment.newInstance()).commit();
 
         // Coming from the saves fragment
         if(sentText.length() > 0) {
@@ -118,45 +115,51 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    // Allow search for the same word after the user presses the back button
+    public void resetSearch() {
+        searchedText = "";
+    }
+
+
+
     private void search() {
-        if(search != null) {
-            String word = search.getText().toString().toLowerCase().trim();
-            if(!word.isEmpty() && !searchedText.equals(word)) {
-                if(sentText.length() == 0) {
-                    dataManager.writeHistory(word);
-                }
+        String word = search.getText().toString().toLowerCase().trim();
+        if(!word.isEmpty() && !searchedText.equals(word)) {
+            if(sentText.length() == 0) {
+                // Don't write to history if the word was passed from the saves fragment
+                dataManager.writeHistory(word);
+            }
 
-                searchedText = word;
-                fragmentContainer.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
+            searchedText = word; // prevents searching the same word twice on the same page
+            fragmentContainer.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
 
-                // check if data exists already
-                if(dataManager.hasWord(word)) {
-                    Word wordData = dataManager.getData(word);
-                    switchToResultsFragment(word, wordData);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    fragmentContainer.setVisibility(View.VISIBLE);
-                } else {
-                    String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
-                    RequestQueue q = Volley.newRequestQueue(ctx);
-                    JsonObjectRequest jsonObjectRequest = makeRequest(url, word);
-                    // Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
-                    q.add(jsonObjectRequest);
-                }
+            // check if data exists already
+            if(dataManager.hasWord(word)) {
+                Word wordData = dataManager.getData(word);
+                switchToResultsFragment(word, wordData);
+                progressBar.setVisibility(View.INVISIBLE);
+                fragmentContainer.setVisibility(View.VISIBLE);
+            } else {
+                String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
+                RequestQueue q = Volley.newRequestQueue(ctx);
+                JsonObjectRequest jsonObjectRequest = makeRequest(url, word);
+                // Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
+                q.add(jsonObjectRequest);
             }
         }
     }
 
     private void switchToResultsFragment(String word, Word wordData) {
-        Fragment fragment = SearchResultsFragment.newInstance(word, wordData, dataManager);
-        FragmentManager fm = getActivity().getSupportFragmentManager();
+        Fragment fragment = SearchResultsFragment.newInstance(word, wordData);
+        FragmentManager fm = requireActivity().getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.addToBackStack(null);
         transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
     }
 
     private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
-        imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         v.clearFocus();
 
@@ -229,7 +232,7 @@ public class HomeFragment extends Fragment {
 
     private final View.OnFocusChangeListener searchFocusListener = (v, hasFocus) -> {
         if(!hasFocus) {
-            imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
     };

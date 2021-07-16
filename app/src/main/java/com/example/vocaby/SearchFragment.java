@@ -16,9 +16,6 @@ import android.widget.TextView;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
-
-    private static final String DATA_MANAGER = "dm";
-
     private DataManager dataManager;
     private Context ctx;
 
@@ -26,10 +23,9 @@ public class SearchFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SearchFragment newInstance(DataManager dataManager) {
+    public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
-        args.putSerializable(DATA_MANAGER, dataManager);
         fragment.setArguments(args);
         return fragment;
     }
@@ -37,11 +33,9 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            dataManager = (DataManager) getArguments().getSerializable(DATA_MANAGER);
-        }
 
-        ctx = getActivity().getApplicationContext();
+        ctx = requireActivity().getApplicationContext();
+        dataManager = DataManager.getInstance(ctx);
     }
 
     @Override

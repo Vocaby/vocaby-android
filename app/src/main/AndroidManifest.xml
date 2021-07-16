@@ -3,6 +3,7 @@
     package="com.example.vocaby">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SET_ALARM" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -25,5 +26,7 @@
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/saves_appwidget_info" />
         </receiver>
+        <receiver android:name=".NotificationReciever"
+            android:enabled="true" />
     </application>
 </manifest>

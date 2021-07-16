@@ -28,11 +28,11 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         void onItemTouch(int position);
     }
 
-    public SavesAdapter(Context ctx, List<String> saves, OnItemTouchListener onItemTouchListener, DataManager dataManager, Activity activity) {
+    public SavesAdapter(Context ctx, List<String> saves, OnItemTouchListener onItemTouchListener, Activity activity) {
         this.saves = saves;
         this.onItemTouchListener = onItemTouchListener;
         this.ctx = ctx;
-        this.dataManager = dataManager;
+        dataManager = DataManager.getInstance(ctx);
 
         builder = new AlertDialog.Builder(activity);
     }

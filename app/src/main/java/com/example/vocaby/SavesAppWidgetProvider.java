@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RemoteViews;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
 
         if(intent.getAction().equals(WIDGET_CLICK)) {
+            Log.d("Click", "Click!!");
             updateWidgetTexts(context, intent.getIntExtra("WIDGET_ID", -1), intent.getParcelableExtra("REMOTE_VIEW"));
         }
     }
@@ -37,14 +39,13 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
         dataManager = DataManager.getInstance(context);
         List<String> saves = dataManager.getSaves();
         if(saves.size() > 0) {
-            int index = (int) (Math.random() * saves.size());
-            String word = saves.get(index);
-            Word wordData = dataManager.getData(word);
+            WordPickerService wordPickerService = new WordPickerService(dataManager, context);
+            Word wordData = wordPickerService.getRandomWordFromSaves();
             String pos = wordData.getAllowedPos()[0];
             String definition = wordData.getDefinitions(pos)[0];
             String[] examples = wordData.getSentences(pos);
 
-            remoteViews.setTextViewText(R.id.widget_word, word);
+            remoteViews.setTextViewText(R.id.widget_word, wordData.getWord());
             remoteViews.setTextViewText(R.id.widget_definition, definition);
 
             if(examples.length > 0) {

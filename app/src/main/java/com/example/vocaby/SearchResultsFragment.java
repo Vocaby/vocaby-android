@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ public class SearchResultsFragment extends Fragment {
 
     private static final String WORD = "param1";
     private static final String WORD_DATA = "param2";
-    private static final String SAVE_DATA = "saves";
 
     private String mWord;
     private Word mWordData;
@@ -40,12 +38,11 @@ public class SearchResultsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SearchResultsFragment newInstance(String param1, Word wordData, DataManager dataManager) {
+    public static SearchResultsFragment newInstance(String param1, Word wordData) {
         SearchResultsFragment fragment = new SearchResultsFragment();
         Bundle args = new Bundle();
         args.putString(WORD, param1);
         args.putSerializable(WORD_DATA, wordData);
-        args.putSerializable(SAVE_DATA, dataManager);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,10 +53,18 @@ public class SearchResultsFragment extends Fragment {
         if (getArguments() != null) {
             mWord = getArguments().getString(WORD);
             mWordData = (Word) getArguments().getSerializable(WORD_DATA);
-            dataManager = (DataManager) getArguments().getSerializable(SAVE_DATA);
         }
 
-        ctx = getActivity().getApplicationContext();
+        ctx = requireActivity().getApplicationContext();
+        dataManager = DataManager.getInstance(ctx);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        HomeFragment fragment = (HomeFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("HOME");
+        assert fragment != null;
+        fragment.resetSearch();
     }
 
     @Override
