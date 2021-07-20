@@ -2,6 +2,7 @@ package com.example.vocaby;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ public class NotificationReciever extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d("NotificationReciever", "Recieved");
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         DataManager dataManager = DataManager.getInstance(context);
         WordPickerService wordPickerService = new WordPickerService(dataManager, context);
@@ -33,10 +35,18 @@ public class NotificationReciever extends BroadcastReceiver {
         }
 
         createNotificationChannel(notificationManager);
+
+        Intent resultIntent = new Intent(context, MainActivity.class);
+        resultIntent.putExtra("com.example.vocaby.notification", word);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification_white)
                 .setColor(context.getColor(R.color.colorPrimary))
                 .setContentTitle(word.toUpperCase())
+                .setContentIntent(resultPendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(message))
                 .setContentText(message);

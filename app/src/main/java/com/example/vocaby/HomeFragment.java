@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment {
         if(sentText.length() > 0) {
             search.setText(sentText);
             // When the user clicks on a saved item, the nav should check dictionary
-            NavigationView navView = getActivity().findViewById(R.id.bottom_navigation);
+            BottomNavigationView navView = requireActivity().findViewById(R.id.bottom_navigation);
             navView.getMenu().findItem(R.id.search).setChecked(true);
             search();
             sentText = "";
