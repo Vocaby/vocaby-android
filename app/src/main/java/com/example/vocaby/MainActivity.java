@@ -10,24 +10,19 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.util.Log;
 
-import com.google.android.material.navigation.NavigationView;
-
-import java.util.Calendar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
-    private DrawerLayout drawer;
-    private NavigationView navigationView;
+    private BottomNavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        navigationView = findViewById(R.id.navigation_view);
-        drawer = findViewById(R.id.drawer);
-        navigationView.setNavigationItemSelectedListener(navListener);
+        navigationView = findViewById(R.id.bottom_navigation);
+        navigationView.setOnItemSelectedListener(navListener);
         navigationView.bringToFront();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(""), "search").commit();
 
@@ -44,10 +39,9 @@ public class MainActivity extends AppCompatActivity {
         // navigationView.getMenu().findItem(R.id.search).setChecked(true);
     }
 
-    private NavigationView.OnNavigationItemSelectedListener navListener =
+    private NavigationBarView.OnItemSelectedListener navListener =
             item -> {
                 int id = item.getItemId();
-                drawer.closeDrawers();
                 Fragment selected = null;
                 FragmentManager fm = getSupportFragmentManager();
                 FragmentTransaction transaction = fm.beginTransaction();
@@ -60,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if(id == R.id.saves) {
                     selected = new SavesFragment();
                 } else if(id == R.id.settings) {
-                    selected = new SettingsFragment();
+                    selected = new ProfileFragment();
                 }
 
                 transaction.replace(R.id.fragment_container, selected).commit();

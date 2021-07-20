@@ -4,18 +4,18 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/search"
-            android:icon="@drawable/ic_dict"
+            android:icon="@drawable/ic_search"
             android:title="@string/nav_search"
             android:checked="true"/>
 
         <item
             android:id="@+id/saves"
-            android:icon="@drawable/ic_saved_unopen"
+            android:icon="@drawable/nav_saves"
             android:title="@string/nav_saves" />
 
         <item
             android:id="@+id/settings"
-            android:icon="@drawable/ic_settings"
-            android:title="@string/nav_settings" />
+            android:icon="@drawable/ic_profile"
+            android:title="@string/nav_profile" />
     </group>
 </menu>

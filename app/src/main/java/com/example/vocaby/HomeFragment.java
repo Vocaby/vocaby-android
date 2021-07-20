@@ -91,14 +91,7 @@ public class HomeFragment extends Fragment {
         search = view.findViewById(R.id.search_bar);
         search.setOnFocusChangeListener(searchFocusListener);
         search.setOnEditorActionListener(searchEditorListener);
-        ImageButton navButton = view.findViewById(R.id.nav_button);
-        navButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DrawerLayout drawer = getActivity().findViewById(R.id.drawer);
-                drawer.openDrawer(GravityCompat.END);
-            }
-        });
+
 
         requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, SearchFragment.newInstance()).commit();
 
@@ -106,7 +99,7 @@ public class HomeFragment extends Fragment {
         if(sentText.length() > 0) {
             search.setText(sentText);
             // When the user clicks on a saved item, the nav should check dictionary
-            NavigationView navView = getActivity().findViewById(R.id.navigation_view);
+            NavigationView navView = getActivity().findViewById(R.id.bottom_navigation);
             navView.getMenu().findItem(R.id.search).setChecked(true);
             search();
             sentText = "";

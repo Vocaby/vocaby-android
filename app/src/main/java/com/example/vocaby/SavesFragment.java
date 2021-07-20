@@ -39,14 +39,6 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
         List<String> saves = dataManager.getSaves();
-        ImageButton navButton = view.findViewById(R.id.nav_button);
-        navButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DrawerLayout drawer = requireActivity().findViewById(R.id.drawer);
-                drawer.openDrawer(GravityCompat.END);
-            }
-        });
 
         RecyclerView recyclerView = view.findViewById(R.id.saves_container);
         SavesAdapter adapter = new SavesAdapter(ctx, saves, this, getActivity());
