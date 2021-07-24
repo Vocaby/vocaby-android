@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vocaby">
+    package="com.vocaby.app">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SET_ALARM" />
@@ -12,21 +12,23 @@
         android:screenOrientation="sensorPortrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.VocabyAndroid">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name="com.vocaby.app.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="SavesAppWidgetProvider" >
+        <receiver android:name="com.vocaby.app.SavesAppWidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/saves_appwidget_info" />
         </receiver>
-        <receiver android:name=".NotificationReciever"
+        <receiver android:name="com.vocaby.app.NotificationReciever"
             android:enabled="true" />
     </application>
 </manifest>

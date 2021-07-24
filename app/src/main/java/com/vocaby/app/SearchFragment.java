@@ -1,6 +1,9 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -18,6 +21,19 @@ import java.util.List;
 public class SearchFragment extends Fragment {
     private DataManager dataManager;
     private Context ctx;
+    private TextView historyAlert;
+    private SearchAdapter searchAdapter;
+    public static final String RADIO_DATASET_CHANGED = "com.vocaby.app.RADIO_DATASET_CHANGED";
+    private Radio radio;
+
+    private class Radio extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(RADIO_DATASET_CHANGED)){
+                searchAdapter.notifyDataSetChanged();
+            }
+        }
+    }
 
     public SearchFragment() {
         // Required empty public constructor
@@ -33,9 +49,9 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         ctx = requireActivity().getApplicationContext();
         dataManager = DataManager.getInstance(ctx);
+        radio = new Radio();
     }
 
     @Override
@@ -43,9 +59,9 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         List<String> history = dataManager.getHistory();
-        TextView historyAlert = view.findViewById(R.id.history_alert);
+        historyAlert = view.findViewById(R.id.history_alert);
         RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
-        SearchAdapter searchAdapter = new SearchAdapter(ctx, dataManager.getHistory());
+        searchAdapter = new SearchAdapter(ctx, dataManager.getHistory());
         historyContainer.setAdapter(searchAdapter);
         historyContainer.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
         historyContainer.setLayoutManager(new LinearLayoutManager(ctx) {
@@ -60,5 +76,23 @@ public class SearchFragment extends Fragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(RADIO_DATASET_CHANGED);
+        ctx.registerReceiver(radio, filter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            ctx.unregisterReceiver(radio);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

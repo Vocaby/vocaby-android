@@ -18,7 +18,7 @@
         <TextView
             android:id="@+id/word_header"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
             android:fontFamily="@font/uchen"
             android:text="@string/search_results"
@@ -33,13 +33,13 @@
             android:id="@+id/pronunciation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/pronunciation"
+            android:layout_marginTop="60dp"
             android:fontFamily="@font/sourcesanspro_semibold"
+            android:text="@string/pronunciation"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/word_header" />
+            app:layout_constraintTop_toTopOf="@+id/word_header" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_button"

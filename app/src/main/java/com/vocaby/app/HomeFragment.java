@@ -1,15 +1,13 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +15,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,20 +26,17 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class HomeFragment extends Fragment {
-    private static final String DATA_MANAGER = "dm";
     private static final String WORD = "word";
 
     private EditText search;
@@ -53,7 +47,6 @@ public class HomeFragment extends Fragment {
     private DataManager dataManager;
     private String searchedText;
     private String sentText;
-    private int stackCount;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -89,9 +82,7 @@ public class HomeFragment extends Fragment {
         fragmentContainer = view.findViewById(R.id.search_fragment_container);
         progressBar.setVisibility(View.INVISIBLE);
         search = view.findViewById(R.id.search_bar);
-        search.setOnFocusChangeListener(searchFocusListener);
         search.setOnEditorActionListener(searchEditorListener);
-
 
         requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, SearchFragment.newInstance()).commit();
 
@@ -119,14 +110,16 @@ public class HomeFragment extends Fragment {
         String word = search.getText().toString().toLowerCase().trim();
         if(!word.isEmpty() && !searchedText.equals(word)) {
             if(sentText.length() == 0) {
-                // Don't write to history if the word was passed from the saves fragment
+                // Only write to history when user searches for the definition
+                // Not when the user looks up definition through saved words
                 dataManager.writeHistory(word);
+                Intent intent = new Intent(SearchFragment.RADIO_DATASET_CHANGED);
+                ctx.sendBroadcast(intent);
             }
 
             searchedText = word; // prevents searching the same word twice on the same page
             fragmentContainer.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
-
             // check if data exists already
             if(dataManager.hasWord(word)) {
                 Word wordData = dataManager.getData(word);
@@ -222,11 +215,4 @@ public class HomeFragment extends Fragment {
             }
         };
     }
-
-    private final View.OnFocusChangeListener searchFocusListener = (v, hasFocus) -> {
-        if(!hasFocus) {
-            imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-    };
 }

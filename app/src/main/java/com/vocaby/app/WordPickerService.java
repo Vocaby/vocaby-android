@@ -1,8 +1,7 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import java.util.List;
 
@@ -18,6 +17,10 @@ public class WordPickerService {
     }
 
     public Word getRandomWordFromSaves() {
+        return getRandomWordFromSaves(null);
+    }
+
+    public Word getRandomWordFromSaves(String prevWord) {
         List<String> saves = dataManager.getSaves();
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PICKS, Context.MODE_PRIVATE);
         int index = (int) (Math.random() * saves.size());
@@ -28,7 +31,7 @@ public class WordPickerService {
         } else if(size == 1) {
             index = 0;
         } else {
-            int prevPick = sharedPreferences.getInt(PICK, 0);
+            int prevPick = prevWord == null ? sharedPreferences.getInt(PICK, 0) : dataManager.getSaves().indexOf(prevWord);
             while(prevPick == index) {
                 index = (int) (Math.random() * saves.size());
             }

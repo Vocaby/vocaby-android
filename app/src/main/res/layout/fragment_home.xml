@@ -4,10 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    tools:context=".HomeFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/edittext"
-                android:drawableStart="@drawable/search_icon"
+                android:drawableStart="@drawable/ic_search_gray"
                 android:drawablePadding="12dp"
                 android:elevation="8dp"
                 android:ems="10"

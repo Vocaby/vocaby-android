@@ -1,4 +1,4 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.RemoteViews;
 import java.util.List;
 
@@ -17,13 +16,14 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
     public SavesAppWidgetProvider() {
         super();
     }
+    private int prevPick = 0;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
-        if(intent.getAction().equals(WIDGET_CLICK)) {
-            Log.d("Click", "Click!!");
+        String action = intent.getAction();
+        if(action.equals(WIDGET_CLICK)) {
             updateWidgetTexts(context, intent.getIntExtra("WIDGET_ID", -1), intent.getParcelableExtra("REMOTE_VIEW"));
         }
     }
@@ -51,9 +51,16 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
             if(examples.length > 0) {
                 remoteViews.setTextViewText(R.id.widget_sentence, examples[0]);
             }
+
+            Intent openIntent = new Intent(context, MainActivity.class);
+            openIntent.setAction(WIDGET_CLICK);
+            openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            openIntent.putExtra("com.vocaby.app.openAndSearch", wordData.getWord());
+            PendingIntent openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent);
         } else {
             remoteViews.setTextViewText(R.id.widget_word, "NO SAVED WORDS");
-            remoteViews.setTextViewText(R.id.widget_definition, "Touch to Refresh");
+            remoteViews.setTextViewText(R.id.widget_definition, "Save words in the app to review them here.");
             remoteViews.setTextViewText(R.id.widget_sentence, "");
         }
 
@@ -67,13 +74,14 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetComponent);
 
         for(int id : appWidgetIds) {
-            Intent intent = new Intent(context, SavesAppWidgetProvider.class);
-            intent.setAction(WIDGET_CLICK);
-            intent.putExtra("WIDGET_ID", id);
+            Intent refreshIntent = new Intent(context, SavesAppWidgetProvider.class);
+            refreshIntent.setAction(WIDGET_CLICK);
+            refreshIntent.putExtra("WIDGET_ID", id);
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.saves_widget);
-            intent.putExtra("REMOTE_VIEW", remoteViews);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, 0);
-            remoteViews.setOnClickPendingIntent(R.id.widget_container, pendingIntent);
+            refreshIntent.putExtra("REMOTE_VIEW", remoteViews);
+            PendingIntent refreshPendingIntent = PendingIntent.getBroadcast(context, id, refreshIntent, 0);
+            remoteViews.setOnClickPendingIntent(R.id.widget_refresh_button, refreshPendingIntent);
+
             updateWidgetTexts(context, id, remoteViews);
         }
 

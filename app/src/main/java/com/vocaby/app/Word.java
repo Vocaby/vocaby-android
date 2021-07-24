@@ -1,4 +1,4 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import java.io.Serializable;
 import java.util.ArrayList;

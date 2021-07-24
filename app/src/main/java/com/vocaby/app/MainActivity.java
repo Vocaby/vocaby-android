@@ -1,7 +1,6 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -13,8 +12,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -46,7 +49,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         navigationView.setOnItemSelectedListener(navListener);
         navigationView.bringToFront();
 
-        String notifiedWord = getIntent().getStringExtra("com.example.vocaby.notification");
+
+        // Notification
+        String notifiedWord = getIntent().getStringExtra("com.vocaby.app.openAndSearch");
         if(notifiedWord != null) {
             if(!notifiedWord.equals("No Saved Words")) {
                 getSupportFragmentManager()
@@ -64,21 +69,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     .beginTransaction()
                     .replace(R.id.fragment_container, HomeFragment.newInstance(""), "HOME")
                     .commit();
+
+            alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            Intent notificationIntent = new Intent(this, NotificationReciever.class);
+            pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
         }
-
-
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent notificationIntent = new Intent(this, NotificationReciever.class);
-        pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-        // navigationView.getMenu().findItem(R.id.search).setChecked(true);
     }
 
     public void showSettings() {
@@ -111,6 +108,23 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 transaction.replace(R.id.fragment_container, selected).commit();
                 return true;
             };
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
+    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {

@@ -1,4 +1,4 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

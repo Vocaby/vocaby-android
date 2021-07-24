@@ -1,4 +1,4 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import org.json.JSONArray;
 import org.json.JSONException;

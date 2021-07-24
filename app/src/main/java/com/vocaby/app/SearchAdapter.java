@@ -1,4 +1,4 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,10 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.HistoryViewHolder> implements Serializable {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.HistoryViewHolder> {
     private List<String> history;
     private Context ctx;
 

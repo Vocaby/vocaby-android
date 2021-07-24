@@ -1,9 +1,7 @@
-package com.example.vocaby;
+package com.vocaby.app;
 
 import android.os.Bundle;
 
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -43,7 +41,7 @@ public class ProfileFragment extends Fragment {
         navButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).showSettings();
+                ((MainActivity)requireActivity()).showSettings();
             }
         });
 
