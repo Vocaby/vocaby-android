@@ -27,4 +27,5 @@
 
     <!-- Sync Preferences -->
     <string name="refresh_button">Refresh Button</string>
+    <string name="back">BACK</string>
 </resources>

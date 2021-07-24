@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment {
         search = view.findViewById(R.id.search_bar);
         search.setOnEditorActionListener(searchEditorListener);
 
-        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment_container, SearchFragment.newInstance()).commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container, new SearchFragment()).commit();
 
         // Coming from the saves fragment
         if(sentText.length() > 0) {
@@ -138,9 +138,15 @@ public class HomeFragment extends Fragment {
 
     private void switchToResultsFragment(String word, Word wordData) {
         Fragment fragment = SearchResultsFragment.newInstance(word, wordData);
-        FragmentManager fm = requireActivity().getSupportFragmentManager();
+        FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.addToBackStack(null);
+        transaction.setCustomAnimations(
+                R.anim.enter_bottom_to_top,
+                R.anim.exit_top_to_bottom,
+                R.anim.enter_bottom_to_top,
+                R.anim.exit_top_to_bottom
+        );
         transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
     }
 

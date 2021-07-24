@@ -21,7 +21,6 @@ import java.util.List;
 public class SearchFragment extends Fragment {
     private DataManager dataManager;
     private Context ctx;
-    private TextView historyAlert;
     private SearchAdapter searchAdapter;
     public static final String RADIO_DATASET_CHANGED = "com.vocaby.app.RADIO_DATASET_CHANGED";
     private Radio radio;
@@ -39,13 +38,6 @@ public class SearchFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SearchFragment newInstance() {
-        SearchFragment fragment = new SearchFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +51,7 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         List<String> history = dataManager.getHistory();
-        historyAlert = view.findViewById(R.id.history_alert);
+        TextView historyAlert = view.findViewById(R.id.history_alert);
         RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
         searchAdapter = new SearchAdapter(ctx, dataManager.getHistory());
         historyContainer.setAdapter(searchAdapter);

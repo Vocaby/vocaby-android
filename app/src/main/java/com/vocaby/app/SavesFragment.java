@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -37,6 +38,11 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
         List<String> saves = dataManager.getSaves();
 
+        if(saves.size() > 0) {
+            TextView savesAlert = view.findViewById(R.id.saves_alert);
+            savesAlert.setVisibility(View.INVISIBLE);
+        }
+
         RecyclerView recyclerView = view.findViewById(R.id.saves_container);
         SavesAdapter adapter = new SavesAdapter(ctx, saves, this, getActivity());
         recyclerView.setAdapter(adapter);
@@ -54,7 +60,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         .setCustomAnimations(
                 R.anim.enter_left_to_right,
                 R.anim.exit_left_to_right
-        ).replace(R.id.fragment_container, HomeFragment.newInstance(search), "HOME").commit();
+        ).replace(R.id.fragment_container, HomeFragment.newInstance(search)).commit();
 
         ((MainActivity)requireActivity()).changePrevPage(R.id.search);
     }

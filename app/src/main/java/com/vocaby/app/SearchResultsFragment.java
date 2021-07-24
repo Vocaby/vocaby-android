@@ -62,7 +62,7 @@ public class SearchResultsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        HomeFragment fragment = (HomeFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("HOME");
+        HomeFragment fragment = (HomeFragment) getParentFragment();
         assert fragment != null;
         fragment.resetSearch();
     }
@@ -78,6 +78,8 @@ public class SearchResultsFragment extends Fragment {
             view = inflater.inflate(R.layout.fragment_search_results, container, false);
             TextView header = view.findViewById(R.id.word_header);
             header.setText(mWord);
+            Button backButton = view.findViewById(R.id.back_button);
+            backButton.setOnClickListener(backListener);
             saveButton = view.findViewById(R.id.save_button);
             saveButton.setOnClickListener(saveListener);
             TextView pronunciation = view.findViewById(R.id.pronunciation);
@@ -102,6 +104,13 @@ public class SearchResultsFragment extends Fragment {
 
         return view;
     }
+
+    private final View.OnClickListener backListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ((MainActivity) requireActivity()).onBackPressed();
+        }
+    };
 
     private final View.OnClickListener saveListener = new View.OnClickListener() {
         @Override

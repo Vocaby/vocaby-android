@@ -6,40 +6,35 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/word_box"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/word_background"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/word_header"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/back_button"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:fontFamily="@font/uchen"
-            android:text="@string/search_results"
-            android:textAllCaps="true"
-            android:textColor="@color/colorPrimary_header"
-            android:textSize="34sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/pronunciation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
+            android:drawableStart="@drawable/ic_left_arrow_green"
+            android:drawablePadding="10dp"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="@string/pronunciation"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/word_header" />
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="8dp"
+            android:text="@string/back"
+            android:textColor="@color/colorPrimary_header"
+            android:textSize="12sp"
+            tools:ignore="SmallSp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_button"
@@ -47,6 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_bookmark_unsaved"
+            android:drawablePadding="4dp"
             android:fontFamily="@font/sourcesanspro_semibold"
             android:minWidth="0dp"
             android:minHeight="0dp"
@@ -54,11 +50,49 @@
             android:text="@string/save_button_unsaved"
             android:textColor="@color/colorPrimary_header"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pronunciation"
-            app:layout_constraintVertical_bias="0.0"
             tools:ignore="SmallSp" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/word_box"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/word_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <TextView
+            android:id="@+id/word_header"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="18dp"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="24sp"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/playfairdisplay_mid"
+            android:text="@string/search_results"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary_header"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.95" />
+
+        <TextView
+            android:id="@+id/pronunciation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:text="@string/pronunciation"
+            android:textColor="@color/black"
+            android:layout_marginBottom="22dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/word_header"
+            app:layout_constraintBottom_toBottomOf="@+id/word_box"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

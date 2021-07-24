@@ -80,6 +80,21 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getSupportFragmentManager();
+        for (Fragment frag : fm.getFragments()) {
+            if (frag.isVisible()) {
+                FragmentManager childFm = frag.getChildFragmentManager();
+                if (childFm.getBackStackEntryCount() > 0) {
+                    childFm.popBackStack();
+                    return;
+                }
+            }
+        }
+        super.onBackPressed();
+    }
+
     public void changePrevPage(int id) {
         prevPage = id;
     }
@@ -112,6 +127,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                                 R.anim.enter_left_to_right,
                                 R.anim.exit_left_to_right
                         );
+                        transaction.replace(R.id.fragment_container, selected, "HOME").commit();
+                        prevPage = id;
+                        return true;
                     } else if(id == R.id.saves) {
                         if(prevPage == R.id.profile) {
                             transaction.setCustomAnimations(
