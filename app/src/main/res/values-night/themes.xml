@@ -8,5 +8,10 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="AppTheme.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">
+        <item name="android:layout">@layout/settings</item>
     </style>
 </resources>

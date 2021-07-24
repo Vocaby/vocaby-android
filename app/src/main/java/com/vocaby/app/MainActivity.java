@@ -87,6 +87,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void showSettings() {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(
+                        R.anim.enter_right_to_left,
+                        R.anim.exit_right_to_left,
+                        R.anim.enter_right_to_left,
+                        R.anim.exit_left_to_right
+                )
                 .addToBackStack(null)
                 .add(R.id.fragment_container, new SettingsFragment())
                 .commit();
