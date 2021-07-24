@@ -50,6 +50,12 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         String search = dataManager.getSaves().get(position);
         FragmentManager fm = requireActivity().getSupportFragmentManager();
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fm.beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(search), "HOME").commit();
+        fm.beginTransaction()
+        .setCustomAnimations(
+                R.anim.enter_left_to_right,
+                R.anim.exit_left_to_right
+        ).replace(R.id.fragment_container, HomeFragment.newInstance(search), "HOME").commit();
+
+        ((MainActivity)requireActivity()).changePrevPage(R.id.search);
     }
 }

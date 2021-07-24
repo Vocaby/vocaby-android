@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private BottomNavigationView navigationView;
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
+    private int prevPage;
 
     @Override
     protected void onStart() {
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prevPage = R.id.search;
         setContentView(R.layout.activity_main);
         navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setOnItemSelectedListener(navListener);
@@ -78,6 +80,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    public void changePrevPage(int id) {
+        prevPage = id;
+    }
+
     public void showSettings() {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -93,19 +99,41 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 FragmentManager fm = getSupportFragmentManager();
                 FragmentTransaction transaction = fm.beginTransaction();
                 fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                if(prevPage != id) {
+                    if(id == R.id.search) {
+                        selected = HomeFragment.newInstance("");
+                        transaction.setCustomAnimations(
+                                R.anim.enter_left_to_right,
+                                R.anim.exit_left_to_right
+                        );
+                    } else if(id == R.id.saves) {
+                        if(prevPage == R.id.profile) {
+                            transaction.setCustomAnimations(
+                                    R.anim.enter_left_to_right,
+                                    R.anim.exit_left_to_right
+                            );
+                        } else {
+                            transaction.setCustomAnimations(
+                                    R.anim.enter_right_to_left,
+                                    R.anim.exit_right_to_left
+                            );
+                        }
 
-                if(id == R.id.search) {
-                    selected = HomeFragment.newInstance("");
-                    transaction.replace(R.id.fragment_container, selected, "HOME").commit();
+                        selected = new SavesFragment();
+                    } else if(id == R.id.profile) {
+                        transaction.setCustomAnimations(
+                                R.anim.enter_right_to_left,
+                                R.anim.exit_right_to_left
+                        );
+                        selected = new ProfileFragment();
+                    }
+
+                    prevPage = id;
+                    assert selected != null;
+                    transaction.replace(R.id.fragment_container, selected).commit();
                     return true;
-                } else if(id == R.id.saves) {
-                    selected = new SavesFragment();
-                } else if(id == R.id.settings) {
-                    selected = new ProfileFragment();
                 }
 
-                assert selected != null;
-                transaction.replace(R.id.fragment_container, selected).commit();
                 return true;
             };
 
