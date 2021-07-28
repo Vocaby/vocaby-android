@@ -45,6 +45,17 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        getParentFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(
+                        R.anim.enter_right_to_left,
+                        R.anim.exit_right_to_left,
+                        R.anim.enter_right_to_left,
+                        R.anim.exit_right_to_left
+                )
+                .replace(R.id.fragment_container, new LoginFragment())
+                .commit();
+
         return view;
     }
 }

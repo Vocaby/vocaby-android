@@ -13,18 +13,18 @@
         android:layout_height="200dp"
         android:background="@drawable/green_gradient"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/profile_side_margin"
             android:fontFamily="@font/sourcesanspro_regular"
             android:text="@string/default_profile_intro_desc"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="@color/white"
-            android:layout_marginStart="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
@@ -36,13 +36,13 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/profile_side_margin"
             android:layout_marginTop="48dp"
-            android:fontFamily="@font/sourcesanspro_semibold"
+            android:fontFamily="@font/playfairdisplay_mid"
             android:text="@string/default_profile_intro"
             android:textAppearance="?attr/textAppearanceHeadline6"
             android:textColor="@color/white"
             android:textSize="28sp"
-            android:layout_marginStart="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,18 +64,14 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
+        android:id="@+id/profile_fragment_child_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/white_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.8"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout"
-        app:layout_constraintVertical_bias="1.0">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,7 +19,7 @@
     <string name="unsave_button_desc">unsave</string>
     <string name="no_definition_found">No definition found</string>
     <string name="navigation_button">navigation button</string>
-    <string name="default_profile_intro">Hi</string>
+    <string name="default_profile_intro">Hi,</string>
     <string name="default_profile_intro_desc">You are currently signed in as guest.</string>
     <!-- Preference Titles -->
 
@@ -28,4 +28,18 @@
     <!-- Sync Preferences -->
     <string name="refresh_button">Refresh Button</string>
     <string name="back">BACK</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="register_success_desc">You have successfully set up your new Vocaby account! As a Vocabler, your data will be synced across platforms.</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="continue_button">Continue</string>
+    <string name="login_header">Login</string>
+    <string name="email_header">E-mail</string>
+    <string name="password_header">Password</string>
+    <string name="log_in">Log In</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="already_have_an_account">Already have an account?</string>
 </resources>

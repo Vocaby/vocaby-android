@@ -22,8 +22,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         });
-        assert view != null;
-        view.setBackgroundColor(getResources().getColor(android.R.color.white));
+
+
+        view.setBackgroundColor(getResources().getColor(android.R.color.white, getContext().getTheme()));
         return view;
     }
 
