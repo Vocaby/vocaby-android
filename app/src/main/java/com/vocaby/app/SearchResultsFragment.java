@@ -1,6 +1,7 @@
 package com.vocaby.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -14,9 +15,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,24 +41,28 @@ import java.io.IOException;
  */
 public class SearchResultsFragment extends Fragment {
 
-    private static final String WORD = "param1";
-    private static final String WORD_DATA = "param2";
-
-    private String mWord;
-    private Word mWordData;
+    private static final String WORD = "word";
+    private static final String FROM_SAVES = "fromSaves";
+    private String searchedWord;
+    private boolean fromSaves;
     private Context ctx;
     private Button saveButton;
     private DataManager dataManager;
+
+    private TextView word;
+    private TextView pronunciation;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
 
     public SearchResultsFragment() {
         // Required empty public constructor
     }
 
-    public static SearchResultsFragment newInstance(String param1, Word wordData) {
+    public static SearchResultsFragment newInstance(String word, boolean fromSaves) {
         SearchResultsFragment fragment = new SearchResultsFragment();
         Bundle args = new Bundle();
-        args.putString(WORD, param1);
-        args.putSerializable(WORD_DATA, wordData);
+        args.putString(WORD, word);
+        args.putBoolean(FROM_SAVES, fromSaves);
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,8 +71,8 @@ public class SearchResultsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mWord = getArguments().getString(WORD);
-            mWordData = (Word) getArguments().getSerializable(WORD_DATA);
+            searchedWord = getArguments().getString(WORD);
+            fromSaves = getArguments().getBoolean(FROM_SAVES);
         }
 
         ctx = requireActivity().getApplicationContext();
@@ -70,39 +90,123 @@ public class SearchResultsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view;
-        // Inflate the layout for this fragment
-        if (mWordData == null) {
-            view = inflater.inflate(R.layout.fragment_search_results_no_def, container, false);
+        View view = inflater.inflate(R.layout.fragment_search_results, container, false);
+        progressBar = view.findViewById(R.id.search_progress);
+        word = view.findViewById(R.id.word_header);
+        Button backButton = view.findViewById(R.id.back_button);
+        backButton.setOnClickListener(backListener);
+        saveButton = view.findViewById(R.id.save_button);
+        saveButton.setOnClickListener(saveListener);
+        saveButton.setVisibility(View.INVISIBLE);
+        saveButton.setEnabled(false);
+        pronunciation = view.findViewById(R.id.pronunciation);
+
+        Drawable icon;
+        if(dataManager.hasSave(searchedWord)) {
+            icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
+            saveButton.setText(ctx.getString(R.string.save_button_saved));
         } else {
-            view = inflater.inflate(R.layout.fragment_search_results, container, false);
-            TextView header = view.findViewById(R.id.word_header);
-            header.setText(mWord);
-            Button backButton = view.findViewById(R.id.back_button);
-            backButton.setOnClickListener(backListener);
-            saveButton = view.findViewById(R.id.save_button);
-            saveButton.setOnClickListener(saveListener);
-            TextView pronunciation = view.findViewById(R.id.pronunciation);
-            pronunciation.setText(mWordData.getPronunciation());
+            icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
+            saveButton.setText(getResources().getString(R.string.save_button_unsaved));
+        }
+        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+        recyclerView = view.findViewById(R.id.definitions_recycler_container);
+        recyclerView.setEnabled(false);
 
-            Drawable icon;
-            if(dataManager.hasSave(mWord)) {
-                icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
-                saveButton.setText(ctx.getString(R.string.save_button_saved));
-            } else {
-                icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
-                saveButton.setText(getResources().getString(R.string.save_button_unsaved));
-            }
-            saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+        search(searchedWord);
+        return view;
+    }
 
-            RecyclerView recyclerView = view.findViewById(R.id.definitions_recycler_container);
-            DefinitionsAdapter adapter = new DefinitionsAdapter(ctx, mWordData);
-            recyclerView.setAdapter(adapter);
-            recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
-            recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+    private void populateView(Word wordData) {
+        progressBar.setVisibility(View.INVISIBLE);
+        word.setText(searchedWord);
+        pronunciation.setText(wordData.getPronunciation());
+        saveButton.setVisibility(View.VISIBLE);
+        saveButton.setEnabled(true);
+        DefinitionsAdapter adapter = new DefinitionsAdapter(ctx, wordData);
+        recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
+        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+    }
+
+    private void populateNoDefinition() {
+        progressBar.setVisibility(View.INVISIBLE);
+        word.setText(getResources().getString(R.string.no_definition_found));
+    }
+
+
+    private void search(String searchedWord) {
+        if(!fromSaves) {
+            // Only write to history when user searches for the definition
+            // Not when the user looks up definition through saved words
+            dataManager.writeHistory(searchedWord);
+            Intent intent = new Intent(SearchFragment.RADIO_DATASET_CHANGED);
+            ctx.sendBroadcast(intent);
         }
 
-        return view;
+        // check if data exists already
+        if(dataManager.hasWord(searchedWord)) {
+            populateView(dataManager.getData(searchedWord));
+        } else {
+            String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
+            RequestQueue q = Volley.newRequestQueue(ctx);
+            JsonObjectRequest jsonObjectRequest = makeRequest(url, searchedWord);
+            // Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
+            q.add(jsonObjectRequest);
+        }
+    }
+
+    private JsonObjectRequest makeRequest(String url, String word) {
+        return new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            WordService service = new WordService(word, response);
+                            service.parse();
+                            if(service.wasSuccessful()) {
+                                Word data = service.getWordData();
+                                populateView(data);
+                                try {
+                                    dataManager.writeData(data);
+                                } catch(IOException e) {
+                                    Toast.makeText(ctx, "Something went wrong while storing data", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                throw new IllegalStateException();
+                            }
+                        } catch (IllegalStateException e) {
+                            Toast.makeText(ctx, "Something went wrong while parsing...", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String responseBody;
+                        if(error.networkResponse.data != null) {
+                            try {
+                                responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                                JSONObject res = new JSONObject(responseBody);
+                                String message = res.getString("error").toLowerCase();
+                                if(message.contains("no entry found")) {
+                                    populateNoDefinition();
+                                }
+                            } catch (JSONException e) {
+                                Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> m = new HashMap<>();
+                m.put("app_id", getResources().getString(R.string.app_id));
+                m.put("app_key", getResources().getString(R.string.app_key));
+
+                return m;
+            }
+        };
     }
 
     private final View.OnClickListener backListener = new View.OnClickListener() {
@@ -120,12 +224,12 @@ public class SearchResultsFragment extends Fragment {
                 if(saveButton.getText().equals("SAVE")) {
                     icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
                     saveButton.setText(ctx.getString(R.string.save_button_saved));
-                    dataManager.writeSave(mWord);
+                    dataManager.writeSave(searchedWord);
                 } else {
                     // Unsave the word
                     icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
                     saveButton.setText(ctx.getString(R.string.save_button_unsaved));
-                    dataManager.deleteSave(mWord);
+                    dataManager.deleteSave(searchedWord);
                 }
                 saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
             } catch (IOException e) {

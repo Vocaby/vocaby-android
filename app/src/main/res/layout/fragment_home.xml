@@ -18,7 +18,7 @@
         app:layout_constraintHeight_percent="0.82"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.92"></FrameLayout>
+        app:layout_constraintWidth_percent="0.92" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
@@ -103,19 +103,4 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <ProgressBar
-        android:id="@+id/search_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/colorPrimary_header"
-        android:scaleY="1.2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header"
-        app:layout_constraintVertical_bias="0.25" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

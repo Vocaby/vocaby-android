@@ -41,12 +41,8 @@ public class HomeFragment extends Fragment {
 
     private EditText search;
     private InputMethodManager imm;
-    private Context ctx;
-    private ProgressBar progressBar;
-    private FrameLayout fragmentContainer;
-    private DataManager dataManager;
-    private String searchedText;
     private String sentText;
+    private String prevWord;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -67,9 +63,6 @@ public class HomeFragment extends Fragment {
         if (getArguments() != null) {
             sentText = getArguments().getString(WORD);
         }
-
-        ctx = requireActivity().getApplicationContext();
-        dataManager = DataManager.getInstance(ctx);
     }
 
     @Override
@@ -77,14 +70,11 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        searchedText = "";
-        progressBar = view.findViewById(R.id.search_progress);
-        fragmentContainer = view.findViewById(R.id.search_fragment_container);
-        progressBar.setVisibility(View.INVISIBLE);
         search = view.findViewById(R.id.search_bar);
         search.setOnEditorActionListener(searchEditorListener);
 
         getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container, new SearchFragment()).commit();
+        prevWord = "";
 
         // Coming from the saves fragment
         if(sentText.length() > 0) {
@@ -92,52 +82,15 @@ public class HomeFragment extends Fragment {
             // When the user clicks on a saved item, the nav should check dictionary
             BottomNavigationView navView = requireActivity().findViewById(R.id.bottom_navigation);
             navView.getMenu().findItem(R.id.search).setChecked(true);
-            search();
-            sentText = "";
+            addResultsFragment(sentText, true);
         }
 
         return view;
     }
 
-    // Allow search for the same word after the user presses the back button
-    public void resetSearch() {
-        searchedText = "";
-    }
-
-
-
-    private void search() {
-        String word = search.getText().toString().toLowerCase().trim();
-        if(!word.isEmpty() && !searchedText.equals(word)) {
-            if(sentText.length() == 0) {
-                // Only write to history when user searches for the definition
-                // Not when the user looks up definition through saved words
-                dataManager.writeHistory(word);
-                Intent intent = new Intent(SearchFragment.RADIO_DATASET_CHANGED);
-                ctx.sendBroadcast(intent);
-            }
-
-            searchedText = word; // prevents searching the same word twice on the same page
-            fragmentContainer.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
-            // check if data exists already
-            if(dataManager.hasWord(word)) {
-                Word wordData = dataManager.getData(word);
-                switchToResultsFragment(word, wordData);
-                progressBar.setVisibility(View.INVISIBLE);
-                fragmentContainer.setVisibility(View.VISIBLE);
-            } else {
-                String url = "https://od-api.oxforddictionaries.com/api/v2/entries/en/" + word;
-                RequestQueue q = Volley.newRequestQueue(ctx);
-                JsonObjectRequest jsonObjectRequest = makeRequest(url, word);
-                // Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
-                q.add(jsonObjectRequest);
-            }
-        }
-    }
-
-    private void switchToResultsFragment(String word, Word wordData) {
-        Fragment fragment = SearchResultsFragment.newInstance(word, wordData);
+    private void addResultsFragment(String word, boolean fromSaves) {
+        prevWord = word;
+        Fragment fragment = SearchResultsFragment.newInstance(word, fromSaves);
         FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.addToBackStack(null);
@@ -147,6 +100,7 @@ public class HomeFragment extends Fragment {
                 R.anim.enter_bottom_to_top,
                 R.anim.exit_top_to_bottom
         );
+
         transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
     }
 
@@ -156,69 +110,20 @@ public class HomeFragment extends Fragment {
         v.clearFocus();
 
         if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-            search();
+            // Clean up text a little bit
+            String searchedText = v.getText().toString().toLowerCase().replaceAll("[^a-z]","");
+            // Prevent double searching
+            if(!searchedText.isEmpty() && !prevWord.equals(searchedText)) {
+                addResultsFragment(searchedText, false);
+            }
+
             return true;
         }
 
         return false;
     };
 
-    private JsonObjectRequest makeRequest(String url, String word) {
-        return new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            WordService service = new WordService(word, response);
-                            service.parse();
-                            if(service.wasSuccessful()) {
-                                Word wordData = service.getWordData();
-                                try {
-                                    dataManager.writeData(wordData);
-                                    switchToResultsFragment(word, wordData);
-                                } catch(IOException e) {
-                                    Toast.makeText(ctx, "Something went wrong while storing data", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                throw new IllegalStateException();
-                            }
-                        } catch (IllegalStateException e) {
-                            Toast.makeText(ctx, "Something went wrong while parsing...", Toast.LENGTH_SHORT).show();
-                        }
-
-                        progressBar.setVisibility(View.INVISIBLE);
-                        fragmentContainer.setVisibility(View.VISIBLE);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                        fragmentContainer.setVisibility(View.VISIBLE);
-                        String responseBody;
-                        if(error.networkResponse.data != null) {
-                            try {
-                                responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-                                JSONObject res = new JSONObject(responseBody);
-                                String message = res.getString("error").toLowerCase();
-                                if(message.contains("no entry found")) {
-                                    switchToResultsFragment(word, null);
-                                }
-                            } catch (JSONException e) {
-                                Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> m = new HashMap<>();
-                m.put("app_id", getResources().getString(R.string.app_id));
-                m.put("app_key", getResources().getString(R.string.app_key));
-
-                return m;
-            }
-        };
+    public void resetSearch() {
+        prevWord = "";
     }
 }
