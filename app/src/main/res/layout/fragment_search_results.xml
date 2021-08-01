@@ -36,6 +36,14 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
+        <ProgressBar
+            android:id="@+id/save_progress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_weight="0"
+            android:layout_gravity="center_vertical"/>
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_button"
             style="?android:attr/borderlessButtonStyle"
@@ -51,6 +59,7 @@
             android:textColor="@color/colorPrimary_header"
             android:textSize="12sp"
             tools:ignore="SmallSp" />
+
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,6 +112,14 @@ public class DataManager {
 
     public void writeSave(String word) throws IOException {
         saves.add(0, word);
+        try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(saves);
+        }
+    }
+
+    public void overwriteSave(List<String> newList) throws IOException {
+        saves = newList;
         try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(saves);

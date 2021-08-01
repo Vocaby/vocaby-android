@@ -31,7 +31,7 @@
         tools:ignore="SmallSp" />
 
     <EditText
-        android:id="@+id/email"
+        android:id="@+id/email_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/edittext"
@@ -43,12 +43,13 @@
         android:fontFamily="@font/sourcesanspro_regular"
         android:inputType="textEmailAddress"
         android:padding="12dp"
+        android:imeOptions="actionNext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_header" />
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/password_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -60,13 +61,14 @@
         android:drawableStart="@drawable/ic_password"
         android:drawablePadding="8dp"
         android:padding="12dp"
+        android:imeOptions="actionNext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_header" />
 
     <EditText
-        android:id="@+id/password_confirm"
+        android:id="@+id/password_confirm_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/edittext"
@@ -78,6 +80,7 @@
         android:fontFamily="@font/sourcesanspro_regular"
         android:inputType="textPassword"
         android:padding="12dp"
+        android:imeOptions="actionDone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_confirm_header" />
@@ -110,7 +113,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <TextView
-        android:id="@+id/email_alert"
+        android:id="@+id/email_header_alert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/sourcesanspro_regular"
@@ -133,10 +136,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email" />
+        app:layout_constraintTop_toBottomOf="@+id/email_input" />
 
     <TextView
-        android:id="@+id/password_alert"
+        android:id="@+id/password_header_alert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -159,10 +162,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password" />
+        app:layout_constraintTop_toBottomOf="@+id/password_input" />
 
     <TextView
-        android:id="@+id/password_confirm_alert"
+        android:id="@+id/password_confirm_header_alert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -184,7 +187,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_confirm" />
+        app:layout_constraintTop_toBottomOf="@+id/password_confirm_input" />
 
     <LinearLayout
         android:layout_width="wrap_content"

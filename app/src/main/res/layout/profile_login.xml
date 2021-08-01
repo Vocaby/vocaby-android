@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gray_background"
@@ -19,6 +20,7 @@
         android:drawablePadding="8dp"
         android:fontFamily="@font/sourcesanspro_regular"
         android:drawableStart="@drawable/ic_email"
+        android:imeOptions="actionNext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,6 +39,7 @@
         android:drawableStart="@drawable/ic_password"
         android:drawablePadding="8dp"
         android:padding="12dp"
+        android:imeOptions="actionDone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,14 +63,27 @@
         android:id="@+id/email_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/sourcesanspro_regular"
         android:text="@string/email_header"
         android:textColor="@color/colorPrimary_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/login_alert" />
+
+    <TextView
+        android:id="@+id/email_header_alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:fontFamily="@font/sourcesanspro_regular"
+        android:text=""
+        android:textColor="@color/color_tertiary"
+        app:layout_constraintBaseline_toBaselineOf="@+id/email_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/email_header" />
 
     <TextView
         android:id="@+id/password_header"
@@ -82,8 +98,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_input" />
 
+    <TextView
+        android:id="@+id/password_header_alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="12dp"
+        android:fontFamily="@font/sourcesanspro_regular"
+        android:text=""
+        android:textColor="@color/color_tertiary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@+id/password_header"
+        app:layout_constraintTop_toBottomOf="@+id/email_input" />
+
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/login_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -112,7 +142,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button4">
+        app:layout_constraintTop_toBottomOf="@+id/login_button">
 
         <TextView
             android:id="@+id/textView9"
@@ -131,5 +161,18 @@
             android:textColor="@color/black"
             android:clickable="true"/>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/login_alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/sourcesanspro_regular"
+        android:text=""
+        android:textColor="@color/color_tertiary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

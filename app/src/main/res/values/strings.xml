@@ -20,7 +20,8 @@
     <string name="no_definition_found">No definition found</string>
     <string name="navigation_button">navigation button</string>
     <string name="default_profile_intro">Hi,</string>
-    <string name="default_profile_intro_desc">You are currently signed in as guest.</string>
+    <string name="default_profile_intro_desc">You are currently signed in.</string>
+    <string name="token_key">token</string>
     <!-- Preference Titles -->
 
     <!-- Messages Preferences -->
@@ -42,4 +43,5 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="sign_in">Sign In</string>
     <string name="already_have_an_account">Already have an account?</string>
+    <string name="log_out">Log out</string>
 </resources>

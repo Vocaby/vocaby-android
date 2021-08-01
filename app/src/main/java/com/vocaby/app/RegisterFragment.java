@@ -71,12 +71,12 @@ public class RegisterFragment extends Fragment {
         TextView signInText = view.findViewById(R.id.signin);
         registerButton = view.findViewById(R.id.register_button);
 
-        emailView = view.findViewById(R.id.email);
-        passwordView = view.findViewById(R.id.password);
-        passwordConfirmView = view.findViewById(R.id.password_confirm);
-        emailAlertView = view.findViewById(R.id.email_alert);
-        passwordAlertView = view.findViewById(R.id.password_alert);
-        passwordConfirmAlertView = view.findViewById(R.id.password_confirm_alert);
+        emailView = view.findViewById(R.id.email_input);
+        passwordView = view.findViewById(R.id.password_input);
+        passwordConfirmView = view.findViewById(R.id.password_confirm_input);
+        emailAlertView = view.findViewById(R.id.email_header_alert);
+        passwordAlertView = view.findViewById(R.id.password_header_alert);
+        passwordConfirmAlertView = view.findViewById(R.id.password_confirm_header_alert);
 
         backButton.setOnClickListener(backListener);
         signInText.setOnClickListener(backListener);
@@ -85,7 +85,7 @@ public class RegisterFragment extends Fragment {
         return view;
     }
 
-    public static boolean isValidEmail(CharSequence target) {
+    private static boolean isValidEmail(CharSequence target) {
         return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
     }
 
@@ -151,8 +151,6 @@ public class RegisterFragment extends Fragment {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("email", email);
             jsonObject.put("password", password);
-            jsonObject.put("first_name", "");
-            jsonObject.put("last_name", "");
             jsonObject.put("saves", jsonArray);
 
             JsonObjectRequest jsonObjectRequest = makeRequest(url, jsonObject);
@@ -181,14 +179,36 @@ public class RegisterFragment extends Fragment {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(ctx, "Something went wrong...", Toast.LENGTH_SHORT).show();
+                        NetworkResponse networkResponse = error.networkResponse;
+                        if (networkResponse != null && networkResponse.data != null) {
+                            String jsonError = new String(networkResponse.data);
+                            Log.d("RESPONSE", "Error: " + error
+                                    + "\nStatus Code " + error.networkResponse.statusCode
+                                    + "\nData " + jsonError);
+                            try {
+                                JSONObject json = new JSONObject(jsonError);
+                                if (json.has("code")) {
+                                    int code = json.getInt("code");
+                                    if(code == getResources().getInteger(R.integer.USER_EXISTS)) {
+                                        emailAlertView.setText("User already exists");
+                                    } else {
+                                        Toast.makeText(ctx, "Error has occured...", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                registerButton.setEnabled(true);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 })
         {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> m = new HashMap<>();
-                // m.put("Authorization", Token);
+                m.put("Content-Type", "application/json; charset=UTF-8");
+                m.put("Vocaby-Api-Key",  getString(R.string.mobile_api_key));
 
                 return m;
             }
