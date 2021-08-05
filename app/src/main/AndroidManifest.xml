@@ -29,7 +29,7 @@
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/saves_appwidget_info" />
         </receiver>
-        <receiver android:name="com.vocaby.app.NotificationReciever"
+        <receiver android:name="com.vocaby.app.NotificationReceiver"
             android:enabled="true" />
     </application>
 </manifest>
