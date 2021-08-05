@@ -1,6 +1,7 @@
 package com.vocaby.app;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -101,29 +102,29 @@ public class RegisterFragment extends Fragment {
             boolean emailIsValid = false;
 
             if(password.isEmpty()) {
-                passwordAlertView.setText("Please enter a password");
+                passwordAlertView.setText(getString(R.string.enter_password));
             } else {
                 passwordAlertView.setText("");
             }
 
             if(passwordConfirm.isEmpty()) {
-                passwordConfirmAlertView.setText("Please enter a password");
+                passwordConfirmAlertView.setText(getString(R.string.enter_password));
             } else {
                 passwordConfirmAlertView.setText("");
                 if(!password.isEmpty()) {
                     if(password.equals(passwordConfirm)) {
                         passwordIsValid = true;
                     } else {
-                        passwordConfirmAlertView.setText("Password does not match!");
+                        passwordConfirmAlertView.setText(getString(R.string.password_no_match));
                     }
                 }
             }
 
             if(email.isEmpty()) {
-                emailAlertView.setText("Please enter an email");
+                emailAlertView.setText(getString(R.string.enter_email));
             } else {
                 if(!isValidEmail(email)) {
-                    emailAlertView.setText("Email is not valid");
+                    emailAlertView.setText(getString(R.string.enter_valid_email));
                 } else {
                     emailAlertView.setText("");
                     emailIsValid = true;
@@ -138,8 +139,6 @@ public class RegisterFragment extends Fragment {
     };
 
     private void postDataToServer(String email, String password) {
-        String url = getString(R.string.register_url);
-        RequestQueue q = Volley.newRequestQueue(ctx);
         try {
             DataManager dataManager = DataManager.getInstance(ctx);
             List<String> saves = dataManager.getSaves();
@@ -153,72 +152,53 @@ public class RegisterFragment extends Fragment {
             jsonObject.put("password", password);
             jsonObject.put("saves", jsonArray);
 
-            JsonObjectRequest jsonObjectRequest = makeRequest(url, jsonObject);
-            q.add(jsonObjectRequest);
+            RequestManager requestManager = RequestManager.getInstance(ctx);
+            requestManager.makeRegisterRequest(jsonObject, registerListenerResponse, registerListenerError);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private JsonObjectRequest makeRequest(String url, JSONObject json) {
-        return new JsonObjectRequest
-                (Request.Method.POST, url, json, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        FragmentManager fm = getParentFragmentManager();
-                        fm.beginTransaction()
-                                .setCustomAnimations(
-                                        R.anim.enter_right_to_left,
-                                        R.anim.exit_left_to_right,
-                                        R.anim.enter_right_to_left,
-                                        R.anim.exit_left_to_right
-                                )
-                                .add(R.id.fragment_container, new SuccessfulCreationFragment())
-                                .commit();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Log.d("RESPONSE", "Error: " + error
-                                    + "\nStatus Code " + error.networkResponse.statusCode
-                                    + "\nData " + jsonError);
-                            try {
-                                JSONObject json = new JSONObject(jsonError);
-                                if (json.has("code")) {
-                                    int code = json.getInt("code");
-                                    if(code == getResources().getInteger(R.integer.USER_EXISTS)) {
-                                        emailAlertView.setText("User already exists");
-                                    } else {
-                                        Toast.makeText(ctx, "Error has occured...", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
+    private Response.Listener<JSONObject> registerListenerResponse = response -> {
+        FragmentManager fm = getParentFragmentManager();
+        fm.beginTransaction()
+                .setCustomAnimations(
+                        R.anim.enter_right_to_left,
+                        R.anim.exit_left_to_right,
+                        R.anim.enter_right_to_left,
+                        R.anim.exit_left_to_right
+                )
+                .add(R.id.fragment_container, new SuccessfulCreationFragment())
+                .commit();
+    };
 
-                                registerButton.setEnabled(true);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+    private Response.ErrorListener registerListenerError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            NetworkResponse networkResponse = error.networkResponse;
+            if (networkResponse != null && networkResponse.data != null) {
+                String jsonError = new String(networkResponse.data);
+                Log.d("RESPONSE", "Error: " + error
+                        + "\nStatus Code " + error.networkResponse.statusCode
+                        + "\nData " + jsonError);
+                try {
+                    JSONObject json = new JSONObject(jsonError);
+                    if (json.has("code")) {
+                        int code = json.getInt("code");
+                        if(code == getResources().getInteger(R.integer.USER_EXISTS)) {
+                            emailAlertView.setText(getString(R.string.user_exists));
+                        } else {
+                            Toast.makeText(ctx, "Error has occured...", Toast.LENGTH_SHORT).show();
                         }
                     }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> m = new HashMap<>();
-                m.put("Content-Type", "application/json; charset=UTF-8");
-                m.put("Vocaby-Api-Key",  getString(R.string.mobile_api_key));
 
-                return m;
+                    registerButton.setEnabled(true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        };
-    }
-
-    private View.OnClickListener backListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            ((MainActivity)requireActivity()).onBackPressed();
         }
     };
+
+    private View.OnClickListener backListener = v -> ((MainActivity)requireActivity()).onBackPressed();
 }

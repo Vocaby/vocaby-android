@@ -35,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -156,62 +157,51 @@ public class SearchResultsFragment extends Fragment {
             populateView(dataManager.getData(searchedWord));
         } else {
             String url = getString(R.string.dictionary_url) + searchedWord;
-            RequestQueue q = Volley.newRequestQueue(ctx);
-            JsonObjectRequest jsonObjectRequest = makeRequest(url, searchedWord);
-            // Toast.makeText(ctx, "Getting data from API", Toast.LENGTH_SHORT).show();
-            q.add(jsonObjectRequest);
+            RequestManager requestManager = RequestManager.getInstance(ctx);
+            requestManager.getDefinition(searchedWord, definitionListenerResponse, definitionListenerError);
         }
     }
 
-    private JsonObjectRequest makeRequest(String url, String word) {
-        return new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            WordService service = new WordService(word, response);
-                            service.parse();
-                            if(service.wasSuccessful()) {
-                                Word data = service.getWordData();
-                                populateView(data);
-                                try {
-                                    dataManager.writeData(data);
-                                } catch(IOException e) {
-                                    Toast.makeText(ctx, "Something went wrong while storing data", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                if(service.getCode() == -1) {
-                                    populateNoDefinition();
-                                } else {
-                                    throw new IllegalStateException();
-                                }
-                            }
-                        } catch (IllegalStateException e) {
-                            Toast.makeText(ctx, "Something went wrong while parsing...", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> m = new HashMap<>();
-                m.put("Vocaby-Api-Key",  getString(R.string.mobile_api_key));
-                return m;
-            }
-        };
-    }
-
-    private final View.OnClickListener backListener = new View.OnClickListener() {
+    private Response.Listener<JSONObject> definitionListenerResponse = new Response.Listener<JSONObject>() {
         @Override
-        public void onClick(View v) {
-            ((MainActivity) requireActivity()).onBackPressed();
+        public void onResponse(JSONObject response) {
+            try {
+                WordService service = new WordService(searchedWord, response);
+                service.parse();
+                if(service.wasSuccessful()) {
+                    Word data = service.getWordData();
+                    populateView(data);
+                    try {
+                        dataManager.writeData(data);
+                    } catch(IOException e) {
+                        Toast.makeText(ctx, "Something went wrong while storing data", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    if(service.getCode() == -1) {
+                        populateNoDefinition();
+                    } else {
+                        throw new IllegalStateException();
+                    }
+                }
+            } catch (IllegalStateException e) {
+                Toast.makeText(ctx, "Something went wrong while parsing...", Toast.LENGTH_SHORT).show();
+            }
         }
     };
+
+    private Response.ErrorListener definitionListenerError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            if(error.networkResponse != null && error.networkResponse.data!=null) {
+                String body = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private final View.OnClickListener backListener = v -> ((MainActivity) requireActivity()).onBackPressed();
 
     private final View.OnClickListener saveListener = new View.OnClickListener() {
         @Override
@@ -243,108 +233,90 @@ public class SearchResultsFragment extends Fragment {
                         updateRemoteSaves(true);
                     }
                 }
-            } catch (JSONException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     };
 
-    private void updateRemoteSaves(boolean delete) throws JSONException {
-        String url = getString(R.string.save_url);
-        RequestQueue q = Volley.newRequestQueue(ctx);
-        JsonObjectRequest jsonObjectRequest;
+    private void updateRemoteSaves(boolean delete) {
         saveProgress.setVisibility(View.VISIBLE);
+        RequestManager requestManager = RequestManager.getInstance(ctx);
+
         if(delete) {
-            jsonObjectRequest = makeDeleteRequest(url + searchedWord);
+            requestManager.makeDeleteRequest(searchedWord, deleteListenerResponse, deleteListenerError);
         } else {
-            jsonObjectRequest = makeSaveRequest(url + searchedWord);
+            requestManager.makeSaveRequest(searchedWord, saveListenerResponse, saveListenerError);
         }
-        q.add(jsonObjectRequest);
     }
 
-    private JsonObjectRequest makeSaveRequest(String url) {
-        return new JsonObjectRequest
-                (Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            saveButton.setText(ctx.getString(R.string.save_button_saved));
-                            Drawable icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
-                            saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
-                            dataManager.writeSave(searchedWord);
-                            saveButton.setEnabled(true);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        saveProgress.setVisibility(View.INVISIBLE);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Log.d("RESPONSE", "Error: " + error
-                                    + "\nStatus Code " + error.networkResponse.statusCode
-                                    + "\nData " + jsonError);
-                        }
-                        Toast.makeText(ctx, "Something went wrong while saving...", Toast.LENGTH_SHORT).show();
-                        saveButton.setEnabled(true);
-                        saveProgress.setVisibility(View.INVISIBLE);
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
-                String token = sharedPref.getString(getString(R.string.token_key), "");
-                Map<String, String> m = new HashMap<>();
-                m.put("Content-Type", "application/json; charset=UTF-8");
-                m.put("Vocaby-Api-Key",  getString(R.string.mobile_api_key));
-                m.put("Authorization",  "Token " + token);
-                return m;
+    private Response.Listener<JSONObject> saveListenerResponse = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                saveButton.setText(ctx.getString(R.string.save_button_saved));
+                Drawable icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
+                saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+                dataManager.writeSave(searchedWord);
+                saveButton.setEnabled(true);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        };
-    }
 
-    private JsonObjectRequest makeDeleteRequest(String url) {
-        return new JsonObjectRequest
-                (Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        saveButton.setText(ctx.getString(R.string.save_button_unsaved));
-                        dataManager.deleteSave(searchedWord);
-                        Drawable icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
-                        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
-                        saveButton.setEnabled(true);
-                        saveProgress.setVisibility(View.INVISIBLE);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Log.d("RESPONSE", "Error: " + error
-                                    + "\nStatus Code " + error.networkResponse.statusCode
-                                    + "\nData " + jsonError);
-                        }
-                        Toast.makeText(ctx, "Something went wrong while unsaving...", Toast.LENGTH_SHORT).show();
-                        saveButton.setEnabled(true);
-                        saveProgress.setVisibility(View.INVISIBLE);
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
-                String token = sharedPref.getString(getString(R.string.token_key), "");
-                Map<String, String> m = new HashMap<>();
-                m.put("Content-Type", "application/json; charset=UTF-8");
-                m.put("Vocaby-Api-Key",  getString(R.string.mobile_api_key));
-                m.put("Authorization",  "Token " + token);
-                return m;
+            saveProgress.setVisibility(View.INVISIBLE);
+        }
+    };
+
+    private Response.ErrorListener saveListenerError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            if(error.networkResponse != null && error.networkResponse.data!=null) {
+                try {
+                    String body = new String(error.networkResponse.data, "UTF-8");
+                    Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                if (error.networkResponse != null && error.networkResponse.data != null) {
+                    String jsonError = new String(error.networkResponse.data);
+                    Log.d("RESPONSE", "Error: " + error
+                            + "\nStatus Code " + error.networkResponse.statusCode
+                            + "\nData " + jsonError);
+                }
+
+                Toast.makeText(ctx, "Something went wrong while saving...", Toast.LENGTH_SHORT).show();
+                saveButton.setEnabled(true);
+                saveProgress.setVisibility(View.INVISIBLE);
             }
-        };
-    }
+        }
+    };
+
+    private Response.Listener<JSONObject> deleteListenerResponse = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            saveButton.setText(ctx.getString(R.string.save_button_unsaved));
+            dataManager.deleteSave(searchedWord);
+            Drawable icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
+            saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+            saveButton.setEnabled(true);
+            saveProgress.setVisibility(View.INVISIBLE);
+        }
+    };
+
+    private Response.ErrorListener deleteListenerError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            NetworkResponse networkResponse = error.networkResponse;
+            if (networkResponse != null && networkResponse.data != null) {
+                String jsonError = new String(networkResponse.data);
+                Log.d("RESPONSE", "Error: " + error
+                        + "\nStatus Code " + error.networkResponse.statusCode
+                        + "\nData " + jsonError);
+            }
+            Toast.makeText(ctx, "Something went wrong while unsaving...", Toast.LENGTH_SHORT).show();
+            saveButton.setEnabled(true);
+            saveProgress.setVisibility(View.INVISIBLE);
+        }
+    };
 }

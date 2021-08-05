@@ -82,22 +82,17 @@ public class LoginFragment extends Fragment {
 
         loginButton.setOnClickListener(loginListener);
 
-        signUpText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getParentFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(
-                            R.anim.enter_right_to_left,
-                            R.anim.exit_left_to_right,
-                            R.anim.enter_right_to_left,
-                            R.anim.exit_left_to_right
-                    )
-                    .addToBackStack("login")
-                    .add(R.id.fragment_container, new RegisterFragment(), "registration")
-                    .commit();
-            }
-        });
+        signUpText.setOnClickListener(v -> getParentFragmentManager()
+            .beginTransaction()
+            .setCustomAnimations(
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_left_to_right,
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_left_to_right
+            )
+            .addToBackStack("login")
+            .add(R.id.fragment_container, new RegisterFragment(), "registration")
+            .commit());
 
         return view;
     }
@@ -111,16 +106,16 @@ public class LoginFragment extends Fragment {
             boolean emailIsValid = false;
 
             if(email.isEmpty()) {
-                emailAlertView.setText("Please enter a email");
+                emailAlertView.setText(getString(R.string.enter_email));
             } else if(!isValidEmail(email)) {
-                emailAlertView.setText("Please enter a valid email");
+                emailAlertView.setText(getString(R.string.enter_valid_email));
             } else {
                 passwordAlertView.setText("");
                 emailIsValid = true;
             }
 
             if(password.isEmpty()) {
-                passwordAlertView.setText("Please enter a password");
+                passwordAlertView.setText(getString(R.string.enter_password));
             } else {
                 passwordAlertView.setText("");
                 passwordIsValid = true;
@@ -134,8 +129,6 @@ public class LoginFragment extends Fragment {
     };
 
     private void login(String email, String password) {
-        String url = getString(R.string.login_url);
-        RequestQueue q = Volley.newRequestQueue(ctx);
         try {
             DataManager dataManager = DataManager.getInstance(ctx);
             List<String> saves = dataManager.getSaves();
@@ -149,78 +142,67 @@ public class LoginFragment extends Fragment {
             jsonObject.put("password", password);
             jsonObject.put("saves", jsonArray);
 
-            JsonObjectRequest jsonObjectRequest = makeRequest(url, jsonObject);
-            q.add(jsonObjectRequest);
+            RequestManager requestManager = RequestManager.getInstance(ctx);
+            requestManager.makeLoginRequest(jsonObject, loginListenerResponse, loginListenerError);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private JsonObjectRequest makeRequest(String url, JSONObject json) {
-        return new JsonObjectRequest
-                (Request.Method.POST, url, json, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String token = response.getString("token");
-                            SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putString(getString(R.string.token_key),token);
-                            editor.apply();
-                            DataManager dataManager = DataManager.getInstance(ctx);
-                            dataManager.overwriteSave(covertJsonToArray(response.getJSONArray("saves")));
-                            FragmentManager fm = getParentFragmentManager();
-                            fm.beginTransaction()
-                                    .setCustomAnimations(
-                                            R.anim.enter_right_to_left,
-                                            R.anim.exit_right_to_left,
-                                            R.anim.enter_right_to_left,
-                                            R.anim.exit_right_to_left
-                                    )
-                                    .replace(R.id.fragment_container, new ProfileFragment())
-                                    .commit();
-                        } catch (JSONException | IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Log.d("RESPONSE", "Error: " + error
-                                    + "\nStatus Code " + error.networkResponse.statusCode
-                                    + "\nData " + jsonError);
-                            try {
-                                JSONObject json = new JSONObject(jsonError);
-                                if (json.has("code")) {
-                                    int code = json.getInt("code");
-                                    if(code == getResources().getInteger(R.integer.WRONG_CREDENTIALS)) {
-                                        loginAlertView.setText("Incorrect email or password");
-                                    } else {
-                                        Toast.makeText(ctx, "Error has occured...", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                loginButton.setEnabled(true);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> m = new HashMap<>();
-                m.put("Content-Type", "application/json; charset=UTF-8");
-                m.put("Vocaby-Api-Key",  getString(R.string.mobile_api_key));
-
-                return m;
+    private Response.Listener<JSONObject> loginListenerResponse = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                String token = response.getString("token");
+                SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.token_key),token);
+                editor.apply();
+                DataManager dataManager = DataManager.getInstance(ctx);
+                dataManager.overwriteSave(covertJsonToArray(response.getJSONArray("saves")));
+                FragmentManager fm = getParentFragmentManager();
+                fm.beginTransaction()
+                        .setCustomAnimations(
+                                R.anim.enter_right_to_left,
+                                R.anim.exit_right_to_left,
+                                R.anim.enter_right_to_left,
+                                R.anim.exit_right_to_left
+                        )
+                        .replace(R.id.fragment_container, new ProfileFragment())
+                        .commit();
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
             }
-        };
-    }
+        }
+    };
+
+    private Response.ErrorListener loginListenerError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            NetworkResponse networkResponse = error.networkResponse;
+            if (networkResponse != null && networkResponse.data != null) {
+                String jsonError = new String(networkResponse.data);
+                Log.d("RESPONSE", "Error: " + error
+                        + "\nStatus Code " + error.networkResponse.statusCode
+                        + "\nData " + jsonError);
+                try {
+                    JSONObject json = new JSONObject(jsonError);
+                    if (json.has("code")) {
+                        int code = json.getInt("code");
+                        if(code == getResources().getInteger(R.integer.WRONG_CREDENTIALS)) {
+                            loginAlertView.setText(getString(R.string.wrong_credentials_desc));
+                        } else {
+                            Toast.makeText(ctx, "Error has occured...", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    loginButton.setEnabled(true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     private static boolean isValidEmail(CharSequence target) {
         return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());

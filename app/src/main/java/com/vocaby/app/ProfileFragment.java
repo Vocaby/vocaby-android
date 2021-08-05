@@ -30,6 +30,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,20 +68,10 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ImageButton navButton = view.findViewById(R.id.settings_button);
-        navButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)requireActivity()).showSettings();
-            }
-        });
+        navButton.setOnClickListener(v -> ((MainActivity)requireActivity()).showSettings());
 
         logoutButton = view.findViewById(R.id.logout_button);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
-            }
-        });
+        logoutButton.setOnClickListener(v -> logout());
 
         InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -103,52 +95,36 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logout() {
-        String url = getString(R.string.logout_url);
-        RequestQueue q = Volley.newRequestQueue(ctx);
-        JsonObjectRequest jsonObjectRequest = makeRequest(url);
-        q.add(jsonObjectRequest);
+        RequestManager requestManager = RequestManager.getInstance(ctx);
+        requestManager.makeLogoutRequest(logoutListenerResponse, logoutListenerError);
     }
 
-    private JsonObjectRequest makeRequest(String url) {
-        return new JsonObjectRequest
-                (Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString(getString(R.string.token_key), null);
-                        editor.apply();
-                        FragmentManager fm = getParentFragmentManager();
-                        fm.beginTransaction()
-                                .replace(R.id.fragment_container, new ProfileFragment())
-                                .commit();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Log.d("RESPONSE", "Error: " + error
-                                    + "\nStatus Code " + error.networkResponse.statusCode
-                                    + "\nData " + jsonError);
-                        }
+    private Response.Listener<JSONObject> logoutListenerResponse = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.token_key), null);
+            editor.apply();
+            FragmentManager fm = getParentFragmentManager();
+            fm.beginTransaction()
+                    .replace(R.id.fragment_container, new ProfileFragment())
+                    .commit();
+        }
+    };
 
-                        logoutButton.setEnabled(true);
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
-                String token = sharedPref.getString(getString(R.string.token_key), "");
-                Map<String, String> m = new HashMap<>();
-                m.put("Content-Type", "application/json; charset=UTF-8");
-                m.put("Vocaby-Api-Key",  getString(R.string.mobile_api_key));
-                m.put("Authorization",  "Token " + token);
-
-                return m;
+    private Response.ErrorListener logoutListenerError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            NetworkResponse networkResponse = error.networkResponse;
+            if (networkResponse != null && networkResponse.data != null) {
+                String jsonError = new String(networkResponse.data);
+                Log.d("RESPONSE", "Error: " + error
+                        + "\nStatus Code " + error.networkResponse.statusCode
+                        + "\nData " + jsonError);
             }
-        };
-    }
+
+            logoutButton.setEnabled(true);
+        }
+    };
 }

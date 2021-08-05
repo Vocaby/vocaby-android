@@ -70,29 +70,35 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     public void onBindViewHolder(@NonNull SavesAdapter.SavesViewHolder holder, int position) {
         String word = saves.get(position);
         holder.savedWord.setText(word);
-        holder.unsaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                builder.setMessage("Are you sure you want to delete?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(token.isEmpty()) {
-                            dataManager.deleteSave(word);
-                            notifyDataSetChanged();
-                        } else {
-                            String url = ctx.getString(R.string.save_url);
-                            RequestQueue q = Volley.newRequestQueue(ctx);
-                            JsonObjectRequest jsonObjectRequest = makeDeleteRequest(url + word, word);
-                            q.add(jsonObjectRequest);
+        holder.unsaveButton.setOnClickListener(v -> {
+            builder.setMessage("Are you sure you want to delete?").setPositiveButton("Yes", (dialog, which) -> {
+                if(token.isEmpty()) {
+                    dataManager.deleteSave(word);
+                    notifyDataSetChanged();
+                } else {
+                    RequestManager requestManager = RequestManager.getInstance(ctx);
+                    requestManager.makeDeleteRequest(word, response -> {
+                        dataManager.deleteSave(word);
+                        notifyDataSetChanged();
+                    }, error -> {
+                        NetworkResponse networkResponse = error.networkResponse;
+                        if (networkResponse != null && networkResponse.data != null) {
+                            String jsonError = new String(networkResponse.data);
+                            Log.d("RESPONSE", "Error: " + error
+                                    + "\nStatus Code " + error.networkResponse.statusCode
+                                    + "\nData " + jsonError);
                         }
-                    }
-                }).setNegativeButton("No", null);
-                showAlertDialog(word);
-            }
+
+                        Toast.makeText(ctx, "Something went wrong while unsaving...", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }).setNegativeButton("No", null);
+
+            showAlertDialog();
         });
     }
 
-    private void showAlertDialog(String word) {
+    private void showAlertDialog() {
         AlertDialog alert = builder.create();
         alert.show();
         Button negativeButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
@@ -121,41 +127,5 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         public void onClick(View v) {
             onItemTouchListener.onItemTouch(getAdapterPosition());
         }
-    }
-
-    private JsonObjectRequest makeDeleteRequest(String url, String word) {
-        return new JsonObjectRequest
-                (Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        dataManager.deleteSave(word);
-                        notifyDataSetChanged();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Log.d("RESPONSE", "Error: " + error
-                                    + "\nStatus Code " + error.networkResponse.statusCode
-                                    + "\nData " + jsonError);
-                        }
-
-                        Toast.makeText(ctx, "Something went wrong while unsaving...", Toast.LENGTH_SHORT).show();
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                SharedPreferences sharedPref = ctx.getSharedPreferences(ctx.getString(R.string.token_key), Context.MODE_PRIVATE);
-                String token = sharedPref.getString(ctx.getString(R.string.token_key), "");
-                Map<String, String> m = new HashMap<>();
-                m.put("Content-Type", "application/json; charset=UTF-8");
-                m.put("Vocaby-Api-Key",  ctx.getString(R.string.mobile_api_key));
-                m.put("Authorization",  "Token " + token);
-                return m;
-            }
-        };
     }
 }
