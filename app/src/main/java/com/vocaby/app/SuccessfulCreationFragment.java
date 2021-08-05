@@ -16,13 +16,6 @@ public class SuccessfulCreationFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SuccessfulCreationFragment newInstance(String param1, String param2) {
-        SuccessfulCreationFragment fragment = new SuccessfulCreationFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,21 +27,18 @@ public class SuccessfulCreationFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_successful_creation, container, false);
         Button continueButton = view.findViewById(R.id.continue_button);
-        continueButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fm = getParentFragmentManager();
-                fm.popBackStack();
-                fm.beginTransaction()
-                .setCustomAnimations(
-                        0,
-                        R.anim.exit_left_to_right,
-                        0,
-                        R.anim.exit_left_to_right
-                )
-                .replace(R.id.fragment_container, new LoginFragment())
-                .commit();
-            }
+        continueButton.setOnClickListener(v -> {
+            FragmentManager fm = getParentFragmentManager();
+            fm.popBackStack();
+            fm.beginTransaction()
+            .setCustomAnimations(
+                    0,
+                    R.anim.exit_left_to_right,
+                    0,
+                    R.anim.exit_left_to_right
+            )
+            .replace(R.id.fragment_container, new LoginFragment())
+            .commit();
         });
 
         return view;

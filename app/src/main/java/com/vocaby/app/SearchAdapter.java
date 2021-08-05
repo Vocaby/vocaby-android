@@ -9,12 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.HistoryViewHolder> {
-    private List<String> history;
-    private Context ctx;
+    private final List<String> history;
+    private final Context ctx;
 
     public SearchAdapter(Context ctx, List<String> history) {
         this.ctx = ctx;
@@ -39,7 +38,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.HistoryVie
         return history.size();
     }
 
-    public class HistoryViewHolder extends RecyclerView.ViewHolder {
+    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
         TextView word;
         public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);

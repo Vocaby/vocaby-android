@@ -7,7 +7,7 @@ import java.util.List;
 
 public class WordPickerService {
     private final DataManager dataManager;
-    private Context context;
+    private final Context context;
     private static final String SHARED_PICKS = "sharedPicks";
     private static final String PICK = "pick";
 

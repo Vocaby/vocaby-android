@@ -8,11 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-public class NotificationReciever extends BroadcastReceiver {
+public class NotificationReceiver extends BroadcastReceiver {
     private static final String CHANNEL_ID = "VOCABY_CHANNEL";
     private static final String NOTIFICATION_PICKS = "notificationPicks";
     private static final String PREV_PICK = "notificationPrevPick";

@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,10 +30,14 @@ public class DataManager {
 
         File dataFile = new File(ctx.getFilesDir(), WORD_DATA_FILE_NAME);
         if(dataFile.exists()) {
+            Log.d("DataManager", "1");
             try(FileInputStream fis = ctx.openFileInput(WORD_DATA_FILE_NAME)) {
+                Log.d("DataManager", "2");
                 ObjectInputStream ois = new ObjectInputStream(fis);
+                Log.d("DataManager", "3");
                 wordMap = (Map<String, Word>) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
                 Log.d("DataManager", "Something went wrong in getInstance");
             }
         } else {

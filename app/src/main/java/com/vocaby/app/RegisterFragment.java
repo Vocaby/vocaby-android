@@ -1,14 +1,12 @@
 package com.vocaby.app;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,22 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RegisterFragment extends Fragment {
     private Context ctx;
@@ -48,13 +38,6 @@ public class RegisterFragment extends Fragment {
 
     public RegisterFragment() {
 
-    }
-
-    public static RegisterFragment newInstance(String param1, String param2) {
-        RegisterFragment fragment = new RegisterFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -92,7 +75,7 @@ public class RegisterFragment extends Fragment {
 
 
 
-    private View.OnClickListener registerListener = new View.OnClickListener() {
+    private final View.OnClickListener registerListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             String email = emailView.getText().toString();
@@ -159,7 +142,7 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-    private Response.Listener<JSONObject> registerListenerResponse = response -> {
+    private final Response.Listener<JSONObject> registerListenerResponse = response -> {
         FragmentManager fm = getParentFragmentManager();
         fm.beginTransaction()
                 .setCustomAnimations(
@@ -172,15 +155,12 @@ public class RegisterFragment extends Fragment {
                 .commit();
     };
 
-    private Response.ErrorListener registerListenerError = new Response.ErrorListener() {
+    private final Response.ErrorListener registerListenerError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             NetworkResponse networkResponse = error.networkResponse;
             if (networkResponse != null && networkResponse.data != null) {
                 String jsonError = new String(networkResponse.data);
-                Log.d("RESPONSE", "Error: " + error
-                        + "\nStatus Code " + error.networkResponse.statusCode
-                        + "\nData " + jsonError);
                 try {
                     JSONObject json = new JSONObject(jsonError);
                     if (json.has("code")) {
@@ -188,17 +168,19 @@ public class RegisterFragment extends Fragment {
                         if(code == getResources().getInteger(R.integer.USER_EXISTS)) {
                             emailAlertView.setText(getString(R.string.user_exists));
                         } else {
-                            Toast.makeText(ctx, "Error has occured...", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ctx, "Error has occurred...", Toast.LENGTH_SHORT).show();
                         }
                     }
-
-                    registerButton.setEnabled(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            } else {
+                Toast.makeText(ctx, "Error has occurred while registering...", Toast.LENGTH_SHORT).show();
             }
+
+            registerButton.setEnabled(true);
         }
     };
 
-    private View.OnClickListener backListener = v -> ((MainActivity)requireActivity()).onBackPressed();
+    private final View.OnClickListener backListener = v -> requireActivity().onBackPressed();
 }

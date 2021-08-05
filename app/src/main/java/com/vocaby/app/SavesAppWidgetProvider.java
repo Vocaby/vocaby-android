@@ -16,7 +16,6 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
     public SavesAppWidgetProvider() {
         super();
     }
-    private int prevPick = 0;
 
     @Override
     public void onReceive(Context context, Intent intent) {

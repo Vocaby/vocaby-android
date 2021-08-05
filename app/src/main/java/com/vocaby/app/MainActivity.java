@@ -23,7 +23,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private BottomNavigationView navigationView;
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
     private int prevPage;
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         super.onCreate(savedInstanceState);
         prevPage = R.id.search;
         setContentView(R.layout.activity_main);
-        navigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setOnItemSelectedListener(navListener);
         navigationView.bringToFront();
 
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     .commit();
 
             alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            Intent notificationIntent = new Intent(this, NotificationReciever.class);
+            Intent notificationIntent = new Intent(this, NotificationReceiver.class);
             pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 .commit();
     }
 
-    private NavigationBarView.OnItemSelectedListener navListener =
+    private final NavigationBarView.OnItemSelectedListener navListener =
             item -> {
                 int id = item.getItemId();
                 Fragment selected = null;

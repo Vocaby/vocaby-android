@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Word implements Serializable {
-    private String word;
+    private final String word;
     private String pronunciation;
-    private Map<String, List<String>> mDefinitions;
-    private Map<String, List<String>> mSentences;
-    private List<String> allowedPos;
+    private final Map<String, List<String>> mDefinitions;
+    private final Map<String, List<String>> mSentences;
+    private final List<String> allowedPos;
 
     public Word(String word) {
         this.word = word;
@@ -32,6 +32,7 @@ public class Word implements Serializable {
     public void addDefinition(String pos, String definition) {
         if(mDefinitions.containsKey(pos)) {
             List<String> definitions = mDefinitions.get(pos);
+            assert definitions != null;
             definitions.add(definition);
         } else {
             allowedPos.add(pos);
@@ -44,6 +45,7 @@ public class Word implements Serializable {
     public void addSentence(String pos, String sentence) {
         if(mSentences.containsKey(pos)) {
             List<String> definitions = mSentences.get(pos);
+            assert definitions != null;
             definitions.add(sentence);
         } else {
             List<String> definitions = new LinkedList<>();

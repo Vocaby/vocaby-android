@@ -1,7 +1,6 @@
 package com.vocaby.app;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,33 +13,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class HomeFragment extends Fragment {
     private static final String WORD = "word";
 
-    private EditText search;
-    private InputMethodManager imm;
     private String sentText;
     private String prevWord;
 
@@ -70,7 +50,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        search = view.findViewById(R.id.search_bar);
+        EditText search = view.findViewById(R.id.search_bar);
         search.setOnEditorActionListener(searchEditorListener);
 
         getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container, new SearchFragment()).commit();
@@ -105,7 +85,7 @@ public class HomeFragment extends Fragment {
     }
 
     private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
-        imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         v.clearFocus();
 

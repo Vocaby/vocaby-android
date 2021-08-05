@@ -3,7 +3,6 @@ package com.vocaby.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -17,7 +16,7 @@ import java.util.Map;
 
 public class RequestManager {
     private static RequestManager instance = null;
-    private Context ctx;
+    private final Context ctx;
     public RequestQueue requestQueue;
     private static String API_KEY;
     private static String TOKEN_KEY;

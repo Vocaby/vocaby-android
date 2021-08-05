@@ -9,12 +9,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,27 +22,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
+
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SearchResultsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class SearchResultsFragment extends Fragment {
 
     private static final String WORD = "word";
@@ -156,13 +143,12 @@ public class SearchResultsFragment extends Fragment {
         if(dataManager.hasWord(searchedWord)) {
             populateView(dataManager.getData(searchedWord));
         } else {
-            String url = getString(R.string.dictionary_url) + searchedWord;
             RequestManager requestManager = RequestManager.getInstance(ctx);
             requestManager.getDefinition(searchedWord, definitionListenerResponse, definitionListenerError);
         }
     }
 
-    private Response.Listener<JSONObject> definitionListenerResponse = new Response.Listener<JSONObject>() {
+    private final Response.Listener<JSONObject> definitionListenerResponse = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
@@ -189,7 +175,7 @@ public class SearchResultsFragment extends Fragment {
         }
     };
 
-    private Response.ErrorListener definitionListenerError = new Response.ErrorListener() {
+    private final Response.ErrorListener definitionListenerError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             if(error.networkResponse != null && error.networkResponse.data!=null) {
@@ -201,7 +187,7 @@ public class SearchResultsFragment extends Fragment {
         }
     };
 
-    private final View.OnClickListener backListener = v -> ((MainActivity) requireActivity()).onBackPressed();
+    private final View.OnClickListener backListener = v -> requireActivity().onBackPressed();
 
     private final View.OnClickListener saveListener = new View.OnClickListener() {
         @Override
@@ -222,7 +208,7 @@ public class SearchResultsFragment extends Fragment {
                         updateRemoteSaves(false);
                     }
                 } else {
-                    // Unsave the word
+                    // Remove the word from saves
                     if(token.isEmpty()) {
                         dataManager.deleteSave(searchedWord);
                         Drawable icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
@@ -250,7 +236,7 @@ public class SearchResultsFragment extends Fragment {
         }
     }
 
-    private Response.Listener<JSONObject> saveListenerResponse = new Response.Listener<JSONObject>() {
+    private final Response.Listener<JSONObject> saveListenerResponse = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
@@ -267,32 +253,22 @@ public class SearchResultsFragment extends Fragment {
         }
     };
 
-    private Response.ErrorListener saveListenerError = new Response.ErrorListener() {
+    private final Response.ErrorListener saveListenerError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             if(error.networkResponse != null && error.networkResponse.data!=null) {
-                try {
-                    String body = new String(error.networkResponse.data, "UTF-8");
-                    Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                String body = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
             } else {
-                if (error.networkResponse != null && error.networkResponse.data != null) {
-                    String jsonError = new String(error.networkResponse.data);
-                    Log.d("RESPONSE", "Error: " + error
-                            + "\nStatus Code " + error.networkResponse.statusCode
-                            + "\nData " + jsonError);
-                }
-
                 Toast.makeText(ctx, "Something went wrong while saving...", Toast.LENGTH_SHORT).show();
-                saveButton.setEnabled(true);
-                saveProgress.setVisibility(View.INVISIBLE);
             }
+
+            saveButton.setEnabled(true);
+            saveProgress.setVisibility(View.INVISIBLE);
         }
     };
 
-    private Response.Listener<JSONObject> deleteListenerResponse = new Response.Listener<JSONObject>() {
+    private final Response.Listener<JSONObject> deleteListenerResponse = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             saveButton.setText(ctx.getString(R.string.save_button_unsaved));
@@ -304,17 +280,17 @@ public class SearchResultsFragment extends Fragment {
         }
     };
 
-    private Response.ErrorListener deleteListenerError = new Response.ErrorListener() {
+    private final Response.ErrorListener deleteListenerError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             NetworkResponse networkResponse = error.networkResponse;
             if (networkResponse != null && networkResponse.data != null) {
-                String jsonError = new String(networkResponse.data);
-                Log.d("RESPONSE", "Error: " + error
-                        + "\nStatus Code " + error.networkResponse.statusCode
-                        + "\nData " + jsonError);
+                String body = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ctx, "Something went wrong while removing...", Toast.LENGTH_SHORT).show();
             }
-            Toast.makeText(ctx, "Something went wrong while unsaving...", Toast.LENGTH_SHORT).show();
+
             saveButton.setEnabled(true);
             saveProgress.setVisibility(View.INVISIBLE);
         }

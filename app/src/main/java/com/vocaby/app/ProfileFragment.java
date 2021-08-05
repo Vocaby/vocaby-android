@@ -7,54 +7,28 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ProfileFragment extends Fragment {
     private Context ctx;
     private Button logoutButton;
 
     public ProfileFragment() {
         // Required empty public constructor
-    }
-
-
-    public static ProfileFragment newInstance() {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -99,7 +73,7 @@ public class ProfileFragment extends Fragment {
         requestManager.makeLogoutRequest(logoutListenerResponse, logoutListenerError);
     }
 
-    private Response.Listener<JSONObject> logoutListenerResponse = new Response.Listener<JSONObject>() {
+    private final Response.Listener<JSONObject> logoutListenerResponse = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
@@ -113,15 +87,13 @@ public class ProfileFragment extends Fragment {
         }
     };
 
-    private Response.ErrorListener logoutListenerError = new Response.ErrorListener() {
+    private final Response.ErrorListener logoutListenerError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             NetworkResponse networkResponse = error.networkResponse;
             if (networkResponse != null && networkResponse.data != null) {
-                String jsonError = new String(networkResponse.data);
-                Log.d("RESPONSE", "Error: " + error
-                        + "\nStatus Code " + error.networkResponse.statusCode
-                        + "\nData " + jsonError);
+                String body = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
             }
 
             logoutButton.setEnabled(true);

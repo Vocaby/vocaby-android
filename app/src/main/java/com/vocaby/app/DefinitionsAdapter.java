@@ -12,9 +12,9 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.DefinitionsViewHolder> {
-    private Word wordData;
-    private String[] allowedPos;
-    private Context ctx;
+    private final Word wordData;
+    private final String[] allowedPos;
+    private final Context ctx;
 
     public DefinitionsAdapter(Context ctx, Word wordData) {
         this.wordData = wordData;
@@ -64,7 +64,7 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
         return allowedPos.length;
     }
 
-    public class DefinitionsViewHolder extends RecyclerView.ViewHolder {
+    public static class DefinitionsViewHolder extends RecyclerView.ViewHolder {
         TextView pos;
         LinearLayout definitionContainer;
 

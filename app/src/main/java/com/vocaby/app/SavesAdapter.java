@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,24 +14,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHolder> {
     private final List<String> saves;
@@ -70,7 +58,7 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     public void onBindViewHolder(@NonNull SavesAdapter.SavesViewHolder holder, int position) {
         String word = saves.get(position);
         holder.savedWord.setText(word);
-        holder.unsaveButton.setOnClickListener(v -> {
+        holder.removeSaveButton.setOnClickListener(v -> {
             builder.setMessage("Are you sure you want to delete?").setPositiveButton("Yes", (dialog, which) -> {
                 if(token.isEmpty()) {
                     dataManager.deleteSave(word);
@@ -83,13 +71,11 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
                     }, error -> {
                         NetworkResponse networkResponse = error.networkResponse;
                         if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Log.d("RESPONSE", "Error: " + error
-                                    + "\nStatus Code " + error.networkResponse.statusCode
-                                    + "\nData " + jsonError);
+                            String body = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                            Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(ctx, "Something went wrong while removing...", Toast.LENGTH_SHORT).show();
                         }
-
-                        Toast.makeText(ctx, "Something went wrong while unsaving...", Toast.LENGTH_SHORT).show();
                     });
                 }
             }).setNegativeButton("No", null);
@@ -111,14 +97,14 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         return saves.size();
     }
 
-    public class SavesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class SavesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView savedWord;
         OnItemTouchListener onItemTouchListener;
-        ImageButton unsaveButton;
+        ImageButton removeSaveButton;
         public SavesViewHolder(@NonNull View itemView, OnItemTouchListener onItemTouchListener) {
             super(itemView);
             savedWord = itemView.findViewById(R.id.save_item);
-            unsaveButton = itemView.findViewById(R.id.unsave_button);
+            removeSaveButton = itemView.findViewById(R.id.unsave_button);
             this.onItemTouchListener = onItemTouchListener;
             itemView.setOnClickListener(this);
         }

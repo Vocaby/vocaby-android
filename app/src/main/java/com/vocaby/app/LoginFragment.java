@@ -3,19 +3,14 @@ package com.vocaby.app;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,12 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,9 +28,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class LoginFragment extends Fragment {
     private Context ctx;
@@ -51,13 +40,6 @@ public class LoginFragment extends Fragment {
     private Button loginButton;
 
     public LoginFragment() {
-    }
-
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -97,7 +79,7 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    private View.OnClickListener loginListener = new View.OnClickListener() {
+    private final View.OnClickListener loginListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             String email = emailView.getText().toString();
@@ -149,7 +131,7 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    private Response.Listener<JSONObject> loginListenerResponse = new Response.Listener<JSONObject>() {
+    private final Response.Listener<JSONObject> loginListenerResponse = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
@@ -176,15 +158,12 @@ public class LoginFragment extends Fragment {
         }
     };
 
-    private Response.ErrorListener loginListenerError = new Response.ErrorListener() {
+    private final Response.ErrorListener loginListenerError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             NetworkResponse networkResponse = error.networkResponse;
             if (networkResponse != null && networkResponse.data != null) {
                 String jsonError = new String(networkResponse.data);
-                Log.d("RESPONSE", "Error: " + error
-                        + "\nStatus Code " + error.networkResponse.statusCode
-                        + "\nData " + jsonError);
                 try {
                     JSONObject json = new JSONObject(jsonError);
                     if (json.has("code")) {
@@ -192,15 +171,17 @@ public class LoginFragment extends Fragment {
                         if(code == getResources().getInteger(R.integer.WRONG_CREDENTIALS)) {
                             loginAlertView.setText(getString(R.string.wrong_credentials_desc));
                         } else {
-                            Toast.makeText(ctx, "Error has occured...", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ctx, "Error has occurred...", Toast.LENGTH_SHORT).show();
                         }
                     }
-
-                    loginButton.setEnabled(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            } else {
+                Toast.makeText(ctx, "Error has occurred while logging in...", Toast.LENGTH_SHORT).show();
             }
+
+            loginButton.setEnabled(true);
         }
     };
 
