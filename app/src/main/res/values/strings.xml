@@ -44,4 +44,10 @@
     <string name="sign_in">Sign In</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="log_out">Log out</string>
+    <string name="enter_email">Please enter a email</string>
+    <string name="enter_valid_email">Please enter a valid email</string>
+    <string name="enter_password">Please enter a password</string>
+    <string name="wrong_credentials_desc">Incorrect email or password</string>
+    <string name="password_no_match">Password does not match!</string>
+    <string name="user_exists">User already exists</string>
 </resources>
