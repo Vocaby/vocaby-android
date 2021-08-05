@@ -115,9 +115,17 @@ public class SearchResultsFragment extends Fragment {
     private void populateView(Word wordData) {
         progressBar.setVisibility(View.INVISIBLE);
         word.setText(searchedWord);
-        pronunciation.setText(wordData.getPronunciation());
         saveButton.setVisibility(View.VISIBLE);
         saveButton.setEnabled(true);
+
+        String pronunciationText = wordData.getPronunciation();
+        if(pronunciationText.isEmpty()) {
+            pronunciation.setVisibility(View.GONE);
+        } else {
+            pronunciation.setVisibility(View.VISIBLE);
+            pronunciation.setText(pronunciationText);
+        }
+
         DefinitionsAdapter adapter = new DefinitionsAdapter(ctx, wordData);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
