@@ -124,6 +124,11 @@ public class LoginFragment extends Fragment {
             jsonObject.put("password", password);
             jsonObject.put("saves", jsonArray);
 
+            SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.email), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.email), email);
+            editor.apply();
+
             RequestManager requestManager = RequestManager.getInstance(ctx);
             requestManager.makeLoginRequest(jsonObject, loginListenerResponse, loginListenerError);
         } catch (JSONException e) {
@@ -140,6 +145,7 @@ public class LoginFragment extends Fragment {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(getString(R.string.token_key),token);
                 editor.apply();
+
                 DataManager dataManager = DataManager.getInstance(ctx);
                 dataManager.overwriteSave(covertJsonToArray(response.getJSONArray("saves")));
                 FragmentManager fm = getParentFragmentManager();

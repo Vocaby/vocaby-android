@@ -51,4 +51,6 @@
     <string name="password_no_match">Password does not match!</string>
     <string name="user_exists">User already exists</string>
     <string name="close">close</string>
+    <string name="email">currentEmail</string>
+    <string name="guest">guest</string>
 </resources>

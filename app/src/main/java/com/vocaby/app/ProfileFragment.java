@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
@@ -51,6 +52,11 @@ public class ProfileFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
         String token = sharedPref.getString(getString(R.string.token_key), "");
+
+        sharedPref = ctx.getSharedPreferences(getString(R.string.email), Context.MODE_PRIVATE);
+        String email = sharedPref.getString(getString(R.string.email), "");
+        TextView currentUser = view.findViewById(R.id.current_user);
+        currentUser.setText(email);
 
         if (token.isEmpty()) {
             getParentFragmentManager()
