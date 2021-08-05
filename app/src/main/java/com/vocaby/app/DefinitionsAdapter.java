@@ -42,18 +42,19 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
         for(int i = 0; i < definitions.length; i++) {
             String def = definitions[i];
             String sen = sentences[i];
-            CardView card;
-            TextView definition;
+            CardView card = (CardView) inflater.inflate(R.layout.definition_row, null);
+            TextView definition = card.findViewById(R.id.definition);
+            TextView sentence = card.findViewById(R.id.sentence);
+            TextView counter = card.findViewById(R.id.definition_counter);
+
             if(sen.length() > 0) {
-                card = (CardView) inflater.inflate(R.layout.definition_row, null);
-                definition = card.findViewById(R.id.definition);
-                TextView sentence = card.findViewById(R.id.sentence);
                 sentence.setText(sen);
             } else {
-                card = (CardView) inflater.inflate(R.layout.definition_row_no_sentence, null);
-                definition = card.findViewById(R.id.definition);
+                sentence.setVisibility(View.GONE);
             }
 
+
+            counter.setText(i+1 + ". ");
             definition.setText(def);
             holder.definitionContainer.addView(card);
         }

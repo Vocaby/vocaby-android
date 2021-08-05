@@ -128,13 +128,13 @@ public class SearchResultsFragment extends Fragment {
 
         DefinitionsAdapter adapter = new DefinitionsAdapter(ctx, wordData);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
     }
 
     private void populateNoDefinition() {
         progressBar.setVisibility(View.INVISIBLE);
         word.setText(getResources().getString(R.string.no_definition_found));
+        pronunciation.setVisibility(View.GONE);
     }
 
 

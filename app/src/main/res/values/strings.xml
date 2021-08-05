@@ -50,4 +50,5 @@
     <string name="wrong_credentials_desc">Incorrect email or password</string>
     <string name="password_no_match">Password does not match!</string>
     <string name="user_exists">User already exists</string>
+    <string name="close">close</string>
 </resources>
