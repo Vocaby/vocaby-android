@@ -19,6 +19,7 @@ import java.util.List;
 public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchListener {
     private DataManager dataManager;
     private Context ctx;
+    private TextView savesCount;
 
     public SavesFragment() {
         // Required empty public constructor
@@ -37,18 +38,28 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
         List<String> saves = dataManager.getSaves();
-
+        savesCount = view.findViewById(R.id.saves_count);
+        setSavesCount(saves.size());
         if(saves.size() > 0) {
             TextView savesAlert = view.findViewById(R.id.saves_alert);
             savesAlert.setVisibility(View.INVISIBLE);
         }
 
         RecyclerView recyclerView = view.findViewById(R.id.saves_container);
-        SavesAdapter adapter = new SavesAdapter(ctx, saves, this, getActivity());
+        SavesAdapter adapter = new SavesAdapter(ctx, this, getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
 
         return view;
+    }
+
+    public void setSavesCount(int size) {
+        savesCount.setText(size + "");
+    }
+
+    @Override
+    public void onSaveDelete(int size) {
+        setSavesCount(size);
     }
 
     @Override

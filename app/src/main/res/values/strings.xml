@@ -20,7 +20,7 @@
     <string name="no_definition_found">No definition found</string>
     <string name="navigation_button">navigation button</string>
     <string name="default_profile_intro">Hi,</string>
-    <string name="default_profile_intro_desc">You are currently signed in.</string>
+    <string name="default_profile_intro_desc">You are currently signed in as</string>
     <string name="token_key">token</string>
     <!-- Preference Titles -->
 

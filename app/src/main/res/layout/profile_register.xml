@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gray_background"
-    android:paddingLeft="@dimen/profile_side_margin"
-    android:paddingRight="@dimen/profile_side_margin"
+    android:paddingLeft="@dimen/container_side_margin"
+    android:paddingRight="@dimen/container_side_margin"
     android:clickable="true">
 
     <androidx.appcompat.widget.AppCompatButton

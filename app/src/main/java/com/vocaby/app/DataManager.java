@@ -30,11 +30,8 @@ public class DataManager {
 
         File dataFile = new File(ctx.getFilesDir(), WORD_DATA_FILE_NAME);
         if(dataFile.exists()) {
-            Log.d("DataManager", "1");
             try(FileInputStream fis = ctx.openFileInput(WORD_DATA_FILE_NAME)) {
-                Log.d("DataManager", "2");
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                Log.d("DataManager", "3");
                 wordMap = (Map<String, Word>) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -129,7 +126,7 @@ public class DataManager {
         }
     }
 
-    public void deleteSave(String word) {
+    public List<String> deleteSave(String word) {
         saves.remove(word);
         try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -137,6 +134,8 @@ public class DataManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return saves;
     }
 
     public boolean hasSave(String word) {

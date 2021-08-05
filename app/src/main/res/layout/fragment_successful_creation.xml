@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gray_background"
-    android:padding="@dimen/profile_side_margin">
+    android:padding="@dimen/container_side_margin">
 
     <TextView
         android:id="@+id/textView2"
