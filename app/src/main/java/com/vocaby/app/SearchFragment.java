@@ -30,16 +30,12 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemTouc
     private SearchAdapter searchAdapter;
     public static final String RADIO_DATASET_CHANGED = "com.vocaby.app.RADIO_DATASET_CHANGED";
     private Radio radio;
-    private TextView wordView;
-    private TextView posView;
-    private TextView definition;
-    private TextView sentence;
 
     @Override
     public void onItemTouch(int position) {
         String word = dataManager.getHistory().get(position);
         HomeFragment fragment = (HomeFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("HOME");
-        fragment.addResultsFragment(word, true);
+        fragment.addResultsFragment(word, false);
     }
 
     private class Radio extends BroadcastReceiver {
@@ -67,15 +63,33 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemTouc
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        List<String> history = dataManager.getHistory();
 
-        wordView = view.findViewById(R.id.word_header);
-        posView = view.findViewById(R.id.pos);
-        definition = view.findViewById(R.id.definition);
-        sentence = view.findViewById(R.id.sentence);
-        updateRandomWords();
+        // Random Word of the Day
+        TextView wordView = view.findViewById(R.id.word_header);
+        TextView posView = view.findViewById(R.id.pos);
+        TextView definition = view.findViewById(R.id.definition);
+        TextView sentence = view.findViewById(R.id.sentence);
+        View wordBox = view.findViewById(R.id.word_box);
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+        int index = settings.getInt("randomWordIndex", 1);
+        DatabaseManager databaseManager = DatabaseManager.getInstance(ctx);
+        Word wordData = databaseManager.getRandomWordData(index);
+
+        String pos = wordData.getAllowedPos()[0];
+        wordView.setText(wordData.getWord());
+        posView.setText(pos);
+        definition.setText(wordData.getDefinitions(pos)[0]);
+        sentence.setText(wordData.getSentences(pos)[0]);
+
+        wordBox.setOnClickListener(v -> {
+            HomeFragment fragment = (HomeFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("HOME");
+            fragment.addResultsFragment(wordData.getWord(), true);
+        });
+
 
         // History
+        List<String> history = dataManager.getHistory();
         TextView historyAlert = view.findViewById(R.id.history_alert);
         RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
         searchAdapter = new SearchAdapter(ctx, dataManager.getHistory(), this);
@@ -93,20 +107,6 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemTouc
         }
 
         return view;
-    }
-
-    // Only updates when the home fragment is replaced
-    public void updateRandomWords() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
-        int index = settings.getInt("randomWordIndex", 1);
-        DatabaseManager databaseManager = DatabaseManager.getInstance(ctx);
-        Word wordData = databaseManager.getRandomWordData(index);
-
-        String pos = wordData.getAllowedPos()[0];
-        wordView.setText(wordData.getWord());
-        posView.setText(pos);
-        definition.setText(wordData.getDefinitions(pos)[0]);
-        sentence.setText(wordData.getSentences(pos)[0]);
     }
 
     @Override
