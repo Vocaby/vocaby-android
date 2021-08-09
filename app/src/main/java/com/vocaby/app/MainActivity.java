@@ -23,6 +23,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.vocaby.app.database.DatabaseManager;
 
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
@@ -41,6 +43,27 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         super.onStop();
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastTimeStarted = settings.getInt("appStarted", -1);
+        Calendar calendar = Calendar.getInstance();
+        int today = calendar.get(Calendar.DAY_OF_YEAR);
+
+        if (today != lastTimeStarted) {
+            SharedPreferences randomWord = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = randomWord.edit();
+            int index = databaseManager.getRandomWordIndex();
+            editor.putInt("randomWordIndex", index);
+            editor.apply();
+
+            editor = settings.edit();
+            editor.putInt("appStarted", today);
+            editor.commit();
+        }
     }
 
     @Override

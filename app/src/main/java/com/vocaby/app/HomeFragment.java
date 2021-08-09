@@ -68,9 +68,9 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private void addResultsFragment(String word, boolean fromSaves) {
+    public void addResultsFragment(String word, boolean ignoreHistory) {
         prevWord = word;
-        Fragment fragment = SearchResultsFragment.newInstance(word, fromSaves);
+        Fragment fragment = SearchResultsFragment.newInstance(word, ignoreHistory);
         FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.addToBackStack(null);
