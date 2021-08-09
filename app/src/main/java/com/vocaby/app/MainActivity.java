@@ -21,10 +21,12 @@ import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.vocaby.app.database.DatabaseManager;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
+    private DatabaseManager databaseManager;
     private int prevPage;
 
     @Override
@@ -44,12 +46,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        databaseManager = DatabaseManager.getInstance(getApplicationContext());
+        databaseManager.openDatabase();
+
         prevPage = R.id.search;
         setContentView(R.layout.activity_main);
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setOnItemSelectedListener(navListener);
         navigationView.bringToFront();
-
 
         // Notification
         String notifiedWord = getIntent().getStringExtra("com.vocaby.app.openAndSearch");
@@ -175,6 +179,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
         }
         return super.dispatchTouchEvent( event );
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseManager.closeDatabase();
     }
 
     @Override

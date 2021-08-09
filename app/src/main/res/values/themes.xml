@@ -12,6 +12,7 @@
         <item name="colorAccent">@color/colorPrimary_header</item>
 
         <!-- Customize your theme here. -->
+        <item name="android:fontFamily">@font/sourcesanspro_regular</item>
     </style>
 
     <style name="AppTheme.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">

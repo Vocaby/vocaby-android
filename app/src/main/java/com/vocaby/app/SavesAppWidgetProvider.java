@@ -7,7 +7,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
+
+import com.vocaby.app.database.DatabaseManager;
+
 import java.util.List;
 
 public class SavesAppWidgetProvider extends AppWidgetProvider {
@@ -37,9 +42,16 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         dataManager = DataManager.getInstance(context);
         List<String> saves = dataManager.getSaves();
+        remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE);
+        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", false);
         if(saves.size() > 0) {
-            WordPickerService wordPickerService = new WordPickerService(dataManager, context);
-            Word wordData = wordPickerService.getRandomWordFromSaves();
+            WordPickerService wordPickerService = new WordPickerService(saves, context);
+            int index = wordPickerService.getRandomWordFromSaves();
+            DatabaseManager databaseManager = DatabaseManager.getInstance(context);
+            if(!databaseManager.isOpen()) {
+                databaseManager.openDatabase();
+            }
+            Word wordData = databaseManager.getWordData(saves.get(index));
             String pos = wordData.getAllowedPos()[0];
             String definition = wordData.getDefinitions(pos)[0];
             String[] examples = wordData.getSentences(pos);
@@ -63,6 +75,8 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
             remoteViews.setTextViewText(R.id.widget_sentence, "");
         }
 
+        remoteViews.setViewVisibility(R.id.refresh_progress, View.INVISIBLE);
+        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true);
         appWidgetManager.updateAppWidget(id, remoteViews);
     }
 
@@ -104,6 +118,8 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
+        DatabaseManager databaseManager = DatabaseManager.getInstance(context);
+        databaseManager.closeDatabase();
     }
 
     @Override

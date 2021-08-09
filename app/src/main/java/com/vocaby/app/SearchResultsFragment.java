@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.vocaby.app.database.DatabaseManager;
 
 
 import org.json.JSONObject;
@@ -117,6 +118,7 @@ public class SearchResultsFragment extends Fragment {
         word.setText(searchedWord);
         saveButton.setVisibility(View.VISIBLE);
         saveButton.setEnabled(true);
+        Toast.makeText(ctx, "Fetched data from database", Toast.LENGTH_SHORT);
 
         String pronunciationText = wordData.getPronunciation();
         if(pronunciationText.isEmpty()) {
@@ -147,12 +149,22 @@ public class SearchResultsFragment extends Fragment {
             ctx.sendBroadcast(intent);
         }
 
-        // check if data exists already
-        if(dataManager.hasWord(searchedWord)) {
-            populateView(dataManager.getData(searchedWord));
+        Toast.makeText(ctx, "Fetching data from database", Toast.LENGTH_SHORT).show();
+        DatabaseManager databaseManager = DatabaseManager.getInstance(ctx);
+        Word wordData = databaseManager.getWordData(searchedWord);
+
+        if(wordData != null) {
+            populateView(wordData);
         } else {
-            RequestManager requestManager = RequestManager.getInstance(ctx);
-            requestManager.getDefinition(searchedWord, definitionListenerResponse, definitionListenerError);
+            // Only get data from API if the word doesn't exist in the local database
+            // and the phone has internet access
+            if(NetworkManager.isConnectedToInternet(ctx)) {
+                Toast.makeText(ctx, "Fetching data from API", Toast.LENGTH_SHORT).show();
+                RequestManager requestManager = RequestManager.getInstance(ctx);
+                requestManager.getDefinition(searchedWord, definitionListenerResponse, definitionListenerError);
+            } else {
+                populateNoDefinition();
+            }
         }
     }
 
@@ -166,6 +178,7 @@ public class SearchResultsFragment extends Fragment {
                     Word data = service.getWordData();
                     populateView(data);
                     try {
+                        // Write to database instead of file
                         dataManager.writeData(data);
                     } catch(IOException e) {
                         Toast.makeText(ctx, "Something went wrong while storing data", Toast.LENGTH_SHORT).show();

@@ -11,6 +11,10 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
+import com.vocaby.app.database.DatabaseManager;
+
+import java.util.List;
+
 public class NotificationReceiver extends BroadcastReceiver {
     private static final String CHANNEL_ID = "VOCABY_CHANNEL";
     private static final String NOTIFICATION_PICKS = "notificationPicks";
@@ -22,13 +26,20 @@ public class NotificationReceiver extends BroadcastReceiver {
         SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_PICKS, Context.MODE_PRIVATE);
         String prevWord = sharedPreferences.getString(PREV_PICK, null);
         DataManager dataManager = DataManager.getInstance(context);
-        WordPickerService wordPickerService = new WordPickerService(dataManager, context);
-        Word wordData = wordPickerService.getRandomWordFromSaves(prevWord);
+        List<String> saves = dataManager.getSaves();
+        WordPickerService wordPickerService = new WordPickerService(saves, context);
+        int index = wordPickerService.getRandomWordFromSaves(prevWord);
+        DatabaseManager databaseManager = DatabaseManager.getInstance(context);
+        if(!databaseManager.isOpen()) {
+            databaseManager.openDatabase();
+        }
+        Word wordData = dataManager.getData(saves.get(index));
+        databaseManager.closeDatabase();
         String word;
         String pos;
         String message;
 
-        if(wordData == null) {
+        if(saves.isEmpty()) {
             word = "No Saved Words";
             message = "Save words in the app to display in the notification";
         } else {
