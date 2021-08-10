@@ -81,7 +81,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         .setCustomAnimations(
                 R.anim.enter_left_to_right,
                 R.anim.exit_left_to_right
-        ).replace(R.id.fragment_container, HomeFragment.newInstance(search)).commit();
+        ).replace(R.id.fragment_container, HomeFragment.newInstance(search), "HOME").commit();
 
         ((MainActivity)requireActivity()).changePrevPage(R.id.search);
     }

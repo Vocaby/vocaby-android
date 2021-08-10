@@ -60,6 +60,7 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
 
     @Override
     public void onBindViewHolder(@NonNull SavesAdapter.SavesViewHolder holder, int position) {
+        holder.cardView.setBackgroundTintList(ColorStateList.valueOf(ctx.getColor(R.color.white)));
         String word = saves.get(position);
         if (position % 2 == 0) holder.cardView.setBackgroundTintList(ColorStateList.valueOf(ctx.getColor(R.color.light_gray)));
         holder.savedWord.setText(word);

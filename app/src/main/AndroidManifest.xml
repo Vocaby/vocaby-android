@@ -12,6 +12,9 @@
         android:screenOrientation="sensorPortrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.VocabyAndroid">
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="@string/bugsnag_api_key"/>
         <activity
             android:name="com.vocaby.app.MainActivity"
             android:screenOrientation="portrait"

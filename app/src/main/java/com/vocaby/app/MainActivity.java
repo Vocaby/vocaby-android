@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.bugsnag.android.Bugsnag;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.vocaby.app.database.DatabaseManager;
@@ -48,27 +49,19 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        int lastTimeStarted = settings.getInt("appStarted", -1);
-        Calendar calendar = Calendar.getInstance();
-        int today = calendar.get(Calendar.DAY_OF_YEAR);
-
-        if (today != lastTimeStarted) {
-            SharedPreferences randomWord = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = randomWord.edit();
-            int index = databaseManager.getRandomWordIndex();
-            editor.putInt("randomWordIndex", index);
-            editor.apply();
-
-            editor = settings.edit();
-            editor.putInt("appStarted", today);
-            editor.commit();
-        }
+        updateRandomWordIndex();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bugsnag.start(this);
+
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         databaseManager = DatabaseManager.getInstance(getApplicationContext());
         databaseManager.openDatabase();
 
@@ -77,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setOnItemSelectedListener(navListener);
         navigationView.bringToFront();
+
+        updateRandomWordIndex();
 
         // Notification
         String notifiedWord = getIntent().getStringExtra("com.vocaby.app.openAndSearch");
@@ -98,9 +93,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     .replace(R.id.fragment_container, HomeFragment.newInstance(""), "HOME")
                     .commit();
 
-            alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            Intent notificationIntent = new Intent(this, NotificationReceiver.class);
-            pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
         }
@@ -219,12 +211,31 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    private void updateRandomWordIndex() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastTimeStarted = settings.getInt("appStarted", -1);
+        Calendar calendar = Calendar.getInstance();
+        int today = calendar.get(Calendar.DAY_OF_YEAR);
+
+        if (today != lastTimeStarted) {
+            SharedPreferences randomWord = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = randomWord.edit();
+            int index = databaseManager.getRandomWordIndex();
+            editor.putInt("randomWordIndex", index);
+            editor.apply();
+
+            editor = settings.edit();
+            editor.putInt("appStarted", today);
+            editor.commit();
+        }
+    }
+
     private void updateNotificationSettings(SharedPreferences sharedPreferences, String key) {
-        alarmManager.cancel(pendingIntent);
         if(sharedPreferences.getBoolean(key, false)) {
             int minutes = Integer.parseInt(sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "5"));
             alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 60 * minutes, pendingIntent);
         } else {
+            alarmManager.cancel(pendingIntent);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancelAll();
         }

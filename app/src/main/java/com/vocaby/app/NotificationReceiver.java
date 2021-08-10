@@ -33,7 +33,8 @@ public class NotificationReceiver extends BroadcastReceiver {
         if(!databaseManager.isOpen()) {
             databaseManager.openDatabase();
         }
-        Word wordData = dataManager.getData(saves.get(index));
+
+        Word wordData = databaseManager.getWordData(saves.get(index));
         databaseManager.closeDatabase();
         String word;
         String pos;
