@@ -47,10 +47,9 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
             WordPickerService wordPickerService = new WordPickerService(saves, context);
             int index = wordPickerService.getRandomWordFromSaves();
             DatabaseManager databaseManager = DatabaseManager.getInstance(context);
-            if(!databaseManager.isOpen()) {
-                databaseManager.openDatabase();
-            }
+            databaseManager.openDatabase();
             Word wordData = databaseManager.getWordData(saves.get(index));
+            databaseManager.closeDatabase();
             String pos = wordData.getAllowedPos()[0];
             String definition = wordData.getDefinitions(pos)[0];
             String[] examples = wordData.getSentences(pos);
@@ -117,8 +116,6 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
-        DatabaseManager databaseManager = DatabaseManager.getInstance(context);
-        databaseManager.closeDatabase();
     }
 
     @Override

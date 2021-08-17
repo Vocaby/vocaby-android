@@ -97,7 +97,7 @@
             android:autoSizeTextType="uniform"
             android:fontFamily="@font/playfairdisplay_mid"
             android:text=""
-            android:textAlignment="center"
+            android:gravity="center_horizontal"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary_header"
             app:layout_constraintBottom_toBottomOf="parent"

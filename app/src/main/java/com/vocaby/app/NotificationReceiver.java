@@ -30,9 +30,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         WordPickerService wordPickerService = new WordPickerService(saves, context);
         int index = wordPickerService.getRandomWordFromSaves(prevWord);
         DatabaseManager databaseManager = DatabaseManager.getInstance(context);
-        if(!databaseManager.isOpen()) {
-            databaseManager.openDatabase();
-        }
+        databaseManager.openDatabase();
 
         Word wordData = databaseManager.getWordData(saves.get(index));
         databaseManager.closeDatabase();

@@ -2,20 +2,17 @@ package com.vocaby.app.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.vocaby.app.Word;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DatabaseManager {
-    private SQLiteOpenHelper openHelper;
+    private final SQLiteOpenHelper openHelper;
     private SQLiteDatabase database;
     private static DatabaseManager databaseManager;
+    private int openCounter;
 
     private DatabaseManager(Context ctx) {
         this.openHelper = new DatabaseOpener(ctx);
@@ -32,21 +29,17 @@ public class DatabaseManager {
         return databaseManager;
     }
 
-    public boolean isOpen() {
-        if(database != null) {
-            return database.isOpen();
-        }
-
-        return false;
-    }
-
     public void openDatabase() {
-        this.database = openHelper.getReadableDatabase();
+        openCounter++;
+        if(openCounter == 1){
+            database = openHelper.getReadableDatabase();
+        }
     }
 
     public void closeDatabase() {
-        if (database != null) {
-            this.database.close();
+        openCounter--;
+        if (database != null && openCounter == 0) {
+            database.close();
         }
     }
 
@@ -114,7 +107,7 @@ public class DatabaseManager {
             String countQuery = "SELECT  * FROM words";
             Cursor cursor = database.rawQuery(countQuery, null);
             int count = cursor.getCount();
-            int id = getRandomNumber(0, count);
+            int id = getRandomNumber(count);
             cursor.close();
 
             return id;
@@ -123,7 +116,7 @@ public class DatabaseManager {
         }
     }
 
-    private int getRandomNumber(int min, long max) {
-        return (int) ((Math.random() * (max - min)) + min);
+    private int getRandomNumber(int max) {
+        return (int) ((Math.random() * (max - 0)) + 0);
     }
 }
