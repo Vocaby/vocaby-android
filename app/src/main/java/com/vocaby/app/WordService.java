@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
 public class WordService {
     private final JSONObject json;
     private final Word word;
@@ -27,17 +29,17 @@ public class WordService {
                 success = true;
                 String pronunciation = json.getString("pronunciation");
                 word.setPronunciation(pronunciation);
-                JSONArray data = json.getJSONArray("data");
-                for(int i = 0; i < data.length(); i++) {
-                    JSONObject definitionData = data.getJSONObject(i);
-                    String pos = definitionData.getString("pos");
-                    JSONArray sd = definitionData.getJSONArray("definitions");
-                    for(int j = 0; j < sd.length(); j++) {
-                        String definition = sd.getJSONObject(j).getString("definition");
-                        String sentence = sd.getJSONObject(j).getString("sentence");
-                        word.addDefinition(pos, definition);
-                        word.addSentence(pos, sentence);
+                JSONObject data = json.getJSONObject("definitions");
+                for (Iterator<String> it = data.keys(); it.hasNext(); ) {
+                    String key = it.next();
+                    JSONArray definitions = data.getJSONArray(key);
+                    for(int i = 0; i < definitions.length() ; i++) {
+                        String definition = definitions.getJSONObject(i).getString("definition");
+                        String sentence = definitions.getJSONObject(i).getString("sentence");
+                        word.addDefinition(key, definition);
+                        word.addSentence(key, sentence);
                     }
+
                 }
             }
         } catch (JSONException e) {

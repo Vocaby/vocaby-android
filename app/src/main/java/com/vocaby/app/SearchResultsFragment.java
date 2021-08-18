@@ -120,7 +120,7 @@ public class SearchResultsFragment extends Fragment {
         saveButton.setEnabled(true);
         Toast.makeText(ctx, "Fetched data from database", Toast.LENGTH_SHORT);
 
-        String pronunciationText = wordData.getPronunciation();
+        String pronunciationText = wordData.getPronunciation().replaceAll("\n","");
         if(pronunciationText.isEmpty()) {
             pronunciation.setVisibility(View.GONE);
         } else {

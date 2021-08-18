@@ -54,5 +54,6 @@
     <string name="email">currentEmail</string>
     <string name="guest">guest</string>
     <string name="unsynced">Unsynced</string>
+    <string name="local">Local</string>
     <string name="random_word_of_the_day">RANDOM WORD OF THE DAY</string>
 </resources>

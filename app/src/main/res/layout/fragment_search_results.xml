@@ -113,6 +113,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcesanspro_semibold"
             android:text=""
+            android:layout_marginBottom="12dp"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

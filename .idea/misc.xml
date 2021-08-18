@@ -3,7 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/layout/fragment_search_results.xml" value="0.22" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_main.xml" value="0.17346014492753623" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/definition_row.xml" value="0.33" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_home.xml" value="0.17346014492753623" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_saves.xml" value="0.1721014492753623" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search.xml" value="0.33" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results.xml" value="0.33" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/section_row.xml" value="0.5" />
       </map>
     </option>
   </component>

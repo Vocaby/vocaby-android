@@ -83,7 +83,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemTouc
         sentence.setText(wordData.getSentences(pos)[0]);
 
         wordBox.setOnClickListener(v -> {
-            HomeFragment fragment = (HomeFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("HOME");
+            HomeFragment fragment = (HomeFragment) this.getParentFragment();
             fragment.addResultsFragment(wordData.getWord(), true);
         });
 
