@@ -79,18 +79,18 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             if(!notifiedWord.equals("No Saved Words")) {
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, HomeFragment.newInstance(notifiedWord), "HOME")
+                        .replace(R.id.fragment_container, DictionaryFragment.newInstance(notifiedWord), "HOME")
                         .commit();
             } else {
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, HomeFragment.newInstance(""), "HOME")
+                        .replace(R.id.fragment_container, DictionaryFragment.newInstance(""), "HOME")
                         .commit();
             }
         } else {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, HomeFragment.newInstance(""), "HOME")
+                    .replace(R.id.fragment_container, DictionaryFragment.newInstance(""), "HOME")
                     .commit();
 
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 }
             }
         }
+
         super.onBackPressed();
     }
 
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 if(prevPage != id) {
                     if(id == R.id.search) {
-                        selected = HomeFragment.newInstance("");
+                        selected = DictionaryFragment.newInstance("");
                         transaction.setCustomAnimations(
                                 R.anim.enter_left_to_right,
                                 R.anim.exit_left_to_right
@@ -226,14 +227,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
             editor = settings.edit();
             editor.putInt("appStarted", today);
-            editor.commit();
+            editor.apply();
         }
     }
 
     private void updateNotificationSettings(SharedPreferences sharedPreferences, String key) {
         if(sharedPreferences.getBoolean(key, false)) {
             int minutes = Integer.parseInt(sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "5"));
-            alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 60 * minutes, pendingIntent);
+            alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000L * 60 * minutes, pendingIntent);
         } else {
             alarmManager.cancel(pendingIntent);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

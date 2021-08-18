@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,9 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.vocaby.app.R;
+
 import java.util.List;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.HistoryViewHolder> {
+public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdapter.HistoryViewHolder> {
     private final List<String> history;
     private final Context ctx;
     private final OnItemTouchListener onItemTouchListener;
@@ -20,7 +22,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.HistoryVie
         void onItemTouch(int position);
     }
 
-    public SearchAdapter(Context ctx, List<String> history, OnItemTouchListener onItemTouchListener) {
+    public SearchHistoryAdapter(Context ctx, List<String> history, OnItemTouchListener onItemTouchListener) {
         this.ctx = ctx;
         this.history = history;
         this.onItemTouchListener = onItemTouchListener;
@@ -35,7 +37,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.HistoryVie
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SearchAdapter.HistoryViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SearchHistoryAdapter.HistoryViewHolder holder, int position) {
         holder.word.setText(history.get(position));
     }
 

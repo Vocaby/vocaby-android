@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,6 +28,10 @@ public class Word implements Serializable {
     public String getPronunciation() { return this.pronunciation; }
 
     public String getWord() { return word; }
+
+    public boolean isEmpty() {
+        return mDefinitions.isEmpty();
+    }
 
     public void addDefinition(String pos, String definition) {
         if(mDefinitions.containsKey(pos)) {
@@ -64,5 +68,10 @@ public class Word implements Serializable {
 
     public String[] getSentences(String pos) {
         return mSentences.get(pos).toArray(new String[0]);
+    }
+
+    @Override
+    public String toString() {
+        return word;
     }
 }

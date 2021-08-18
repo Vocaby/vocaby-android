@@ -2,7 +2,6 @@ package com.vocaby.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,13 +9,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
+
+import com.vocaby.app.adapters.SavesAdapter;
 
 import java.util.List;
 
@@ -50,7 +48,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         String token = sharedPref.getString(ctx.getString(R.string.token_key), "");
         if(!token.isEmpty()) {
             TextView status = view.findViewById(R.id.network_status_text);
-            status.setText("Synced");
+            status.setText(getString(R.string.synced));
             View indicator = view.findViewById(R.id.network_indicator);
             indicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
         }
@@ -81,7 +79,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         .setCustomAnimations(
                 R.anim.enter_left_to_right,
                 R.anim.exit_left_to_right
-        ).replace(R.id.fragment_container, HomeFragment.newInstance(search), "HOME").commit();
+        ).replace(R.id.fragment_container, DictionaryFragment.newInstance(search), "HOME").commit();
 
         ((MainActivity)requireActivity()).changePrevPage(R.id.search);
     }

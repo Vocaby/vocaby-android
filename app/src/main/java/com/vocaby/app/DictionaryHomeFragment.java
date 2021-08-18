@@ -8,8 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,34 +18,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.database.DatabaseManager;
+import com.vocaby.app.models.Word;
 
 import java.util.List;
 
-public class SearchFragment extends Fragment implements SearchAdapter.OnItemTouchListener {
+public class DictionaryHomeFragment extends Fragment implements SearchHistoryAdapter.OnItemTouchListener {
     private DataManager dataManager;
     private Context ctx;
-    private SearchAdapter searchAdapter;
+    private SearchHistoryAdapter searchHistoryAdapter;
     public static final String RADIO_DATASET_CHANGED = "com.vocaby.app.RADIO_DATASET_CHANGED";
     private Radio radio;
 
     @Override
     public void onItemTouch(int position) {
         String word = dataManager.getHistory().get(position);
-        HomeFragment fragment = (HomeFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("HOME");
-        fragment.addResultsFragment(word, false);
+        DictionaryFragment fragment = (DictionaryFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("HOME");
+        fragment.addResultsFragment(word,false);
     }
 
     private class Radio extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(RADIO_DATASET_CHANGED)){
-                searchAdapter.notifyDataSetChanged();
+                searchHistoryAdapter.notifyDataSetChanged();
             }
         }
     }
 
-    public SearchFragment() {
+    public DictionaryHomeFragment() {
         // Required empty public constructor
     }
 
@@ -62,7 +62,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemTouc
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_dictionary_main, container, false);
 
         // Random Word of the Day
         TextView wordView = view.findViewById(R.id.word_header);
@@ -83,7 +83,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemTouc
         sentence.setText(wordData.getSentences(pos)[0]);
 
         wordBox.setOnClickListener(v -> {
-            HomeFragment fragment = (HomeFragment) this.getParentFragment();
+            DictionaryFragment fragment = (DictionaryFragment) this.getParentFragment();
             fragment.addResultsFragment(wordData.getWord(), true);
         });
 
@@ -92,8 +92,8 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemTouc
         List<String> history = dataManager.getHistory();
         TextView historyAlert = view.findViewById(R.id.history_alert);
         RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
-        searchAdapter = new SearchAdapter(ctx, dataManager.getHistory(), this);
-        historyContainer.setAdapter(searchAdapter);
+        searchHistoryAdapter = new SearchHistoryAdapter(ctx, dataManager.getHistory(), this);
+        historyContainer.setAdapter(searchHistoryAdapter);
         historyContainer.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
         historyContainer.setLayoutManager(new LinearLayoutManager(ctx) {
             @Override

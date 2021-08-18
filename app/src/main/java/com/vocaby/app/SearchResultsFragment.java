@@ -9,7 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,7 +25,11 @@ import android.widget.Toast;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.vocaby.app.database.DatabaseManager;
+import com.vocaby.app.adapters.DefinitionsAdapter;
+import com.vocaby.app.api.RequestManager;
+import com.vocaby.app.models.Word;
+import com.vocaby.app.utils.NetworkManager;
+import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 
 import org.json.JSONObject;
@@ -48,6 +53,9 @@ public class SearchResultsFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private ProgressBar saveProgress;
+
+    DictionaryViewModel dictionaryViewModel;
+    Observer<Word> observer;
 
     public SearchResultsFragment() {
         // Required empty public constructor
@@ -77,9 +85,8 @@ public class SearchResultsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        HomeFragment fragment = (HomeFragment) getParentFragment();
+        DictionaryFragment fragment = (DictionaryFragment) getParentFragment();
         assert fragment != null;
-        fragment.resetSearch();
     }
 
     @Override
@@ -108,9 +115,43 @@ public class SearchResultsFragment extends Fragment {
         saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
         recyclerView = view.findViewById(R.id.definitions_recycler_container);
         recyclerView.setEnabled(false);
-
-        search(searchedWord);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+        dictionaryViewModel.retrieveWordDataFromRepo(searchedWord, NetworkManager.isConnectedToInternet(ctx));
+
+        observer = wordData -> {
+            if (wordData != null && wordData.toString().equals(searchedWord)) {
+                if(!fromSaves) {
+                    // Only write to history when user searches for the definition
+                    // Not when the user looks up definition through saved words
+                    dataManager.writeHistory(searchedWord);
+                    Intent intent = new Intent(DictionaryHomeFragment.RADIO_DATASET_CHANGED);
+                    ctx.sendBroadcast(intent);
+                }
+
+                if(wordData.isEmpty()) {
+                    populateNoDefinition();
+                } else {
+                    populateView(wordData);
+                }
+
+                dictionaryViewModel.getWordData().removeObserver(observer);
+            }
+        };
+
+        dictionaryViewModel.getWordData().observe(getViewLifecycleOwner(), observer);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        dictionaryViewModel.getWordData().removeObserver(observer);
+        dictionaryViewModel.setSearch("");
     }
 
     private void populateView(Word wordData) {
@@ -118,7 +159,6 @@ public class SearchResultsFragment extends Fragment {
         word.setText(searchedWord);
         saveButton.setVisibility(View.VISIBLE);
         saveButton.setEnabled(true);
-        Toast.makeText(ctx, "Fetched data from database", Toast.LENGTH_SHORT);
 
         String pronunciationText = wordData.getPronunciation().replaceAll("\n","");
         if(pronunciationText.isEmpty()) {
@@ -138,75 +178,6 @@ public class SearchResultsFragment extends Fragment {
         word.setText(getResources().getString(R.string.no_definition_found));
         pronunciation.setVisibility(View.GONE);
     }
-
-
-    private void search(String searchedWord) {
-        if(!fromSaves) {
-            // Only write to history when user searches for the definition
-            // Not when the user looks up definition through saved words
-            dataManager.writeHistory(searchedWord);
-            Intent intent = new Intent(SearchFragment.RADIO_DATASET_CHANGED);
-            ctx.sendBroadcast(intent);
-        }
-
-        Toast.makeText(ctx, "Fetching data from database", Toast.LENGTH_SHORT).show();
-        DatabaseManager databaseManager = DatabaseManager.getInstance(ctx);
-        Word wordData = databaseManager.getWordData(searchedWord);
-
-        if(wordData != null) {
-            populateView(wordData);
-        } else {
-            // Only get data from API if the word doesn't exist in the local database
-            // and the phone has internet access
-            if(NetworkManager.isConnectedToInternet(ctx)) {
-                Toast.makeText(ctx, "Fetching data from API", Toast.LENGTH_SHORT).show();
-                RequestManager requestManager = RequestManager.getInstance(ctx);
-                requestManager.getDefinition(searchedWord, definitionListenerResponse, definitionListenerError);
-            } else {
-                populateNoDefinition();
-            }
-        }
-    }
-
-    private final Response.Listener<JSONObject> definitionListenerResponse = new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
-            try {
-                WordService service = new WordService(searchedWord, response);
-                service.parse();
-                if(service.wasSuccessful()) {
-                    Word data = service.getWordData();
-                    populateView(data);
-                    try {
-                        // Write to database instead of file
-                        dataManager.writeData(data);
-                    } catch(IOException e) {
-                        Toast.makeText(ctx, "Something went wrong while storing data", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    if(service.getCode() == -1) {
-                        populateNoDefinition();
-                    } else {
-                        throw new IllegalStateException();
-                    }
-                }
-            } catch (IllegalStateException e) {
-                Toast.makeText(ctx, "Something went wrong while parsing...", Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
-    private final Response.ErrorListener definitionListenerError = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            if(error.networkResponse != null && error.networkResponse.data!=null) {
-                String body = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-                Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
 
     private final View.OnClickListener backListener = v -> requireActivity().onBackPressed();
 

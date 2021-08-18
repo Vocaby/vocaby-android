@@ -3,11 +3,14 @@ package com.vocaby.app;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,20 +20,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.vocaby.app.models.Word;
+import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 
-public class HomeFragment extends Fragment {
+public class DictionaryFragment extends Fragment {
     private static final String WORD = "word";
 
     private String sentText;
-    private String prevWord;
+    private DictionaryViewModel dictionaryViewModel;
+    private Observer<String> searchObserver;
+    private String searchedWord;
 
-    public HomeFragment() {
+    public DictionaryFragment() {
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance(String word) {
-        HomeFragment fragment = new HomeFragment();
+    public static DictionaryFragment newInstance(String word) {
+        DictionaryFragment fragment = new DictionaryFragment();
         Bundle args = new Bundle();
         args.putSerializable(WORD, word);
         fragment.setArguments(args);
@@ -54,8 +61,8 @@ public class HomeFragment extends Fragment {
         EditText search = view.findViewById(R.id.search_bar);
         search.setOnEditorActionListener(searchEditorListener);
 
-        getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container, new SearchFragment()).commit();
-        prevWord = "";
+        getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container,
+                new DictionaryHomeFragment()).commit();
 
         // Coming from the saves fragment
         if(sentText.length() > 0) {
@@ -69,8 +76,26 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+        searchObserver = s -> {
+            if(!s.isEmpty()) {
+                addResultsFragment(s, false);
+            }
+        };
+
+        dictionaryViewModel.getSearch().observe(requireActivity(), searchObserver);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        dictionaryViewModel.getSearch().removeObserver(searchObserver);
+    }
+
     public void addResultsFragment(String word, boolean ignoreHistory) {
-        prevWord = word;
         Fragment fragment = SearchResultsFragment.newInstance(word, ignoreHistory);
         FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
@@ -82,28 +107,22 @@ public class HomeFragment extends Fragment {
                 R.anim.exit_top_to_bottom
         );
 
-        transaction.add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT").commit();
+        transaction
+                .add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT")
+                .commit();
     }
 
     private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
-        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) requireActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         v.clearFocus();
         if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-            // Clean up text a little bit
-            String searchedText = v.getText().toString().toLowerCase().replaceAll("[^a-z]","");
-            // Prevent double searching
-            if(!searchedText.isEmpty() && !prevWord.equals(searchedText)) {
-                addResultsFragment(searchedText, false);
-            }
-
+            searchedWord = v.getText().toString().toLowerCase().replaceAll("[^a-z]","");
+            dictionaryViewModel.setSearch(searchedWord);
             return true;
         }
 
         return false;
     };
-
-    public void resetSearch() {
-        prevWord = "";
-    }
 }

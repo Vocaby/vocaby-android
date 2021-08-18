@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,6 +8,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.vocaby.app.R;
 
 import org.json.JSONObject;
 

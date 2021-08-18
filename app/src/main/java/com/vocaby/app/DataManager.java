@@ -3,6 +3,8 @@ package com.vocaby.app;
 import android.content.Context;
 import android.util.Log;
 
+import com.vocaby.app.models.Word;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -152,13 +154,5 @@ public class DataManager {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(wordMap);
         }
-    }
-
-    public Word getData(String word) {
-        return wordMap.get(word);
-    }
-
-    public boolean hasWord(String word) {
-        return wordMap.containsKey(word);
     }
 }

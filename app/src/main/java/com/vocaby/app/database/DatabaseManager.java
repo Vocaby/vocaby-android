@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.vocaby.app.Word;
+import com.vocaby.app.models.Word;
 
 public class DatabaseManager {
     private final SQLiteOpenHelper openHelper;
@@ -117,6 +117,6 @@ public class DatabaseManager {
     }
 
     private int getRandomNumber(int max) {
-        return (int) ((Math.random() * (max - 0)) + 0);
+        return (int) ((Math.random() * max));
     }
 }

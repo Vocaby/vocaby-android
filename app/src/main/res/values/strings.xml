@@ -56,4 +56,5 @@
     <string name="unsynced">Unsynced</string>
     <string name="local">Local</string>
     <string name="random_word_of_the_day">RANDOM WORD OF THE DAY</string>
+    <string name="synced">Synced</string>
 </resources>

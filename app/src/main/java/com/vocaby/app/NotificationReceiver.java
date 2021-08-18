@@ -12,6 +12,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import com.vocaby.app.database.DatabaseManager;
+import com.vocaby.app.models.Word;
 
 import java.util.List;
 
@@ -71,13 +72,11 @@ public class NotificationReceiver extends BroadcastReceiver {
     }
 
     private void createNotificationChannel(NotificationManager notificationManager) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Vocaby Notification";
-            String description = "Vocaby Notification";
-            int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            notificationManager.createNotificationChannel(channel);
-        }
+        CharSequence name = "Vocaby Notification";
+        String description = "Vocaby Notification";
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+        notificationManager.createNotificationChannel(channel);
     }
 }

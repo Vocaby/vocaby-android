@@ -1,5 +1,7 @@
 package com.vocaby.app;
 
+import com.vocaby.app.models.Word;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

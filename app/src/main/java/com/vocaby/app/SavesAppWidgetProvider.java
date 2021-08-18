@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import com.vocaby.app.database.DatabaseManager;
+import com.vocaby.app.models.Word;
 
 import java.util.List;
 
