@@ -1,5 +1,6 @@
 package com.vocaby.app.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +16,12 @@ import com.vocaby.app.R;
 import com.vocaby.app.models.Word;
 
 public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.DefinitionsViewHolder> {
-    private final Word wordData;
-    private final String[] allowedPos;
+    private Word wordData;
     private final Context ctx;
 
-    public DefinitionsAdapter(Context ctx, Word wordData) {
-        this.wordData = wordData;
+    public DefinitionsAdapter(Context ctx) {
         this.ctx = ctx;
-
-        allowedPos = wordData.getAllowedPos();
+        wordData = null;
     }
 
     @NonNull
@@ -34,38 +32,46 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
         return new DefinitionsViewHolder(view);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    public void setWordData(Word wordData) {
+        this.wordData = wordData;
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull DefinitionsAdapter.DefinitionsViewHolder holder, int position) {
-        String selectedPos = allowedPos[position];
-        String[] definitions = wordData.getDefinitions(selectedPos);
-        String[] sentences = wordData.getSentences(selectedPos);
-        holder.pos.setText(selectedPos);
+        if(wordData != null) {
+            String selectedPos = wordData.getAllowedPos()[position];
+            String[] definitions = wordData.getDefinitions(selectedPos);
+            String[] sentences = wordData.getSentences(selectedPos);
+            holder.pos.setText(selectedPos);
 
-        LayoutInflater inflater = LayoutInflater.from(ctx);
-        for(int i = 0; i < definitions.length; i++) {
-            String def = definitions[i];
-            String sen = sentences[i];
-            CardView card = (CardView) inflater.inflate(R.layout.definition_row, null);
-            TextView definition = card.findViewById(R.id.definition);
-            TextView sentence = card.findViewById(R.id.sentence);
-            TextView counter = card.findViewById(R.id.definition_counter);
+            LayoutInflater inflater = LayoutInflater.from(ctx);
+            for(int i = 0; i < definitions.length; i++) {
+                String def = definitions[i];
+                String sen = sentences[i];
+                CardView card = (CardView) inflater.inflate(R.layout.definition_row, null);
+                TextView definition = card.findViewById(R.id.definition);
+                TextView sentence = card.findViewById(R.id.sentence);
+                TextView counter = card.findViewById(R.id.definition_counter);
 
-            if(sen.length() > 0) {
-                sentence.setText(sen);
-            } else {
-                sentence.setVisibility(View.GONE);
+                if(sen.length() > 0) {
+                    sentence.setText(sen);
+                } else {
+                    sentence.setVisibility(View.GONE);
+                }
+
+                String numbering = i+1 + ". ";
+                counter.setText(numbering);
+                definition.setText(def);
+                holder.definitionContainer.addView(card);
             }
-
-
-            counter.setText(i+1 + ". ");
-            definition.setText(def);
-            holder.definitionContainer.addView(card);
         }
     }
 
     @Override
     public int getItemCount() {
-        return allowedPos.length;
+        return wordData == null ? 0 : wordData.getAllowedPos().length;
     }
 
     public static class DefinitionsViewHolder extends RecyclerView.ViewHolder {

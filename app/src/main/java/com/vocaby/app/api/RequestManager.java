@@ -8,12 +8,19 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.vocaby.app.R;
+import com.vocaby.app.models.Word;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RequestManager {
     private static RequestManager instance = null;
@@ -36,6 +43,7 @@ public class RequestManager {
 
         return instance;
     }
+
 
     public void getDefinition(String word, Response.Listener<JSONObject> listenerResponse, Response.ErrorListener listenerError) {
         JsonObjectRequest r = new JsonObjectRequest(Request.Method.GET, ctx.getString(R.string.dictionary_url) + word, null, listenerResponse, listenerError) {

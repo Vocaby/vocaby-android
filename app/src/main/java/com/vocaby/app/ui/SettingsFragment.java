@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.vocaby.app.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 

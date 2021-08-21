@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -22,6 +22,8 @@ import android.widget.EditText;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.vocaby.app.NotificationReceiver;
+import com.vocaby.app.R;
 import com.vocaby.app.database.DatabaseManager;
 
 import java.util.Calendar;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         Bugsnag.start(this);
 
@@ -66,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         databaseManager.openDatabase();
 
         prevPage = R.id.search;
-        setContentView(R.layout.activity_main);
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setOnItemSelectedListener(navListener);
         navigationView.bringToFront();

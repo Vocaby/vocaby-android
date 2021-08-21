@@ -1,5 +1,6 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.vocaby.app.DataManager;
+import com.vocaby.app.R;
 import com.vocaby.app.adapters.DefinitionsAdapter;
 import com.vocaby.app.api.RequestManager;
 import com.vocaby.app.models.Word;
@@ -51,6 +55,7 @@ public class SearchResultsFragment extends Fragment {
     private TextView word;
     private TextView pronunciation;
     private RecyclerView recyclerView;
+    private DefinitionsAdapter adapter;
     private ProgressBar progressBar;
     private ProgressBar saveProgress;
 
@@ -105,6 +110,7 @@ public class SearchResultsFragment extends Fragment {
         saveProgress = view.findViewById(R.id.save_progress);
         saveProgress.setVisibility(View.INVISIBLE);
         Drawable icon;
+
         if(dataManager.hasSave(searchedWord)) {
             icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
             saveButton.setText(ctx.getString(R.string.save_button_saved));
@@ -112,12 +118,18 @@ public class SearchResultsFragment extends Fragment {
             icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
             saveButton.setText(getResources().getString(R.string.save_button_unsaved));
         }
+
         saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
         recyclerView = view.findViewById(R.id.definitions_recycler_container);
         recyclerView.setEnabled(false);
+        adapter = new DefinitionsAdapter(ctx);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+
         return view;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -125,6 +137,7 @@ public class SearchResultsFragment extends Fragment {
         dictionaryViewModel.retrieveWordDataFromRepo(searchedWord, NetworkManager.isConnectedToInternet(ctx));
 
         observer = wordData -> {
+            Log.d("SearchResults", "Observing");
             if (wordData != null && wordData.toString().equals(searchedWord)) {
                 if(!fromSaves) {
                     // Only write to history when user searches for the definition
@@ -138,9 +151,8 @@ public class SearchResultsFragment extends Fragment {
                     populateNoDefinition();
                 } else {
                     populateView(wordData);
+                    adapter.setWordData(wordData);
                 }
-
-                dictionaryViewModel.getWordData().removeObserver(observer);
             }
         };
 
@@ -150,7 +162,6 @@ public class SearchResultsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        dictionaryViewModel.getWordData().removeObserver(observer);
         dictionaryViewModel.setSearch("");
     }
 
@@ -167,10 +178,6 @@ public class SearchResultsFragment extends Fragment {
             pronunciation.setVisibility(View.VISIBLE);
             pronunciation.setText(pronunciationText);
         }
-
-        DefinitionsAdapter adapter = new DefinitionsAdapter(ctx, wordData);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
     }
 
     private void populateNoDefinition() {

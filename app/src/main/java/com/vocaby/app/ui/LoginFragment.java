@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.vocaby.app.DataManager;
+import com.vocaby.app.R;
 import com.vocaby.app.api.RequestManager;
 
 import org.json.JSONArray;
@@ -55,6 +57,9 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.profile_login, container, false);
+        Button backButton = view.findViewById(R.id.back_button);
+        backButton.setOnClickListener(backListener);
+
         emailView = view.findViewById(R.id.email_input);
         passwordView = view.findViewById(R.id.password_input);
         emailAlertView = view.findViewById(R.id.email_header_alert);
@@ -68,13 +73,13 @@ public class LoginFragment extends Fragment {
         signUpText.setOnClickListener(v -> getParentFragmentManager()
             .beginTransaction()
             .setCustomAnimations(
-                    R.anim.enter_right_to_left,
-                    R.anim.exit_left_to_right,
-                    R.anim.enter_right_to_left,
-                    R.anim.exit_left_to_right
+                R.anim.enter_right_to_left,
+                R.anim.exit_left_to_right,
+                R.anim.enter_right_to_left,
+                R.anim.exit_left_to_right
             )
-            .addToBackStack("login")
-            .add(R.id.fragment_container, new RegisterFragment(), "registration")
+            .addToBackStack(null)
+            .add(R.id.login_fragment_container, new RegisterFragment())
             .commit());
 
         return view;
@@ -157,7 +162,7 @@ public class LoginFragment extends Fragment {
                                 R.anim.enter_right_to_left,
                                 R.anim.exit_right_to_left
                         )
-                        .replace(R.id.fragment_container, new ProfileFragment())
+                        .replace(R.id.login_fragment_container, new ProfileFragment())
                         .commit();
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
@@ -205,4 +210,5 @@ public class LoginFragment extends Fragment {
         return newList;
     }
 
+    private final View.OnClickListener backListener = v -> requireActivity().finish();
 }

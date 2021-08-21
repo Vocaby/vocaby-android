@@ -1,10 +1,9 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,7 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.vocaby.app.models.Word;
+import com.vocaby.app.R;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 
@@ -29,8 +28,6 @@ public class DictionaryFragment extends Fragment {
 
     private String sentText;
     private DictionaryViewModel dictionaryViewModel;
-    private Observer<String> searchObserver;
-    private String searchedWord;
 
     public DictionaryFragment() {
         // Required empty public constructor
@@ -80,19 +77,13 @@ public class DictionaryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
-        searchObserver = s -> {
-            if(!s.isEmpty()) {
+        Observer<String> searchObserver = s -> {
+            if (!s.isEmpty()) {
                 addResultsFragment(s, false);
             }
         };
 
-        dictionaryViewModel.getSearch().observe(requireActivity(), searchObserver);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        dictionaryViewModel.getSearch().removeObserver(searchObserver);
+        dictionaryViewModel.getSearch().observe(getViewLifecycleOwner(), searchObserver);
     }
 
     public void addResultsFragment(String word, boolean ignoreHistory) {
@@ -118,7 +109,7 @@ public class DictionaryFragment extends Fragment {
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         v.clearFocus();
         if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-            searchedWord = v.getText().toString().toLowerCase().replaceAll("[^a-z]","");
+            String searchedWord = v.getText().toString().toLowerCase().replaceAll("[^a-z]", "");
             dictionaryViewModel.setSearch(searchedWord);
             return true;
         }

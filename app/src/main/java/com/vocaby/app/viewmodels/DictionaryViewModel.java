@@ -7,17 +7,18 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.android.volley.Response;
-import com.vocaby.app.WordService;
+import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.models.Word;
 import com.vocaby.app.repositories.DictionaryRepository;
 
-import org.json.JSONObject;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class DictionaryViewModel extends AndroidViewModel {
     private final DictionaryRepository dictionaryRepository;
     private final MutableLiveData<Word> mWordData;
-    private String searchedWord;
+    private final CompositeDisposable compositeDisposable;
     private final MutableLiveData<String> search;
 
     public DictionaryViewModel(Application application) {
@@ -25,6 +26,7 @@ public class DictionaryViewModel extends AndroidViewModel {
         search = new MutableLiveData<>();
         mWordData = new MutableLiveData<>();
         dictionaryRepository = new DictionaryRepository(application);
+        compositeDisposable = new CompositeDisposable();
     }
 
     public LiveData<String> getSearch() {
@@ -32,10 +34,10 @@ public class DictionaryViewModel extends AndroidViewModel {
     }
 
     public void setSearch(String word) {
-        if(search.getValue() == null) {
+        if (search.getValue() == null) {
             search.setValue(word);
         } else {
-            if(!search.getValue().equals(word)) {
+            if (!search.getValue().equals(word)) {
                 search.setValue(word);
             }
         }
@@ -46,33 +48,33 @@ public class DictionaryViewModel extends AndroidViewModel {
     }
 
     public void retrieveWordDataFromRepo(String word, boolean isConnectedToInternet) {
-        searchedWord = word;
         Word wordData = dictionaryRepository.getWordDataFromDatabase(word);
-        if(wordData == null) {
-            if(isConnectedToInternet) {
-                dictionaryRepository.getWordDataFromApi(word, apiListener);
+        if (wordData == null) {
+            if (isConnectedToInternet) {
+                // Get definition from the api
+                VocabyApiService vocabyApi = dictionaryRepository.getVocabyApiService();
+                compositeDisposable.add(
+                    vocabyApi.getWordData(word)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    mWordData::setValue,
+                                    onError -> Log.e("DVM", onError.getMessage())
+                            )
+                );
             } else {
-                mWordData.postValue(new Word(word));
+                // No definition in the database
+                mWordData.setValue(new Word(word));
             }
         } else {
-            mWordData.postValue(wordData);
+            // Get definition in the database
+            mWordData.setValue(wordData);
         }
     }
 
-    private final Response.Listener<JSONObject> apiListener = new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
-            WordService service = new WordService(searchedWord, response);
-            service.parse();
-            if(service.wasSuccessful()) {
-                Word wordData = service.getWordData();
-                if(wordData == null) {
-                    wordData = new Word(searchedWord);
-                }
-
-                mWordData.postValue(wordData);
-            } else {
-                mWordData.postValue(new Word(searchedWord));
-            }
-        }
-    };}
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        compositeDisposable.clear();
+    }
+}

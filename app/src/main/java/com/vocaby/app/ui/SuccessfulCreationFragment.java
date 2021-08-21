@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import android.os.Bundle;
 
@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.vocaby.app.R;
 
 public class SuccessfulCreationFragment extends Fragment {
 

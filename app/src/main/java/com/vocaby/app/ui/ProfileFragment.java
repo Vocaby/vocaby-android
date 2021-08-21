@@ -1,11 +1,16 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +24,10 @@ import android.widget.Toast;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.vocaby.app.R;
 import com.vocaby.app.api.RequestManager;
+import com.vocaby.app.models.User;
+import com.vocaby.app.viewmodels.UserViewModel;
 
 import org.json.JSONObject;
 
@@ -27,7 +35,9 @@ import java.nio.charset.StandardCharsets;
 
 public class ProfileFragment extends Fragment {
     private Context ctx;
-    private Button logoutButton;
+    private Button loginoutButton;
+    private UserViewModel userViewModel;
+    private TextView currentUserName;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -43,41 +53,46 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        currentUserName = view.findViewById(R.id.current_user);
+
         ImageButton navButton = view.findViewById(R.id.settings_button);
         navButton.setOnClickListener(v -> ((MainActivity)requireActivity()).showSettings());
 
-        logoutButton = view.findViewById(R.id.logout_button);
-        logoutButton.setOnClickListener(v -> logout());
+        loginoutButton = view.findViewById(R.id.loginout_button);
 
         InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        SharedPreferences sharedPref = ctx.getSharedPreferences(getString(R.string.token_key), Context.MODE_PRIVATE);
-        String token = sharedPref.getString(getString(R.string.token_key), "");
-
-        sharedPref = ctx.getSharedPreferences(getString(R.string.email), Context.MODE_PRIVATE);
-        String email = sharedPref.getString(getString(R.string.email), "");
-        TextView currentUser = view.findViewById(R.id.current_user);
-        currentUser.setText(email);
-
-        if (token.isEmpty()) {
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(
-                            R.anim.enter_right_to_left,
-                            R.anim.exit_right_to_left,
-                            R.anim.enter_right_to_left,
-                            R.anim.exit_right_to_left
-                    )
-                    .replace(R.id.fragment_container, new LoginFragment())
-                    .commit();
-        }
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        Observer<User> userObserver = user -> {
+            currentUserName.setText(user.getUsername());
+
+            if(user.isLoggedIn()) {
+                loginoutButton.setText(getString(R.string.log_out));
+                loginoutButton.setOnClickListener(v -> logout());
+            } else {
+                loginoutButton.setText(getString(R.string.log_in));
+                loginoutButton.setOnClickListener(v -> login());
+            }
+        };
+
+        userViewModel.getUser().observe(getViewLifecycleOwner(), userObserver);
     }
 
     private void logout() {
         RequestManager requestManager = RequestManager.getInstance(ctx);
         requestManager.makeLogoutRequest(logoutListenerResponse, logoutListenerError);
+    }
+
+    private void login() {
+        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        startActivity(intent);
     }
 
     private final Response.Listener<JSONObject> logoutListenerResponse = new Response.Listener<JSONObject>() {
@@ -103,7 +118,7 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
             }
 
-            logoutButton.setEnabled(true);
+            loginoutButton.setEnabled(true);
         }
     };
 }

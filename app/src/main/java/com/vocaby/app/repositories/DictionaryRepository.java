@@ -7,10 +7,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.android.volley.Response;
 import com.vocaby.app.api.ApiManager;
+import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.database.DatabaseManager;
 import com.vocaby.app.models.Word;
 
 import org.json.JSONObject;
+
+import io.reactivex.rxjava3.core.Observable;
 
 public class DictionaryRepository {
     private DatabaseManager databaseManager;
@@ -18,7 +21,7 @@ public class DictionaryRepository {
 
     public DictionaryRepository(Application application) {
         databaseManager = DatabaseManager.getInstance(application);
-        apiManager = ApiManager.getInstance(application);
+        apiManager = ApiManager.getInstance();
     }
 
     public Word getWordDataFromDatabase(String word) {
@@ -28,7 +31,7 @@ public class DictionaryRepository {
         return data;
     }
 
-    public void getWordDataFromApi(String word, Response.Listener<JSONObject> apiListener) {
-        apiManager.getWordData(word, apiListener);
+    public VocabyApiService getVocabyApiService() {
+        return apiManager.getVocabyApiService();
     }
 }

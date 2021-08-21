@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.vocaby.app.DataManager;
+import com.vocaby.app.R;
 import com.vocaby.app.api.RequestManager;
 
 import org.json.JSONArray;
@@ -152,7 +154,7 @@ public class RegisterFragment extends Fragment {
                         R.anim.enter_right_to_left,
                         R.anim.exit_left_to_right
                 )
-                .add(R.id.fragment_container, new SuccessfulCreationFragment())
+                .add(R.id.login_fragment_container, new SuccessfulCreationFragment())
                 .commit();
     };
 
@@ -183,5 +185,5 @@ public class RegisterFragment extends Fragment {
         }
     };
 
-    private final View.OnClickListener backListener = v -> requireActivity().onBackPressed();
+    private final View.OnClickListener backListener = v -> getParentFragmentManager().popBackStack();
 }

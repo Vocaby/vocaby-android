@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.vocaby.app.DataManager;
+import com.vocaby.app.R;
 import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.database.DatabaseManager;
 import com.vocaby.app.models.Word;

@@ -20,4 +20,13 @@
         <item name="android:textColor">@color/black</item>
         <item name="android:textColorPrimary">@color/black</item>
     </style>
+
+    <style name="Theme.VocabyAndroid.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.VocabyAndroid.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

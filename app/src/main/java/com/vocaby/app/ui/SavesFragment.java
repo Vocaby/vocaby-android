@@ -1,4 +1,4 @@
-package com.vocaby.app;
+package com.vocaby.app.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.vocaby.app.DataManager;
+import com.vocaby.app.R;
 import com.vocaby.app.adapters.SavesAdapter;
 
 import java.util.List;

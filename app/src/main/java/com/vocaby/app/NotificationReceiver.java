@@ -7,12 +7,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
 import com.vocaby.app.database.DatabaseManager;
 import com.vocaby.app.models.Word;
+import com.vocaby.app.ui.MainActivity;
 
 import java.util.List;
 
