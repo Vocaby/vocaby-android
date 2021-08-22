@@ -38,10 +38,9 @@ public class UserRepository {
         dataManager.setUser(user);
     }
 
-    public UserModel deleteUser() throws IOException {
+    public void deleteUser() throws IOException {
         user = new UserModel();
         dataManager.setUser(user);
-        return user;
     }
 
     public String getUsername() {

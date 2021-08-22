@@ -46,8 +46,13 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         this.ctx = ctx;
         dataManager = DataManager.getInstance(ctx);
         this.saves = dataManager.getUser().getSavedWords();
-        this.saves = new ArrayList<>();
         builder = new AlertDialog.Builder(activity);
+    }
+
+    public void updateSavedWords(List<String> newSavedWords) {
+        saves.clear();
+        saves.addAll(newSavedWords);
+        this.notifyDataSetChanged();
     }
 
     @NonNull

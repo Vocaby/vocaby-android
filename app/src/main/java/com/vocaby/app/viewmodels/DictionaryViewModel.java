@@ -49,7 +49,6 @@ public class DictionaryViewModel extends AndroidViewModel {
     }
 
     public void retrieveWordDataFromRepo(String searched, boolean isConnectedToInternet) {
-        Log.d("Retrieving", searched);
         WordModel wordModelData = dictionaryRepository.getWordDataFromDatabase(searched);
         if (wordModelData == null) {
             if (isConnectedToInternet) {
@@ -61,10 +60,7 @@ public class DictionaryViewModel extends AndroidViewModel {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     // onSuccess
-                                    wordData -> {
-                                        Log.d("GotFromApi", wordData.getWord());
-                                        mWordData.setValue(wordData);
-                                    },
+                                    mWordData::setValue,
                                     // onError
                                     onError -> Log.e("DVM", onError.getMessage())
                             )
@@ -74,7 +70,6 @@ public class DictionaryViewModel extends AndroidViewModel {
                 mWordData.setValue(new WordModel(searched));
             }
         } else {
-            Log.d("Got", wordModelData.getWord());
             // Get definition in the database
             mWordData.setValue(wordModelData);
         }

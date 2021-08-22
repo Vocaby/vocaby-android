@@ -47,6 +47,7 @@ public class UserViewModel extends AndroidViewModel {
 
     public void refreshUser() {
         mUserModel.setValue(userRepository.getUser());
+        mSavedWords.setValue(userRepository.getSaves());
     }
 
     public LiveData<UserModel> getUser() {
@@ -96,12 +97,10 @@ public class UserViewModel extends AndroidViewModel {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString(TOKEN_KEY, "");
                             editor.apply();
-                            UserModel guest = userRepository.deleteUser();
-                            mUserModel.setValue(guest);
+                            userRepository.deleteUser();
+                            refreshUser();
                             Log.d("Logout", "Successful");
-                        }, throwable -> {
-                            Log.d("Logout", throwable.getMessage());
-                        })
+                        }, throwable -> { Log.d("Logout", throwable.getMessage()); })
             );
         }
     }

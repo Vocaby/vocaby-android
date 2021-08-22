@@ -66,7 +66,6 @@ public class SearchResultsFragment extends Fragment {
             fromSaves = getArguments().getBoolean(FROM_SAVES);
         }
 
-        Log.d("SearchResults", searchedWord);
         ctx = requireActivity().getApplicationContext();
         dataManager = DataManager.getInstance(ctx);
     }
@@ -120,18 +119,15 @@ public class SearchResultsFragment extends Fragment {
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         dictionaryViewModel.retrieveWordDataFromRepo(searchedWord, NetworkManager.isConnectedToInternet(ctx));
         observer = wordData -> {
-            Log.d("SearchResults", "Observing");
             if (wordData != null) {
                 if(!fromSaves) {
                     // Only write to history when user searches for the definition
                     // Not when the user looks up definition through saved words
-                    Log.d("SearchResultsHistory", searchedWord);
                     dataManager.writeHistory(searchedWord);
                     Intent intent = new Intent(DictionaryHomeFragment.RADIO_DATASET_CHANGED);
                     ctx.sendBroadcast(intent);
                 }
 
-                Log.d("SearchFound", searchedWord);
                 if(wordData.isEmpty()) {
                     populateNoDefinition();
                 } else {
@@ -140,8 +136,6 @@ public class SearchResultsFragment extends Fragment {
                 }
 
                 dictionaryViewModel.getWordData().removeObserver(observer);
-            } else {
-                Log.d("SearchResults", "Word data is null");
             }
         };
 

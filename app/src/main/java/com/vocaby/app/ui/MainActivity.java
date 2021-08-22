@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private PendingIntent pendingIntent;
     private DatabaseManager databaseManager;
     private UserViewModel userViewModel;
+    private ViewPager2 viewPager;
 
     @Override
     protected void onResume() {
@@ -72,44 +73,24 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
 
         updateRandomWordIndex();
-
-        // Notification
-        String notifiedWord = getIntent().getStringExtra("com.vocaby.app.openAndSearch");
-        if(notifiedWord != null) {
-            if(!notifiedWord.equals("No Saved Words")) {
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.nav_host_fragment, DictionaryFragment.newInstance(), "HOME")
-//                        .commit();
-            } else {
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.nav_host_fragment, DictionaryFragment.newInstance(), "HOME")
-//                        .commit();
-            }
-        } else {
-            // Home
-        }
     }
 
     private void setupNavigation() {
-        ViewPager2 viewPager = findViewById(R.id.fragment_container);
+        viewPager = findViewById(R.id.fragment_container);
         viewPager.setAdapter(new FragmentAdapter(this));
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.dictionaryFragment:
-                    viewPager.setCurrentItem(0);
-                    break;
-                case R.id.savesFragment:
-                    viewPager.setCurrentItem(1);
-                    break;
-                case R.id.profileFragment:
-                    viewPager.setCurrentItem(2);
-                    break;
+            int current = item.getItemId();
+            if(current == R.id.profileFragment) {
+                viewPager.setCurrentItem(2);
+            } else if(current == R.id.savesFragment) {
+                viewPager.setCurrentItem(1);
+            } else {
+                viewPager.setCurrentItem(0);
             }
-            return false;
-        })  ;
+
+            return true;
+        }) ;
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -205,5 +186,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancelAll();
         }
+    }
+
+    public void showDefinition(String word) {
+        viewPager.setCurrentItem(0);
+        DictionaryFragment dictionaryFragment = (DictionaryFragment) getSupportFragmentManager().findFragmentByTag("f0");
+        dictionaryFragment.addResultsFragment(word, true);
     }
 }

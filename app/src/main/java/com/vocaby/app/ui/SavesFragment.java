@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     private TextView savesCount;
     private SavesAdapter savesAdapter;
     private RecyclerView recyclerView;
+
+    private UserViewModel userViewModel;
 
     public SavesFragment() {
         // Required empty public constructor
@@ -68,6 +71,16 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        userViewModel.getSavedWords().observe(getViewLifecycleOwner(), savedWords -> {
+            savesAdapter.updateSavedWords(savedWords);
+            setSavesCount(savedWords.size());
+        });
+    }
+
     public void setSavesCount(int size) {
         savesCount.setText(String.valueOf(size));
     }
@@ -79,13 +92,6 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
 
     @Override
     public void onItemTouch(int position) {
-        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-        FragmentManager fm = requireActivity().getSupportFragmentManager();
-        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fm.beginTransaction()
-        .setCustomAnimations(
-                R.anim.enter_left_to_right,
-                R.anim.exit_left_to_right
-        ).replace(R.id.fragment_container, DictionaryFragment.newInstance(), "HOME").commit();
+        ((MainActivity) requireActivity()).showDefinition(userViewModel.getSaveItem(position));
     }
 }

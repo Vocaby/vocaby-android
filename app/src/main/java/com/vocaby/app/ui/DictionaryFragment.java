@@ -10,7 +10,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vocaby.app.R;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 
@@ -39,12 +37,6 @@ public class DictionaryFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +59,6 @@ public class DictionaryFragment extends Fragment {
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         Observer<String> searchObserver = s -> {
             if(!s.isEmpty()) {
-                Log.d("Dictionary", s);
                 addResultsFragment(s, false);
             }
         };
@@ -76,7 +67,6 @@ public class DictionaryFragment extends Fragment {
     }
 
     public void addResultsFragment(String search, boolean ignoreHistory) {
-        Log.d("Dictionary2", search);
         Fragment fragment = SearchResultsFragment.newInstance(search, ignoreHistory);
         FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
