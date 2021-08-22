@@ -1,6 +1,6 @@
 package com.vocaby.app;
 
-import com.vocaby.app.models.Word;
+import com.vocaby.app.models.WordModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,12 +10,12 @@ import java.util.Iterator;
 
 public class WordService {
     private final JSONObject json;
-    private final Word word;
+    private final WordModel wordModel;
     private boolean success;
     private int code;
 
     public WordService(String word, JSONObject json) {
-        this.word = new Word(word);
+        this.wordModel = new WordModel(word);
         this.json = json;
         success = false;
         code = 0;
@@ -30,7 +30,7 @@ public class WordService {
             } else {
                 success = true;
                 String pronunciation = json.getString("pronunciation");
-                word.setPronunciation(pronunciation);
+                wordModel.setPronunciation(pronunciation);
                 JSONObject data = json.getJSONObject("definitions");
                 for (Iterator<String> it = data.keys(); it.hasNext(); ) {
                     String key = it.next();
@@ -38,8 +38,8 @@ public class WordService {
                     for(int i = 0; i < definitions.length() ; i++) {
                         String definition = definitions.getJSONObject(i).getString("definition");
                         String sentence = definitions.getJSONObject(i).getString("sentence");
-                        word.addDefinition(key, definition);
-                        word.addSentence(key, sentence);
+                        wordModel.addDefinition(key, definition);
+                        wordModel.addSentence(key, sentence);
                     }
 
                 }
@@ -49,8 +49,8 @@ public class WordService {
         }
     }
 
-    public Word getWordData() {
-        return word;
+    public WordModel getWordData() {
+        return wordModel;
     }
 
     public boolean wasSuccessful() {

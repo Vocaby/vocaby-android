@@ -1,10 +1,15 @@
 package com.vocaby.app.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
@@ -14,6 +19,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -22,9 +28,11 @@ import android.widget.EditText;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.vocaby.app.FragmentAdapter;
 import com.vocaby.app.NotificationReceiver;
 import com.vocaby.app.R;
 import com.vocaby.app.database.DatabaseManager;
+import com.vocaby.app.viewmodels.UserViewModel;
 
 import java.util.Calendar;
 
@@ -32,25 +40,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
     private DatabaseManager databaseManager;
-    private int prevPage;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .unregisterOnSharedPreferenceChangeListener(this);
-    }
+    private UserViewModel userViewModel;
 
     @Override
     protected void onResume() {
         super.onResume();
+        userViewModel.refreshUser();
+        userViewModel.refreshLoginStatus();
         updateRandomWordIndex();
     }
 
@@ -61,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         Bugsnag.start(this);
 
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -68,10 +66,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         databaseManager = DatabaseManager.getInstance(getApplicationContext());
         databaseManager.openDatabase();
 
-        prevPage = R.id.search;
-        BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
-        navigationView.setOnItemSelectedListener(navListener);
-        navigationView.bringToFront();
+        setupNavigation();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
 
         updateRandomWordIndex();
 
@@ -79,25 +77,47 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         String notifiedWord = getIntent().getStringExtra("com.vocaby.app.openAndSearch");
         if(notifiedWord != null) {
             if(!notifiedWord.equals("No Saved Words")) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, DictionaryFragment.newInstance(notifiedWord), "HOME")
-                        .commit();
+//                getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .replace(R.id.nav_host_fragment, DictionaryFragment.newInstance(), "HOME")
+//                        .commit();
             } else {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, DictionaryFragment.newInstance(""), "HOME")
-                        .commit();
+//                getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .replace(R.id.nav_host_fragment, DictionaryFragment.newInstance(), "HOME")
+//                        .commit();
             }
         } else {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, DictionaryFragment.newInstance(""), "HOME")
-                    .commit();
-
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
+            // Home
         }
+    }
+
+    private void setupNavigation() {
+        ViewPager2 viewPager = findViewById(R.id.fragment_container);
+        viewPager.setAdapter(new FragmentAdapter(this));
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        bottomNav.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.dictionaryFragment:
+                    viewPager.setCurrentItem(0);
+                    break;
+                case R.id.savesFragment:
+                    viewPager.setCurrentItem(1);
+                    break;
+                case R.id.profileFragment:
+                    viewPager.setCurrentItem(2);
+                    break;
+            }
+            return false;
+        })  ;
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                bottomNav.getMenu().getItem(position).setChecked(true);
+            }
+        });
     }
 
     @Override
@@ -116,71 +136,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         super.onBackPressed();
     }
 
-    public void changePrevPage(int id) {
-        prevPage = id;
-    }
-
-    public void showSettings() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_right_to_left,
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_left_to_right
-                )
-                .addToBackStack(null)
-                .add(R.id.fragment_container, new SettingsFragment())
-                .commit();
-    }
-
-    private final NavigationBarView.OnItemSelectedListener navListener =
-            item -> {
-                int id = item.getItemId();
-                Fragment selected = null;
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction transaction = fm.beginTransaction();
-                fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                if(prevPage != id) {
-                    if(id == R.id.search) {
-                        selected = DictionaryFragment.newInstance("");
-                        transaction.setCustomAnimations(
-                                R.anim.enter_left_to_right,
-                                R.anim.exit_left_to_right
-                        );
-                        transaction.replace(R.id.fragment_container, selected, "HOME").commit();
-                        prevPage = id;
-                        return true;
-                    } else if(id == R.id.saves) {
-                        if(prevPage == R.id.profile) {
-                            transaction.setCustomAnimations(
-                                    R.anim.enter_left_to_right,
-                                    R.anim.exit_left_to_right
-                            );
-                        } else {
-                            transaction.setCustomAnimations(
-                                    R.anim.enter_right_to_left,
-                                    R.anim.exit_right_to_left
-                            );
-                        }
-
-                        selected = new SavesFragment();
-                    } else if(id == R.id.profile) {
-                        transaction.setCustomAnimations(
-                                R.anim.enter_right_to_left,
-                                R.anim.exit_right_to_left
-                        );
-                        selected = new ProfileFragment();
-                    }
-
-                    prevPage = id;
-                    assert selected != null;
-                    transaction.replace(R.id.fragment_container, selected).commit();
-                    return true;
-                }
-
-                return true;
-            };
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
@@ -207,12 +162,20 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(key.equals(getString(R.string.pref_notification_key))) {
+        if(key.equals("TOKEN")) {
+          if(sharedPreferences.getString(key, "").isEmpty()) {
+              userViewModel.setLoginStatus(false);
+          } else {
+              userViewModel.setLoginStatus(true);
+          }
+        } else if(key.equals(getString(R.string.pref_notification_key))) {
             updateNotificationSettings(sharedPreferences, key);
         } else if(key.equals(getString(R.string.pref_notification_frequency_key))) {
             updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
         }
     }
+
+
 
     private void updateRandomWordIndex() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);

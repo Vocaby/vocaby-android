@@ -25,6 +25,7 @@ import com.vocaby.app.api.RequestManager;
 
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHolder> {
@@ -44,7 +45,8 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         this.onItemTouchListener = onItemTouchListener;
         this.ctx = ctx;
         dataManager = DataManager.getInstance(ctx);
-        this.saves = dataManager.getSaves();
+        this.saves = dataManager.getUser().getSavedWords();
+        this.saves = new ArrayList<>();
         builder = new AlertDialog.Builder(activity);
     }
 
@@ -67,13 +69,13 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         holder.removeSaveButton.setOnClickListener(v -> {
             builder.setMessage("Are you sure you want to delete?").setPositiveButton("Yes", (dialog, which) -> {
                 if(token.isEmpty()) {
-                    saves = dataManager.deleteSave(word);
+                    this.saves = dataManager.getUser().getSavedWords();
                     onItemTouchListener.onSaveDelete(saves.size());
                     notifyDataSetChanged();
                 } else {
                     RequestManager requestManager = RequestManager.getInstance(ctx);
                     requestManager.makeDeleteRequest(word, response -> {
-                        saves = dataManager.deleteSave(word);
+                        this.saves = dataManager.getUser().getSavedWords();
                         onItemTouchListener.onSaveDelete(saves.size());
                         notifyDataSetChanged();
                     }, error -> {

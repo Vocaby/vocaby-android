@@ -7,14 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class Word implements Serializable {
+public class WordModel implements Serializable {
     private final String word;
     private String pronunciation;
     private final Map<String, List<String>> mDefinitions;
     private final Map<String, List<String>> mSentences;
     private final List<String> allowedPos;
 
-    public Word(String word) {
+    public WordModel(String word) {
         this.word = word;
         allowedPos = new ArrayList<>();
         mDefinitions = new HashMap<>();

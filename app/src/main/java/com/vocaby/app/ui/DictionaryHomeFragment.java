@@ -22,7 +22,7 @@ import com.vocaby.app.DataManager;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.database.DatabaseManager;
-import com.vocaby.app.models.Word;
+import com.vocaby.app.models.WordModel;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     @Override
     public void onItemTouch(int position) {
         String word = dataManager.getHistory().get(position);
-        DictionaryFragment fragment = (DictionaryFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("HOME");
+        DictionaryFragment fragment = (DictionaryFragment) this.getParentFragment();
         fragment.addResultsFragment(word,false);
     }
 
@@ -76,17 +76,17 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
         int index = settings.getInt("randomWordIndex", 1);
         DatabaseManager databaseManager = DatabaseManager.getInstance(ctx);
-        Word wordData = databaseManager.getRandomWordData(index);
+        WordModel wordModelData = databaseManager.getRandomWordData(index);
 
-        String pos = wordData.getAllowedPos()[0];
-        wordView.setText(wordData.getWord());
+        String pos = wordModelData.getAllowedPos()[0];
+        wordView.setText(wordModelData.getWord());
         posView.setText(pos);
-        definition.setText(wordData.getDefinitions(pos)[0]);
-        sentence.setText(wordData.getSentences(pos)[0]);
+        definition.setText(wordModelData.getDefinitions(pos)[0]);
+        sentence.setText(wordModelData.getSentences(pos)[0]);
 
         wordBox.setOnClickListener(v -> {
             DictionaryFragment fragment = (DictionaryFragment) this.getParentFragment();
-            fragment.addResultsFragment(wordData.getWord(), true);
+            fragment.addResultsFragment(wordModelData.getWord(),true);
         });
 
 

@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +21,7 @@ import android.widget.TextView;
 import com.vocaby.app.DataManager;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SavesAdapter;
+import com.vocaby.app.viewmodels.UserViewModel;
 
 import java.util.List;
 
@@ -25,6 +30,8 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     private DataManager dataManager;
     private Context ctx;
     private TextView savesCount;
+    private SavesAdapter savesAdapter;
+    private RecyclerView recyclerView;
 
     public SavesFragment() {
         // Required empty public constructor
@@ -42,9 +49,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
-        List<String> saves = dataManager.getSaves();
         savesCount = view.findViewById(R.id.saves_count);
-        setSavesCount(saves.size());
 
         SharedPreferences sharedPref = ctx.getSharedPreferences(ctx.getString(R.string.token_key), Context.MODE_PRIVATE);
         String token = sharedPref.getString(ctx.getString(R.string.token_key), "");
@@ -55,9 +60,9 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
             indicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
         }
 
-        RecyclerView recyclerView = view.findViewById(R.id.saves_container);
-        SavesAdapter adapter = new SavesAdapter(ctx, this, getActivity());
-        recyclerView.setAdapter(adapter);
+        recyclerView = view.findViewById(R.id.saves_container);
+        savesAdapter = new SavesAdapter(ctx, this, getActivity());
+        recyclerView.setAdapter(savesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
 
         return view;
@@ -74,15 +79,13 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
 
     @Override
     public void onItemTouch(int position) {
-        String search = dataManager.getSaves().get(position);
+        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
         FragmentManager fm = requireActivity().getSupportFragmentManager();
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         fm.beginTransaction()
         .setCustomAnimations(
                 R.anim.enter_left_to_right,
                 R.anim.exit_left_to_right
-        ).replace(R.id.fragment_container, DictionaryFragment.newInstance(search), "HOME").commit();
-
-        ((MainActivity)requireActivity()).changePrevPage(R.id.search);
+        ).replace(R.id.fragment_container, DictionaryFragment.newInstance(), "HOME").commit();
     }
 }

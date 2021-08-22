@@ -13,15 +13,15 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vocaby.app.R;
-import com.vocaby.app.models.Word;
+import com.vocaby.app.models.WordModel;
 
 public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.DefinitionsViewHolder> {
-    private Word wordData;
+    private WordModel wordModelData;
     private final Context ctx;
 
     public DefinitionsAdapter(Context ctx) {
         this.ctx = ctx;
-        wordData = null;
+        wordModelData = null;
     }
 
     @NonNull
@@ -33,17 +33,17 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setWordData(Word wordData) {
-        this.wordData = wordData;
+    public void setWordData(WordModel wordModelData) {
+        this.wordModelData = wordModelData;
         notifyDataSetChanged();
     }
 
     @Override
     public void onBindViewHolder(@NonNull DefinitionsAdapter.DefinitionsViewHolder holder, int position) {
-        if(wordData != null) {
-            String selectedPos = wordData.getAllowedPos()[position];
-            String[] definitions = wordData.getDefinitions(selectedPos);
-            String[] sentences = wordData.getSentences(selectedPos);
+        if(wordModelData != null) {
+            String selectedPos = wordModelData.getAllowedPos()[position];
+            String[] definitions = wordModelData.getDefinitions(selectedPos);
+            String[] sentences = wordModelData.getSentences(selectedPos);
             holder.pos.setText(selectedPos);
 
             LayoutInflater inflater = LayoutInflater.from(ctx);
@@ -71,7 +71,7 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
 
     @Override
     public int getItemCount() {
-        return wordData == null ? 0 : wordData.getAllowedPos().length;
+        return wordModelData == null ? 0 : wordModelData.getAllowedPos().length;
     }
 
     public static class DefinitionsViewHolder extends RecyclerView.ViewHolder {

@@ -6,24 +6,24 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.vocaby.app.models.Word;
+import com.vocaby.app.models.WordModel;
 
 
 import java.lang.reflect.Type;
 
-public class GetWordDataDeserializer implements JsonDeserializer<Word> {
+public class GetWordDataDeserializer implements JsonDeserializer<WordModel> {
     @Override
-    public Word deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public WordModel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
         String status = jsonObject.get("status").getAsString();
         String word = jsonObject.get("word").getAsString();
-        Word wordData =  new Word(word);
+        WordModel wordModelData =  new WordModel(word);
         if(status.equals("success")) {
 
             String pronunciation = jsonObject.get("pronunciation").getAsString();
 
 
-            wordData.setPronunciation(pronunciation);
+            wordModelData.setPronunciation(pronunciation);
 
             JsonObject data = jsonObject.get("definitions").getAsJsonObject();
             for (String key : data.keySet()) {
@@ -32,12 +32,12 @@ public class GetWordDataDeserializer implements JsonDeserializer<Word> {
                     final JsonObject itemJsonObject = jsonElement.getAsJsonObject();
                     String definition = itemJsonObject.get("definition").getAsString();
                     String sentence = itemJsonObject.get("sentence").getAsString();
-                    wordData.addDefinition(key, definition);
-                    wordData.addSentence(key, sentence);
+                    wordModelData.addDefinition(key, definition);
+                    wordModelData.addSentence(key, sentence);
                 }
             }
         }
 
-        return wordData;
+        return wordModelData;
     }
 }

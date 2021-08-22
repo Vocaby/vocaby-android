@@ -39,7 +39,7 @@ public class SuccessfulCreationFragment extends Fragment {
                     0,
                     R.anim.exit_left_to_right
             )
-            .replace(R.id.fragment_container, new LoginFragment())
+            .replace(R.id.login_fragment_container, new LoginFragment())
             .commit();
         });
 

@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,19 +25,15 @@ import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 
 public class DictionaryFragment extends Fragment {
-    private static final String WORD = "word";
-
-    private String sentText;
     private DictionaryViewModel dictionaryViewModel;
 
     public DictionaryFragment() {
         // Required empty public constructor
     }
 
-    public static DictionaryFragment newInstance(String word) {
+    public static DictionaryFragment newInstance() {
         DictionaryFragment fragment = new DictionaryFragment();
         Bundle args = new Bundle();
-        args.putSerializable(WORD, word);
         fragment.setArguments(args);
 
         return fragment;
@@ -46,7 +43,6 @@ public class DictionaryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            sentText = getArguments().getString(WORD);
         }
     }
 
@@ -61,14 +57,6 @@ public class DictionaryFragment extends Fragment {
         getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container,
                 new DictionaryHomeFragment()).commit();
 
-        // Coming from the saves fragment
-        if(sentText.length() > 0) {
-            search.setText(sentText);
-            // When the user clicks on a saved item, the nav should check dictionary
-            BottomNavigationView navView = requireActivity().findViewById(R.id.bottom_navigation);
-            navView.getMenu().findItem(R.id.search).setChecked(true);
-            addResultsFragment(sentText, true);
-        }
 
         return view;
     }
@@ -78,7 +66,8 @@ public class DictionaryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         Observer<String> searchObserver = s -> {
-            if (!s.isEmpty()) {
+            if(!s.isEmpty()) {
+                Log.d("Dictionary", s);
                 addResultsFragment(s, false);
             }
         };
@@ -86,21 +75,21 @@ public class DictionaryFragment extends Fragment {
         dictionaryViewModel.getSearch().observe(getViewLifecycleOwner(), searchObserver);
     }
 
-    public void addResultsFragment(String word, boolean ignoreHistory) {
-        Fragment fragment = SearchResultsFragment.newInstance(word, ignoreHistory);
+    public void addResultsFragment(String search, boolean ignoreHistory) {
+        Log.d("Dictionary2", search);
+        Fragment fragment = SearchResultsFragment.newInstance(search, ignoreHistory);
         FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-        transaction.addToBackStack(null);
-        transaction.setCustomAnimations(
+        transaction
+            .addToBackStack(null)
+            .setCustomAnimations(
                 R.anim.enter_bottom_to_top,
                 R.anim.exit_top_to_bottom,
                 R.anim.enter_bottom_to_top,
                 R.anim.exit_top_to_bottom
-        );
-
-        transaction
-                .add(R.id.search_fragment_container, fragment, "SEARCH_RESULTS_FRAGMENT")
-                .commit();
+            )
+            .add(R.id.search_fragment_container, fragment)
+            .commit();
     }
 
     private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {

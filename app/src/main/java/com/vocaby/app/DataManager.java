@@ -3,7 +3,8 @@ package com.vocaby.app;
 import android.content.Context;
 import android.util.Log;
 
-import com.vocaby.app.models.Word;
+import com.vocaby.app.models.UserModel;
+import com.vocaby.app.models.WordModel;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,48 +21,27 @@ import java.util.Map;
 public class DataManager {
     private static DataManager dataManager = null;
     private static Context ctx;
-    private static final String WORD_DATA_FILE_NAME = "dVocaby";
-    private static final String SAVE_DATA_FILE_NAME = "sVocaby";
+    private static final String USER_DATA_FILE_NAME = "uVocaby";
     private static final String HISTORY_DATA_FILE_NAME = "hVocaby";
-    private static Map<String, Word> wordMap;
-    private static List<String> saves;
+    private static UserModel user;
     private static List<String> history;
 
     private DataManager(Context context) {
         ctx = context.getApplicationContext();
 
-        File dataFile = new File(ctx.getFilesDir(), WORD_DATA_FILE_NAME);
-        if(dataFile.exists()) {
-            try(FileInputStream fis = ctx.openFileInput(WORD_DATA_FILE_NAME)) {
+        File userFile = new File(ctx.getFilesDir(), USER_DATA_FILE_NAME);
+        if(userFile.exists()) {
+            try(FileInputStream fis = ctx.openFileInput(USER_DATA_FILE_NAME)) {
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                wordMap = (Map<String, Word>) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-                Log.d("DataManager", "Something went wrong in getInstance");
-            }
-        } else {
-            wordMap = new HashMap<>();
-            try (FileOutputStream fos = ctx.openFileOutput(WORD_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(wordMap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        File saveFile = new File(ctx.getFilesDir(), SAVE_DATA_FILE_NAME);
-        if(saveFile.exists()) {
-            try(FileInputStream fis = ctx.openFileInput(SAVE_DATA_FILE_NAME)) {
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                saves = (List<String>) ois.readObject();
+                user = (UserModel) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
                 Log.d("DataManager", "Something went wrong in getInstance");
             }
         } else {
-            saves = new ArrayList<>();
-            try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
+            user = new UserModel();
+            try (FileOutputStream fos = ctx.openFileOutput(USER_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(saves);
+                oos.writeObject(user);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -112,47 +92,15 @@ public class DataManager {
     }
 
 
-    public void writeSave(String word) throws IOException {
-        saves.add(0, word);
-        try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
+    public void setUser(UserModel newUser) throws IOException {
+        user = newUser;
+        try (FileOutputStream fos = ctx.openFileOutput(USER_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(saves);
+            oos.writeObject(user);
         }
     }
 
-    public void overwriteSave(List<String> newList) throws IOException {
-        saves = newList;
-        try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(saves);
-        }
-    }
-
-    public List<String> deleteSave(String word) {
-        saves.remove(word);
-        try (FileOutputStream fos = ctx.openFileOutput(SAVE_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(saves);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return saves;
-    }
-
-    public boolean hasSave(String word) {
-        return saves.contains(word);
-    }
-
-    public List<String> getSaves() {
-        return saves;
-    }
-
-    public void writeData(Word wordData) throws IOException {
-        wordMap.put(wordData.getWord(), wordData);
-        try (FileOutputStream fos = ctx.openFileOutput(WORD_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(wordMap);
-        }
+    public UserModel getUser() {
+        return user;
     }
 }

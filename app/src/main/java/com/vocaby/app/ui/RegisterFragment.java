@@ -3,8 +3,12 @@ package com.vocaby.app.ui;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -22,6 +26,8 @@ import com.android.volley.VolleyError;
 import com.vocaby.app.DataManager;
 import com.vocaby.app.R;
 import com.vocaby.app.api.RequestManager;
+import com.vocaby.app.models.AuthModel;
+import com.vocaby.app.viewmodels.RegisterViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +44,8 @@ public class RegisterFragment extends Fragment {
     private TextView emailAlertView;
     private TextView passwordAlertView;
     private TextView passwordConfirmAlertView;
+
+    private RegisterViewModel registerViewModel;
 
     public RegisterFragment() {
 
@@ -72,11 +80,64 @@ public class RegisterFragment extends Fragment {
         return view;
     }
 
-    private static boolean isValidEmail(CharSequence target) {
-        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        registerViewModel = new ViewModelProvider(requireActivity()).get(RegisterViewModel.class);
+        registerViewModel.getAuthModel().observe(getViewLifecycleOwner(), new Observer<AuthModel>() {
+            @Override
+            public void onChanged(AuthModel authModel) {
+                if(authModel.passwordIsEmpty()) {
+                    passwordAlertView.setText(getString(R.string.enter_password));
+                } else {
+                    passwordAlertView.setText("");
+                }
+
+                if(authModel.confirmationPasswordIsEmpty()) {
+                    passwordConfirmAlertView.setText(getString(R.string.enter_password));
+                } else {
+                    passwordConfirmAlertView.setText("");
+
+                    if(!authModel.passwordsMatch()) {
+                        passwordConfirmAlertView.setText(getString(R.string.password_no_match));
+                    }
+                }
+
+                if(authModel.emailIsEmpty()) {
+                    emailAlertView.setText(getString(R.string.enter_email));
+                } else {
+                    if(!authModel.isEmail()) {
+                        emailAlertView.setText(getString(R.string.enter_valid_email));
+                    } else {
+                        emailAlertView.setText("");
+                    }
+                }
+
+                if(authModel.registrationIsValid()) {
+                    registerViewModel.register();
+                    registerButton.setEnabled(false);
+                }
+            }
+        });
+
+        registerViewModel.getRegistrationStatus().observe(getViewLifecycleOwner(), registrationSuccessful -> {
+            if(registrationSuccessful) {
+                FragmentManager fm = getParentFragmentManager();
+                fm.beginTransaction()
+                        .setCustomAnimations(
+                                R.anim.enter_right_to_left,
+                                R.anim.exit_left_to_right,
+                                R.anim.enter_right_to_left,
+                                R.anim.exit_left_to_right
+                        )
+                        .add(R.id.login_fragment_container, new SuccessfulCreationFragment())
+                        .commit();
+            } else {
+                emailAlertView.setText(getString(R.string.user_exists));
+                registerButton.setEnabled(true);
+            }
+        });
     }
-
-
 
     private final View.OnClickListener registerListener = new View.OnClickListener() {
         @Override
@@ -84,104 +145,7 @@ public class RegisterFragment extends Fragment {
             String email = emailView.getText().toString();
             String password = passwordView.getText().toString();
             String passwordConfirm = passwordConfirmView.getText().toString();
-            boolean passwordIsValid = false;
-            boolean emailIsValid = false;
-
-            if(password.isEmpty()) {
-                passwordAlertView.setText(getString(R.string.enter_password));
-            } else {
-                passwordAlertView.setText("");
-            }
-
-            if(passwordConfirm.isEmpty()) {
-                passwordConfirmAlertView.setText(getString(R.string.enter_password));
-            } else {
-                passwordConfirmAlertView.setText("");
-                if(!password.isEmpty()) {
-                    if(password.equals(passwordConfirm)) {
-                        passwordIsValid = true;
-                    } else {
-                        passwordConfirmAlertView.setText(getString(R.string.password_no_match));
-                    }
-                }
-            }
-
-            if(email.isEmpty()) {
-                emailAlertView.setText(getString(R.string.enter_email));
-            } else {
-                if(!isValidEmail(email)) {
-                    emailAlertView.setText(getString(R.string.enter_valid_email));
-                } else {
-                    emailAlertView.setText("");
-                    emailIsValid = true;
-                }
-            }
-
-            if(emailIsValid && passwordIsValid) {
-                postDataToServer(email, password);
-                registerButton.setEnabled(false);
-            }
-        }
-    };
-
-    private void postDataToServer(String email, String password) {
-        try {
-            DataManager dataManager = DataManager.getInstance(ctx);
-            List<String> saves = dataManager.getSaves();
-            JSONArray jsonArray = new JSONArray();
-            for(String word : saves) {
-                jsonArray.put(word);
-            }
-
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("email", email);
-            jsonObject.put("password", password);
-            jsonObject.put("saves", jsonArray);
-
-            RequestManager requestManager = RequestManager.getInstance(ctx);
-            requestManager.makeRegisterRequest(jsonObject, registerListenerResponse, registerListenerError);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private final Response.Listener<JSONObject> registerListenerResponse = response -> {
-        FragmentManager fm = getParentFragmentManager();
-        fm.beginTransaction()
-                .setCustomAnimations(
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_left_to_right,
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_left_to_right
-                )
-                .add(R.id.login_fragment_container, new SuccessfulCreationFragment())
-                .commit();
-    };
-
-    private final Response.ErrorListener registerListenerError = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            NetworkResponse networkResponse = error.networkResponse;
-            if (networkResponse != null && networkResponse.data != null) {
-                String jsonError = new String(networkResponse.data);
-                try {
-                    JSONObject json = new JSONObject(jsonError);
-                    if (json.has("code")) {
-                        int code = json.getInt("code");
-                        if(code == getResources().getInteger(R.integer.USER_EXISTS)) {
-                            emailAlertView.setText(getString(R.string.user_exists));
-                        } else {
-                            Toast.makeText(ctx, "Error has occurred...", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Toast.makeText(ctx, "Error has occurred while registering...", Toast.LENGTH_SHORT).show();
-            }
-
-            registerButton.setEnabled(true);
+            registerViewModel.setAuthData(email, password, passwordConfirm);
         }
     };
 

@@ -2,18 +2,10 @@ package com.vocaby.app.repositories;
 
 import android.app.Application;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
-import com.android.volley.Response;
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.database.DatabaseManager;
-import com.vocaby.app.models.Word;
-
-import org.json.JSONObject;
-
-import io.reactivex.rxjava3.core.Observable;
+import com.vocaby.app.models.WordModel;
 
 public class DictionaryRepository {
     private DatabaseManager databaseManager;
@@ -24,14 +16,14 @@ public class DictionaryRepository {
         apiManager = ApiManager.getInstance();
     }
 
-    public Word getWordDataFromDatabase(String word) {
+    public WordModel getWordDataFromDatabase(String word) {
         databaseManager.openDatabase();
-        Word data = databaseManager.getWordData(word);
+        WordModel data = databaseManager.getWordData(word);
         databaseManager.closeDatabase();
         return data;
     }
 
     public VocabyApiService getVocabyApiService() {
-        return apiManager.getVocabyApiService();
+        return apiManager.getVocabyApiService("DICTIONARY");
     }
 }

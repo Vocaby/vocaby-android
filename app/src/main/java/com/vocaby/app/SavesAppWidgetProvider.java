@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import com.vocaby.app.database.DatabaseManager;
-import com.vocaby.app.models.Word;
+import com.vocaby.app.models.WordModel;
 import com.vocaby.app.ui.MainActivity;
 
 import java.util.List;
@@ -40,44 +40,44 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
     }
 
     private void updateWidgetTexts(Context context, int id, RemoteViews remoteViews) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        dataManager = DataManager.getInstance(context);
-        List<String> saves = dataManager.getSaves();
-        remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE);
-        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", false);
-        if(saves.size() > 0) {
-            WordPickerService wordPickerService = new WordPickerService(saves, context);
-            int index = wordPickerService.getRandomWordFromSaves();
-            DatabaseManager databaseManager = DatabaseManager.getInstance(context);
-            databaseManager.openDatabase();
-            Word wordData = databaseManager.getWordData(saves.get(index));
-            databaseManager.closeDatabase();
-            String pos = wordData.getAllowedPos()[0];
-            String definition = wordData.getDefinitions(pos)[0];
-            String[] examples = wordData.getSentences(pos);
-
-            remoteViews.setTextViewText(R.id.widget_word, wordData.getWord());
-            remoteViews.setTextViewText(R.id.widget_definition, definition);
-
-            if(examples.length > 0) {
-                remoteViews.setTextViewText(R.id.widget_sentence, examples[0]);
-            }
-
-            Intent openIntent = new Intent(context, MainActivity.class);
-            openIntent.setAction(WIDGET_CLICK);
-            openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            openIntent.putExtra("com.vocaby.app.openAndSearch", wordData.getWord());
-            PendingIntent openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent);
-        } else {
-            remoteViews.setTextViewText(R.id.widget_word, "NO SAVED WORDS");
-            remoteViews.setTextViewText(R.id.widget_definition, "Save words in the app to review them here.");
-            remoteViews.setTextViewText(R.id.widget_sentence, "");
-        }
-
-        remoteViews.setViewVisibility(R.id.refresh_progress, View.INVISIBLE);
-        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true);
-        appWidgetManager.updateAppWidget(id, remoteViews);
+//        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+//        dataManager = DataManager.getInstance(context);
+//        List<String> saves = dataManager.getSaves();
+//        remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE);
+//        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", false);
+//        if(saves.size() > 0) {
+//            WordPickerService wordPickerService = new WordPickerService(saves, context);
+//            int index = wordPickerService.getRandomWordFromSaves();
+//            DatabaseManager databaseManager = DatabaseManager.getInstance(context);
+//            databaseManager.openDatabase();
+//            WordModel wordModelData = databaseManager.getWordData(saves.get(index));
+//            databaseManager.closeDatabase();
+//            String pos = wordModelData.getAllowedPos()[0];
+//            String definition = wordModelData.getDefinitions(pos)[0];
+//            String[] examples = wordModelData.getSentences(pos);
+//
+//            remoteViews.setTextViewText(R.id.widget_word, wordModelData.getWord());
+//            remoteViews.setTextViewText(R.id.widget_definition, definition);
+//
+//            if(examples.length > 0) {
+//                remoteViews.setTextViewText(R.id.widget_sentence, examples[0]);
+//            }
+//
+//            Intent openIntent = new Intent(context, MainActivity.class);
+//            openIntent.setAction(WIDGET_CLICK);
+//            openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            openIntent.putExtra("com.vocaby.app.openAndSearch", wordModelData.getWord());
+//            PendingIntent openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+//            remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent);
+//        } else {
+//            remoteViews.setTextViewText(R.id.widget_word, "NO SAVED WORDS");
+//            remoteViews.setTextViewText(R.id.widget_definition, "Save words in the app to review them here.");
+//            remoteViews.setTextViewText(R.id.widget_sentence, "");
+//        }
+//
+//        remoteViews.setViewVisibility(R.id.refresh_progress, View.INVISIBLE);
+//        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true);
+//        appWidgetManager.updateAppWidget(id, remoteViews);
     }
 
     private void updateWidget(Context context) {
