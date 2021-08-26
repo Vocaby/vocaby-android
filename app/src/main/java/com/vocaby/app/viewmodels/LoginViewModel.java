@@ -7,14 +7,17 @@ import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.LoginRequest;
+import com.vocaby.app.database.entity.User;
+import com.vocaby.app.database.entity.UserSaves;
 import com.vocaby.app.models.AuthModel;
 import com.vocaby.app.repositories.UserRepository;
+import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -22,18 +25,19 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class LoginViewModel extends AndroidViewModel {
+    private final VocabyRepository vocabyRepository;
     private final SingleLiveEvent<AuthModel> mAuthModel;
     private final CompositeDisposable compositeDisposable;
     private final SingleLiveEvent<Boolean> mLoginSuccessful;
-    private final String TOKEN_KEY = "TOKEN";
+    private final String ID_KEY = "USER_ID";
     SharedPreferences sharedPreferences;
 
     public LoginViewModel(Application application) {
         super(application);
+        vocabyRepository = new VocabyRepository(application);
         mAuthModel = new SingleLiveEvent<>();
         mLoginSuccessful = new SingleLiveEvent<>();
         compositeDisposable = new CompositeDisposable();
-        sharedPreferences = application.getSharedPreferences(TOKEN_KEY, Context.MODE_PRIVATE);
     }
 
     public LiveData<AuthModel> getAuthModel() {
@@ -51,20 +55,44 @@ public class LoginViewModel extends AndroidViewModel {
         List<String> saves = userRepository.getSaves();
         LoginRequest loginRequest = new LoginRequest(email, password, saves);
         compositeDisposable.add(
-            ApiManager.getInstance().getVocabyApiService("AUTH").login(loginRequest)
+            ApiManager.getInstance().getVocabyApiService("LOGIN").login(loginRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(loginResponse -> {
                     if(loginResponse != null) {
-                        mLoginSuccessful.setValue(true);
-                        userRepository.setUser(email, loginResponse.getSaves());
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString(TOKEN_KEY, loginResponse.getToken());
-                        editor.apply();
+                        vocabyRepository.clearUser()
+                            .subscribe(() -> {
+                                vocabyRepository.createUser(new User(
+                                    email,
+                                    "Eric",
+                                    "Kim",
+                                    loginResponse.getToken()
+                                )).subscribe(id -> {
+                                    int userId = id.intValue();
+                                    SharedPreferences sharedPreferences = getApplication().getSharedPreferences(ID_KEY, Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putInt(ID_KEY, userId);
+                                    editor.apply();
+
+                                    List<String> s = loginResponse.getSaves();
+                                    List<UserSaves> userSaves = new LinkedList<>();
+                                    for(String word : s) {
+                                        userSaves.add(new UserSaves(userId, word));
+                                    }
+
+                                    vocabyRepository.insertSavedWords(userSaves)
+                                        .subscribe(list -> {
+                                            mLoginSuccessful.setValue(true);
+                                        }, error -> Log.e("login (saves): ", error.getMessage()));
+                                },
+                                error -> Log.e("login (create): ", error.getMessage()));
+                            },
+                            error -> Log.e("login (clear): ", error.getMessage())
+                        );
                     }
                 }, error -> {
                     mLoginSuccessful.setValue(false);
-                    Log.d("Login Failed", error.getMessage());
+                    Log.e("login (api):", error.getMessage());
                 })
         );
     }

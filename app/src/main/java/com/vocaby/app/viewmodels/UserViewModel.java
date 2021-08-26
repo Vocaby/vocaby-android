@@ -9,10 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.room.rxjava3.EmptyResultSetException;
 
+import com.vocaby.app.database.entity.User;
 import com.vocaby.app.models.UserModel;
 import com.vocaby.app.repositories.UserRepository;
-import com.vocaby.app.utils.SingleLiveEvent;
+import com.vocaby.app.repositories.VocabyRepository;
 
 import java.util.List;
 
@@ -21,86 +23,123 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class UserViewModel extends AndroidViewModel {
-    private final MutableLiveData<Boolean> isLoggedIn;
-    private final MutableLiveData<UserModel> mUserModel;
-    private final MutableLiveData<List<String>> mSavedWords;
-    private final UserRepository userRepository;
-    private CompositeDisposable compositeDisposable;
+    private final VocabyRepository vocabyRepository;
+    private MutableLiveData<Boolean> isLoggedIn;
+    private MutableLiveData<User> mUser;
+    private MutableLiveData<List<String>> mSavedWords;
+    private final String ID_KEY = "USER_ID";
+    private final CompositeDisposable compositeDisposable;
     SharedPreferences sharedPreferences;
-    private final String TOKEN_KEY = "TOKEN";
 
     public UserViewModel(@NonNull Application application) {
         super(application);
-        isLoggedIn = new MutableLiveData<>();
-        userRepository = new UserRepository(application);
-        sharedPreferences = application.getSharedPreferences(TOKEN_KEY, Context.MODE_PRIVATE);
-        mUserModel = new MutableLiveData<>(userRepository.getUser());
-        mSavedWords = new MutableLiveData<>(userRepository.getSaves());
+        vocabyRepository = new VocabyRepository(application);
         compositeDisposable = new CompositeDisposable();
+        sharedPreferences = getApplication().getSharedPreferences(ID_KEY, Context.MODE_PRIVATE);
+        mSavedWords = new MutableLiveData<>();
 
-        refreshLoginStatus();
+        compositeDisposable.add(
+            vocabyRepository.getCurrentUser(sharedPreferences.getInt(ID_KEY, 0))
+                .subscribe(user -> {
+                        mUser = new MutableLiveData<>(user);
+                        Log.d("UserViewModel: ", "Initializing user: " + user.getToken());
+                        if(user.getToken().isEmpty()) {
+                            isLoggedIn = new MutableLiveData<>(false);
+                        } else {
+                            isLoggedIn = new MutableLiveData<>(true);
+                        }
+
+                        setSavedWords();
+                    },
+                    error -> {
+                        User user = new User();
+                        if(error instanceof EmptyResultSetException) {
+                            vocabyRepository.createUser(user)
+                                .subscribe(id -> {
+                                    Log.d("UserViewModel: ", "Creating new user");
+                                    int userId = id.intValue();
+                                    SharedPreferences sharedPreferences = getApplication().getSharedPreferences(ID_KEY, Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putInt(ID_KEY, userId);
+                                    editor.apply();
+                                    mUser = new MutableLiveData<>(user);
+                                    isLoggedIn = new MutableLiveData<>(false);
+
+                                    setSavedWords();
+                                },
+                                error2 -> Log.d("UserViewModel: ", error2.getMessage()));
+                        } else {
+                            error.printStackTrace();
+                        }
+
+                    })
+        );
+
+        compositeDisposable.add(
+                vocabyRepository.getUserCount()
+                    .subscribe(count -> Log.d("UserViewModel: ", count + ""))
+        );
     }
 
-    public void refreshLoginStatus() {
-        setLoginStatus(!sharedPreferences.getString(TOKEN_KEY, "").isEmpty());
+    public void loginUser() {
+        compositeDisposable.add(
+            vocabyRepository.getCurrentUser(sharedPreferences.getInt(ID_KEY, 0))
+                .subscribe(user -> {
+                        mUser.setValue(user);
+                        isLoggedIn.setValue(true);
+                        setSavedWords();
+                    },
+                    error -> {
+                        error.printStackTrace();
+                    })
+        );
     }
 
-    public void refreshUser() {
-        mUserModel.setValue(userRepository.getUser());
-        mSavedWords.setValue(userRepository.getSaves());
-    }
-
-    public LiveData<UserModel> getUser() {
-        return mUserModel;
+    public LiveData<User> getUser() {
+        return mUser;
     }
 
     public LiveData<List<String>> getSavedWords() {
         return mSavedWords;
     }
 
+    public void setSavedWords() {
+        compositeDisposable.add(
+            vocabyRepository.getUserSaves(sharedPreferences.getInt(ID_KEY, 0))
+                .subscribe(list -> {
+                    mSavedWords.setValue(list);
+                    Log.d("setSavedWords: ", list.size() + "");
+                }, error -> Log.e("UserViewModel (setSavedWords): ", error.getMessage()))
+        );
+    }
+
     public String getSaveItem(int position) {
         return mSavedWords.getValue().get(position);
     }
 
-    public String getUserName() {
-        return userRepository.getUsername();
-    }
-
-    public String getEmail() {
-        return userRepository.getEmail();
-    }
-
-
-    public LiveData<Boolean> getLoginStatus() {
-        return isLoggedIn;
-    }
-
-    public void setLoginStatus(Boolean loggedIn) {
-        isLoggedIn.setValue(loggedIn);
-    }
-
-    public void setToken(String token) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(TOKEN_KEY, token);
-        editor.apply();
-    }
-
     public void logout() {
-        if(isLoggedIn.getValue()) {
-            String token = "Token " + sharedPreferences.getString(TOKEN_KEY, "");
+        if(mUser.getValue() != null) {
             compositeDisposable.add(
-                userRepository.getVocabyLogoutService().logout(token)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {
-                            isLoggedIn.setValue(false);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString(TOKEN_KEY, "");
-                            editor.apply();
-                            userRepository.deleteUser();
-                            refreshUser();
-                            Log.d("Logout", "Successful");
-                        }, throwable -> { Log.d("Logout", throwable.getMessage()); })
+                vocabyRepository.getVocabyApiService("")
+                    .logout("Token " + mUser.getValue().getToken())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(() -> {
+                        vocabyRepository.clearUser()
+                                .subscribe(() -> {
+                                    User user = new User();
+                                    vocabyRepository.createUser(user)
+                                            .subscribe(id -> {
+                                                    int userId = id.intValue();
+                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                    editor.putInt(ID_KEY, userId);
+                                                    editor.apply();
+                                                    mUser.setValue(user);
+                                                    setSavedWords();
+                                                },
+                                                    error -> Log.e("logout (create): ", error.getMessage()));
+                                }, error -> Log.e("logout (clear): ", error.getMessage()));
+                    }, error -> Log.e("logout (api): ", error.getMessage()))
             );
         }
     }

@@ -104,6 +104,10 @@ public class SearchResultsFragment extends Fragment {
 //        }
 
         saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+        saveButton.setOnClickListener(v -> {
+            dictionaryViewModel.saveWord(searchedWord);
+        });
+
         RecyclerView recyclerView = view.findViewById(R.id.definitions_recycler_container);
         recyclerView.setEnabled(false);
         adapter = new DefinitionsAdapter(ctx);
@@ -134,9 +138,9 @@ public class SearchResultsFragment extends Fragment {
                     populateView(wordData);
                     adapter.setWordData(wordData);
                 }
-
-                dictionaryViewModel.getWordData().removeObserver(observer);
             }
+
+            dictionaryViewModel.getWordData().removeObservers(getViewLifecycleOwner());
         };
 
         dictionaryViewModel.getWordData().observe(getViewLifecycleOwner(), observer);
@@ -145,7 +149,7 @@ public class SearchResultsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        dictionaryViewModel.setSearch("");
+        dictionaryViewModel.popSearchHistory();
     }
 
     private void populateView(WordModel wordModelData) {

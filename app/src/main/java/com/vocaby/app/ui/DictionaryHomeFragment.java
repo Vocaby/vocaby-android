@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,6 +24,7 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.database.DatabaseManager;
 import com.vocaby.app.models.WordModel;
+import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 import java.util.List;
 
@@ -32,12 +34,12 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     private SearchHistoryAdapter searchHistoryAdapter;
     public static final String RADIO_DATASET_CHANGED = "com.vocaby.app.RADIO_DATASET_CHANGED";
     private Radio radio;
+    private DictionaryViewModel dictionaryViewModel;
 
     @Override
     public void onItemTouch(int position) {
         String word = dataManager.getHistory().get(position);
-        DictionaryFragment fragment = (DictionaryFragment) this.getParentFragment();
-        fragment.addResultsFragment(word,false);
+        dictionaryViewModel.setSearch(word);
     }
 
     private class Radio extends BroadcastReceiver {
@@ -83,10 +85,9 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
         posView.setText(pos);
         definition.setText(wordModelData.getDefinitions(pos)[0]);
         sentence.setText(wordModelData.getSentences(pos)[0]);
-
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         wordBox.setOnClickListener(v -> {
-            DictionaryFragment fragment = (DictionaryFragment) this.getParentFragment();
-            fragment.addResultsFragment(wordModelData.getWord(),true);
+            dictionaryViewModel.setSearch(wordModelData.getWord());
         });
 
 

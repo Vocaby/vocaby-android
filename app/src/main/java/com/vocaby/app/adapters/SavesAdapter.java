@@ -25,7 +25,6 @@ import com.vocaby.app.api.RequestManager;
 
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHolder> {

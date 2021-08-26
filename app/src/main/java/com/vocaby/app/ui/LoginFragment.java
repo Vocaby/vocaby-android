@@ -122,6 +122,7 @@ public class LoginFragment extends Fragment {
 
         loginViewModel.getLoginStatus().observe(getViewLifecycleOwner(), loginSuccessful -> {
             if(loginSuccessful) {
+                MainActivity.loginUser();
                 requireActivity().finish();
             } else {
                 loginAlertView.setText(getString(R.string.wrong_credentials_desc));

@@ -7,32 +7,24 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.vocaby.app.DataManager;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SavesAdapter;
 import com.vocaby.app.viewmodels.UserViewModel;
 
-import java.util.List;
-
 
 public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchListener {
-    private DataManager dataManager;
     private Context ctx;
     private TextView savesCount;
     private SavesAdapter savesAdapter;
-    private RecyclerView recyclerView;
 
     private UserViewModel userViewModel;
 
@@ -43,9 +35,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         ctx = requireActivity().getApplicationContext();
-        dataManager = DataManager.getInstance(ctx);
     }
 
     @Override
@@ -63,7 +53,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
             indicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
         }
 
-        recyclerView = view.findViewById(R.id.saves_container);
+        RecyclerView recyclerView = view.findViewById(R.id.saves_container);
         savesAdapter = new SavesAdapter(ctx, this, getActivity());
         recyclerView.setAdapter(savesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));

@@ -2,6 +2,8 @@ package com.vocaby.app.api;
 
 import com.vocaby.app.models.WordModel;
 
+import java.util.List;
+
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 
@@ -14,19 +16,27 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface VocabyApiService {
-    @Headers("Vocaby-Api-Key: dCKMPJZW.8m3GHcR3wU4d9Tkg7Hy2eX3ujtmah1kc")
+    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @GET("dictionary/{word}")
     Single<WordModel> getWordData(@Path("word") String word);
 
-    @Headers("Vocaby-Api-Key: dCKMPJZW.8m3GHcR3wU4d9Tkg7Hy2eX3ujtmah1kc")
+    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("login/")
     Single<AuthResponse> login(@Body LoginRequest loginRequest);
 
-    @Headers("Vocaby-Api-Key: dCKMPJZW.8m3GHcR3wU4d9Tkg7Hy2eX3ujtmah1kc")
+    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("logout/")
     Completable logout(@Header("Authorization") String token);
 
-    @Headers("Vocaby-Api-Key: dCKMPJZW.8m3GHcR3wU4d9Tkg7Hy2eX3ujtmah1kc")
+    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("register/")
     Single<AuthResponse> register(@Body RegisterRequest registerRequest);
+
+    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
+    @POST("account/saves/{word}")
+    Completable save(@Header("Authorization") String token, @Path("word") String word);
+
+    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
+    @POST("account/saves/")
+    Single<List<String>> getSaves(@Header("Authorization") String token);
 }

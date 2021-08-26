@@ -51,10 +51,9 @@ public class RegisterViewModel extends AndroidViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(authResponse -> {
                     mRegistrationSuccessful.setValue(true);
-                    Log.d("Registration Successful", "yay");
                 }, error-> {
                     mRegistrationSuccessful.setValue(false);
-                    Log.d("Registration Failed", error.getMessage());
+                    Log.e("Registration Failed", error.getMessage());
                 })
         );
     }

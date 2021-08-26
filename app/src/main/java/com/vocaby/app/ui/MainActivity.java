@@ -1,13 +1,10 @@
 package com.vocaby.app.ui;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -19,7 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -27,11 +24,11 @@ import android.widget.EditText;
 
 import com.bugsnag.android.Bugsnag;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.vocaby.app.FragmentAdapter;
 import com.vocaby.app.NotificationReceiver;
 import com.vocaby.app.R;
 import com.vocaby.app.database.DatabaseManager;
+import com.vocaby.app.database.entity.User;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 import java.util.Calendar;
@@ -40,14 +37,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
     private DatabaseManager databaseManager;
-    private UserViewModel userViewModel;
+    private static UserViewModel userViewModel;
     private ViewPager2 viewPager;
 
     @Override
     protected void onResume() {
         super.onResume();
-        userViewModel.refreshUser();
-        userViewModel.refreshLoginStatus();
         updateRandomWordIndex();
     }
 
@@ -73,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
 
         updateRandomWordIndex();
+    }
+
+    public static void loginUser() {
+        userViewModel.loginUser();
     }
 
     private void setupNavigation() {
@@ -143,13 +142,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(key.equals("TOKEN")) {
-          if(sharedPreferences.getString(key, "").isEmpty()) {
-              userViewModel.setLoginStatus(false);
-          } else {
-              userViewModel.setLoginStatus(true);
-          }
-        } else if(key.equals(getString(R.string.pref_notification_key))) {
+        if(key.equals(getString(R.string.pref_notification_key))) {
             updateNotificationSettings(sharedPreferences, key);
         } else if(key.equals(getString(R.string.pref_notification_frequency_key))) {
             updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));

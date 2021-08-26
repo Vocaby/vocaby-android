@@ -42,11 +42,12 @@ public class ApiManager {
             case "DICTIONARY":
                 gsonBuilder.registerTypeAdapter(WordModel.class, new GetWordDataDeserializer());
                 break;
-            case "AUTH":
+            case "LOGIN":
                 gsonBuilder.registerTypeAdapter(AuthResponse.class, new GetAuthDeserializer());
             default:
                 return GsonConverterFactory.create();
         }
+
         Gson myGson = gsonBuilder.create();
 
         return GsonConverterFactory.create(myGson);

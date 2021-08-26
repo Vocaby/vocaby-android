@@ -46,7 +46,7 @@ public class DatabaseManager {
     public WordModel getWordData(String word) {
         WordModel wordModelData = null;
         if(database != null) {
-            String sql = "SELECT pronunciation, pos, definition, sentence FROM words as w, definitions as d WHERE w.id = d.word_id AND w.word = ?";
+            String sql = "SELECT pronunciation, pos, definition, sentence FROM dictionary_word as w, dictionary_definition as d WHERE w.id = d.word_id AND w.word = ?";
             Cursor cursor = database.rawQuery(sql, new String[] {word});
             if(cursor.getCount() > 0) {
                 wordModelData = new WordModel(word);
@@ -75,7 +75,7 @@ public class DatabaseManager {
     public WordModel getRandomWordData(int id) {
         WordModel wordModelData = null;
         if(database != null) {
-            String sql = "SELECT word, pronunciation, pos, definition, sentence FROM words as w, definitions as d WHERE w.id = d.word_id AND w.id = ?";
+            String sql = "SELECT word, pronunciation, pos, definition, sentence FROM dictionary_word as w, dictionary_definition as d WHERE w.id = d.word_id AND w.id = ?";
             Cursor cursor = database.rawQuery(sql, new String[] {String.valueOf(id)});
             if(cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -104,7 +104,7 @@ public class DatabaseManager {
 
     public int getRandomWordIndex() {
         if(database != null) {
-            String countQuery = "SELECT  * FROM words";
+            String countQuery = "SELECT  * FROM dictionary_word";
             Cursor cursor = database.rawQuery(countQuery, null);
             int count = cursor.getCount();
             int id = getRandomNumber(count);

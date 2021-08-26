@@ -21,13 +21,15 @@ import android.widget.TextView;
 
 import com.vocaby.app.R;
 
+import com.vocaby.app.database.entity.User;
 import com.vocaby.app.models.UserModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 public class ProfileFragment extends Fragment {
     private Button loginoutButton;
     private UserViewModel userViewModel;
-    private TextView currentUserName;
+    private TextView currentUserEmail;
+    private TextView firstName;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -42,7 +44,8 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        currentUserName = view.findViewById(R.id.current_user);
+        firstName = view.findViewById(R.id.first_name);
+        currentUserEmail = view.findViewById(R.id.current_user);
 
         ImageButton navButton = view.findViewById(R.id.settings_button);
         navButton.setOnClickListener(v -> {});
@@ -56,24 +59,22 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-        Observer<Boolean> loginObserver = loggedIn -> {
-            if(loggedIn) {
+
+        userViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
+            firstName.setText(user.getFirstName());
+            currentUserEmail.setText(user.getEmail());
+
+            if(user.getToken().isEmpty()) {
+               loginoutButton.setText(getString(R.string.log_in));
+               loginoutButton.setOnClickListener(v -> login());
+            } else {
                 loginoutButton.setText(getString(R.string.log_out));
                 loginoutButton.setOnClickListener(v -> userViewModel.logout());
-            } else {
-                loginoutButton.setText(getString(R.string.log_in));
-                loginoutButton.setOnClickListener(v -> login());
             }
-        };
-
-        userViewModel.getLoginStatus().observe(getViewLifecycleOwner(), loginObserver);
-
-        Observer<UserModel> userObserver = user -> currentUserName.setText(user.getEmail());
-
-        userViewModel.getUser().observe(getViewLifecycleOwner(), userObserver);
+        });
     }
 
     private void login() {

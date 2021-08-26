@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +68,6 @@ public class DictionaryFragment extends Fragment {
     }
 
     public void addResultsFragment(String search, boolean ignoreHistory) {
-        Fragment fragment = SearchResultsFragment.newInstance(search, ignoreHistory);
         FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         transaction
@@ -78,7 +78,7 @@ public class DictionaryFragment extends Fragment {
                 R.anim.enter_bottom_to_top,
                 R.anim.exit_top_to_bottom
             )
-            .add(R.id.search_fragment_container, fragment)
+            .add(R.id.search_fragment_container, SearchResultsFragment.newInstance(search, ignoreHistory))
             .commit();
     }
 
