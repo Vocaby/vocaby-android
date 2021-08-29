@@ -7,7 +7,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -17,12 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.vocaby.app.DataManager;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.database.DatabaseManager;
+import com.vocaby.app.database.entity.Definition;
 import com.vocaby.app.models.WordModel;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 
@@ -35,6 +40,13 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     public static final String RADIO_DATASET_CHANGED = "com.vocaby.app.RADIO_DATASET_CHANGED";
     private Radio radio;
     private DictionaryViewModel dictionaryViewModel;
+
+    private TextView wordView;
+    private TextView posView;
+    private TextView definition;
+    private TextView sentence;
+    private View wordBox;
+    private ProgressBar progressBar;
 
     @Override
     public void onItemTouch(int position) {
@@ -69,26 +81,15 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
         View view = inflater.inflate(R.layout.fragment_dictionary_main, container, false);
 
         // Random Word of the Day
-        TextView wordView = view.findViewById(R.id.word_header);
-        TextView posView = view.findViewById(R.id.pos);
-        TextView definition = view.findViewById(R.id.definition);
-        TextView sentence = view.findViewById(R.id.sentence);
-        View wordBox = view.findViewById(R.id.word_box);
+        wordView = view.findViewById(R.id.word_header);
+        posView = view.findViewById(R.id.pos);
+        definition = view.findViewById(R.id.definition);
+        sentence = view.findViewById(R.id.sentence);
+        wordBox = view.findViewById(R.id.word_box);
+        progressBar = view.findViewById(R.id.randomword_progress);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
         int index = settings.getInt("randomWordIndex", 1);
-        DatabaseManager databaseManager = DatabaseManager.getInstance(ctx);
-        WordModel wordModelData = databaseManager.getRandomWordData(index);
-
-        String pos = wordModelData.getAllowedPos()[0];
-        wordView.setText(wordModelData.getWord());
-        posView.setText(pos);
-        definition.setText(wordModelData.getDefinitions(pos)[0]);
-        sentence.setText(wordModelData.getSentences(pos)[0]);
-        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
-        wordBox.setOnClickListener(v -> {
-            dictionaryViewModel.setSearch(wordModelData.getWord());
-        });
 
 
         // History
@@ -113,11 +114,34 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+
+        dictionaryViewModel.getRandomWord().observe(getViewLifecycleOwner(), new Observer<WordModel>() {
+            @Override
+            public void onChanged(WordModel wordModel) {
+                progressBar.setVisibility(View.INVISIBLE);
+                String pos = wordModel.getAllowedPos()[0];
+                wordView.setText(wordModel.getWord());
+                posView.setText(pos);
+                definition.setText(wordModel.getDefinitions(pos)[0]);
+                sentence.setText(wordModel.getSentences(pos)[0]);
+                dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+                wordBox.setOnClickListener(v -> {
+                    dictionaryViewModel.setSearch(wordModel.getWord());
+                });
+            }
+        });
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         IntentFilter filter = new IntentFilter();
         filter.addAction(RADIO_DATASET_CHANGED);
         ctx.registerReceiver(radio, filter);
+        dictionaryViewModel.updateRandomWord();
     }
 
     @Override

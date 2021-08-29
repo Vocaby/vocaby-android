@@ -1,5 +1,7 @@
 package com.vocaby.app.ui;
 
+import static androidx.appcompat.content.res.AppCompatResources.*;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -13,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,22 +28,26 @@ import com.vocaby.app.adapters.DefinitionsAdapter;
 import com.vocaby.app.models.WordModel;
 import com.vocaby.app.utils.NetworkManager;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
+import com.vocaby.app.viewmodels.SearchResultsViewModel;
+import com.vocaby.app.viewmodels.UserViewModel;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SearchResultsFragment extends Fragment {
     private static final String WORD = "PASSED_WORD_KEY";
     private static final String FROM_SAVES = "fromSaves";
     private String searchedWord;
     private boolean fromSaves;
+
     private Context ctx;
     private Button saveButton;
     private DataManager dataManager;
-
     private TextView word;
     private TextView pronunciation;
     private DefinitionsAdapter adapter;
     private ProgressBar progressBar;
-
-    DictionaryViewModel dictionaryViewModel;
+    private ProgressBar saveProgress;
+    SearchResultsViewModel searchResultsViewModel;
     Observer<WordModel> observer;
 
     public SearchResultsFragment() {
@@ -90,23 +95,8 @@ public class SearchResultsFragment extends Fragment {
         saveButton.setVisibility(View.INVISIBLE);
         saveButton.setEnabled(false);
         pronunciation = view.findViewById(R.id.pronunciation);
-        ProgressBar saveProgress = view.findViewById(R.id.save_progress);
-        saveProgress.setVisibility(View.INVISIBLE);
-        Drawable icon;
-        icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
-
-//        if(dataManager.hasSave(searchedWord)) {
-//            icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved);
-//            saveButton.setText(ctx.getString(R.string.save_button_saved));
-//        } else {
-//            icon =  AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved);
-//            saveButton.setText(getResources().getString(R.string.save_button_unsaved));
-//        }
-
-        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
-        saveButton.setOnClickListener(v -> {
-            dictionaryViewModel.saveWord(searchedWord);
-        });
+        saveProgress = view.findViewById(R.id.save_progress);
+        saveProgress.setVisibility(View.VISIBLE);
 
         RecyclerView recyclerView = view.findViewById(R.id.definitions_recycler_container);
         recyclerView.setEnabled(false);
@@ -120,8 +110,13 @@ public class SearchResultsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
-        dictionaryViewModel.retrieveWordDataFromRepo(searchedWord, NetworkManager.isConnectedToInternet(ctx));
+        observeDefinition();
+        observeSave();
+    }
+
+    public void observeDefinition() {
+        searchResultsViewModel = new ViewModelProvider(this).get(SearchResultsViewModel.class);
+        searchResultsViewModel.retrieveWordDataFromRepo(searchedWord);
         observer = wordData -> {
             if (wordData != null) {
                 if(!fromSaves) {
@@ -139,16 +134,42 @@ public class SearchResultsFragment extends Fragment {
                     adapter.setWordData(wordData);
                 }
             }
-
-            dictionaryViewModel.getWordData().removeObservers(getViewLifecycleOwner());
         };
 
-        dictionaryViewModel.getWordData().observe(getViewLifecycleOwner(), observer);
+        searchResultsViewModel.getWordData().observe(getViewLifecycleOwner(), observer);
+    }
+
+    public void observeSave() {
+        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        AtomicReference<Drawable> icon = new AtomicReference<>();
+        icon.set(getDrawable(ctx, R.drawable.ic_bookmark_disabled));
+        saveButton.setEnabled(false);
+        saveButton.setTextColor(ctx.getColor(R.color.dark_gray));
+        saveProgress.setVisibility(View.INVISIBLE);
+
+        if(userViewModel.hasSave(searchedWord)) {
+            icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved));
+            saveButton.setText(ctx.getString(R.string.save_button_saved));
+            saveButton.setOnClickListener(v -> {
+                userViewModel.removeSave(searchedWord);
+            });
+        } else {
+            icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved));
+            saveButton.setText(getResources().getString(R.string.save_button_unsaved));
+            saveButton.setOnClickListener(v -> {
+                userViewModel.saveWord(searchedWord);
+            });
+        }
+
+        saveButton.setEnabled(true);
+        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        DictionaryViewModel dictionaryViewModel =
+                new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         dictionaryViewModel.popSearchHistory();
     }
 

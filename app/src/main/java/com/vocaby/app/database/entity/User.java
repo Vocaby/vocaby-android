@@ -72,4 +72,6 @@ public class User {
     public void setToken(String token) {
         this.token = token;
     }
+
+    public boolean isLoggedIn() { return !token.isEmpty(); }
 }

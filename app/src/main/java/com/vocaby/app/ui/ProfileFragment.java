@@ -67,12 +67,12 @@ public class ProfileFragment extends Fragment {
             firstName.setText(user.getFirstName());
             currentUserEmail.setText(user.getEmail());
 
-            if(user.getToken().isEmpty()) {
-               loginoutButton.setText(getString(R.string.log_in));
-               loginoutButton.setOnClickListener(v -> login());
-            } else {
+            if(user.isLoggedIn()) {
                 loginoutButton.setText(getString(R.string.log_out));
                 loginoutButton.setOnClickListener(v -> userViewModel.logout());
+            } else {
+                loginoutButton.setText(getString(R.string.log_in));
+                loginoutButton.setOnClickListener(v -> login());
             }
         });
     }

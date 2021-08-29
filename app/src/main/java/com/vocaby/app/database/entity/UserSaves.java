@@ -1,13 +1,21 @@
 package com.vocaby.app.database.entity;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "saves")
+@Entity(tableName = "saves", foreignKeys = {
+        @ForeignKey(onDelete = ForeignKey.CASCADE,
+                entity = User.class,
+                parentColumns = "user_id",
+                childColumns = "user_id")
+})
 public class UserSaves {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
+    @ColumnInfo(name = "user_id")
     private int userId;
     private String word;
 

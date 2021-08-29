@@ -3,7 +3,6 @@ package com.vocaby.app.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -16,7 +15,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -27,8 +25,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vocaby.app.FragmentAdapter;
 import com.vocaby.app.NotificationReceiver;
 import com.vocaby.app.R;
-import com.vocaby.app.database.DatabaseManager;
-import com.vocaby.app.database.entity.User;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 import java.util.Calendar;
@@ -36,14 +32,12 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
-    private DatabaseManager databaseManager;
     private static UserViewModel userViewModel;
     private ViewPager2 viewPager;
 
     @Override
     protected void onResume() {
         super.onResume();
-        updateRandomWordIndex();
     }
 
     @Override
@@ -54,20 +48,15 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         Bugsnag.start(this);
 
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        databaseManager = DatabaseManager.getInstance(getApplicationContext());
-        databaseManager.openDatabase();
 
         setupNavigation();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
-
-        updateRandomWordIndex();
     }
 
     public static void loginUser() {
@@ -135,38 +124,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        databaseManager.closeDatabase();
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(getString(R.string.pref_notification_key))) {
             updateNotificationSettings(sharedPreferences, key);
         } else if(key.equals(getString(R.string.pref_notification_frequency_key))) {
             updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
-        }
-    }
-
-
-
-    private void updateRandomWordIndex() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        int lastTimeStarted = settings.getInt("appStarted", -1);
-        Calendar calendar = Calendar.getInstance();
-        int today = calendar.get(Calendar.DAY_OF_YEAR);
-
-        if (today != lastTimeStarted) {
-            SharedPreferences randomWord = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = randomWord.edit();
-            int index = databaseManager.getRandomWordIndex();
-            editor.putInt("randomWordIndex", index);
-            editor.apply();
-
-            editor = settings.edit();
-            editor.putInt("appStarted", today);
-            editor.apply();
         }
     }
 

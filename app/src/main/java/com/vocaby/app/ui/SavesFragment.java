@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SavesAdapter;
+import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 
@@ -36,6 +37,12 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ctx = requireActivity().getApplicationContext();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        userViewModel.refreshSaves();
     }
 
     @Override

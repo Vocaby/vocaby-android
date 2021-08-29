@@ -68,6 +68,7 @@ public class DictionaryFragment extends Fragment {
     }
 
     public void addResultsFragment(String search, boolean ignoreHistory) {
+        dictionaryViewModel.addToStack(search);
         FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         transaction
