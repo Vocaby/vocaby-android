@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.preference.PreferenceManager;
 
+import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.DataManager;
 import com.vocaby.app.database.entity.Definition;
 import com.vocaby.app.database.entity.WordDefinitions;
@@ -57,7 +58,10 @@ public class DictionaryViewModel extends AndroidViewModel {
                             editor.putInt("randomWordId", wordDefinitions.word.getId());
                             editor.apply();
                             mWordModel.setValue(makeWordData(wordDefinitions));
-                        }, error -> Log.e("DictionaryViewModel: ", error.getMessage()))
+                        }, error -> {
+                            Bugsnag.notify(error);
+                            Log.e("DictionaryViewModel: ", error.getMessage());
+                        })
             );
 
             editor.putInt("appStarted", today);
@@ -68,7 +72,10 @@ public class DictionaryViewModel extends AndroidViewModel {
             compositeDisposable.add(
                 vocabyRepository.getWordDataFromDatabase(id)
                         .subscribe(wordDefinitions -> mWordModel.setValue(makeWordData(wordDefinitions)),
-                                error -> Log.e("DictionaryViewModel: ", error.getMessage()))
+                                error -> {
+                                    Bugsnag.notify(error);
+                                    Log.e("DictionaryViewModel: ", error.getMessage());
+                                })
             );
         }
     }

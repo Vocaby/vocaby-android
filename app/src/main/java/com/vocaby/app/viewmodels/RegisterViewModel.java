@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.RegisterRequest;
 import com.vocaby.app.models.AuthModel;
@@ -61,6 +62,7 @@ public class RegisterViewModel extends AndroidViewModel {
                         mRegistrationSuccessful.setValue(true);
                     }, error-> {
                         mRegistrationSuccessful.setValue(false);
+                        Bugsnag.notify(error);
                         Log.e("Registration Failed", error.getMessage());
                     })
         );

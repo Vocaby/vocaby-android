@@ -10,6 +10,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
+import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.database.entity.Definition;
 import com.vocaby.app.database.entity.User;
@@ -64,7 +65,9 @@ public class SearchResultsViewModel extends AndroidViewModel {
                     error -> {
                         if(error instanceof EmptyResultSetException) {
                             mWordPackage.setValue(new WordDataPackage(new WordModel(searched), false));
+
                         }
+                        Bugsnag.notify(error);
                         Log.e("retrieveWordDataFromRepo: ", error.getMessage());
                 }
             )
@@ -85,6 +88,8 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                                 if(error instanceof HttpException) {
                                                     mWordPackage.setValue(mWordPackage.getValue().setSave(false));
                                                 }
+
+                                                Bugsnag.notify(error);
                                                 Log.e("saveWord: ", error.getMessage());
                                             })
                     );
@@ -107,7 +112,10 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                 .subscribe(() -> {
                                             mWordPackage.setValue(mWordPackage.getValue().setSave(true));
                                         },
-                                        error -> Log.e("saveWord (local, saved): ", error.getMessage()))
+                                        error -> {
+                                            Bugsnag.notify(error);
+                                            Log.e("saveWord (local, saved): ", error.getMessage());
+                                        })
                 );
             }
         }
@@ -127,6 +135,8 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                                 if(error instanceof HttpException) {
                                                     mWordPackage.setValue(mWordPackage.getValue().setSave(true));
                                                 }
+
+                                                Bugsnag.notify(error);
                                                 Log.e("saveWord: ", error.getMessage());
                                             })
                     );
@@ -151,7 +161,10 @@ public class SearchResultsViewModel extends AndroidViewModel {
                             .subscribe(() -> {
                                         mWordPackage.setValue(mWordPackage.getValue().setSave(false));
                                     },
-                                    error -> Log.e("saveWord (local): ", error.getMessage()))
+                                    error -> {
+                                        Bugsnag.notify(error);
+                                        Log.e("saveWord (local): ", error.getMessage());
+                                    })
             );
         }
     }

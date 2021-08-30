@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.LoginRequest;
 import com.vocaby.app.database.entity.User;
@@ -83,18 +84,28 @@ public class LoginViewModel extends AndroidViewModel {
                                                     compositeDisposable.add(
                                                         vocabyRepository.insertSavedWords(userSaves)
                                                                 .subscribe(saves -> mLoginSuccessful.setValue(true),
-                                                                        error -> Log.e("login (saves): ", error.getMessage()))
+                                                                        error -> {
+                                                                            Bugsnag.notify(error);
+                                                                            Log.e("login (saves): ", error.getMessage());
+                                                                        })
                                                     );
                                                 },
-                                                error -> Log.e("login (create): ", error.getMessage()))
+                                                error -> {
+                                                    Bugsnag.notify(error);
+                                                    Log.e("login (create): ", error.getMessage());
+                                                })
                                     );
                                 }
                             }, error -> {
                                 mLoginSuccessful.setValue(false);
+                                Bugsnag.notify(error);
                                 Log.e("login (api):", error.getMessage());
                             })
                     );
-                }, error -> Log.e("UserViewModel (setSavedWords): ", error.getMessage()))
+                }, error -> {
+                    Bugsnag.notify(error);
+                    Log.e("UserViewModel (setSavedWords): ", error.getMessage());
+                })
         );
     }
 

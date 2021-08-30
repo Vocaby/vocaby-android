@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
+import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.adapters.OnSaveItemButtonTouch;
 import com.vocaby.app.database.entity.User;
 import com.vocaby.app.database.entity.UserSaves;
@@ -58,6 +59,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                         if(e instanceof EmptyResultSetException) {
                             addDefaultUser();
                         } else {
+                            Bugsnag.notify(e);
                             Log.e("UserViewModel (current user): ", e.getMessage());
                         }
                     })
@@ -76,7 +78,10 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                             editor.apply();
                             mUser.setValue(user);
                             setSavedWords();
-                        }, error -> Log.e("UserViewModel (new user): ", error.getMessage()))
+                        }, error -> {
+                            Bugsnag.notify(error);
+                            Log.e("UserViewModel (new user): ", error.getMessage());
+                        })
         );
     }
 
@@ -107,7 +112,10 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
     public void setSavedWords() {
         compositeDisposable.add(
             vocabyRepository.getUserSaves(sharedPreferences.getInt(CURRENT_ID_KEY, 0))
-                .subscribe(mSavedWords::setValue, error -> Log.e("UserViewModel (setSavedWords): ", error.getMessage()))
+                .subscribe(mSavedWords::setValue, error -> {
+                    Bugsnag.notify(error);
+                    Log.e("UserViewModel (setSavedWords): ", error.getMessage());
+                })
         );
     }
 
@@ -144,6 +152,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                                 Log.d("logout: ", error.getMessage());
                             }
 
+                            Bugsnag.notify(error);
                             compositeDisposable.add(
                                     vocabyRepository.getUserCount()
                                     .subscribe(num -> Log.d("logout: ", num+""))
@@ -172,6 +181,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(() -> {},
                                             error -> {
+                                                Bugsnag.notify(error);
                                                 Log.e("removeWordFromSaves(api): ", error.getMessage());
                                             })
                     );
@@ -185,7 +195,10 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                 compositeDisposable.add(
                         vocabyRepository.removeSave(mUser.getValue().getUserId(), word)
                                 .subscribe(() -> {},
-                                    error -> Log.e("removeWordFromSaves(local): ", error.getMessage()))
+                                    error -> {
+                                        Bugsnag.notify(error);
+                                        Log.e("removeWordFromSaves(local): ", error.getMessage());
+                                    })
                 );
 
             }
