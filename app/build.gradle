@@ -11,7 +11,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 31
         versionCode 1
-        versionName "0.6.5"
+        versionName "0.6.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,16 +45,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.google.code.gson:gson:2.8.8'
 
-    // Volley
-    implementation 'com.android.volley:volley:1.2.0'
-
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation "com.github.akarnokd:rxjava3-retrofit-adapter:3.0.0"
-
-    // SQLiteAssetHelper
-    implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
 
     // Bugsnag
     implementation "com.bugsnag:bugsnag-android:5.+"
