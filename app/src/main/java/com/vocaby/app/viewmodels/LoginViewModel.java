@@ -57,7 +57,7 @@ public class LoginViewModel extends AndroidViewModel {
                 .subscribe(list -> {
                     LoginRequest loginRequest = new LoginRequest(email, password, list);
                     compositeDisposable.add(
-                        ApiManager.getInstance().getVocabyApiService("LOGIN").login(loginRequest)
+                        ApiManager.getInstance().getVocabyApiService("L").login(loginRequest)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(loginResponse -> {
@@ -82,9 +82,8 @@ public class LoginViewModel extends AndroidViewModel {
 
                                                     compositeDisposable.add(
                                                         vocabyRepository.insertSavedWords(userSaves)
-                                                                .subscribe(saves -> {
-                                                                    mLoginSuccessful.setValue(true);
-                                                                }, error -> Log.e("login (saves): ", error.getMessage()))
+                                                                .subscribe(saves -> mLoginSuccessful.setValue(true),
+                                                                        error -> Log.e("login (saves): ", error.getMessage()))
                                                     );
                                                 },
                                                 error -> Log.e("login (create): ", error.getMessage()))

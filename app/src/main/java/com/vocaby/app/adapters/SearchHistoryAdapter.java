@@ -11,10 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vocaby.app.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdapter.HistoryViewHolder> {
-    private final List<String> history;
+    private List<String> history;
     private final Context ctx;
     private final OnItemTouchListener onItemTouchListener;
 
@@ -22,10 +23,15 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
         void onItemTouch(int position);
     }
 
-    public SearchHistoryAdapter(Context ctx, List<String> history, OnItemTouchListener onItemTouchListener) {
+    public SearchHistoryAdapter(Context ctx, OnItemTouchListener onItemTouchListener) {
         this.ctx = ctx;
-        this.history = history;
         this.onItemTouchListener = onItemTouchListener;
+        history = new ArrayList<>();
+    }
+
+    public void updateSearchHistory(List<String> newHistory) {
+        this.history = newHistory;
+        notifyDataSetChanged();
     }
 
     @NonNull

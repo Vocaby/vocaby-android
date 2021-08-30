@@ -10,30 +10,16 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.vocaby.app.DataManager;
 import com.vocaby.app.R;
-import com.vocaby.app.api.RequestManager;
 import com.vocaby.app.models.AuthModel;
 import com.vocaby.app.viewmodels.RegisterViewModel;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
 
 public class RegisterFragment extends Fragment {
     private Context ctx;

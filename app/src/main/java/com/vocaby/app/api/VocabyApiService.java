@@ -1,5 +1,6 @@
 package com.vocaby.app.api;
 
+import com.vocaby.app.models.WordDataPackage;
 import com.vocaby.app.models.WordModel;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import io.reactivex.rxjava3.core.Single;
 
 import retrofit2.Response;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -17,8 +19,8 @@ import retrofit2.http.Path;
 
 public interface VocabyApiService {
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
-    @GET("dictionary/{word}")
-    Single<WordModel> getWordData(@Path("word") String word);
+    @POST("authdictionary/{word}")
+    Single<WordDataPackage> getWordData(@Header("Authorization") String token, @Path("word") String word);
 
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("login/")
@@ -35,6 +37,10 @@ public interface VocabyApiService {
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("account/saves/{word}")
     Completable save(@Header("Authorization") String token, @Path("word") String word);
+
+    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
+    @DELETE("account/saves/{word}")
+    Completable removeSave(@Header("Authorization") String token, @Path("word") String word);
 
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("account/saves/")

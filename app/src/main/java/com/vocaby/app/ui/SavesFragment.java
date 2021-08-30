@@ -18,14 +18,15 @@ import android.widget.TextView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SavesAdapter;
-import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 
-public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchListener {
+public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTouch {
     private Context ctx;
     private TextView savesCount;
     private SavesAdapter savesAdapter;
+    private TextView userStateText;
+    private View userStateIndicator;
 
     private UserViewModel userViewModel;
 
@@ -42,7 +43,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     @Override
     public void onResume() {
         super.onResume();
-        userViewModel.refreshSaves();
+        userViewModel.setSavedWords();
     }
 
     @Override
@@ -51,19 +52,8 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
         savesCount = view.findViewById(R.id.saves_count);
 
-        SharedPreferences sharedPref = ctx.getSharedPreferences(ctx.getString(R.string.token_key), Context.MODE_PRIVATE);
-        String token = sharedPref.getString(ctx.getString(R.string.token_key), "");
-        if(!token.isEmpty()) {
-            TextView status = view.findViewById(R.id.network_status_text);
-            status.setText(getString(R.string.synced));
-            View indicator = view.findViewById(R.id.network_indicator);
-            indicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
-        }
-
-        RecyclerView recyclerView = view.findViewById(R.id.saves_container);
-        savesAdapter = new SavesAdapter(ctx, this, getActivity());
-        recyclerView.setAdapter(savesAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+        userStateText = view.findViewById(R.id.network_status_text);
+        userStateIndicator = view.findViewById(R.id.network_indicator);
 
         return view;
     }
@@ -72,9 +62,27 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     public void onViewCreated(@NonNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+
+        RecyclerView recyclerView = view.findViewById(R.id.saves_container);
+        savesAdapter = new SavesAdapter(ctx, this, userViewModel, getActivity());
+        recyclerView.setAdapter(savesAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+
         userViewModel.getSavedWords().observe(getViewLifecycleOwner(), savedWords -> {
             savesAdapter.updateSavedWords(savedWords);
             setSavesCount(savedWords.size());
+        });
+
+        userViewModel.getUserState().observe(getViewLifecycleOwner(), userState -> {
+            if(userState != null) {
+                if(userState.isLocal()) {
+                    userStateText.setText(getString(R.string.local));
+                    userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.turquoise));
+                } else {
+                    userStateText.setText(getString(R.string.synced));
+                    userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
+                }
+            }
         });
     }
 
@@ -83,12 +91,12 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnItemTouchL
     }
 
     @Override
-    public void onSaveDelete(int size) {
+    public void changeSaveCount(int size) {
         setSavesCount(size);
     }
 
     @Override
-    public void onItemTouch(int position) {
+    public void getDefinition(int position) {
         ((MainActivity) requireActivity()).showDefinition(userViewModel.getSaveItem(position));
     }
 }

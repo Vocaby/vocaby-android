@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
@@ -56,17 +55,22 @@
 
             <TextView
                 android:id="@+id/word_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
                 android:layout_marginTop="16dp"
                 android:text=""
                 android:textColor="@color/colorPrimary_header"
                 android:fontFamily="@font/playfairdisplay_mid"
-                android:textSize="22sp"
+                android:autoSizeMaxTextSize="28sp"
+                android:autoSizeMinTextSize="22sp"
+                android:autoSizeTextType="uniform"
+                android:autoSizeStepGranularity="2sp"
+                android:gravity="center_horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.90"/>
 
             <TextView
                 android:id="@+id/pos"
@@ -130,23 +134,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/history_empty"
-            app:layout_constraintBottom_toBottomOf="@+id/search_history_container"
-            app:layout_constraintEnd_toEndOf="@+id/search_history_container"
+            app:layout_constraintBottom_toBottomOf="@+id/search_history"
+            app:layout_constraintEnd_toEndOf="@+id/search_history"
             app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="@+id/search_history_container"
-            app:layout_constraintTop_toTopOf="@+id/search_history_container"
+            app:layout_constraintStart_toStartOf="@+id/search_history"
+            app:layout_constraintTop_toTopOf="@+id/search_history"
             app:layout_constraintVertical_bias="0.13" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_history_container"
-            android:layout_width="match_parent"
+        <ScrollView
+            android:id="@+id/search_history"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/history_header"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_history_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:scrollbars="vertical" />
+        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

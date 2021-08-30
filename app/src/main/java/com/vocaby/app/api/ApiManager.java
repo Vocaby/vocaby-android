@@ -1,7 +1,10 @@
 package com.vocaby.app.api;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.vocaby.app.models.WordDataPackage;
 import com.vocaby.app.models.WordModel;
 
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
@@ -39,11 +42,12 @@ public class ApiManager {
         GsonBuilder gsonBuilder = new GsonBuilder();
         // Adding custom deserializers
         switch(type) {
-            case "DICTIONARY":
-                gsonBuilder.registerTypeAdapter(WordModel.class, new GetWordDataDeserializer());
+            case "D":
+                gsonBuilder.registerTypeAdapter(WordDataPackage.class, new GetWordDataDeserializer());
                 break;
-            case "LOGIN":
+            case "L":
                 gsonBuilder.registerTypeAdapter(AuthResponse.class, new GetAuthDeserializer());
+                break;
             default:
                 return GsonConverterFactory.create();
         }

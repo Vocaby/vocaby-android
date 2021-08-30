@@ -3,7 +3,6 @@ package com.vocaby.app.ui;
 import static androidx.appcompat.content.res.AppCompatResources.*;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -15,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +25,13 @@ import android.widget.TextView;
 import com.vocaby.app.DataManager;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.DefinitionsAdapter;
+import com.vocaby.app.models.WordDataPackage;
 import com.vocaby.app.models.WordModel;
 import com.vocaby.app.utils.NetworkManager;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.SearchResultsViewModel;
-import com.vocaby.app.viewmodels.UserViewModel;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SearchResultsFragment extends Fragment {
@@ -41,14 +42,14 @@ public class SearchResultsFragment extends Fragment {
 
     private Context ctx;
     private Button saveButton;
-    private DataManager dataManager;
     private TextView word;
     private TextView pronunciation;
     private DefinitionsAdapter adapter;
     private ProgressBar progressBar;
     private ProgressBar saveProgress;
+
     SearchResultsViewModel searchResultsViewModel;
-    Observer<WordModel> observer;
+    DictionaryViewModel dictionaryViewModel;
 
     public SearchResultsFragment() {
         // Required empty public constructor
@@ -72,7 +73,6 @@ public class SearchResultsFragment extends Fragment {
         }
 
         ctx = requireActivity().getApplicationContext();
-        dataManager = DataManager.getInstance(ctx);
     }
 
     @Override
@@ -110,67 +110,86 @@ public class SearchResultsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        observeDefinition();
-        observeSave();
+        dictionaryViewModel =
+                new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+
+        if(!fromSaves) {
+            // Only write to history when user searches for the definition
+            // Not when the user looks up a definition through saved words
+            dictionaryViewModel.writeHistory(searchedWord);
+        }
+
+        observeWordPackageData();
     }
 
-    public void observeDefinition() {
+    public void observeWordPackageData() {
         searchResultsViewModel = new ViewModelProvider(this).get(SearchResultsViewModel.class);
-        searchResultsViewModel.retrieveWordDataFromRepo(searchedWord);
-        observer = wordData -> {
-            if (wordData != null) {
-                if(!fromSaves) {
-                    // Only write to history when user searches for the definition
-                    // Not when the user looks up definition through saved words
-                    dataManager.writeHistory(searchedWord);
-                    Intent intent = new Intent(DictionaryHomeFragment.RADIO_DATASET_CHANGED);
-                    ctx.sendBroadcast(intent);
+        searchResultsViewModel.retrieveWordDataFromRepo(searchedWord, NetworkManager.isConnectedToInternet(ctx));
+        AtomicReference<Drawable> icon = new AtomicReference<>();
+        icon.set(getDrawable(ctx, R.drawable.ic_bookmark_disabled));
+        saveButton.setEnabled(false);
+        saveButton.setTextColor(ctx.getColor(R.color.dark_gray));
+        saveProgress.setVisibility(View.INVISIBLE);
+        AtomicBoolean populated = new AtomicBoolean(false);
+
+        Observer<WordDataPackage> observer = wordPackage -> {
+            if (wordPackage != null) {
+                if(!populated.get()) {
+                    WordModel wordData = wordPackage.getWordModel();
+                    if(wordData.isEmpty()) {
+                        populateNoDefinition();
+                    } else {
+                        populateView(wordData);
+                        adapter.setWordData(wordData);
+                    }
+
+                    populated.set(true);
                 }
 
-                if(wordData.isEmpty()) {
-                    populateNoDefinition();
+
+                if(wordPackage.saved()) {
+                    icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved));
+                    saveButton.setText(ctx.getString(R.string.save_button_saved));
+                    saveButton.setOnClickListener(v -> {
+                        searchResultsViewModel.removeSave(searchedWord, NetworkManager.isConnectedToInternet(ctx));
+                        saveProgress.setVisibility(View.VISIBLE);
+                        disableSaveButton(icon);
+                        Log.d("observeWordPackageData: ", "unsaving");
+                    });
                 } else {
-                    populateView(wordData);
-                    adapter.setWordData(wordData);
+                    icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved));
+                    saveButton.setText(getResources().getString(R.string.save_button_unsaved));
+                    saveButton.setOnClickListener(v -> {
+                        searchResultsViewModel.saveWord(searchedWord, NetworkManager.isConnectedToInternet(ctx));
+                        saveProgress.setVisibility(View.VISIBLE);
+                        disableSaveButton(icon);
+                        Log.d("observeWordPackageData: ", "saving");
+                    });
                 }
+
+                saveProgress.setVisibility(View.INVISIBLE);
+                saveButton.setEnabled(true);
+                saveButton.setTextColor(ctx.getColor(R.color.colorPrimary_header));
+                saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
             }
         };
 
         searchResultsViewModel.getWordData().observe(getViewLifecycleOwner(), observer);
     }
 
-    public void observeSave() {
-        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-        AtomicReference<Drawable> icon = new AtomicReference<>();
-        icon.set(getDrawable(ctx, R.drawable.ic_bookmark_disabled));
+    private void disableSaveButton(AtomicReference<Drawable> icon) {
         saveButton.setEnabled(false);
         saveButton.setTextColor(ctx.getColor(R.color.dark_gray));
-        saveProgress.setVisibility(View.INVISIBLE);
-
-        if(userViewModel.hasSave(searchedWord)) {
-            icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved));
-            saveButton.setText(ctx.getString(R.string.save_button_saved));
-            saveButton.setOnClickListener(v -> {
-                userViewModel.removeSave(searchedWord);
-            });
-        } else {
-            icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved));
-            saveButton.setText(getResources().getString(R.string.save_button_unsaved));
-            saveButton.setOnClickListener(v -> {
-                userViewModel.saveWord(searchedWord);
-            });
-        }
-
-        saveButton.setEnabled(true);
+        icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_disabled));
+        icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_disabled));
+        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
         saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        DictionaryViewModel dictionaryViewModel =
-                new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
-        dictionaryViewModel.popSearchHistory();
+        dictionaryViewModel.popSearchStack();
     }
 
     private void populateView(WordModel wordModelData) {

@@ -11,9 +11,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
+import com.vocaby.app.adapters.OnSaveItemButtonTouch;
 import com.vocaby.app.database.entity.User;
 import com.vocaby.app.database.entity.UserSaves;
+import com.vocaby.app.models.UserStateModel;
 import com.vocaby.app.repositories.VocabyRepository;
+import com.vocaby.app.utils.NetworkManager;
+import com.vocaby.app.utils.SingleLiveEvent;
 
 import java.util.List;
 
@@ -22,13 +26,15 @@ import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.HttpException;
 
-public class UserViewModel extends AndroidViewModel {
+public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonTouch {
     private final VocabyRepository vocabyRepository;
     private MutableLiveData<User> mUser;
     private final MutableLiveData<List<String>> mSavedWords;
     private final String LOCAL_ID_KEY = "LOCAL_USER_ID";
     private final String CURRENT_ID_KEY = "CURRENT_USER_ID";
+    private final SingleLiveEvent<UserStateModel> userState;
     private final CompositeDisposable compositeDisposable;
     SharedPreferences sharedPreferences;
 
@@ -37,28 +43,20 @@ public class UserViewModel extends AndroidViewModel {
         vocabyRepository = new VocabyRepository(application);
         compositeDisposable = new CompositeDisposable();
         sharedPreferences = getApplication().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
+        userState = new SingleLiveEvent<>();
         mSavedWords = new MutableLiveData<>();
+        mUser = new MutableLiveData<>();
+
         compositeDisposable.add(
             vocabyRepository.getUser(sharedPreferences.getInt(CURRENT_ID_KEY, 1))
                 .subscribe(user -> {
-                        mUser = new MutableLiveData<>(user);
+                        mUser.setValue(user);
                         setSavedWords();
+                        userState.setValue(new UserStateModel(!user.isLoggedIn()));
                     },
                     e -> {
                         if(e instanceof EmptyResultSetException) {
-                            User user = new User();
-                            compositeDisposable.add(
-                                    vocabyRepository.createUser(user)
-                                            .subscribe(id -> {
-                                                int userId = id.intValue();
-                                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                editor.putInt("LOCAL_USER_ID", userId);
-                                                editor.putInt("CURRENT_USER_ID", userId);
-                                                editor.apply();
-                                                mUser = new MutableLiveData<>(user);
-                                                setSavedWords();
-                                            }, error -> Log.e("UserViewModel (new user): ", e.getMessage()))
-                            );
+                            addDefaultUser();
                         } else {
                             Log.e("UserViewModel (current user): ", e.getMessage());
                         }
@@ -66,11 +64,32 @@ public class UserViewModel extends AndroidViewModel {
         );
     }
 
+    private void addDefaultUser() {
+        User user = new User();
+        compositeDisposable.add(
+                vocabyRepository.createUser(user)
+                        .subscribe(id -> {
+                            int userId = id.intValue();
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putInt("LOCAL_USER_ID", userId);
+                            editor.putInt("CURRENT_USER_ID", userId);
+                            editor.apply();
+                            mUser.setValue(user);
+                            setSavedWords();
+                        }, error -> Log.e("UserViewModel (new user): ", error.getMessage()))
+        );
+    }
+
+    public LiveData<UserStateModel> getUserState() {
+        return this.userState;
+    }
+
     public void loginUser() {
         compositeDisposable.add(
             vocabyRepository.getUser(sharedPreferences.getInt(CURRENT_ID_KEY, 0))
                 .subscribe(user -> {
                         mUser.setValue(user);
+                        userState.setValue(new UserStateModel(!user.isLoggedIn()));
                         setSavedWords();
                     },
                         Throwable::printStackTrace)
@@ -92,76 +111,45 @@ public class UserViewModel extends AndroidViewModel {
         );
     }
 
-    public boolean hasSave(String word) {
-        if(mUser.getValue() != null && mSavedWords.getValue() != null) {
-            if(mUser.getValue().isLoggedIn()) {
-                return false;
-            } else {
-                return mSavedWords.getValue().contains(word);
-            }
-        }
-
-        return false;
-    }
-
     public String getSaveItem(int position) {
         return mSavedWords.getValue().get(position);
     }
 
-    public void refreshSaves() {
-        Log.d("UserViewModel", "refreshSaves: ");
-    }
-
-    public void saveWord(String word) {
-        if(mUser.getValue() != null && mSavedWords.getValue() != null) {
-            if(mUser.getValue().isLoggedIn()) {
-                // Add Locally
-                compositeDisposable.add(
-                    vocabyRepository.addSave(new UserSaves(mUser.getValue().getUserId(), word))
-                        .subscribe(() -> {},
-                                Throwable::printStackTrace)
-                );
-            } else {
-               // Add Remote
-            }
-        }
-    }
-
-    public void removeSave(String word) {
-        if(mUser.getValue() != null && mSavedWords.getValue() != null) {
-            if(mUser.getValue().isLoggedIn()) {
-                compositeDisposable.add(
-                    vocabyRepository.removeSave(new UserSaves(mUser.getValue().getUserId(), word))
-                            .subscribe(() -> {},
-                                    Throwable::printStackTrace)
-                );
-            } else {
-                // Remove Remote
-            }
-        }
-    }
-
     public void logout() {
-        int id = sharedPreferences.getInt(LOCAL_ID_KEY, 1);
-        Completable deleteUser = vocabyRepository.deleteUser(mUser.getValue());
-        Single<User> getUser = vocabyRepository.getUser(id);
+        int localId = sharedPreferences.getInt(LOCAL_ID_KEY, 1);
+        Completable deleteAllUsers = vocabyRepository.deleteAllUsers(localId);
+        Single<User> getLocalUser = vocabyRepository.getUser(localId);
         if(mUser.getValue() != null) {
+            String token = mUser.getValue().getToken();
             compositeDisposable.add(
-                vocabyRepository.getVocabyApiService("")
-                    .logout("Token " + mUser.getValue().getToken())
-                    .andThen(deleteUser)
-                    .andThen(getUser)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(user -> {
+                deleteAllUsers
+                    .andThen(getLocalUser)
+                    .flatMapCompletable(user -> {
                         mUser.setValue(user);
                         setSavedWords();
+                        userState.setValue(new UserStateModel(!user.isLoggedIn()));
 
                         // Set current user ID back to local user ID
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putInt(CURRENT_ID_KEY, user.getUserId());
                         editor.apply();
-                    }, Throwable::printStackTrace));
+
+                        return vocabyRepository.getVocabyApiService("").logout(token)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread());
+                    }).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(() -> {}, error -> {
+                            if(!(error instanceof HttpException)) {
+                                Log.d("logout: ", error.getMessage());
+                            }
+
+                            compositeDisposable.add(
+                                    vocabyRepository.getUserCount()
+                                    .subscribe(num -> Log.d("logout: ", num+""))
+                            );
+                    })
+        );
         }
     }
 
@@ -169,5 +157,38 @@ public class UserViewModel extends AndroidViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.clear();
+    }
+
+    @Override
+    public void removeSave(String word) {
+        User currentUser = mUser.getValue();
+        if(currentUser != null) {
+            if (currentUser.isLoggedIn()) {
+                if(NetworkManager.isConnectedToInternet(getApplication())) {
+                    compositeDisposable.add(
+                            vocabyRepository.getVocabyApiService("").removeSave(currentUser.getToken(), word)
+                                    .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(() -> {},
+                                            error -> {
+                                                Log.e("removeWordFromSaves(api): ", error.getMessage());
+                                            })
+                    );
+                } else {
+                    // Add to Offline Save
+                    // AndThen User Save
+                    // Set sync to false (Just check this onResume?)
+                }
+            } else {
+                // local remove
+                compositeDisposable.add(
+                        vocabyRepository.removeSave(mUser.getValue().getUserId(), word)
+                                .subscribe(() -> {},
+                                    error -> Log.e("removeWordFromSaves(local): ", error.getMessage()))
+                );
+
+            }
+        }
     }
 }

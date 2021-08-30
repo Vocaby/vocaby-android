@@ -58,20 +58,16 @@ public class User {
     }
 
     public String getLastName() {
-        return lastName;
+        return this.lastName;
     }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public String getToken() {
-        return token;
-    }
+    public String getToken() { return this.token; }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+    public void setToken(String token) { this.token = token; }
 
     public boolean isLoggedIn() { return !token.isEmpty(); }
 }

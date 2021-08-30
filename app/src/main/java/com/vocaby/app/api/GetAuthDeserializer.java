@@ -1,5 +1,7 @@
 package com.vocaby.app.api;
 
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -15,7 +17,8 @@ public class GetAuthDeserializer implements JsonDeserializer<AuthResponse> {
     public AuthResponse deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
         if(!jsonObject.has("status")) {
-            String token = jsonObject.get("token").getAsString();
+            String token = "Token " + jsonObject.get("token").getAsString();
+            Log.d("deserialize: ", token);
             JsonArray responseSaves = jsonObject.get("saves").getAsJsonArray();
             ArrayList<String> saves = new ArrayList<>();
             for(JsonElement wordElement : responseSaves) {

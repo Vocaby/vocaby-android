@@ -21,7 +21,6 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
 
     public DefinitionsAdapter(Context ctx) {
         this.ctx = ctx;
-        wordModelData = null;
     }
 
     @NonNull
@@ -35,7 +34,7 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
     @SuppressLint("NotifyDataSetChanged")
     public void setWordData(WordModel wordModelData) {
         this.wordModelData = wordModelData;
-        notifyDataSetChanged();
+        this.notifyDataSetChanged();
     }
 
     @Override

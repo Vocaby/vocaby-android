@@ -7,6 +7,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
+import com.vocaby.app.database.entity.OfflineAddedSaves;
+import com.vocaby.app.database.entity.OfflineRemovedSaves;
 import com.vocaby.app.database.entity.User;
 import com.vocaby.app.database.entity.UserSaves;
 import com.vocaby.app.database.entity.Word;
@@ -19,20 +21,26 @@ import io.reactivex.rxjava3.core.Single;
 
 @Dao
 public abstract class VocabyDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Single<Long> createUser(User user);
 
     @Delete
     public abstract Completable removeUser(User user);
 
+    @Query("DELETE FROM vocaby_user WHERE user_id != :id")
+    public abstract Completable removeAllUsers(int id);
+
     @Insert
     public abstract Completable addAllSaves(Word... words);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Completable addSave(UserSaves userSaves);
 
-    @Delete
-    public abstract Completable removeSave(UserSaves userSaves);
+    @Query("DELETE FROM saves WHERE user_id = :id AND word = :word")
+    public abstract Completable removeSave(int id, String word);
+
+    @Query("SELECT EXISTS(SELECT 1 FROM saves WHERE word = :word AND user_id = :id)")
+    public abstract Single<Integer> hasSave(String word, int id);
 
     @Query("DELETE FROM saves WHERE user_id = :id")
     public abstract Completable removeAllSaves(int id);
@@ -45,6 +53,24 @@ public abstract class VocabyDao {
 
     @Query("DELETE FROM saves")
     public abstract Completable clearSaves();
+
+    @Insert
+    public abstract Completable addOfflineAddedSave(OfflineAddedSaves offlineAddedSaves);
+
+    @Query("SELECT word FROM offline_added")
+    public abstract Single<List<String>> getOfflineAdded();
+
+    @Query("DELETE FROM offline_added")
+    public abstract Completable clearOfflineAdded();
+
+    @Insert
+    public abstract Completable addOfflineRemovedSave(OfflineRemovedSaves offlineRemovedSaves);
+
+    @Query("SELECT word FROM offline_removed")
+    public abstract Single<List<String>> getOfflineRemoved();
+
+    @Query("DELETE FROM offline_removed")
+    public abstract Completable clearOfflineRemoved();
 
     @Transaction
     @Query("SELECT COUNT(*) FROM vocaby_user")

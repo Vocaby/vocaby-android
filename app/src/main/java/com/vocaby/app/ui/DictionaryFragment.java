@@ -68,19 +68,22 @@ public class DictionaryFragment extends Fragment {
     }
 
     public void addResultsFragment(String search, boolean ignoreHistory) {
-        dictionaryViewModel.addToStack(search);
-        FragmentManager fm = getChildFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        transaction
-            .addToBackStack(null)
-            .setCustomAnimations(
-                R.anim.enter_bottom_to_top,
-                R.anim.exit_top_to_bottom,
-                R.anim.enter_bottom_to_top,
-                R.anim.exit_top_to_bottom
-            )
-            .add(R.id.search_fragment_container, SearchResultsFragment.newInstance(search, ignoreHistory))
-            .commit();
+        search = search.toLowerCase().replaceAll("[^a-z-._ ]", "");
+        if(dictionaryViewModel.isNotOpen(search)) {
+            dictionaryViewModel.addToStack(search);
+            FragmentManager fm = getChildFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction
+                    .addToBackStack(null)
+                    .setCustomAnimations(
+                            R.anim.enter_bottom_to_top,
+                            R.anim.exit_top_to_bottom,
+                            R.anim.enter_bottom_to_top,
+                            R.anim.exit_top_to_bottom
+                    )
+                    .add(R.id.search_fragment_container, SearchResultsFragment.newInstance(search, ignoreHistory))
+                    .commit();
+        }
     }
 
     private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
@@ -89,7 +92,7 @@ public class DictionaryFragment extends Fragment {
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         v.clearFocus();
         if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-            String searchedWord = v.getText().toString().toLowerCase().replaceAll("[^a-z]", "");
+            String searchedWord = v.getText().toString().toLowerCase().replaceAll("[^a-z-._ ]", "");
             dictionaryViewModel.setSearch(searchedWord);
             return true;
         }

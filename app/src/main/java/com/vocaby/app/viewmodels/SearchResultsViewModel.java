@@ -10,80 +10,150 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
+import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.database.entity.Definition;
 import com.vocaby.app.database.entity.User;
+import com.vocaby.app.database.entity.UserSaves;
+import com.vocaby.app.models.WordDataPackage;
 import com.vocaby.app.models.WordModel;
 import com.vocaby.app.repositories.VocabyRepository;
-import com.vocaby.app.utils.NetworkManager;
 import com.vocaby.app.utils.SingleLiveEvent;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.HttpException;
 
 public class SearchResultsViewModel extends AndroidViewModel {
     private final CompositeDisposable compositeDisposable;
     private final VocabyRepository vocabyRepository;
-    private final SingleLiveEvent<WordModel> mWordData;
+    private final SingleLiveEvent<WordDataPackage> mWordPackage;
+    private final SharedPreferences sharedPreferences;
+    private User currentUser;
 
     public SearchResultsViewModel(@NonNull Application application) {
         super(application);
+        sharedPreferences = getApplication().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
         compositeDisposable = new CompositeDisposable();
         vocabyRepository = new VocabyRepository(application);
-        mWordData = new SingleLiveEvent<>();
+        mWordPackage = new SingleLiveEvent<>();
     }
 
-    public LiveData<WordModel> getWordData() {
-        return mWordData;
+    public LiveData<WordDataPackage> getWordData() {
+        return mWordPackage;
     }
 
-    public void retrieveWordDataFromRepo(String searched) {
+    public void retrieveWordDataFromRepo(String searched, Boolean isConnected) {
+        int userId = sharedPreferences.getInt("CURRENT_USER_ID", 1);
+        VocabyApiService vocabyApi = vocabyRepository.getVocabyApiService("D");
         compositeDisposable.add(
-                vocabyRepository.getWordDataFromDatabase(searched)
-                        .subscribe(wordDefinitions -> {
-                            WordModel wordData = new WordModel(searched);
-                            if(wordDefinitions.word.getPronunciation() != null) {
-                                wordData.setPronunciation(wordDefinitions.word.getPronunciation());
-                            } else {
-                                wordData.setPronunciation("");
-                            }
+            vocabyRepository.getUser(userId)
+                .flatMap(user -> {
+                    currentUser = user;
+                    if(user.isLoggedIn()) {
+                        if(isConnected) {
+                            return vocabyApi.getWordData(user.getToken(), searched)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread());
+                        }
+                    }
 
-                            for(Definition data : wordDefinitions.definitions) {
-                                wordData.addDefinition(data.getPos(), data.getDefinition());
-                                wordData.addSentence(data.getPos(), data.getSentence());
-                            }
-
-                            mWordData.setValue(wordData);
-                        }, error -> {
-                            if(error instanceof EmptyResultSetException) {
-                                mWordData.setValue(new WordModel(searched));
-                            }
-                        })
+                    // Get Local Definitions and Local Saves
+                    return vocabyRepository.getWordDataPackageLocally(searched, userId);
+                }).subscribe(mWordPackage::setValue,
+                    error -> {
+                        if(error instanceof EmptyResultSetException) {
+                            mWordPackage.setValue(new WordDataPackage(new WordModel(searched), false));
+                        }
+                        Log.e("retrieveWordDataFromRepo: ", error.getMessage());
+                }
+            )
         );
+    }
 
-//        if (wordModelData == null) {
-//            if (isConnectedToInternet) {
-//                // Get definition from the api
-//                VocabyApiService vocabyApi = vocabyRepository.getVocabyApiService();
-//                compositeDisposable.add(
-//                    vocabyApi.getWordData(searched)
-//                            .subscribeOn(Schedulers.io())
-//                            .observeOn(AndroidSchedulers.mainThread())
-//                            .subscribe(
-//                                    // onSuccess
-//                                    mWordData::setValue,
-//                                    // onError
-//                                    onError -> Log.e("DVM", onError.getMessage())
-//                            )
-//                );
-//            } else {
-//                // No definition in the database
-//                mWordData.setValue(new WordModel(searched));
-//            }
-//        } else {
-//            // Get definition in the database
-//            mWordData.setValue(wordModelData);
-//        }
+    public void saveWord(String word, boolean isConnected) {
+        if(mWordPackage.getValue() != null) {
+            if(currentUser.isLoggedIn()) {
+                if(isConnected) {
+                    compositeDisposable.add(
+                            vocabyRepository.getVocabyApiService("").save(currentUser.getToken(), word)
+                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(() -> { mWordPackage.setValue(mWordPackage.getValue().setSave(true));},
+                                            error -> {
+                                                if(error instanceof HttpException) {
+                                                    mWordPackage.setValue(mWordPackage.getValue().setSave(false));
+                                                }
+                                                Log.e("saveWord: ", error.getMessage());
+                                            })
+                    );
+                } else {
+                    // Add to Offline Save
+                    // AndThen User Save
+                    // Set sync to false (Just check this onResume?)
+//                    compositeDisposable.add(
+//                            vocabyRepository.addOfflineAddedSave(word)
+//                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
+//                                    .subscribe(() -> {
+//                                                mWordPackage.setValue(mWordPackage.getValue().setSave(true));
+//                                            },
+//                                            error -> Log.e("saveWord (local, saved): ", error.getMessage()))
+//                    );
+                }
+            } else {
+                compositeDisposable.add(
+                        vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word))
+                                .subscribe(() -> {
+                                            mWordPackage.setValue(mWordPackage.getValue().setSave(true));
+                                        },
+                                        error -> Log.e("saveWord (local, saved): ", error.getMessage()))
+                );
+            }
+        }
+    }
+
+    public void removeSave(String word, Boolean isConnected) {
+        if(mWordPackage.getValue() != null) {
+            if (currentUser.isLoggedIn()) {
+                if(isConnected) {
+                    compositeDisposable.add(
+                            vocabyRepository.getVocabyApiService("").removeSave(currentUser.getToken(), word)
+                                    .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(() -> { mWordPackage.setValue(mWordPackage.getValue().setSave(false));},
+                                            error -> {
+                                                if(error instanceof HttpException) {
+                                                    mWordPackage.setValue(mWordPackage.getValue().setSave(true));
+                                                }
+                                                Log.e("saveWord: ", error.getMessage());
+                                            })
+                    );
+                } else {
+                    // Add to Offline Save
+                    // AndThen User Save
+                    // Set sync to false (Just check this onResume?)
+//                    compositeDisposable.add(
+//                            vocabyRepository.addOfflineRemovedSave(word)
+//                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
+//                                    .subscribe(() -> {
+//                                                mWordPackage.setValue(mWordPackage.getValue().setSave(false));
+//                                            },
+//                                            error -> Log.e("saveWord (local, saved): ", error.getMessage()))
+//                    );
+                }
+            }
+
+            // Always update user saves locally
+            compositeDisposable.add(
+                    vocabyRepository.removeSave(currentUser.getUserId(), word)
+                            .subscribe(() -> {
+                                        mWordPackage.setValue(mWordPackage.getValue().setSave(false));
+                                    },
+                                    error -> Log.e("saveWord (local): ", error.getMessage()))
+            );
+        }
     }
 
     @Override

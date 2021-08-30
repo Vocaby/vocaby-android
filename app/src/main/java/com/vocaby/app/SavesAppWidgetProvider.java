@@ -7,14 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.RemoteViews;
-
-import com.vocaby.app.database.DatabaseManager;
-import com.vocaby.app.models.WordModel;
-import com.vocaby.app.ui.MainActivity;
-
-import java.util.List;
 
 public class SavesAppWidgetProvider extends AppWidgetProvider {
     private DataManager dataManager;

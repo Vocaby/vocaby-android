@@ -3,8 +3,6 @@ package com.vocaby.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.vocaby.app.database.DatabaseManager;
-
 import java.util.List;
 
 public class WordPickerService {

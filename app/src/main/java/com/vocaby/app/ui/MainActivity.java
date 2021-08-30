@@ -49,14 +49,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+//        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+//        pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
 
         setupNavigation();
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
     }
 
     public static void loginUser() {

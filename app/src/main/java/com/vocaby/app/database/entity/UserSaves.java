@@ -3,6 +3,7 @@ package com.vocaby.app.database.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "saves", foreignKeys = {
@@ -10,7 +11,7 @@ import androidx.room.PrimaryKey;
                 entity = User.class,
                 parentColumns = "user_id",
                 childColumns = "user_id")
-})
+}, indices = {@Index(value = {"user_id", "word"}, unique = true)})
 public class UserSaves {
     @PrimaryKey(autoGenerate = true)
     private int id;
