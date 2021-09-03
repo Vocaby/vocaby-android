@@ -9,7 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.vocaby.app.DataManager;
+import com.vocaby.app.database.DataManager;
 import com.vocaby.app.database.entity.Definition;
 import com.vocaby.app.database.entity.WordDefinitions;
 import com.vocaby.app.models.WordModel;
@@ -49,8 +49,6 @@ public class DictionaryViewModel extends AndroidViewModel {
         int lastTimeStarted = randomWordPicker.getInt("appStarted", -1);
         Calendar calendar = Calendar.getInstance();
         int today = calendar.get(Calendar.DAY_OF_YEAR);
-        Log.d("updateRandomWord: ", today+"");
-        Log.d("updateRandomWord: ", lastTimeStarted+"");
         if (today != lastTimeStarted) {
             compositeDisposable.add(
                 vocabyRepository.getRandomWord()
@@ -68,7 +66,6 @@ public class DictionaryViewModel extends AndroidViewModel {
             editor.apply();
         } else {
             int id = randomWordPicker.getInt("randomWordId", 100000);
-            Log.d("updateRandomWord: ", id+"");
             compositeDisposable.add(
                 vocabyRepository.getWordDataFromDatabase(id)
                         .subscribe(wordDefinitions -> mWordModel.setValue(makeWordData(wordDefinitions)),

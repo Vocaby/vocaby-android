@@ -97,6 +97,12 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Single<String> getRandomUserSave(int id) {
+        return vocabyDao.getRandomSave(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Completable addOfflineAddedSave(String word) {
         return vocabyDao.addOfflineAddedSave(new OfflineAddedSaves(word))
                 .subscribeOn(Schedulers.io())

@@ -1,10 +1,7 @@
-package com.vocaby.app;
+package com.vocaby.app.database;
 
 import android.content.Context;
 import android.util.Log;
-
-import com.vocaby.app.models.UserModel;
-import com.vocaby.app.models.WordModel;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,15 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class DataManager {
     private static DataManager dataManager = null;

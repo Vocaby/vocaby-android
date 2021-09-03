@@ -51,6 +51,9 @@ public abstract class VocabyDao {
     @Query("SELECT word FROM saves where user_id = :id")
     public abstract Single<List<String>> getSaves(int id);
 
+    @Query("SELECT word FROM saves where user_id = :id ORDER BY RANDOM() LIMIT 1")
+    public abstract Single<String> getRandomSave(int id);
+
     @Query("DELETE FROM saves")
     public abstract Completable clearSaves();
 

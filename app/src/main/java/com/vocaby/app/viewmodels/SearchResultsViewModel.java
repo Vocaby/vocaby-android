@@ -12,7 +12,6 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.api.VocabyApiService;
-import com.vocaby.app.database.entity.Definition;
 import com.vocaby.app.database.entity.User;
 import com.vocaby.app.database.entity.UserSaves;
 import com.vocaby.app.models.WordDataPackage;
@@ -47,6 +46,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
     public void retrieveWordDataFromRepo(String searched, Boolean isConnected) {
         int userId = sharedPreferences.getInt("CURRENT_USER_ID", 1);
         VocabyApiService vocabyApi = vocabyRepository.getVocabyApiService("D");
+
         compositeDisposable.add(
             vocabyRepository.getUser(userId)
                 .flatMap(user -> {
@@ -67,6 +67,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                             mWordPackage.setValue(new WordDataPackage(new WordModel(searched), false));
 
                         }
+
                         Bugsnag.notify(error);
                         Log.e("retrieveWordDataFromRepo: ", error.getMessage());
                 }
@@ -83,7 +84,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                     .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(() -> { mWordPackage.setValue(mWordPackage.getValue().setSave(true));},
+                                    .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(true)),
                                             error -> {
                                                 if(error instanceof HttpException) {
                                                     mWordPackage.setValue(mWordPackage.getValue().setSave(false));
@@ -109,9 +110,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
             } else {
                 compositeDisposable.add(
                         vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word))
-                                .subscribe(() -> {
-                                            mWordPackage.setValue(mWordPackage.getValue().setSave(true));
-                                        },
+                                .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(true)),
                                         error -> {
                                             Bugsnag.notify(error);
                                             Log.e("saveWord (local, saved): ", error.getMessage());
@@ -130,7 +129,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                     .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(() -> { mWordPackage.setValue(mWordPackage.getValue().setSave(false));},
+                                    .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(false)),
                                             error -> {
                                                 if(error instanceof HttpException) {
                                                     mWordPackage.setValue(mWordPackage.getValue().setSave(true));

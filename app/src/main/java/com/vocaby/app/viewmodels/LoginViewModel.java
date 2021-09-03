@@ -85,13 +85,7 @@ public class LoginViewModel extends AndroidViewModel {
 
                                 return vocabyRepository.insertSavedWords(userSaves);
                         })
-                ).subscribe(saves -> {
-                            mLogin.setValue(true);
-                            compositeDisposable.add(
-                                    vocabyRepository.getUserCount()
-                                            .subscribe(num -> Log.d("login: ", num+""))
-                            );
-                        },
+                ).subscribe(saves -> mLogin.setValue(true),
                     error -> {
                         if(error instanceof HttpException) {
                             Response<?> response = ((HttpException) error).response();

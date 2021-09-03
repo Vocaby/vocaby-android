@@ -11,12 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
-        app:navigationContentDescription="@string/abc_action_bar_up_description"
-        android:background="@color/colorPrimary"
-        app:titleTextColor="@color/white"
+        android:background="@color/white"
         style="@style/PreferenceThemeOverlay"
-        app:navigationIcon="@drawable/ic_left_arrow"
-        app:title="Settings" />
+        app:navigationIcon="@drawable/ic_left_arrow" />
 
     <FrameLayout
         android:id="@android:id/list_container"

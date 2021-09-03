@@ -107,7 +107,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
 
     public void handleActivityResult(ActivityResult result) {
         if(result.getResultCode() == Activity.RESULT_OK) {
-            if(result.getData().getBooleanExtra("loginStatus", false)) {
+            if(result.getData() != null && result.getData().getBooleanExtra("loginStatus", false)) {
                 changeToCurrentUser();
             }
         }
@@ -132,7 +132,11 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
     }
 
     public String getSaveItem(int position) {
-        return mSavedWords.getValue().get(position);
+        if(mSavedWords.getValue() != null) {
+            return mSavedWords.getValue().get(position);
+        }
+
+        return null;
     }
 
     public void logout() {
@@ -159,9 +163,10 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                                 .observeOn(AndroidSchedulers.mainThread());
                     }).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {}, error -> {
+                        .subscribe(() -> {
+                        }, error -> {
                             if(!(error instanceof HttpException)) {
-                                Log.d("logout: ", error.getMessage());
+                                Log.e("logout: ", error.getMessage());
                             }
                             Bugsnag.notify(error);
                     })

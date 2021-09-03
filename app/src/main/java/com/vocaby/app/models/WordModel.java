@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class WordModel implements Serializable {
+public class WordModel {
     private final String word;
     private String pronunciation;
     private final Map<String, List<String>> mDefinitions;

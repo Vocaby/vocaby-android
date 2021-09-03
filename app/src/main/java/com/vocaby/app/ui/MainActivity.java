@@ -3,6 +3,8 @@ package com.vocaby.app.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.AlarmManager;
@@ -13,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -20,21 +23,17 @@ import android.widget.EditText;
 
 import com.bugsnag.android.Bugsnag;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.vocaby.app.FragmentAdapter;
-import com.vocaby.app.NotificationReceiver;
+import com.vocaby.app.receivers.NotificationReceiver;
+import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.R;
+import com.vocaby.app.viewmodels.UserViewModel;
 
-import java.util.Calendar;
-
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity {
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
+    private Intent notificationIntent;
     private ViewPager2 viewPager;
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +42,30 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         Bugsnag.start(this);
 
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
-//        pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        setupNotification();
         setupNavigation();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        sharedPreferences.registerOnSharedPreferenceChangeListener(mPrefsListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(mPrefsListener);
+    }
+
+    private void setupNotification() {
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        notificationIntent = new Intent(this, NotificationReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        updateNotificationStatus(sharedPreferences, getString(R.string.pref_notification_key));
     }
 
     private void setupNavigation() {
@@ -109,32 +125,48 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 }
             }
         }
+
         return super.dispatchTouchEvent( event );
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(key.equals(getString(R.string.pref_notification_key))) {
-            updateNotificationSettings(sharedPreferences, key);
-        } else if(key.equals(getString(R.string.pref_notification_frequency_key))) {
-            updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
-        }
-    }
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
+        (sharedPreferences, key) -> {
+            if(key.equals(getString(R.string.pref_notification_key))) {
+                updateNotificationStatus(sharedPreferences, key);
+            } else if(key.equals(getString(R.string.pref_notification_frequency_key))) {
+                updateNotificationFrequency(sharedPreferences, getString(R.string.pref_notification_key));
+            }
+    };
 
-    private void updateNotificationSettings(SharedPreferences sharedPreferences, String key) {
+    private void updateNotificationStatus(SharedPreferences sharedPreferences, String key) {
         if(sharedPreferences.getBoolean(key, false)) {
             int minutes = Integer.parseInt(sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "5"));
-            alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000L * 60 * minutes, pendingIntent);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 * minutes, pendingIntent);
         } else {
             alarmManager.cancel(pendingIntent);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancelAll();
+            notificationManager.cancel(313);
+        }
+    }
+
+    private void updateNotificationFrequency(SharedPreferences sharedPreferences, String key) {
+        if(sharedPreferences.getBoolean(key, false)) {
+            alarmManager.cancel(pendingIntent);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(313);
+
+            int minutes = Integer.parseInt(sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "5"));
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 * minutes, pendingIntent);
         }
     }
 
     public void showDefinition(String word) {
         viewPager.setCurrentItem(0);
-        DictionaryFragment dictionaryFragment = (DictionaryFragment) getSupportFragmentManager().findFragmentByTag("f0");
-        dictionaryFragment.addResultsFragment(word, true);
+        DictionaryFragment dictionaryFragment = (DictionaryFragment) getSupportFragmentManager()
+                .findFragmentByTag("f0");
+
+        if(dictionaryFragment != null) {
+            dictionaryFragment.addResultsFragment(word, true);
+        }
     }
 }

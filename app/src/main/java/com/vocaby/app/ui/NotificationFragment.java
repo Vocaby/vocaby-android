@@ -12,14 +12,14 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.vocaby.app.R;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class NotificationFragment extends PreferenceFragmentCompat {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         assert view != null;
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
 
 
         view.setBackgroundColor(getResources().getColor(android.R.color.white, getContext().getTheme()));
@@ -28,6 +28,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setPreferencesFromResource(R.xml.preferences, rootKey);
+        setPreferencesFromResource(R.xml.notification_preferences, rootKey);
     }
 }

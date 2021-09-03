@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         app:key="notifications_category"
-        app:title="NOTIFICATIONS">
+        app:title="NOTIFICATION SETTINGS">
         <SwitchPreferenceCompat
             android:key="@string/pref_notification_key"
             android:title="Enable Saves Notification"

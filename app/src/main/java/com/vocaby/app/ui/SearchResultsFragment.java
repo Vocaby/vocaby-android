@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.vocaby.app.DataManager;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.DefinitionsAdapter;
 import com.vocaby.app.models.WordDataPackage;
@@ -154,7 +152,6 @@ public class SearchResultsFragment extends Fragment {
                         searchResultsViewModel.removeSave(searchedWord, NetworkManager.isConnectedToInternet(ctx));
                         saveProgress.setVisibility(View.VISIBLE);
                         disableSaveButton(icon);
-                        Log.d("observeWordPackageData: ", "unsaving");
                     });
                 } else {
                     icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved));
@@ -163,7 +160,6 @@ public class SearchResultsFragment extends Fragment {
                         searchResultsViewModel.saveWord(searchedWord, NetworkManager.isConnectedToInternet(ctx));
                         saveProgress.setVisibility(View.VISIBLE);
                         disableSaveButton(icon);
-                        Log.d("observeWordPackageData: ", "saving");
                     });
                 }
 

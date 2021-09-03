@@ -1,6 +1,6 @@
 package com.vocaby.app.models;
 
-import com.vocaby.app.database.entity.Definition;
+import com.vocaby.app.utils.WordService;
 import com.vocaby.app.database.entity.WordDefinitions;
 
 public class WordDataPackage {
@@ -13,19 +13,7 @@ public class WordDataPackage {
     }
 
     public WordDataPackage(WordDefinitions wordDefinitions, int result) {
-        WordModel wordData = new WordModel(wordDefinitions.word.getWord());
-        if(wordDefinitions.word.getPronunciation() != null) {
-            wordData.setPronunciation(wordDefinitions.word.getPronunciation());
-        } else {
-            wordData.setPronunciation("");
-        }
-
-        for(Definition data : wordDefinitions.definitions) {
-            wordData.addDefinition(data.getPos(), data.getDefinition());
-            wordData.addSentence(data.getPos(), data.getSentence());
-        }
-
-        this.wordModel = wordData;
+        this.wordModel = WordService.convertToWordModel(wordDefinitions);
         this.saved = result == 1;
     }
 
