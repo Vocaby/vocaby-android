@@ -2,6 +2,7 @@ package com.vocaby.app.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -99,10 +100,7 @@ public class LoginFragment extends Fragment {
         });
 
         loginViewModel.getLoginStatus().observe(getViewLifecycleOwner(), loginSuccessful -> {
-            if(loginSuccessful) {
-                MainActivity.loginUser();
-                requireActivity().finish();
-            } else {
+            if(!loginSuccessful) {
                 loginAlertView.setText(getString(R.string.wrong_credentials_desc));
                 loginButton.setEnabled(true);
             }

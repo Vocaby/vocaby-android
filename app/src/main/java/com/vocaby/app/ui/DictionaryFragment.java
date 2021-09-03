@@ -68,11 +68,12 @@ public class DictionaryFragment extends Fragment {
     }
 
     public void addResultsFragment(String search, boolean ignoreHistory) {
-        search = search.toLowerCase().replaceAll("[^a-z-._ ]", "");
-        if(dictionaryViewModel.isNotOpen(search)) {
-            dictionaryViewModel.addToStack(search);
+        search = cleanText(search);
+        if(!dictionaryViewModel.isOpen(search)) {
             FragmentManager fm = getChildFragmentManager();
             FragmentTransaction transaction = fm.beginTransaction();
+            dictionaryViewModel.addToStack(search);
+
             transaction
                     .addToBackStack(null)
                     .setCustomAnimations(
@@ -81,8 +82,9 @@ public class DictionaryFragment extends Fragment {
                             R.anim.enter_bottom_to_top,
                             R.anim.exit_top_to_bottom
                     )
-                    .add(R.id.search_fragment_container, SearchResultsFragment.newInstance(search, ignoreHistory))
-                    .commit();
+                    .add(R.id.search_fragment_container,
+                            SearchResultsFragment.newInstance(search, ignoreHistory)
+                    ).commit();
         }
     }
 
@@ -92,11 +94,15 @@ public class DictionaryFragment extends Fragment {
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         v.clearFocus();
         if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-            String searchedWord = v.getText().toString().toLowerCase().replaceAll("[^a-z-._ ]", "");
+            String searchedWord = cleanText(v.getText().toString());
             dictionaryViewModel.setSearch(searchedWord);
             return true;
         }
 
         return false;
     };
+
+    private String cleanText(String text) {
+        return text.toLowerCase().trim().replaceAll("[^a-z-._ ]", "");
+    }
 }

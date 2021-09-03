@@ -26,6 +26,7 @@ public class User {
         this.token = "";
     }
 
+    @Ignore
     public User(String email, String firstName, String lastName, String token) {
         this.email = email;
         this.firstName = firstName;

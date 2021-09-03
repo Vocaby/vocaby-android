@@ -106,11 +106,11 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
-    public boolean isNotOpen(String word) {
+    public boolean isOpen(String word) {
         if(searchStack.empty()) {
-            return true;
+            return false;
         } else {
-            return !searchStack.peek().equals(word);
+            return searchStack.peek().equals(word);
         }
     }
 

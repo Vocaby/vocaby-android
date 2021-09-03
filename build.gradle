@@ -8,9 +8,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.1'
         classpath "com.bugsnag:bugsnag-android-gradle-plugin:7.0.0-beta01"
-
-        def nav_version = "2.3.5"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
     }
 }
 

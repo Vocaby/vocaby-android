@@ -23,6 +23,7 @@ import java.util.List;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.HttpException;
 
 public class LoginViewModel extends AndroidViewModel {
     private final VocabyRepository vocabyRepository;
@@ -55,56 +56,37 @@ public class LoginViewModel extends AndroidViewModel {
                 getApplication().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
         compositeDisposable.add(
             vocabyRepository.getUserSaves(sharedPreferences.getInt(CURRENT_ID_KEY, 0))
-                .subscribe(list -> {
+                .flatMap(list -> {
                     LoginRequest loginRequest = new LoginRequest(email, password, list);
-                    compositeDisposable.add(
-                        ApiManager.getInstance().getVocabyApiService("L").login(loginRequest)
+                    return ApiManager.getInstance().getVocabyApiService("L").login(loginRequest)
                             .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(loginResponse -> {
-                                if(loginResponse != null) {
-                                    compositeDisposable.add(
-                                        vocabyRepository.createUser(new User(
-                                                email,
-                                                "Eric",
-                                                "Kim",
-                                                loginResponse.getToken()
-                                        )).subscribe(id -> {
-                                                    int userId = id.intValue();
-                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                    editor.putInt(CURRENT_ID_KEY, userId);
-                                                    editor.apply();
+                            .observeOn(AndroidSchedulers.mainThread());
+                }).flatMap(authResponse -> vocabyRepository.createUser(
+                        new User(
+                            email,
+                            "Eric",
+                            "Kim",
+                            authResponse.getToken()
+                        )
+                    ).flatMap(id -> {
+                                int userId = id.intValue();
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putInt(CURRENT_ID_KEY, userId);
+                                editor.apply();
 
-                                                    List<String> s = loginResponse.getSaves();
-                                                    List<UserSaves> userSaves = new LinkedList<>();
-                                                    for(String word : s) {
-                                                        userSaves.add(new UserSaves(userId, word));
-                                                    }
-
-                                                    compositeDisposable.add(
-                                                        vocabyRepository.insertSavedWords(userSaves)
-                                                                .subscribe(saves -> mLoginSuccessful.setValue(true),
-                                                                        error -> {
-                                                                            Bugsnag.notify(error);
-                                                                            Log.e("login (saves): ", error.getMessage());
-                                                                        })
-                                                    );
-                                                },
-                                                error -> {
-                                                    Bugsnag.notify(error);
-                                                    Log.e("login (create): ", error.getMessage());
-                                                })
-                                    );
+                                List<String> s = authResponse.getSaves();
+                                List<UserSaves> userSaves = new LinkedList<>();
+                                for(String word : s) {
+                                    userSaves.add(new UserSaves(userId, word));
                                 }
-                            }, error -> {
-                                mLoginSuccessful.setValue(false);
-                                Bugsnag.notify(error);
-                                Log.e("login (api):", error.getMessage());
-                            })
-                    );
-                }, error -> {
-                    Bugsnag.notify(error);
-                    Log.e("UserViewModel (setSavedWords): ", error.getMessage());
+
+                                return vocabyRepository.insertSavedWords(userSaves);
+                        })
+                ).subscribe(saves -> mLoginSuccessful.setValue(true), error -> {
+                    if(!(error instanceof HttpException)) {
+                        Bugsnag.notify(error);
+                        Log.e("UserViewModel (login): ", error.getMessage());
+                    }
                 })
         );
     }

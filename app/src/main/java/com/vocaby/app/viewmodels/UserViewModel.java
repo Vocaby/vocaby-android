@@ -1,10 +1,12 @@
 package com.vocaby.app.viewmodels;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -47,14 +49,16 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
         userState = new SingleLiveEvent<>();
         mSavedWords = new MutableLiveData<>();
         mUser = new MutableLiveData<>();
+        int currentId = sharedPreferences.getInt(CURRENT_ID_KEY, 1);
 
         compositeDisposable.add(
-            vocabyRepository.getUser(sharedPreferences.getInt(CURRENT_ID_KEY, 1))
-                .subscribe(user -> {
-                        mUser.setValue(user);
-                        setSavedWords();
-                        userState.setValue(new UserStateModel(!user.isLoggedIn()));
-                    },
+            vocabyRepository.getUser(currentId)
+                .flatMap(user -> {
+                    mUser.setValue(user);
+                    userState.setValue(new UserStateModel(!user.isLoggedIn()));
+                    return vocabyRepository.getUserSaves(currentId);
+                })
+                .subscribe(mSavedWords::setValue,
                     e -> {
                         if(e instanceof EmptyResultSetException) {
                             addDefaultUser();
@@ -89,7 +93,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
         return this.userState;
     }
 
-    public void loginUser() {
+    public void changeToCurrentUser() {
         compositeDisposable.add(
             vocabyRepository.getUser(sharedPreferences.getInt(CURRENT_ID_KEY, 0))
                 .subscribe(user -> {
@@ -99,6 +103,14 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                     },
                         Throwable::printStackTrace)
         );
+    }
+
+    public void handleActivityResult(ActivityResult result) {
+        if(result.getResultCode() == Activity.RESULT_OK) {
+            if(result.getData().getBooleanExtra("loginStatus", false)) {
+                changeToCurrentUser();
+            }
+        }
     }
 
     public LiveData<User> getUser() {

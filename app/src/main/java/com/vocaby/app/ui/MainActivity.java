@@ -3,8 +3,6 @@ package com.vocaby.app.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.AlarmManager;
@@ -25,14 +23,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vocaby.app.FragmentAdapter;
 import com.vocaby.app.NotificationReceiver;
 import com.vocaby.app.R;
-import com.vocaby.app.viewmodels.UserViewModel;
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
-    private static UserViewModel userViewModel;
     private ViewPager2 viewPager;
 
     @Override
@@ -47,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         Bugsnag.start(this);
 
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 //        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
 //        pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -55,10 +50,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 //        updateNotificationSettings(sharedPreferences, getString(R.string.pref_notification_key));
 
         setupNavigation();
-    }
-
-    public static void loginUser() {
-        userViewModel.loginUser();
     }
 
     private void setupNavigation() {
