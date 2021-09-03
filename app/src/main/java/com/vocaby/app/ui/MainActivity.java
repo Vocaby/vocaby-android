@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         notificationIntent = new Intent(this, NotificationReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        updateNotificationStatus(sharedPreferences, getString(R.string.pref_notification_key));
     }
 
     private void setupNavigation() {
