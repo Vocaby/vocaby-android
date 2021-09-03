@@ -61,12 +61,6 @@ public class VocabyRepository {
         );
     }
 
-    public Single<Integer> getUserCount() {
-        return vocabyDao.getUserCount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
     public Single<WordDefinitions> getRandomWord() {
         return vocabyDao.getRandomWord()
                 .subscribeOn(Schedulers.io())
@@ -129,15 +123,12 @@ public class VocabyRepository {
     }
 
     public Single<Map<String, List<String>>> getOfflineSaves() {
-        return Single.zip(getOfflineAddedSaves(), getOfflineRemovedSaves(), new BiFunction<List<String>, List<String>, Map<String, List<String>>>() {
-            @Override
-            public Map<String, List<String>> apply(List<String> added, List<String> removed) throws Throwable {
-                Map<String, List<String>> map = new HashMap<>();
-                map.put("added", added);
-                map.put("removed", removed);
+        return Single.zip(getOfflineAddedSaves(), getOfflineRemovedSaves(), (added, removed) -> {
+            Map<String, List<String>> map = new HashMap<>();
+            map.put("added", added);
+            map.put("removed", removed);
 
-                return map;
-            }
+            return map;
         });
     }
 
@@ -166,13 +157,19 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public VocabyApiService getVocabyApiService(String type) {
+        return apiManager.getVocabyApiService(type);
+    }
+
     public Single<Integer> getSavesCount() {
         return vocabyDao.getSavesCount()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public VocabyApiService getVocabyApiService(String type) {
-        return apiManager.getVocabyApiService(type);
+    public Single<Integer> getUserCount() {
+        return vocabyDao.getUserCount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }

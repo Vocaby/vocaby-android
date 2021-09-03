@@ -3,26 +3,37 @@ package com.vocaby.app.models;
 import android.text.TextUtils;
 import android.util.Patterns;
 
+import java.util.regex.Pattern;
+
 public class AuthModel {
     private String email;
     private String password;
     private String confirmationPassword;
+    private String firstName;
+    private String lastName;
 
     public AuthModel() {
         this.email = "";
         this.password = "";
         this.confirmationPassword = "";
+        this.firstName = "";
+        this.lastName = "";
     }
 
     public AuthModel(String email, String password) {
         this.email = email;
         this.password = password;
+        this.confirmationPassword = "";
+        this.firstName = "";
+        this.lastName = "";
     }
 
-    public AuthModel(String email, String password, String confirmationPassword) {
+    public AuthModel(String email, String password, String confirmationPassword, String firstName, String lastName) {
         this.email = email;
         this.password = password;
         this.confirmationPassword = confirmationPassword;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -70,6 +81,11 @@ public class AuthModel {
         return this.password.isEmpty();
     }
 
+    public boolean passwordIsClean() {
+        Pattern invalidCharacters = Pattern.compile("[_ ]");
+        return !invalidCharacters.matcher(this.password).find();
+    }
+
     public boolean confirmationPasswordIsEmpty() { return this.confirmationPassword.isEmpty(); }
 
     public boolean passwordsMatch() {return !passwordIsEmpty() && this.password.equals(this.confirmationPassword); }
@@ -79,6 +95,14 @@ public class AuthModel {
     }
 
     public boolean registrationIsValid() {
-        return emailIsValid() && !confirmationPasswordIsEmpty() && passwordsMatch();
+        return emailIsValid() && !confirmationPasswordIsEmpty() && passwordsMatch() && passwordIsClean();
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 }

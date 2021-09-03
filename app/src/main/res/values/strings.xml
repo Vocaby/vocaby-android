@@ -44,7 +44,7 @@
     <string name="sign_in">Sign In</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="log_out">Log out</string>
-    <string name="enter_email">Please enter a email</string>
+    <string name="enter_email">Please enter an email</string>
     <string name="enter_valid_email">Please enter a valid email</string>
     <string name="enter_password">Please enter a password</string>
     <string name="wrong_credentials_desc">Incorrect email or password</string>
@@ -68,4 +68,8 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="profile">Profile</string>
     <string name="dictionaryfragment">Dictionary Fragment</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="optional">optional</string>
+    <string name="valid_password_characters">Invalid characters</string>
 </resources>

@@ -163,12 +163,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                             if(!(error instanceof HttpException)) {
                                 Log.d("logout: ", error.getMessage());
                             }
-
                             Bugsnag.notify(error);
-                            compositeDisposable.add(
-                                    vocabyRepository.getUserCount()
-                                    .subscribe(num -> Log.d("logout: ", num+""))
-                            );
                     })
         );
         }

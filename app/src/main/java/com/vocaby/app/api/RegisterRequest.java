@@ -16,11 +16,11 @@ public class RegisterRequest {
     @SerializedName("saves")
     final List<String> saves;
 
-    public RegisterRequest(String email, String password, List<String> saves) {
+    public RegisterRequest(String email, String password, String firstName, String lastName, List<String> saves) {
         this.email = email;
         this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.saves = saves;
-        this.firstName = "";
-        this.lastName = "";
     }
 }

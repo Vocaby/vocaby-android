@@ -99,11 +99,9 @@ public class LoginFragment extends Fragment {
                 }
         });
 
-        loginViewModel.getLoginStatus().observe(getViewLifecycleOwner(), loginSuccessful -> {
-            if(!loginSuccessful) {
-                loginAlertView.setText(getString(R.string.wrong_credentials_desc));
-                loginButton.setEnabled(true);
-            }
+        loginViewModel.getLoginStatus().observe(getViewLifecycleOwner(), loginMessage -> {
+            loginAlertView.setText(loginMessage);
+            loginButton.setEnabled(true);
         });
     }
 

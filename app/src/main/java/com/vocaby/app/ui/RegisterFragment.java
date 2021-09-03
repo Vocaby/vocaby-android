@@ -22,14 +22,16 @@ import com.vocaby.app.models.AuthModel;
 import com.vocaby.app.viewmodels.RegisterViewModel;
 
 public class RegisterFragment extends Fragment {
-    private Context ctx;
-    private TextView emailView;
+    private EditText emailView;
     private EditText passwordView;
     private EditText passwordConfirmView;
+    private EditText firstNameView;
+    private EditText lastNameView;
     private Button registerButton;
     private TextView emailAlertView;
     private TextView passwordAlertView;
     private TextView passwordConfirmAlertView;
+    private TextView registrationAlert;
 
     private RegisterViewModel registerViewModel;
 
@@ -40,8 +42,6 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ctx = requireActivity().getApplicationContext();
     }
 
     @Override
@@ -58,6 +58,9 @@ public class RegisterFragment extends Fragment {
         emailAlertView = view.findViewById(R.id.email_header_alert);
         passwordAlertView = view.findViewById(R.id.password_header_alert);
         passwordConfirmAlertView = view.findViewById(R.id.password_confirm_header_alert);
+        firstNameView = view.findViewById(R.id.first_name_input);
+        lastNameView = view.findViewById(R.id.last_name_input);
+        registrationAlert = view.findViewById(R.id.registration_alert);
 
         backButton.setOnClickListener(backListener);
         signInText.setOnClickListener(backListener);
@@ -70,44 +73,45 @@ public class RegisterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         registerViewModel = new ViewModelProvider(requireActivity()).get(RegisterViewModel.class);
-        registerViewModel.getAuthModel().observe(getViewLifecycleOwner(), new Observer<AuthModel>() {
-            @Override
-            public void onChanged(AuthModel authModel) {
-                if(authModel.passwordIsEmpty()) {
-                    passwordAlertView.setText(getString(R.string.enter_password));
-                } else {
+        registerViewModel.getAuthModel().observe(getViewLifecycleOwner(), authModel -> {
+            if(authModel.passwordIsEmpty()) {
+                passwordAlertView.setText(getString(R.string.enter_password));
+            } else {
+                if(authModel.passwordIsClean()) {
                     passwordAlertView.setText("");
-                }
-
-                if(authModel.confirmationPasswordIsEmpty()) {
-                    passwordConfirmAlertView.setText(getString(R.string.enter_password));
                 } else {
-                    passwordConfirmAlertView.setText("");
-
-                    if(!authModel.passwordsMatch()) {
-                        passwordConfirmAlertView.setText(getString(R.string.password_no_match));
-                    }
+                    passwordAlertView.setText(R.string.valid_password_characters);
                 }
+            }
 
-                if(authModel.emailIsEmpty()) {
-                    emailAlertView.setText(getString(R.string.enter_email));
+            if(authModel.confirmationPasswordIsEmpty()) {
+                passwordConfirmAlertView.setText(getString(R.string.enter_password));
+            } else {
+                passwordConfirmAlertView.setText("");
+
+                if(!authModel.passwordsMatch()) {
+                    passwordConfirmAlertView.setText(getString(R.string.password_no_match));
+                }
+            }
+
+            if(authModel.emailIsEmpty()) {
+                emailAlertView.setText(getString(R.string.enter_email));
+            } else {
+                if(!authModel.isEmail()) {
+                    emailAlertView.setText(getString(R.string.enter_valid_email));
                 } else {
-                    if(!authModel.isEmail()) {
-                        emailAlertView.setText(getString(R.string.enter_valid_email));
-                    } else {
-                        emailAlertView.setText("");
-                    }
+                    emailAlertView.setText("");
                 }
+            }
 
-                if(authModel.registrationIsValid()) {
-                    registerViewModel.register();
-                    registerButton.setEnabled(false);
-                }
+            if(authModel.registrationIsValid()) {
+                registerViewModel.register();
+                registerButton.setEnabled(false);
             }
         });
 
-        registerViewModel.getRegistrationStatus().observe(getViewLifecycleOwner(), registrationSuccessful -> {
-            if(registrationSuccessful) {
+        registerViewModel.getRegistrationStatus().observe(getViewLifecycleOwner(), registrationMessage -> {
+            if(registrationMessage.equals("s")) {
                 FragmentManager fm = getParentFragmentManager();
                 fm.beginTransaction()
                         .setCustomAnimations(
@@ -119,7 +123,7 @@ public class RegisterFragment extends Fragment {
                         .add(R.id.login_fragment_container, new SuccessfulCreationFragment())
                         .commit();
             } else {
-                emailAlertView.setText(getString(R.string.user_exists));
+                registrationAlert.setText(registrationMessage);
                 registerButton.setEnabled(true);
             }
         });
@@ -131,9 +135,20 @@ public class RegisterFragment extends Fragment {
             String email = emailView.getText().toString();
             String password = passwordView.getText().toString();
             String passwordConfirm = passwordConfirmView.getText().toString();
-            registerViewModel.setAuthData(email, password, passwordConfirm);
+            String firstName = cleanUpName(firstNameView.getText().toString());
+            String lastName = cleanUpName(lastNameView.getText().toString());
+            registerViewModel.setAuthData(email, password, passwordConfirm, firstName, lastName);
         }
     };
+
+    private String cleanUpName(String name) {
+        String cleaned = "";
+        if(!name.isEmpty()) {
+            cleaned = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        }
+
+        return cleaned;
+    }
 
     private final View.OnClickListener backListener = v -> getParentFragmentManager().popBackStack();
 }

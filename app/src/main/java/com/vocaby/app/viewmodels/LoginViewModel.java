@@ -17,6 +17,7 @@ import com.vocaby.app.models.AuthModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,19 +25,22 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.HttpException;
+import retrofit2.Response;
 
 public class LoginViewModel extends AndroidViewModel {
     private final VocabyRepository vocabyRepository;
     private final SingleLiveEvent<AuthModel> mAuthModel;
     private final CompositeDisposable compositeDisposable;
-    private final SingleLiveEvent<Boolean> mLoginSuccessful;
+    private final SingleLiveEvent<String> mLoginStatus;
+    private final SingleLiveEvent<Boolean> mLogin;
     private final String CURRENT_ID_KEY = "CURRENT_USER_ID";
 
     public LoginViewModel(Application application) {
         super(application);
         vocabyRepository = new VocabyRepository(application);
         mAuthModel = new SingleLiveEvent<>();
-        mLoginSuccessful = new SingleLiveEvent<>();
+        mLoginStatus = new SingleLiveEvent<>();
+        mLogin = new SingleLiveEvent<>();
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -48,24 +52,23 @@ public class LoginViewModel extends AndroidViewModel {
         mAuthModel.setValue(new AuthModel(email, password));
     }
 
-    // Clean up later
     public void login() {
-        String email = mAuthModel.getValue().getEmail();
-        String password = mAuthModel.getValue().getPassword();
-        SharedPreferences sharedPreferences =
-                getApplication().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
-        compositeDisposable.add(
-            vocabyRepository.getUserSaves(sharedPreferences.getInt(CURRENT_ID_KEY, 0))
-                .flatMap(list -> {
-                    LoginRequest loginRequest = new LoginRequest(email, password, list);
-                    return ApiManager.getInstance().getVocabyApiService("L").login(loginRequest)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread());
-                }).flatMap(authResponse -> vocabyRepository.createUser(
+        if(mAuthModel.getValue() != null) {
+            String email = mAuthModel.getValue().getEmail();
+            String password = mAuthModel.getValue().getPassword();
+            SharedPreferences sharedPreferences =
+                    getApplication().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
+
+            compositeDisposable.add(
+                ApiManager.getInstance().getVocabyApiService("L").login(
+                    new LoginRequest(email, password, new ArrayList<>())
+                ).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(authResponse -> vocabyRepository.createUser(
                         new User(
                             email,
-                            "Eric",
-                            "Kim",
+                            authResponse.getFirstName(),
+                            authResponse.getLastName(),
                             authResponse.getToken()
                         )
                     ).flatMap(id -> {
@@ -82,18 +85,38 @@ public class LoginViewModel extends AndroidViewModel {
 
                                 return vocabyRepository.insertSavedWords(userSaves);
                         })
-                ).subscribe(saves -> mLoginSuccessful.setValue(true), error -> {
-                    if(!(error instanceof HttpException)) {
-                        Bugsnag.notify(error);
-                        Log.e("UserViewModel (login): ", error.getMessage());
-                    }
+                ).subscribe(saves -> {
+                            mLogin.setValue(true);
+                            compositeDisposable.add(
+                                    vocabyRepository.getUserCount()
+                                            .subscribe(num -> Log.d("login: ", num+""))
+                            );
+                        },
+                    error -> {
+                        if(error instanceof HttpException) {
+                            Response<?> response = ((HttpException) error).response();
+                            if(response != null) {
+                                int code = response.code();
+                                if (code == 403) {
+                                    mLoginStatus.setValue("Incorrect email or password");
+                                } else if (code == 400) {
+                                    mLoginStatus.setValue("Something went wrong on Vocaby's side. Please try again.");
+                                }
+                            }
+                        } else {
+                            Bugsnag.notify(error);
+                            Log.e("UserViewModel (login): ", error.getMessage());
+                        }
                 })
-        );
+            );
+        }
     }
 
-    public LiveData<Boolean> getLoginStatus() {
-        return mLoginSuccessful;
+    public LiveData<String> getLoginStatus() {
+        return mLoginStatus;
     }
+
+    public LiveData<Boolean> getLogin() { return mLogin; }
 
     @Override
     protected void onCleared() {
