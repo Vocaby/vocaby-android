@@ -72,4 +72,7 @@
     <string name="last_name">Last Name</string>
     <string name="optional">optional</string>
     <string name="valid_password_characters">Invalid characters</string>
+    <string name="notifications">Notifications</string>
+    <string name="clear_saves">Clear Saves</string>
+    <string name="profile_background">Profile Background</string>
 </resources>
