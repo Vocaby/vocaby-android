@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -22,14 +21,13 @@ import com.vocaby.app.models.WordModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
 
-import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public class SavesAppWidgetProvider extends AppWidgetProvider {
-    public static String WIDGET_CLICK = "widgetClick";
+    public static final String WIDGET_CLICK = "widgetClick";
+    public static final String WIDGET_PREV_KEY = "WIDGET_PREV_SELECT_";
     public static Disposable disposable;
     public SavesAppWidgetProvider() {
         super();
@@ -65,10 +63,10 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
 
         disposable = vocabyRepository.getUserSaves(currentId)
                 .flatMap(saves -> {
-                    String prev_word = sp.getString("WIDGET_PREV_SELECT", "");
+                    String prev_word = sp.getString(WIDGET_PREV_KEY+id, "");
                     if(saves.isEmpty()) {
                         SharedPreferences.Editor editor = sp.edit();
-                        editor.putString("WIDGET_PREV_SELECT", "");
+                        editor.putString(WIDGET_PREV_KEY+id, "");
                         editor.apply();
                         throw new EmptyResultSetException("User has no saves!");
                     } else if(saves.size() == 1) {
@@ -92,7 +90,7 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
                     String[] examples = wordData.getSentences(pos);
 
                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("WIDGET_PREV_SELECT", wordData.getWord());
+                    editor.putString(WIDGET_PREV_KEY+id, wordData.getWord());
                     editor.apply();
 
                     remoteViews.setTextViewText(R.id.widget_word, wordData.getWord());
@@ -140,7 +138,8 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
             refreshIntent.putExtra("WIDGET_ID", id);
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.saves_widget);
             refreshIntent.putExtra("REMOTE_VIEW", remoteViews);
-            PendingIntent refreshPendingIntent = PendingIntent.getBroadcast(context, id, refreshIntent, 0);
+            PendingIntent refreshPendingIntent = PendingIntent.getBroadcast(context, id, refreshIntent,
+                    PendingIntent.FLAG_IMMUTABLE);
             remoteViews.setOnClickPendingIntent(R.id.widget_refresh_button, refreshPendingIntent);
 
             updateWidgetTexts(context, id, remoteViews);
@@ -148,7 +147,14 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
     }
 
     @Override
-    public void onDisabled(Context context) {
-        super.onDisabled(context);
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        super.onDeleted(context, appWidgetIds);
+        SharedPreferences sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+
+        for(int id : appWidgetIds) {
+            editor.remove(WIDGET_PREV_KEY+id);
+            editor.apply();
+        }
     }
 }

@@ -16,7 +16,6 @@ import androidx.room.rxjava3.EmptyResultSetException;
 import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.adapters.OnSaveItemButtonTouch;
 import com.vocaby.app.database.entity.User;
-import com.vocaby.app.database.entity.UserSaves;
 import com.vocaby.app.models.UserStateModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.NetworkManager;
@@ -33,9 +32,8 @@ import retrofit2.HttpException;
 
 public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonTouch {
     private final VocabyRepository vocabyRepository;
-    private MutableLiveData<User> mUser;
+    private final MutableLiveData<User> mUser;
     private final MutableLiveData<List<String>> mSavedWords;
-    private final String LOCAL_ID_KEY = "LOCAL_USER_ID";
     private final String CURRENT_ID_KEY = "CURRENT_USER_ID";
     private final SingleLiveEvent<UserStateModel> userState;
     private final CompositeDisposable compositeDisposable;
@@ -140,7 +138,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
     }
 
     public void logout() {
-        int localId = sharedPreferences.getInt(LOCAL_ID_KEY, 1);
+        int localId = sharedPreferences.getInt("LOCAL_USER_ID", 1);
         Completable deleteAllUsers = vocabyRepository.deleteAllUsers(localId);
         Single<User> getLocalUser = vocabyRepository.getUser(localId);
         if(mUser.getValue() != null) {
@@ -167,8 +165,8 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                         }, error -> {
                             if(!(error instanceof HttpException)) {
                                 Log.e("logout: ", error.getMessage());
+                                Bugsnag.notify(error);
                             }
-                            Bugsnag.notify(error);
                     })
         );
         }

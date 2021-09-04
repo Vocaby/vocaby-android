@@ -40,7 +40,6 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     public void onItemTouch(int position) {
         String word = dictionaryViewModel.getHistoryWord(position);
         dictionaryViewModel.setSearch(word);
-        Log.d("onItemTouch: ", word);
     }
 
     public DictionaryHomeFragment() {
@@ -90,8 +89,9 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
             posView.setText(pos);
             definition.setText(wordModel.getDefinitions(pos)[0]);
             sentence.setText(wordModel.getSentences(pos)[0]);
-            dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
-            wordBox.setOnClickListener(v -> dictionaryViewModel.setSearch(wordModel.getWord()));
+            wordBox.setOnClickListener(v ->
+                    dictionaryViewModel.setSearch(wordModel.getWord())
+            );
         });
 
         dictionaryViewModel.getSearchHistory().observe(getViewLifecycleOwner(), searchHistory -> {
