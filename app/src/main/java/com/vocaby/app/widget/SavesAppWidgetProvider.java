@@ -55,9 +55,11 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
     private void updateWidgetTexts(Context context, int id, RemoteViews remoteViews) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         VocabyRepository vocabyRepository = new VocabyRepository((Application) context.getApplicationContext());
+
         SharedPreferences sharedPreferences = context.getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
         SharedPreferences sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE);
         int currentId = sharedPreferences.getInt("CURRENT_USER_ID", 1);
+
         remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE);
         remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", false);
 
@@ -106,7 +108,7 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
                     PendingIntent openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE);
                     remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent);
 
-                    remoteViews.setViewVisibility(R.id.refresh_progress, View.INVISIBLE);
+                    remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
                     remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true);
                     appWidgetManager.updateAppWidget(id, remoteViews);
                 }, error -> {
@@ -115,7 +117,7 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
                         remoteViews.setTextViewText(R.id.widget_definition, "Save words in the app to review them here.");
                         remoteViews.setTextViewText(R.id.widget_sentence, "");
 
-                        remoteViews.setViewVisibility(R.id.refresh_progress, View.INVISIBLE);
+                        remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
                         remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true);
                         appWidgetManager.updateAppWidget(id, remoteViews);
                         Log.d("updateWidgetTexts: ", error.getMessage());

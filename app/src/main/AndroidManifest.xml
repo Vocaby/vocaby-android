@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.vocaby.app" >
-
-    <uses-permission android:name="android.permission.INTERNET" />
+    package="com.vocaby.app">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="false"
@@ -14,19 +13,23 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="sensorPortrait"
-        android:theme="@style/Theme.VocabyAndroid" >
+        android:theme="@style/Theme.VocabyAndroid">
         <activity
             android:name=".ui.AuthActivity"
             android:exported="true" />
 
-        <meta-data
-            android:name="com.bugsnag.android.API_KEY"
-            android:value="@string/bugsnag_api_key" />
-
         <activity
             android:name=".ui.MainActivity"
-            android:screenOrientation="portrait"
             android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name=".ui.SplashScreenActivity"
+            android:theme="@style/Theme.VocabyAndroid.Splash"
+            android:exported="true"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
@@ -35,7 +38,12 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".widget.SavesAppWidgetProvider"
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="@string/bugsnag_api_key" />
+
+        <receiver
+            android:name=".widget.SavesAppWidgetProvider"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -57,5 +65,4 @@
             </intent-filter>
         </receiver>
     </application>
-
 </manifest>

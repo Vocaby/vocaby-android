@@ -1,4 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.VocabyAndroid.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+    </style>
+
     <!-- Base application theme. -->
     <style name="Theme.VocabyAndroid" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -7,6 +17,7 @@
         <item name="colorOnPrimary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
 
         <item name="colorAccent">@color/colorPrimary_header</item>

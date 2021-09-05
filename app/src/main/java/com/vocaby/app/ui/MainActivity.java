@@ -30,7 +30,6 @@ import com.vocaby.app.viewmodels.UserViewModel;
 public class MainActivity extends AppCompatActivity {
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
-    private Intent notificationIntent;
     private ViewPager2 viewPager;
     private SharedPreferences sharedPreferences;
 
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupNotification() {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        notificationIntent = new Intent(this, NotificationReceiver.class);
+        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 777, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
