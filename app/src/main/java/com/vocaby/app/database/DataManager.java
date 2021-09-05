@@ -25,6 +25,7 @@ public class DataManager {
             try(FileInputStream fis = ctx.openFileInput(HISTORY_DATA_FILE_NAME)) {
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 history = (List<String>) ois.readObject();
+                ois.close();
             } catch (IOException | ClassNotFoundException e) {
                 Log.d("DataManager", "Something went wrong in getInstance");
             }
@@ -33,6 +34,7 @@ public class DataManager {
             try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(history);
+                oos.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -58,6 +60,7 @@ public class DataManager {
             try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(history);
+                oos.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

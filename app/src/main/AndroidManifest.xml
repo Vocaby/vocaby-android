@@ -16,6 +16,7 @@
         android:theme="@style/Theme.VocabyAndroid">
         <activity
             android:name=".ui.AuthActivity"
+            android:launchMode="singleInstance"
             android:exported="true" />
 
         <activity

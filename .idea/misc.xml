@@ -37,7 +37,9 @@
         <entry key="app/src/main/res/drawable/ic_logo.xml" value="0.23385416666666667" />
         <entry key="app/src/main/res/drawable/ic_refresh.xml" value="0.23385416666666667" />
         <entry key="app/src/main/res/drawable/ic_settings.xml" value="0.12129629629629629" />
+        <entry key="app/src/main/res/drawable/ic_splash_image.xml" value="0.12129629629629629" />
         <entry key="app/src/main/res/drawable/ic_vocaby_logo.xml" value="0.12129629629629629" />
+        <entry key="app/src/main/res/drawable/ic_widget_preview.xml" value="0.12129629629629629" />
         <entry key="app/src/main/res/drawable/splash.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/splashscreen.xml" value="1.0" />
         <entry key="app/src/main/res/drawable/white_background.xml" value="0.12129629629629629" />

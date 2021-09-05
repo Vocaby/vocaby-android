@@ -104,8 +104,9 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
 
                     Intent openIntent = new Intent(context, MainActivity.class);
                     openIntent.setAction(WIDGET_CLICK);
-                    openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    PendingIntent openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE);
+                    openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    PendingIntent openPendingIntent = PendingIntent
+                            .getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE);
                     remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent);
 
                     remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
