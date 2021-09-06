@@ -77,10 +77,15 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
             if(userState != null) {
                 if(userState.isLocal()) {
                     userStateText.setText(getString(R.string.local));
-                    userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.turquoise));
-                } else {
-                    userStateText.setText(getString(R.string.synced));
                     userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
+                } else {
+                    if(userState.isSynced()) {
+                        userStateText.setText(getString(R.string.synced));
+                        userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.turquoise));
+                    } else {
+                        userStateText.setText(getString(R.string.unsynced));
+                        userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.color_tertiary));
+                    }
                 }
             }
         });

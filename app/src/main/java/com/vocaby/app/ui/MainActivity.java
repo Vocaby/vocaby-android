@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        userViewModel.setUser();
+        userViewModel.setupApplication();
 
         setupNotification();
         setupNavigation();

@@ -75,6 +75,9 @@ public abstract class VocabyDao {
     @Query("DELETE FROM offline_removed")
     public abstract Completable clearOfflineRemoved();
 
+    @Query("SELECT (SELECT COUNT(*) FROM offline_added) + (SELECT COUNT(*) FROM offline_removed)")
+    public abstract Single<Integer> getOfflineSavesCount();
+
     @Transaction
     @Query("SELECT COUNT(*) FROM vocaby_user")
     public abstract Single<Integer> getUserCount();

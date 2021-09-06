@@ -128,6 +128,12 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Single<Integer> getOfflineSavesCount() {
+        return vocabyDao.getOfflineSavesCount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Single<Map<String, List<String>>> getOfflineSaves() {
         return Single.zip(getOfflineAddedSaves(), getOfflineRemovedSaves(), (added, removed) -> {
             Map<String, List<String>> map = new HashMap<>();

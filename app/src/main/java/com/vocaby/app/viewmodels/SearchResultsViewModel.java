@@ -95,17 +95,15 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                             })
                     );
                 } else {
-                    // Add to Offline Save
+                    // Add to Offline Save because user is logged in but is offline
                     // AndThen User Save
                     // Set sync to false (Just check this onResume?)
-//                    compositeDisposable.add(
-//                            vocabyRepository.addOfflineAddedSave(word)
-//                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
-//                                    .subscribe(() -> {
-//                                                mWordPackage.setValue(mWordPackage.getValue().setSave(true));
-//                                            },
-//                                            error -> Log.e("saveWord (local, saved): ", error.getMessage()))
-//                    );
+                    compositeDisposable.add(
+                            vocabyRepository.addOfflineAddedSave(word)
+                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
+                                    .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(true)),
+                                            error -> Log.e("saveWord (local, saved): ", error.getMessage()))
+                    );
                 }
             } else {
                 compositeDisposable.add(
@@ -140,31 +138,26 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                             })
                     );
                 } else {
-                    // Add to Offline Save
+                    // Add to Offline Save because user is logged in but is offline
                     // AndThen User Save
                     // Set sync to false (Just check this onResume?)
-//                    compositeDisposable.add(
-//                            vocabyRepository.addOfflineRemovedSave(word)
-//                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
-//                                    .subscribe(() -> {
-//                                                mWordPackage.setValue(mWordPackage.getValue().setSave(false));
-//                                            },
-//                                            error -> Log.e("saveWord (local, saved): ", error.getMessage()))
-//                    );
+                    compositeDisposable.add(
+                            vocabyRepository.addOfflineRemovedSave(word)
+                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
+                                    .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(false)),
+                                            error -> Log.e("saveWord (local, saved): ", error.getMessage()))
+                    );
                 }
+            } else {
+                compositeDisposable.add(
+                        vocabyRepository.removeSave(currentUser.getUserId(), word)
+                                .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(false)),
+                                        error -> {
+                                            Bugsnag.notify(error);
+                                            Log.e("saveWord (local): ", error.getMessage());
+                                        })
+                );
             }
-
-            // Always update user saves locally
-            compositeDisposable.add(
-                    vocabyRepository.removeSave(currentUser.getUserId(), word)
-                            .subscribe(() -> {
-                                        mWordPackage.setValue(mWordPackage.getValue().setSave(false));
-                                    },
-                                    error -> {
-                                        Bugsnag.notify(error);
-                                        Log.e("saveWord (local): ", error.getMessage());
-                                    })
-            );
         }
     }
 

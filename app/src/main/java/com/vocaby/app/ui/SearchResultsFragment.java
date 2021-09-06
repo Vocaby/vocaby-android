@@ -23,11 +23,13 @@ import android.widget.TextView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.DefinitionsAdapter;
+import com.vocaby.app.models.UserStateModel;
 import com.vocaby.app.models.WordDataPackage;
 import com.vocaby.app.models.WordModel;
 import com.vocaby.app.utils.NetworkManager;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.SearchResultsViewModel;
+import com.vocaby.app.viewmodels.UserViewModel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,6 +46,8 @@ public class SearchResultsFragment extends Fragment {
     private DefinitionsAdapter adapter;
     private ProgressBar progressBar;
     private ProgressBar saveProgress;
+    private View userStateIndicator;
+    private TextView userStateText;
 
     SearchResultsViewModel searchResultsViewModel;
     DictionaryViewModel dictionaryViewModel;
@@ -85,6 +89,8 @@ public class SearchResultsFragment extends Fragment {
         pronunciation = view.findViewById(R.id.pronunciation);
         saveProgress = view.findViewById(R.id.save_progress);
         saveProgress.setVisibility(View.VISIBLE);
+        userStateIndicator = view.findViewById(R.id.network_indicator);
+        userStateText = view.findViewById(R.id.network_status_text);
 
         RecyclerView recyclerView = view.findViewById(R.id.definitions_recycler_container);
         recyclerView.setEnabled(false);
@@ -102,6 +108,26 @@ public class SearchResultsFragment extends Fragment {
                 new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
 
         observeWordPackageData();
+
+        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        userViewModel.getUserState().observe(getViewLifecycleOwner(), userStateModel -> {
+            userViewModel.getUserState().observe(getViewLifecycleOwner(), userState -> {
+                if(userState != null) {
+                    if(userState.isLocal()) {
+                        userStateText.setText(getString(R.string.local));
+                        userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
+                    } else {
+                        if(userState.isSynced()) {
+                            userStateText.setText(getString(R.string.synced));
+                            userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.turquoise));
+                        } else {
+                            userStateText.setText(getString(R.string.unsynced));
+                            userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.color_tertiary));
+                        }
+                    }
+                }
+            });
+        });
     }
 
     public void observeWordPackageData() {
