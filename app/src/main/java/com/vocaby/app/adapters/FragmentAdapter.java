@@ -1,5 +1,7 @@
 package com.vocaby.app.adapters;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -10,23 +12,21 @@ import com.vocaby.app.ui.ProfileFragment;
 import com.vocaby.app.ui.ProfileHomeFragment;
 import com.vocaby.app.ui.SavesFragment;
 
+import java.util.ArrayList;
+
 public class FragmentAdapter extends FragmentStateAdapter {
+    private ArrayList<Fragment> fragments = new ArrayList<>();
     public FragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
+        fragments.add(new DictionaryFragment());
+        fragments.add(new SavesFragment());
+        fragments.add(new ProfileFragment());
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch(position) {
-            case 1:
-                return new SavesFragment();
-            case 2:
-                return new ProfileFragment();
-            default:
-                return DictionaryFragment.newInstance();
-        }
-
+        return fragments.get(position);
     }
 
     @Override

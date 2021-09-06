@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -40,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
         Bugsnag.start(this);
 
-        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.setUser();
 
         setupNotification();
         setupNavigation();

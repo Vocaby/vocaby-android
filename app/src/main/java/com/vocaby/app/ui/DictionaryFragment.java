@@ -29,15 +29,6 @@ public class DictionaryFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static DictionaryFragment newInstance() {
-        DictionaryFragment fragment = new DictionaryFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

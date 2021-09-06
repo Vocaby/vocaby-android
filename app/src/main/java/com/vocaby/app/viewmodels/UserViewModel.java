@@ -47,24 +47,26 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
         userState = new SingleLiveEvent<>();
         mSavedWords = new MutableLiveData<>();
         mUser = new MutableLiveData<>();
-        int currentId = sharedPreferences.getInt(CURRENT_ID_KEY, 1);
+    }
 
+    public void setUser() {
+        int currentId = sharedPreferences.getInt(CURRENT_ID_KEY, 1);
         compositeDisposable.add(
-            vocabyRepository.getUser(currentId)
-                .flatMap(user -> {
-                    mUser.setValue(user);
-                    userState.setValue(new UserStateModel(!user.isLoggedIn()));
-                    return vocabyRepository.getUserSaves(currentId);
-                })
-                .subscribe(mSavedWords::setValue,
-                    e -> {
-                        if(e instanceof EmptyResultSetException) {
-                            addDefaultUser();
-                        } else {
-                            Bugsnag.notify(e);
-                            Log.e("UserViewModel (current user): ", e.getMessage());
-                        }
-                    })
+                vocabyRepository.getUser(currentId)
+                        .flatMap(user -> {
+                            mUser.setValue(user);
+                            userState.setValue(new UserStateModel(!user.isLoggedIn()));
+                            return vocabyRepository.getUserSaves(currentId);
+                        })
+                        .subscribe(mSavedWords::setValue,
+                                e -> {
+                                    if(e instanceof EmptyResultSetException) {
+                                        addDefaultUser();
+                                    } else {
+                                        Bugsnag.notify(e);
+                                        Log.e("UserViewModel (current user): ", e.getMessage());
+                                    }
+                                })
         );
     }
 

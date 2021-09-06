@@ -80,7 +80,7 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+        dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
 
         dictionaryViewModel.getRandomWord().observe(getViewLifecycleOwner(), wordModel -> {
             progressBar.setVisibility(View.INVISIBLE);

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    android:weightSum="7">
+    android:weightSum="7"
+    android:background="@color/white">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -134,6 +135,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/history_empty"
+            android:textColor="@color/dark_gray"
             app:layout_constraintBottom_toBottomOf="@+id/search_history"
             app:layout_constraintEnd_toEndOf="@+id/search_history"
             app:layout_constraintHorizontal_bias="0.498"

@@ -11,8 +11,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 
 import com.vocaby.app.R;
 
+import com.vocaby.app.database.entity.User;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 public class ProfileHomeFragment extends Fragment {
@@ -47,7 +50,6 @@ public class ProfileHomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile_main, container, false);
         firstName = view.findViewById(R.id.first_name);
         currentUserEmail = view.findViewById(R.id.current_user);
-
         Button navButton = view.findViewById(R.id.notification_button);
         navButton.setOnClickListener(v -> getParentFragmentManager()
                 .beginTransaction()
@@ -73,7 +75,6 @@ public class ProfileHomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-
         userViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
             firstName.setText(user.getFirstName());
             currentUserEmail.setText(user.getEmail());
