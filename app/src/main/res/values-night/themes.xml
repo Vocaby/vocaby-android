@@ -16,6 +16,7 @@
         <item name="colorPrimaryVariant">@color/colorPrimary</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="android:windowBackground">@color/white</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
 
@@ -24,6 +25,7 @@
         <item name="colorAccent">@color/colorPrimary_header</item>
 
         <item name="android:fontFamily">@font/sourcesanspro_regular</item>
+        <item name="android:textColor">@color/black</item>
 
         <!-- Bottom Navigation  -->
         <item name="bottomNavigationStyle">@style/Theme.VocabyAndroid.BottomNavigation</item>

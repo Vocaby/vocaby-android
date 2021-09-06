@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
@@ -28,7 +29,7 @@ public class DictionaryViewModel extends AndroidViewModel {
     private final SingleLiveEvent<WordModel> mWordModel;
     private final CompositeDisposable compositeDisposable;
     private final DataManager dataManager;
-    private final SingleLiveEvent<List<String>> searchHistory;
+    private final MutableLiveData<List<String>> searchHistory;
 
     public DictionaryViewModel(Application application) {
         super(application);
@@ -37,7 +38,7 @@ public class DictionaryViewModel extends AndroidViewModel {
         mWordModel = new SingleLiveEvent<>();
         compositeDisposable = new CompositeDisposable();
         dataManager = DataManager.getInstance(application);
-        searchHistory = new SingleLiveEvent<>();
+        searchHistory = new MutableLiveData<>();
         searchHistory.setValue(dataManager.getHistory());
     }
 

@@ -11,22 +11,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 
 import com.vocaby.app.R;
-
-import com.vocaby.app.database.entity.User;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 public class ProfileHomeFragment extends Fragment {

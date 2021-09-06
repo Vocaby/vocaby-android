@@ -72,7 +72,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/playfairdisplay_mid"
         android:text="@string/login_header"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:textColor="@color/colorPrimary_header"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,6 +87,7 @@
         android:layout_marginTop="12dp"
         android:fontFamily="@font/sourcesanspro_regular"
         android:text="@string/email_header"
+        android:labelFor="@id/email_input"
         android:textColor="@color/colorPrimary_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -111,6 +112,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:labelFor="@id/password_input"
         android:text="@string/password_header"
         android:textColor="@color/colorPrimary_header"
         android:fontFamily="@font/sourcesanspro_regular"
@@ -151,6 +153,7 @@
         android:layout_marginTop="12dp"
         android:fontFamily="@font/sourcesanspro_regular"
         android:text="@string/forgot_password"
+        android:textColor="@color/dark_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -159,7 +162,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -169,7 +172,7 @@
             android:id="@+id/textView9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sourcesanspro_regular"
+            android:textColor="@color/dark_gray"
             android:text="@string/no_account" />
 
         <TextView

@@ -37,9 +37,10 @@ public class DictionaryFragment extends Fragment {
         EditText search = view.findViewById(R.id.search_bar);
         search.setOnEditorActionListener(searchEditorListener);
 
-        getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container,
-                new DictionaryHomeFragment()).commit();
-
+        if(savedInstanceState == null) {
+            getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container,
+                    new DictionaryHomeFragment()).commit();
+        }
 
         return view;
     }
@@ -64,6 +65,12 @@ public class DictionaryFragment extends Fragment {
             FragmentTransaction transaction = fm.beginTransaction();
             dictionaryViewModel.addToStack(search);
 
+            if(!ignoreHistory) {
+                // Only write to history when user searches for the definition
+                // Not when the user looks up a definition through saved words
+                dictionaryViewModel.writeHistory(search);
+            }
+
             transaction
                     .addToBackStack(null)
                     .setCustomAnimations(
@@ -73,7 +80,7 @@ public class DictionaryFragment extends Fragment {
                             R.anim.exit_top_to_bottom
                     )
                     .add(R.id.search_fragment_container,
-                            SearchResultsFragment.newInstance(search, ignoreHistory)
+                            SearchResultsFragment.newInstance(search)
                     ).commit();
         }
     }

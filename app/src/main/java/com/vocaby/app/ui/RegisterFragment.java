@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -65,6 +66,9 @@ public class RegisterFragment extends Fragment {
         backButton.setOnClickListener(backListener);
         signInText.setOnClickListener(backListener);
         registerButton.setOnClickListener(registerListener);
+
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
         return view;
     }

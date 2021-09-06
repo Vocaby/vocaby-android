@@ -36,7 +36,6 @@ public class SearchResultsFragment extends Fragment {
     private static final String WORD = "PASSED_WORD_KEY";
     private static final String FROM_SAVES = "fromSaves";
     private String searchedWord;
-    private boolean fromSaves;
 
     private Context ctx;
     private Button saveButton;
@@ -53,11 +52,10 @@ public class SearchResultsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SearchResultsFragment newInstance(String passedWord, boolean fromSaves) {
+    public static SearchResultsFragment newInstance(String passedWord) {
         SearchResultsFragment fragment = new SearchResultsFragment();
         Bundle args = new Bundle();
         args.putString(WORD, passedWord);
-        args.putBoolean(FROM_SAVES, fromSaves);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,17 +65,9 @@ public class SearchResultsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             searchedWord = getArguments().getString(WORD);
-            fromSaves = getArguments().getBoolean(FROM_SAVES);
         }
 
         ctx = requireActivity().getApplicationContext();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        DictionaryFragment fragment = (DictionaryFragment) getParentFragment();
-        assert fragment != null;
     }
 
     @Override
@@ -110,12 +100,6 @@ public class SearchResultsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         dictionaryViewModel =
                 new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
-
-        if(!fromSaves) {
-            // Only write to history when user searches for the definition
-            // Not when the user looks up a definition through saved words
-            dictionaryViewModel.writeHistory(searchedWord);
-        }
 
         observeWordPackageData();
     }

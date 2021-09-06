@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.DictionaryFragment">
 
-
     <FrameLayout
         android:id="@+id/search_fragment_container"
         android:layout_width="0dp"

@@ -30,7 +30,8 @@
     <string name="refresh_button">Refresh Button</string>
     <string name="back">BACK</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="register_success_desc">You have successfully set up your new Vocaby account! As a Vocabler, your data will be synced across platforms.</string>
+    <string name="register_success_desc">You have successfully set up your new Vocaby account! Your data will now be synced across platforms.</string>
+    <string name="thankyou">Thank you for using Vocaby!</string>
     <string name="congratulations">Congratulations!</string>
     <string name="continue_button">Continue</string>
     <string name="login_header">Login</string>

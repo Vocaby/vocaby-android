@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +79,7 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
 
         dictionaryViewModel.getRandomWord().observe(getViewLifecycleOwner(), wordModel -> {
             progressBar.setVisibility(View.INVISIBLE);
@@ -89,9 +88,7 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
             posView.setText(pos);
             definition.setText(wordModel.getDefinitions(pos)[0]);
             sentence.setText(wordModel.getSentences(pos)[0]);
-            wordBox.setOnClickListener(v ->
-                    dictionaryViewModel.setSearch(wordModel.getWord())
-            );
+            wordBox.setOnClickListener(v -> dictionaryViewModel.setSearch(wordModel.getWord()));
         });
 
         dictionaryViewModel.getSearchHistory().observe(getViewLifecycleOwner(), searchHistory -> {
