@@ -11,6 +11,7 @@ import com.vocaby.app.database.entity.OfflineRemovedSaves;
 import com.vocaby.app.database.entity.User;
 import com.vocaby.app.database.entity.UserSaves;
 import com.vocaby.app.database.entity.WordDefinitions;
+import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.WordDataPackage;
 
 import java.util.HashMap;
@@ -97,6 +98,18 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Completable addUserSaves(List<UserSaves> saves){
+        return vocabyDao.addSaves(saves)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable removeUserSaves(List<String> saves){
+        return vocabyDao.removeSaves(saves)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Single<String> getRandomUserSave(int id) {
         return vocabyDao.getRandomSave(id)
                 .subscribeOn(Schedulers.io())
@@ -133,10 +146,59 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public VocabyApiService getVocabyApiService(String type) {
+    public VocabyApiService getVocabyApiService(int type) {
         return apiManager.getVocabyApiService(type);
     }
 
+    // OFFLINE
+    public Completable addOfflineAddedSave(String word) {
+        return vocabyDao.addOfflineAddedSave(new OfflineAddedSaves(word))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable addOfflineDeletedSave(String word) {
+        return vocabyDao.addOfflineRemovedSave(new OfflineRemovedSaves(word))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable removeOfflineAddedSave(String word) {
+        return vocabyDao.removeOfflineAddedSave(word)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable removeOfflineDeletedSave(String word) {
+        return vocabyDao.removeOfflineRemovedSave(word)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<OfflineDataModel> getOfflineData() {
+        return Single.zip(getOfflineAdded(), getOfflineRemoved(), OfflineDataModel::new);
+    }
+
+    public Completable clearOfflineDataInDatabase() {
+        return vocabyDao.clearOfflineRemoved()
+                .andThen(vocabyDao.clearOfflineAdded())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Single<List<String>> getOfflineAdded() {
+        return vocabyDao.getOfflineAdded()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Single<List<String>> getOfflineRemoved() {
+        return vocabyDao.getOfflineRemoved()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    // UTIL
     public Single<Integer> getSavesCount() {
         return vocabyDao.getSavesCount()
                 .subscribeOn(Schedulers.io())

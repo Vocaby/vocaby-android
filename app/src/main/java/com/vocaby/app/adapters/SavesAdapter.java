@@ -1,9 +1,9 @@
 package com.vocaby.app.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +30,6 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     private final OnSaveItemButtonTouch onSaveItemButtonTouchListener;
     private final OnSaveItemTouch onSaveItemTouch;
     private final MaterialAlertDialogBuilder builder;
-    private String token;
 
     public interface OnSaveItemTouch {
         void changeSaveCount(int size);
@@ -45,6 +44,7 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         builder = new MaterialAlertDialogBuilder(activity);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void updateSavedWords(List<String> newSavedWords) {
         saves.clear();
         saves.addAll(newSavedWords);
@@ -56,8 +56,6 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     public SavesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(ctx);
         CardView card = (CardView) inflater.inflate(R.layout.save_item, parent, false);
-        SharedPreferences sharedPref = ctx.getSharedPreferences(ctx.getString(R.string.token_key), Context.MODE_PRIVATE);
-        token = sharedPref.getString(ctx.getString(R.string.token_key), "");
         return new SavesViewHolder(card, onSaveItemButtonTouchListener, onSaveItemTouch);
     }
 
@@ -70,27 +68,11 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
             builder.setTitle("Are you sure you want to delete?")
                     .setMessage(word)
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        if(token.isEmpty()) {
-                            saves.remove(position);
-                            onSaveItemButtonTouchListener.removeSave(word);
-                            onSaveItemTouch.changeSaveCount(saves.size());
-                            notifyItemRemoved(position);
-                        } else {
-        //                    RequestManager requestManager = RequestManager.getInstance(ctx);
-        //                    requestManager.makeDeleteRequest(word, response -> {
-        //                        this.saves = dataManager.getUser().getSavedWords();
-        //                        onItemTouchListener.onSaveDelete(saves.size());
-        //                        notifyDataSetChanged();
-        //                    }, error -> {
-        //                        NetworkResponse networkResponse = error.networkResponse;
-        //                        if (networkResponse != null && networkResponse.data != null) {
-        //                            String body = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-        //                            Toast.makeText(ctx, body, Toast.LENGTH_SHORT).show();
-        //                        } else {
-        //                            Toast.makeText(ctx, "Something went wrong while removing...", Toast.LENGTH_SHORT).show();
-        //                        }
-        //                    });
-                        }
+                        saves.remove(position);
+                        onSaveItemButtonTouchListener.removeSave(word);
+                        onSaveItemTouch.changeSaveCount(saves.size());
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, getItemCount());
                     }).setNegativeButton("No", null);
 
             showAlertDialog();

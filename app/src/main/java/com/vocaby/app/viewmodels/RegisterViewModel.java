@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.RegisterRequest;
+import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.models.AuthModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
@@ -55,7 +56,7 @@ public class RegisterViewModel extends AndroidViewModel {
 
             compositeDisposable.add(
                     vocabyRepository.getUserSaves(sharedPreferences.getInt("CURRENT_USER_ID", 1))
-                        .flatMap(list -> ApiManager.getInstance().getVocabyApiService("")
+                        .flatMap(list -> ApiManager.getInstance().getVocabyApiService(VocabyApiService.DEFAULT)
                                 .register(new RegisterRequest(email, password, firstName, lastName, list))
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())

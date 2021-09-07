@@ -77,9 +77,7 @@
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
         android:layout_marginTop="8dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -101,6 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/local"
+            android:layout_marginEnd="8dp"
             android:textColor="@color/dark_gray"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -108,9 +107,32 @@
             app:layout_constraintStart_toEndOf="@+id/network_indicator"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
+        <TextView
+            android:id="@+id/sync_data_button"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary_header"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:textSize="12sp"
+            android:drawablePadding="2dp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:clickable="true"
+            android:text="@string/sync_your_data"
+            android:layout_marginEnd="8dp"
+            app:drawableTint="@color/colorPrimary_header"
+            app:drawableEndCompat="@drawable/ic_sync" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:visibility="gone"
+            android:layout_width="14dp"
+            android:layout_height="14dp"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_weight="1" />
 
         <TextView
@@ -118,9 +140,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcesanspro_regular"
-            android:text="0"
-            android:layout_marginBottom="1dp"
-            android:textColor="@color/black"
+            android:text="@string/zero"
+            android:textColor="@color/dark_gray"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
@@ -130,8 +151,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="SAVED WORDS"
-            android:textColor="@color/colorPrimary_header"
+            android:text="@string/saved_words"
+            android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/saves_count"
             app:layout_constraintEnd_toEndOf="parent"

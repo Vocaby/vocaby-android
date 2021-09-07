@@ -11,12 +11,14 @@ import androidx.lifecycle.LiveData;
 import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.LoginRequest;
+import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.database.entity.User;
 import com.vocaby.app.database.entity.UserSaves;
 import com.vocaby.app.models.AuthModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +62,7 @@ public class LoginViewModel extends AndroidViewModel {
                     getApplication().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
 
             compositeDisposable.add(
-                ApiManager.getInstance().getVocabyApiService("L").login(
+                ApiManager.getInstance().getVocabyApiService(VocabyApiService.LOGIN).login(
                     new LoginRequest(email, password, new ArrayList<>())
                 ).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -97,6 +99,8 @@ public class LoginViewModel extends AndroidViewModel {
                                     mLoginStatus.setValue("Something went wrong on Vocaby's side. Please try again.");
                                 }
                             }
+                        } else if(error instanceof UnknownHostException) {
+                            mLoginStatus.setValue("Please connect to the Internet");
                         } else {
                             Bugsnag.notify(error);
                             Log.e("UserViewModel (login): ", error.getMessage());

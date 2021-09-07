@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.vocaby.app.R;
@@ -28,6 +29,8 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
     private SavesAdapter savesAdapter;
     private TextView userStateText;
     private View userStateIndicator;
+    private TextView syncDataButton;
+    private ProgressBar progressBar;
 
     private UserViewModel userViewModel;
 
@@ -44,7 +47,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
     @Override
     public void onResume() {
         super.onResume();
-        userViewModel.setSavedWords();
+        userViewModel.syncUserSaves();
     }
 
     @Override
@@ -55,6 +58,8 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
 
         userStateText = view.findViewById(R.id.network_status_text);
         userStateIndicator = view.findViewById(R.id.network_indicator);
+        syncDataButton = view.findViewById(R.id.sync_data_button);
+        progressBar = view.findViewById(R.id.progressBar);
 
         return view;
     }
@@ -68,23 +73,39 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
         recyclerView.setAdapter(savesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
 
+        syncDataButton.setOnClickListener(view1 -> userViewModel.syncUserSaves());
+
+        userViewModel.getSyncStatus().observe(getViewLifecycleOwner(), syncStatus -> {
+            if(syncStatus) {
+                progressBar.setVisibility(View.GONE);
+            } else {
+                userStateText.setText(getString(R.string.fetching));
+                userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.orange));
+                progressBar.setVisibility(View.VISIBLE);
+            }
+        });
+
         userViewModel.getSavedWords().observe(getViewLifecycleOwner(), savedWords -> {
             savesAdapter.updateSavedWords(savedWords);
             setSavesCount(savedWords.size());
         });
 
         userViewModel.getUserState().observe(getViewLifecycleOwner(), userState -> {
+            progressBar.setVisibility(View.GONE);
             if(userState != null) {
                 if(userState.isLocal()) {
                     userStateText.setText(getString(R.string.local));
                     userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
+                    syncDataButton.setVisibility(View.GONE);
                 } else {
                     if(userState.isSynced()) {
                         userStateText.setText(getString(R.string.synced));
                         userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.turquoise));
+                        syncDataButton.setVisibility(View.GONE);
                     } else {
                         userStateText.setText(getString(R.string.unsynced));
                         userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.color_tertiary));
+                        syncDataButton.setVisibility(View.VISIBLE);
                     }
                 }
             }

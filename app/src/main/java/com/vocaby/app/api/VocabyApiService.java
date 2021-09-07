@@ -1,5 +1,6 @@
 package com.vocaby.app.api;
 
+import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.WordDataPackage;
 import com.vocaby.app.models.WordModel;
 
@@ -18,6 +19,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface VocabyApiService {
+    int DEFAULT = 0;
+    int DEFINITION = 1;
+    int LOGIN = 2;
+
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("authdictionary/{word}")
     Single<WordDataPackage> getWordData(@Header("Authorization") String token, @Path("word") String word);
@@ -43,6 +48,10 @@ public interface VocabyApiService {
     Completable removeSave(@Header("Authorization") String token, @Path("word") String word);
 
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
-    @POST("account/saves/")
+    @GET("account/saves/")
     Single<List<String>> getSaves(@Header("Authorization") String token);
+
+    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
+    @POST("account/sync/")
+    Completable syncData(@Header("Authorization") String token, @Body OfflineDataModel offlineDataModel);
 }

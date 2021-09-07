@@ -58,6 +58,7 @@
     <string name="local">Local</string>
     <string name="random_word_of_the_day">RANDOM WORD OF THE DAY</string>
     <string name="synced">Synced</string>
+    <string name="fetching">Fetching…</string>
     <string name="title_activity_login">LoginActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -76,4 +77,7 @@
     <string name="notifications">Notifications</string>
     <string name="clear_saves">Clear Saves</string>
     <string name="profile_background">Profile Background</string>
+    <string name="sync_your_data">Sync your data</string>
+    <string name="saved_words">Saved Words</string>
+    <string name="zero">0</string>
 </resources>

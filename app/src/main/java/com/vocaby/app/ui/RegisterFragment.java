@@ -67,9 +67,6 @@ public class RegisterFragment extends Fragment {
         signInText.setOnClickListener(backListener);
         registerButton.setOnClickListener(registerListener);
 
-        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-
         return view;
     }
 
@@ -116,6 +113,9 @@ public class RegisterFragment extends Fragment {
 
         registerViewModel.getRegistrationStatus().observe(getViewLifecycleOwner(), registrationMessage -> {
             if(registrationMessage.equals("s")) {
+                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
                 FragmentManager fm = getParentFragmentManager();
                 fm.beginTransaction()
                         .setCustomAnimations(

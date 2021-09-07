@@ -100,6 +100,6 @@ public class DictionaryFragment extends Fragment {
     };
 
     private String cleanText(String text) {
-        return text.toLowerCase().trim().replaceAll("[^a-z-._ ]", "");
+        return text.toLowerCase().trim().replaceAll("[^0-9a-z-._ ]", "");
     }
 }

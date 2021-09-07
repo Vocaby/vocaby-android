@@ -30,9 +30,6 @@ public abstract class VocabyDao {
     @Query("DELETE FROM vocaby_user WHERE user_id != :id")
     public abstract Completable removeAllUsers(int id);
 
-    @Insert
-    public abstract Completable addAllSaves(Word... words);
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Completable addSave(UserSaves userSaves);
 
@@ -44,6 +41,12 @@ public abstract class VocabyDao {
 
     @Query("DELETE FROM saves WHERE user_id = :id")
     public abstract Completable removeAllSaves(int id);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract Completable addSaves(List<UserSaves> userSaves);
+
+    @Query("DELETE FROM saves WHERE word IN (:wordList)")
+    public abstract Completable removeSaves(List<String> wordList);
 
     @Insert
     public abstract Single<List<Long>> insertSavedWords(List<UserSaves> userSaves);
@@ -86,4 +89,29 @@ public abstract class VocabyDao {
     @Query("SELECT * FROM dictionary_word WHERE id = " +
             "(SELECT id FROM dictionary_word ORDER BY RANDOM() LIMIT 1)")
     public abstract Single<WordDefinitions> getRandomWord();
+
+    // OFFLINE SAVES
+    @Insert
+    public abstract Completable addOfflineAddedSave(OfflineAddedSaves offlineAddedSaves);
+
+    @Insert
+    public abstract Completable addOfflineRemovedSave(OfflineRemovedSaves offlineRemovedSaves);
+
+    @Query("DELETE FROM offline_added WHERE word = :word")
+    public abstract Completable removeOfflineAddedSave(String word);
+
+    @Query("DELETE FROM offline_removed WHERE word = :word")
+    public abstract Completable removeOfflineRemovedSave(String word);
+
+    @Query("SELECT word FROM offline_added")
+    public abstract Single<List<String>> getOfflineAdded();
+
+    @Query("SELECT word FROM offline_removed")
+    public abstract Single<List<String>> getOfflineRemoved();
+
+    @Query("DELETE FROM offline_added")
+    public abstract Completable clearOfflineAdded();
+
+    @Query("DELETE FROM offline_removed")
+    public abstract Completable clearOfflineRemoved();
 }

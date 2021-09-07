@@ -27,7 +27,7 @@ public class ApiManager {
         return instance;
     }
 
-    public VocabyApiService getVocabyApiService(String type) {
+    public VocabyApiService getVocabyApiService(int type) {
         apiService = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(createGsonConverterFactory(type))
@@ -38,14 +38,14 @@ public class ApiManager {
         return apiService;
     }
 
-    private static GsonConverterFactory createGsonConverterFactory(String type) {
+    private static GsonConverterFactory createGsonConverterFactory(int type) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         // Adding custom deserializers
         switch(type) {
-            case "D":
+            case VocabyApiService.DEFINITION:
                 gsonBuilder.registerTypeAdapter(WordDataPackage.class, new GetWordDataDeserializer());
                 break;
-            case "L":
+            case VocabyApiService.LOGIN:
                 gsonBuilder.registerTypeAdapter(AuthResponse.class, new GetAuthDeserializer());
                 break;
             default:

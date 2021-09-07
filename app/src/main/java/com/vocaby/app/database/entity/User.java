@@ -75,7 +75,7 @@ public class User {
 
     public boolean isLoggedIn() { return !token.isEmpty(); }
 
-    public boolean getSynced() { return this.synced; }
+    public boolean isSynced() { return this.synced; }
 
     public void setSynced(boolean synced) { this.synced = synced; }
 }
