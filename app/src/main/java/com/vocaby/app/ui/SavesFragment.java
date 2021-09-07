@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -60,6 +63,13 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
         userStateIndicator = view.findViewById(R.id.network_indicator);
         syncDataButton = view.findViewById(R.id.sync_data_button);
         progressBar = view.findViewById(R.id.progressBar);
+
+        // Navigation
+        ImageButton navButton = view.findViewById(R.id.nav_button);
+        navButton.setOnClickListener(v -> {
+            DrawerLayout drawer = requireActivity().findViewById(R.id.drawer);
+            drawer.openDrawer(GravityCompat.END);
+        });
 
         return view;
     }

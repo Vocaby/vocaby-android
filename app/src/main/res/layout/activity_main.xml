@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.drawerlayout.widget.DrawerLayout
+    android:id="@+id/drawer"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,17 +9,33 @@
     android:orientation="vertical"
     tools:context=".ui.MainActivity">
 
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header"
+        app:itemTextColor="@color/nav_colors"
+        app:itemIconTint="@color/nav_colors"
+        app:itemBackground="@color/very_light_gray"
+        app:itemTextAppearance="@style/Theme.VocabyAndroid.NavigationDrawerStyle"
+        app:menu="@menu/navigation">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/loginout_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            style="@style/Theme.VocabyAndroid.NavButton"
+            android:background="@color/very_light_gray"
+            android:drawableStart="@drawable/ic_auth"/>
+    </com.google.android.material.navigation.NavigationView>
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/fragment_container"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:labelVisibilityMode="unlabeled"
-        app:menu="@menu/navigation" />
-</LinearLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

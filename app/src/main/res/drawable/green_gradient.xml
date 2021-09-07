@@ -7,9 +7,6 @@
                 android:endColor="@color/colorPrimary_sub"
                 android:angle="270"
             />
-            <corners
-                android:bottomLeftRadius="@dimen/radius"
-                android:bottomRightRadius="@dimen/radius" />
         </shape>
     </item>
 </selector>

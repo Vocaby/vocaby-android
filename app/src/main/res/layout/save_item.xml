@@ -6,36 +6,40 @@
     android:layout_height="wrap_content"
     android:backgroundTint="@color/white"
     app:cardElevation="0dp">
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:gravity="center"
+        android:weightSum="10">
         <TextView
             android:id="@+id/save_item"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="4dp"
-            android:layout_marginStart="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:autoSizeMaxTextSize="26sp"
+            android:autoSizeMinTextSize="18sp"
+            android:autoSizeStepGranularity="4sp"
+            android:autoSizeTextType="uniform"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
             android:fontFamily="@font/playfair_display"
-            android:text=""
-            android:textAllCaps="true"
-            android:textColor="@color/colorPrimary_header"
-            android:textSize="26sp"
             android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/unsave_button"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_weight="9"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary_header" />
 
         <ImageButton
             android:id="@+id/unsave_button"
-            android:layout_width="wrap_content"
+            android:layout_width="28dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="-2dp"
+            android:layout_weight="1"
             android:background="@drawable/ic_bookmark_saved"
-            android:contentDescription="@string/unsave_button_desc"
-            android:layout_marginEnd="12dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:contentDescription="@string/unsave_button_desc" />
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

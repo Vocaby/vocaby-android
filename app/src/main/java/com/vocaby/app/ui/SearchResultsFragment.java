@@ -111,23 +111,21 @@ public class SearchResultsFragment extends Fragment {
         observeWordPackageData();
 
         UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-        userViewModel.getUserState().observe(getViewLifecycleOwner(), userStateModel -> {
-            userViewModel.getUserState().observe(getViewLifecycleOwner(), userState -> {
-                if(userState != null) {
-                    if(userState.isLocal()) {
-                        userStateText.setText(getString(R.string.local));
-                        userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
+        userViewModel.getUserState().observe(getViewLifecycleOwner(), userState -> {
+            if(userState != null) {
+                if(userState.isLocal()) {
+                    userStateText.setText(getString(R.string.local));
+                    userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
+                } else {
+                    if(userState.isSynced()) {
+                        userStateText.setText(getString(R.string.synced));
+                        userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.turquoise));
                     } else {
-                        if(userState.isSynced()) {
-                            userStateText.setText(getString(R.string.synced));
-                            userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.turquoise));
-                        } else {
-                            userStateText.setText(getString(R.string.unsynced));
-                            userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.color_tertiary));
-                        }
+                        userStateText.setText(getString(R.string.unsynced));
+                        userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.color_tertiary));
                     }
                 }
-            });
+            }
         });
 
         searchResultsViewModel.getRemoteSaveStatus().observe(getViewLifecycleOwner(),
@@ -151,6 +149,7 @@ public class SearchResultsFragment extends Fragment {
             if (wordPackage != null) {
                 if(!populated.get()) {
                     WordModel wordData = wordPackage.getWordModel();
+                    word.setVisibility(View.VISIBLE);
                     if(wordData.isEmpty()) {
                         populateNoDefinition();
                     } else {
@@ -206,22 +205,20 @@ public class SearchResultsFragment extends Fragment {
     }
 
     private void populateView(WordModel wordModelData) {
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.GONE);
         word.setText(searchedWord);
         saveButton.setVisibility(View.VISIBLE);
         saveButton.setEnabled(true);
 
         String pronunciationText = wordModelData.getPronunciation().replaceAll("\n","");
-        if(pronunciationText.isEmpty()) {
-            pronunciation.setVisibility(View.GONE);
-        } else {
+        if(!pronunciationText.isEmpty()) {
             pronunciation.setVisibility(View.VISIBLE);
             pronunciation.setText(pronunciationText);
         }
     }
 
     private void populateNoDefinition() {
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.GONE);
         word.setText(getResources().getString(R.string.no_definition_found));
         pronunciation.setVisibility(View.GONE);
     }

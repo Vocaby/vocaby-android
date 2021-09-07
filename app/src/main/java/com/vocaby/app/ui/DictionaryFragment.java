@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.vocaby.app.R;
@@ -36,6 +39,13 @@ public class DictionaryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         EditText search = view.findViewById(R.id.search_bar);
         search.setOnEditorActionListener(searchEditorListener);
+
+        // Navigation
+        ImageButton navButton = view.findViewById(R.id.nav_button);
+        navButton.setOnClickListener(v -> {
+            DrawerLayout drawer = requireActivity().findViewById(R.id.drawer);
+            drawer.openDrawer(GravityCompat.END);
+        });
 
         if(savedInstanceState == null) {
             getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container,

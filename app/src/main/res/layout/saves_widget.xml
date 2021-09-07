@@ -19,7 +19,8 @@
             android:layout_weight="1"
             android:fontFamily="serif"
             android:padding="2dp"
-            android:text=""
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary_header"
             android:textSize="20sp" />
@@ -51,7 +52,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/sourcesanspro_regular"
-        android:text=""
         android:padding="2dp"
         android:textColor="@color/black"
         android:textSize="16sp" />
@@ -63,7 +63,6 @@
         android:fontFamily="@font/sourcesanspro_regular"
         android:textSize="16sp"
         android:padding="2dp"
-        android:text=""
         android:textColor="@color/dark_gray" />
 
 </LinearLayout>

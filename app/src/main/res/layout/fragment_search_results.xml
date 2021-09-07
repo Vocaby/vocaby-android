@@ -102,11 +102,14 @@
         </LinearLayout>
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/word_box"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:minHeight="80dp"
         android:background="@drawable/word_background"
+        android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
@@ -114,53 +117,37 @@
         <ProgressBar
             android:id="@+id/search_progress"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="120dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:indeterminateTint="@color/colorPrimary_header"
-            android:scaleY="1.2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:scaleY="1.2" />
 
         <TextView
             android:id="@+id/word_header"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp"
             android:autoSizeMaxTextSize="32sp"
-            android:autoSizeMinTextSize="24sp"
+            android:autoSizeMinTextSize="12sp"
             android:autoSizeStepGranularity="2sp"
             android:autoSizeTextType="uniform"
             android:fontFamily="@font/playfairdisplay_mid"
-            android:text=""
-            android:gravity="center_horizontal"
+            android:visibility="gone"
+            android:gravity="center"
             android:textAllCaps="true"
-            android:textColor="@color/colorPrimary_header"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintWidth_percent="0.95" />
+            android:textColor="@color/colorPrimary_header"/>
 
         <TextView
             android:id="@+id/pronunciation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:text=""
-            android:layout_marginBottom="12dp"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/word_header"
-            app:layout_constraintBottom_toBottomOf="@+id/word_box"/>
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"
+            android:textSize="12sp"
+            android:textColor="@color/dark_gray" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/definitions_recycler_container"

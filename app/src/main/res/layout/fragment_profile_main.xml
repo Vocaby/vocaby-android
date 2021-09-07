@@ -28,6 +28,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/nav_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:contentDescription="@string/navigation_button"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_menu"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
@@ -105,14 +119,6 @@
             android:layout_height="wrap_content"
             android:text="@string/notifications"
             android:drawableStart="@drawable/ic_notifications" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/loginout_button"
-            style="@style/Theme.VocabyAndroid.ProfileButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:drawableStart="@drawable/ic_auth"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/delete_button"

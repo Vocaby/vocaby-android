@@ -1,6 +1,12 @@
 package com.vocaby.app.ui;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -13,16 +19,18 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.bugsnag.android.Bugsnag;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.vocaby.app.receivers.NotificationReceiver;
 import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.R;
@@ -33,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private ViewPager2 viewPager;
     private SharedPreferences sharedPreferences;
+    private NavigationView navigationView;
+    private UserViewModel userViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +52,32 @@ public class MainActivity extends AppCompatActivity {
         Bugsnag.start(this);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.setupApplication();
 
         setupNotification();
         setupNavigation();
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView firstName = headerView.findViewById(R.id.first_name);
+        TextView currentUser = headerView.findViewById(R.id.current_user);
+        Button loginoutButton = findViewById(R.id.loginout_button);
+
+
+        userViewModel.getUser().observe(this, user -> {
+            firstName.setText(user.getFirstName());
+            currentUser.setText(user.getEmail());
+
+            if(user.isLoggedIn()) {
+                loginoutButton.setText(getString(R.string.log_out));
+                loginoutButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.color_tertiary)));
+                loginoutButton.setOnClickListener(v -> userViewModel.logout());
+            } else {
+                loginoutButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.colorPrimary)));
+                loginoutButton.setText(getString(R.string.log_in));
+                loginoutButton.setOnClickListener(v -> login());
+            }
+        });
     }
 
     @Override
@@ -70,15 +101,19 @@ public class MainActivity extends AppCompatActivity {
     private void setupNavigation() {
         viewPager = findViewById(R.id.fragment_container);
         viewPager.setAdapter(new FragmentAdapter(this));
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        bottomNav.setOnItemSelectedListener(item -> {
+        viewPager.setUserInputEnabled(false);
+        navigationView = findViewById(R.id.navigation_view);
+        navigationView.bringToFront();
+        DrawerLayout drawer = findViewById(R.id.drawer);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            drawer.closeDrawer(GravityCompat.END);
             int current = item.getItemId();
             if(current == R.id.profileFragment) {
-                viewPager.setCurrentItem(2);
+                viewPager.setCurrentItem(2, false);
             } else if(current == R.id.savesFragment) {
-                viewPager.setCurrentItem(1);
+                viewPager.setCurrentItem(1, false);
             } else {
-                viewPager.setCurrentItem(0);
+                viewPager.setCurrentItem(0, false);
             }
 
             return true;
@@ -88,10 +123,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                bottomNav.getMenu().getItem(position).setChecked(true);
+                navigationView.getMenu().getItem(position).setChecked(true);
             }
         });
     }
+
+    private void login() {
+        mGetLogin.launch(new Intent(this, AuthActivity.class));
+    }
+
+    private final ActivityResultLauncher<Intent> mGetLogin = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> userViewModel.handleActivityResult(result)
+    );
 
     @Override
     public void onBackPressed() {
