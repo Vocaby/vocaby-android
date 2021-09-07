@@ -103,54 +103,6 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Completable addOfflineAddedSave(String word) {
-        return vocabyDao.addOfflineAddedSave(new OfflineAddedSaves(word))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<List<String>> getOfflineAddedSaves() {
-        return vocabyDao.getOfflineAdded()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-
-    public Completable addOfflineRemovedSave(String word) {
-        return vocabyDao.addOfflineRemovedSave(new OfflineRemovedSaves(word))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<List<String>> getOfflineRemovedSaves() {
-        return vocabyDao.getOfflineRemoved()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<Integer> getOfflineSavesCount() {
-        return vocabyDao.getOfflineSavesCount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<Map<String, List<String>>> getOfflineSaves() {
-        return Single.zip(getOfflineAddedSaves(), getOfflineRemovedSaves(), (added, removed) -> {
-            Map<String, List<String>> map = new HashMap<>();
-            map.put("added", added);
-            map.put("removed", removed);
-
-            return map;
-        });
-    }
-
-    public Completable clearOfflineData() {
-        return vocabyDao.clearOfflineAdded()
-                .andThen(vocabyDao.clearOfflineRemoved())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
     public Single<Long> createUser(User user) {
         return vocabyDao.createUser(user)
                 .subscribeOn(Schedulers.io())
@@ -159,6 +111,18 @@ public class VocabyRepository {
 
     public Completable deleteUser(User user) {
         return vocabyDao.removeUser(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<Boolean> getUserSyncStatus(int userId) {
+        return vocabyDao.getSyncStatus(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable setUserSyncStatus(boolean isSynced, int userId) {
+        return vocabyDao.setUserSyncStatus(isSynced, userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

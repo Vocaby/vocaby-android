@@ -18,12 +18,14 @@ public class User {
     private String firstName;
     private String lastName;
     private String token;
+    private boolean synced;
 
     public User() {
         this.email = "Guest";
         this.firstName = "";
         this.lastName = "";
         this.token = "";
+        this.synced = false;
     }
 
     @Ignore
@@ -32,6 +34,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.token = token;
+        this.synced = true;
     }
 
     public int getUserId() {
@@ -71,4 +74,8 @@ public class User {
     public void setToken(String token) { this.token = token; }
 
     public boolean isLoggedIn() { return !token.isEmpty(); }
+
+    public boolean getSynced() { return this.synced; }
+
+    public void setSynced(boolean synced) { this.synced = synced; }
 }

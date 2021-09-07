@@ -29,6 +29,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
     private final VocabyRepository vocabyRepository;
     private final SingleLiveEvent<WordDataPackage> mWordPackage;
     private final SharedPreferences sharedPreferences;
+    private final SingleLiveEvent<Boolean> remoteSaveSuccessful;
     private User currentUser;
 
     public SearchResultsViewModel(@NonNull Application application) {
@@ -37,11 +38,14 @@ public class SearchResultsViewModel extends AndroidViewModel {
         compositeDisposable = new CompositeDisposable();
         vocabyRepository = new VocabyRepository(application);
         mWordPackage = new SingleLiveEvent<>();
+        remoteSaveSuccessful = new SingleLiveEvent<>();
     }
 
     public LiveData<WordDataPackage> getWordData() {
         return mWordPackage;
     }
+
+    public LiveData<Boolean> getRemoteSaveStatus() { return remoteSaveSuccessful; }
 
     public void retrieveWordDataFromRepo(String searched, Boolean isConnected) {
         int userId = sharedPreferences.getInt("CURRENT_USER_ID", 1);
@@ -59,13 +63,13 @@ public class SearchResultsViewModel extends AndroidViewModel {
                         }
                     }
 
-                    // Get Local Definitions and Local Saves
+                    // Get Local Definitions and Local Saves if above check fails
                     return vocabyRepository.getWordDataPackageLocally(searched, userId);
-                }).subscribe(mWordPackage::setValue,
-                    error -> {
+                }).subscribe(wordPackage -> {
+                        mWordPackage.setValue(wordPackage);
+                    }, error -> {
                         if(error instanceof EmptyResultSetException) {
                             mWordPackage.setValue(new WordDataPackage(new WordModel(searched), false));
-
                         }
 
                         Bugsnag.notify(error);
@@ -77,35 +81,27 @@ public class SearchResultsViewModel extends AndroidViewModel {
 
     public void saveWord(String word, boolean isConnected) {
         if(mWordPackage.getValue() != null) {
-            if(currentUser.isLoggedIn()) {
-                if(isConnected) {
-                    compositeDisposable.add(
-                            vocabyRepository.getVocabyApiService("").save(currentUser.getToken(), word)
-                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(true)),
-                                            error -> {
-                                                if(error instanceof HttpException) {
-                                                    mWordPackage.setValue(mWordPackage.getValue().setSave(false));
-                                                }
+            if(currentUser.isLoggedIn() && isConnected) {
+                compositeDisposable.add(
+                        vocabyRepository.getVocabyApiService("").save(currentUser.getToken(), word)
+                                .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(true)),
+                                        error -> {
+                                            if(error instanceof HttpException) {
+                                                mWordPackage.setValue(mWordPackage.getValue().setSave(false));
+                                            }
 
-                                                Bugsnag.notify(error);
-                                                Log.e("saveWord: ", error.getMessage());
-                                            })
-                    );
-                } else {
-                    // Add to Offline Save because user is logged in but is offline
-                    // AndThen User Save
-                    // Set sync to false (Just check this onResume?)
-                    compositeDisposable.add(
-                            vocabyRepository.addOfflineAddedSave(word)
-                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
-                                    .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(true)),
-                                            error -> Log.e("saveWord (local, saved): ", error.getMessage()))
-                    );
-                }
+                                            Bugsnag.notify(error);
+                                            Log.e("saveWord: ", error.getMessage());
+                                        })
+                );
             } else {
+                if(currentUser.isLoggedIn()) {
+                    remoteSaveSuccessful.setValue(false);
+                }
+
                 compositeDisposable.add(
                         vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word))
                                 .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(true)),
@@ -120,35 +116,27 @@ public class SearchResultsViewModel extends AndroidViewModel {
 
     public void removeSave(String word, Boolean isConnected) {
         if(mWordPackage.getValue() != null) {
-            if (currentUser.isLoggedIn()) {
-                if(isConnected) {
-                    compositeDisposable.add(
-                            vocabyRepository.getVocabyApiService("").removeSave(currentUser.getToken(), word)
-                                    .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(false)),
-                                            error -> {
-                                                if(error instanceof HttpException) {
-                                                    mWordPackage.setValue(mWordPackage.getValue().setSave(true));
-                                                }
+            if (currentUser.isLoggedIn() && isConnected) {
+                compositeDisposable.add(
+                        vocabyRepository.getVocabyApiService("").removeSave(currentUser.getToken(), word)
+                                .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(false)),
+                                        error -> {
+                                            if(error instanceof HttpException) {
+                                                mWordPackage.setValue(mWordPackage.getValue().setSave(true));
+                                            }
 
-                                                Bugsnag.notify(error);
-                                                Log.e("saveWord: ", error.getMessage());
-                                            })
-                    );
-                } else {
-                    // Add to Offline Save because user is logged in but is offline
-                    // AndThen User Save
-                    // Set sync to false (Just check this onResume?)
-                    compositeDisposable.add(
-                            vocabyRepository.addOfflineRemovedSave(word)
-                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
-                                    .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(false)),
-                                            error -> Log.e("saveWord (local, saved): ", error.getMessage()))
-                    );
-                }
+                                            Bugsnag.notify(error);
+                                            Log.e("saveWord: ", error.getMessage());
+                                        })
+                );
             } else {
+                if(currentUser.isLoggedIn()) {
+                    remoteSaveSuccessful.setValue(false);
+                }
+
                 compositeDisposable.add(
                         vocabyRepository.removeSave(currentUser.getUserId(), word)
                                 .subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(false)),

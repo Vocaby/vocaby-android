@@ -57,27 +57,6 @@ public abstract class VocabyDao {
     @Query("DELETE FROM saves")
     public abstract Completable clearSaves();
 
-    @Insert
-    public abstract Completable addOfflineAddedSave(OfflineAddedSaves offlineAddedSaves);
-
-    @Query("SELECT word FROM offline_added")
-    public abstract Single<List<String>> getOfflineAdded();
-
-    @Query("DELETE FROM offline_added")
-    public abstract Completable clearOfflineAdded();
-
-    @Insert
-    public abstract Completable addOfflineRemovedSave(OfflineRemovedSaves offlineRemovedSaves);
-
-    @Query("SELECT word FROM offline_removed")
-    public abstract Single<List<String>> getOfflineRemoved();
-
-    @Query("DELETE FROM offline_removed")
-    public abstract Completable clearOfflineRemoved();
-
-    @Query("SELECT (SELECT COUNT(*) FROM offline_added) + (SELECT COUNT(*) FROM offline_removed)")
-    public abstract Single<Integer> getOfflineSavesCount();
-
     @Transaction
     @Query("SELECT COUNT(*) FROM vocaby_user")
     public abstract Single<Integer> getUserCount();
@@ -88,6 +67,12 @@ public abstract class VocabyDao {
     @Transaction
     @Query("SELECT * FROM vocaby_user WHERE user_id = :id")
     public abstract Single<User> getCurrentUser(int id);
+
+    @Query("SELECT synced FROM vocaby_user WHERE user_id = :id")
+    public abstract Single<Boolean> getSyncStatus(int id);
+
+    @Query("UPDATE vocaby_user SET synced = :synced WHERE user_id = :id")
+    public abstract Completable setUserSyncStatus(boolean synced, int id);
 
     @Transaction
     @Query("SELECT * FROM dictionary_word WHERE word = :word")

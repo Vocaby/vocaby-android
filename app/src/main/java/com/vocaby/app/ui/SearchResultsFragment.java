@@ -106,6 +106,7 @@ public class SearchResultsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         dictionaryViewModel =
                 new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+        searchResultsViewModel = new ViewModelProvider(this).get(SearchResultsViewModel.class);
 
         observeWordPackageData();
 
@@ -128,10 +129,16 @@ public class SearchResultsFragment extends Fragment {
                 }
             });
         });
+
+        searchResultsViewModel.getRemoteSaveStatus().observe(getViewLifecycleOwner(),
+                remoteSaveSuccessful -> {
+                    if(!remoteSaveSuccessful) {
+                        userViewModel.setUserState(new UserStateModel(false, false));
+                    }
+        });
     }
 
     public void observeWordPackageData() {
-        searchResultsViewModel = new ViewModelProvider(this).get(SearchResultsViewModel.class);
         searchResultsViewModel.retrieveWordDataFromRepo(searchedWord, NetworkManager.isConnectedToInternet(ctx));
         AtomicReference<Drawable> icon = new AtomicReference<>();
         icon.set(getDrawable(ctx, R.drawable.ic_bookmark_disabled));

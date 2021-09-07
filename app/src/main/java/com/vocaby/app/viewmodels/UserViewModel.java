@@ -59,14 +59,14 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                             return vocabyRepository.getUserSaves(currentId);
                         }).flatMap(saves -> {
                             mSavedWords.setValue(saves);
-                            return vocabyRepository.getOfflineSavesCount();
-                        }).subscribe(num -> {
+                            return vocabyRepository.getUserSyncStatus(currentId);
+                        }).subscribe(isSynced -> {
                             // User is Logged In. Check if offlineSaves exist
                             if(mUser.getValue() != null && mUser.getValue().isLoggedIn()) {
-                                if(num > 0) {
-                                    userState.setValue(new UserStateModel(false, false));
-                                } else {
+                                if(isSynced) {
                                     userState.setValue(new UserStateModel(false, true));
+                                } else {
+                                    userState.setValue(new UserStateModel(false, false));
                                 }
                             } else {
                                 // User is local
@@ -81,6 +81,24 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                             }
                         })
         );
+    }
+
+    public void setUserState(UserStateModel userState) {
+        if(mUser.getValue() != null) {
+            User user = mUser.getValue();
+            if(userState.isSynced() != user.getSynced()) {
+                if(user.isLoggedIn()) {
+                    compositeDisposable.add(
+                            vocabyRepository.setUserSyncStatus(userState.isSynced(), user.getUserId())
+                                    .subscribe(() -> this.userState.setValue(userState),
+                                            error -> {
+                                                Bugsnag.notify(error);
+                                                Log.e("UserViewModel (set user state): ", error.getMessage());
+                                            })
+                    );
+                }
+            }
+        }
     }
 
     private void addDefaultUser() {
@@ -105,23 +123,6 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
 
     public LiveData<UserStateModel> getUserState() {
         return this.userState;
-    }
-
-    public void refreshState() {
-        compositeDisposable.add(
-                vocabyRepository.getOfflineSavesCount()
-                    .subscribe(num -> {
-                        if(mUser.getValue() != null && mUser.getValue().isLoggedIn()) {
-                            if(num > 0) {
-                                userState.setValue(new UserStateModel(false, false));
-                            } else {
-                                userState.setValue(new UserStateModel(false, true));
-                            }
-                        } else {
-                            userState.setValue(new UserStateModel(true));
-                        }
-                    })
-        );
     }
 
     public void changeToCurrentUser() {
@@ -174,13 +175,11 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
     public void logout() {
         int localId = sharedPreferences.getInt("LOCAL_USER_ID", 1);
         Completable deleteAllUsers = vocabyRepository.deleteAllUsers(localId);
-        Completable clearOfflineData = vocabyRepository.clearOfflineData();
         Single<User> getLocalUser = vocabyRepository.getUser(localId);
         if(mUser.getValue() != null) {
             String token = mUser.getValue().getToken();
             compositeDisposable.add(
                 deleteAllUsers
-                    .andThen(clearOfflineData)
                     .andThen(getLocalUser)
                     .flatMapCompletable(user -> {
                         mUser.setValue(user);
@@ -219,25 +218,23 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
     public void removeSave(String word) {
         User currentUser = mUser.getValue();
         if(currentUser != null) {
-            if (currentUser.isLoggedIn()) {
-                if(NetworkManager.isConnectedToInternet(getApplication())) {
-                    compositeDisposable.add(
-                            vocabyRepository.getVocabyApiService("").removeSave(currentUser.getToken(), word)
-                                    .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(() -> {},
-                                            error -> {
-                                                Bugsnag.notify(error);
-                                                Log.e("removeWordFromSaves(api): ", error.getMessage());
-                                            })
-                    );
-                } else {
-                    // Add to Offline Save
-                    // AndThen User Save
-                    // Set sync to false (Just check this onResume?)
-                }
+            if (currentUser.isLoggedIn() && NetworkManager.isConnectedToInternet(getApplication())) {
+                compositeDisposable.add(
+                        vocabyRepository.getVocabyApiService("").removeSave(currentUser.getToken(), word)
+                                .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> {},
+                                        error -> {
+                                            Bugsnag.notify(error);
+                                            Log.e("removeWordFromSaves(api): ", error.getMessage());
+                                        })
+                );
             } else {
+                if(currentUser.isLoggedIn()) {
+                    setUserState(new UserStateModel(false, false));
+                }
+
                 // local remove
                 compositeDisposable.add(
                         vocabyRepository.removeSave(mUser.getValue().getUserId(), word)
