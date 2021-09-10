@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,11 +21,12 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.bugsnag.android.Bugsnag;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.shape.CornerFamily;
+import com.google.android.material.shape.MaterialShapeDrawable;
 import com.vocaby.app.receivers.NotificationReceiver;
 import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.R;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private UserViewModel userViewModel;
 
+    @SuppressLint("UseCompatTextViewDrawableApis")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         TextView firstName = headerView.findViewById(R.id.first_name);
         TextView currentUser = headerView.findViewById(R.id.current_user);
-        Button loginoutButton = findViewById(R.id.loginout_button);
+        TextView loginoutButton = findViewById(R.id.loginout_button);
 
 
         userViewModel.getUser().observe(this, user -> {
@@ -68,11 +71,13 @@ public class MainActivity extends AppCompatActivity {
 
             if(user.isLoggedIn()) {
                 loginoutButton.setText(getString(R.string.log_out));
-                loginoutButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.color_tertiary)));
+                loginoutButton.setTextColor(getColor(R.color.color_tertiary));
+                loginoutButton.setCompoundDrawableTintList(ColorStateList.valueOf(getColor(R.color.color_tertiary)));
                 loginoutButton.setOnClickListener(v -> userViewModel.logout());
             } else {
-                loginoutButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.colorPrimary)));
                 loginoutButton.setText(getString(R.string.log_in));
+                loginoutButton.setCompoundDrawableTintList(ColorStateList.valueOf(getColor(R.color.colorPrimary)));
+                loginoutButton.setTextColor(getColor(R.color.colorPrimary));
                 loginoutButton.setOnClickListener(v -> login());
             }
         });
@@ -124,6 +129,16 @@ public class MainActivity extends AppCompatActivity {
                 navigationView.getMenu().getItem(position).setChecked(true);
             }
         });
+
+        MaterialShapeDrawable msd = (MaterialShapeDrawable) navigationView.getBackground();
+        float radius = getResources().getDimension(R.dimen.radius);
+        msd.setShapeAppearanceModel(
+                msd.getShapeAppearanceModel()
+                .toBuilder()
+                .setBottomLeftCorner(CornerFamily.ROUNDED, radius)
+                .setTopLeftCorner(CornerFamily.ROUNDED, radius)
+                .build()
+        );
     }
 
     private void login() {

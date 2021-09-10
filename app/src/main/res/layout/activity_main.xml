@@ -15,6 +15,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:fitsSystemWindows="true"
+        android:clickable="true"
+        android:background="@color/very_light_gray"
         app:headerLayout="@layout/nav_header"
         app:itemTextColor="@color/nav_colors"
         app:itemIconTint="@color/nav_colors"
@@ -22,14 +24,20 @@
         app:itemTextAppearance="@style/Theme.VocabyAndroid.NavigationDrawerStyle"
         app:menu="@menu/navigation">
 
-        <androidx.appcompat.widget.AppCompatButton
+        <TextView
             android:id="@+id/loginout_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="18dp"
             android:layout_gravity="bottom"
-            style="@style/Theme.VocabyAndroid.NavButton"
-            android:background="@color/very_light_gray"
-            android:drawableStart="@drawable/ic_auth"/>
+            android:gravity="center_vertical"
+            android:drawablePadding="14dp"
+            android:textSize="14sp"
+            android:clickable="true"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/bottom_navigation_button"
+            app:drawableStartCompat="@drawable/ic_auth"
+            app:drawableTint="@color/colorPrimary" />
     </com.google.android.material.navigation.NavigationView>
 
     <androidx.viewpager2.widget.ViewPager2
