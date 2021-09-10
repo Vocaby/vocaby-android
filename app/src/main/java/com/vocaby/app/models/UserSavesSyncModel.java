@@ -1,7 +1,7 @@
 package com.vocaby.app.models;
 
 import com.google.gson.annotations.SerializedName;
-import com.vocaby.app.database.entity.UserSaves;
+import com.vocaby.app.data.entity.UserSaves;
 
 import java.util.List;
 

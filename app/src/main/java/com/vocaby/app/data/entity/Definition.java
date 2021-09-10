@@ -1,4 +1,4 @@
-package com.vocaby.app.database.entity;
+package com.vocaby.app.data.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;

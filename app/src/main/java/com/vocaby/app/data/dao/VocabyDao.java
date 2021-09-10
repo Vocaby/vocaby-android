@@ -1,4 +1,4 @@
-package com.vocaby.app.database.dao;
+package com.vocaby.app.data.dao;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -7,12 +7,11 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import com.vocaby.app.database.entity.OfflineAddedSaves;
-import com.vocaby.app.database.entity.OfflineRemovedSaves;
-import com.vocaby.app.database.entity.User;
-import com.vocaby.app.database.entity.UserSaves;
-import com.vocaby.app.database.entity.Word;
-import com.vocaby.app.database.entity.WordDefinitions;
+import com.vocaby.app.data.entity.OfflineAddedSaves;
+import com.vocaby.app.data.entity.OfflineRemovedSaves;
+import com.vocaby.app.data.entity.User;
+import com.vocaby.app.data.entity.UserSaves;
+import com.vocaby.app.data.entity.WordDefinitions;
 
 import java.util.List;
 
@@ -21,6 +20,9 @@ import io.reactivex.rxjava3.core.Single;
 
 @Dao
 public abstract class VocabyDao {
+    @Query("SELECT word FROM dictionary_word ORDER BY word ASC")
+    public abstract Single<List<String>> getDictionaryEntries();
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Single<Long> createUser(User user);
 

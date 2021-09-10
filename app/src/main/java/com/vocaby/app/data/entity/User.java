@@ -1,12 +1,9 @@
-package com.vocaby.app.database.entity;
+package com.vocaby.app.data.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-
-import java.util.LinkedList;
-import java.util.List;
 
 @Entity(tableName = "vocaby_user")
 public class User {

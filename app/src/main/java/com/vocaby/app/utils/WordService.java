@@ -1,14 +1,8 @@
 package com.vocaby.app.utils;
 
-import com.vocaby.app.database.entity.Definition;
-import com.vocaby.app.database.entity.WordDefinitions;
+import com.vocaby.app.data.entity.Definition;
+import com.vocaby.app.data.entity.WordDefinitions;
 import com.vocaby.app.models.WordModel;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Iterator;
 
 public class WordService {
     public static WordModel convertToWordModel(WordDefinitions wordDefinitions) {

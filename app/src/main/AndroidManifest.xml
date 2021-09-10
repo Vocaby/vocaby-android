@@ -20,6 +20,7 @@
             android:exported="true" />
 
         <activity
+            android:launchMode="singleTop"
             android:name=".ui.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"

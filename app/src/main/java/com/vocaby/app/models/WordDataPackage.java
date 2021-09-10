@@ -1,7 +1,7 @@
 package com.vocaby.app.models;
 
 import com.vocaby.app.utils.WordService;
-import com.vocaby.app.database.entity.WordDefinitions;
+import com.vocaby.app.data.entity.WordDefinitions;
 
 public class WordDataPackage {
     private final WordModel wordModel;

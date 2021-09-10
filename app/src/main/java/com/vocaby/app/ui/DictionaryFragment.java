@@ -1,6 +1,5 @@
 package com.vocaby.app.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,18 +14,20 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.vocaby.app.R;
+import com.vocaby.app.models.SearchSuggestionItem;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
+
+import java.util.List;
 
 
 public class DictionaryFragment extends Fragment {
     private DictionaryViewModel dictionaryViewModel;
+    private FloatingSearchView searchView;
 
     public DictionaryFragment() {
         // Required empty public constructor
@@ -37,8 +38,10 @@ public class DictionaryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        EditText search = view.findViewById(R.id.search_bar);
-        search.setOnEditorActionListener(searchEditorListener);
+
+        searchView = view.findViewById(R.id.search_bar);
+        searchView.setOnSearchListener(searchListener);
+        searchView.setOnQueryChangeListener(queryChangeListener);
 
         // Navigation
         ImageButton navButton = view.findViewById(R.id.nav_button);
@@ -95,21 +98,36 @@ public class DictionaryFragment extends Fragment {
         }
     }
 
-    private final TextView.OnEditorActionListener searchEditorListener = (v, actionId, event) -> {
-        InputMethodManager imm = (InputMethodManager) requireActivity()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        v.clearFocus();
-        if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-            String searchedWord = cleanText(v.getText().toString());
+    private String cleanText(String text) {
+        return text.toLowerCase().trim().replaceAll("[^0-9a-z-'._ ]", "");
+    }
+
+    private final FloatingSearchView.OnSearchListener searchListener = new FloatingSearchView.OnSearchListener() {
+        @Override
+        public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+            String searchedWord = cleanText(searchSuggestion.getBody());
+            searchView.setSearchText(searchedWord);
+            searchView.clearSearchFocus();
             dictionaryViewModel.setSearch(searchedWord);
-            return true;
         }
 
-        return false;
+        @Override
+        public void onSearchAction(String currentQuery) {
+            String searchedWord = cleanText(currentQuery);
+            dictionaryViewModel.setSearch(searchedWord);
+        }
     };
 
-    private String cleanText(String text) {
-        return text.toLowerCase().trim().replaceAll("[^0-9a-z-._ ]", "");
-    }
+    private final FloatingSearchView.OnQueryChangeListener queryChangeListener =
+            (oldQuery, newQuery) -> {
+        oldQuery = cleanText(oldQuery);
+        newQuery = cleanText(newQuery);
+        if(!oldQuery.equals(newQuery)) {
+            List<SearchSuggestionItem> searchSuggestions =
+                    dictionaryViewModel.getSearchSuggestion(newQuery,4);
+
+            searchView.swapSuggestions(searchSuggestions);
+        }
+
+    };
 }

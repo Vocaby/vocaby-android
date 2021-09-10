@@ -1,4 +1,4 @@
-package com.vocaby.app.database;
+package com.vocaby.app.data;
 
 import android.content.Context;
 import android.util.Log;
@@ -16,6 +16,7 @@ public class DataManager {
     private static DataManager dataManager = null;
     private static Context ctx;
     private static final String HISTORY_DATA_FILE_NAME = "hVocaby";
+    private static final String SEARCH_SUGGEST_CACHE_FILE_NAME = "searchSuggest";
     private static List<String> history;
 
     private DataManager(Context context) {
@@ -24,6 +25,7 @@ public class DataManager {
         if(historyFile.exists()) {
             try(FileInputStream fis = ctx.openFileInput(HISTORY_DATA_FILE_NAME)) {
                 ObjectInputStream ois = new ObjectInputStream(fis);
+                //noinspection unchecked
                 history = (List<String>) ois.readObject();
                 ois.close();
             } catch (IOException | ClassNotFoundException e) {

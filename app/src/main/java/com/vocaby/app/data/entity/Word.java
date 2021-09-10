@@ -1,8 +1,7 @@
-package com.vocaby.app.database.entity;
+package com.vocaby.app.data.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "dictionary_word")

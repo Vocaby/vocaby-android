@@ -4,24 +4,21 @@ import android.app.Application;
 
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.VocabyApiService;
-import com.vocaby.app.database.VocabyDatabase;
-import com.vocaby.app.database.dao.VocabyDao;
-import com.vocaby.app.database.entity.OfflineAddedSaves;
-import com.vocaby.app.database.entity.OfflineRemovedSaves;
-import com.vocaby.app.database.entity.User;
-import com.vocaby.app.database.entity.UserSaves;
-import com.vocaby.app.database.entity.WordDefinitions;
+import com.vocaby.app.data.VocabyDatabase;
+import com.vocaby.app.data.dao.VocabyDao;
+import com.vocaby.app.data.entity.OfflineAddedSaves;
+import com.vocaby.app.data.entity.OfflineRemovedSaves;
+import com.vocaby.app.data.entity.User;
+import com.vocaby.app.data.entity.UserSaves;
+import com.vocaby.app.data.entity.WordDefinitions;
 import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.WordDataPackage;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VocabyRepository {
@@ -34,6 +31,13 @@ public class VocabyRepository {
         vocabyDatabase = VocabyDatabase.getDatabase(application);
         vocabyDao = vocabyDatabase.vocabyDao();
         apiManager = ApiManager.getInstance();
+    }
+
+    // Gets data from UI Thread
+    public Single<List<String>> getDictionaryEntries() {
+        return vocabyDao.getDictionaryEntries()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Single<WordDefinitions> getWordDataFromDatabase(String word) {

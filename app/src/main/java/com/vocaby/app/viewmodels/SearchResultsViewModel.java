@@ -12,7 +12,7 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.api.VocabyApiService;
-import com.vocaby.app.database.entity.UserSaves;
+import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.models.WordDataPackage;
 import com.vocaby.app.models.WordModel;
 import com.vocaby.app.repositories.VocabyRepository;

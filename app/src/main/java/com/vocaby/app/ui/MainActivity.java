@@ -1,7 +1,5 @@
 package com.vocaby.app.ui;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,13 +18,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bugsnag.android.Bugsnag;
@@ -34,6 +28,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.vocaby.app.receivers.NotificationReceiver;
 import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.R;
+import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.setupApplication();
+
+        DictionaryViewModel dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
+        dictionaryViewModel.setupDictionary();
 
         setupNotification();
         setupNavigation();
@@ -151,25 +149,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onBackPressed();
-    }
-
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus();
-            if ( v instanceof EditText) {
-                Rect outRect = new Rect();
-                v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
-                    v.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-            }
-        }
-
-        return super.dispatchTouchEvent( event );
     }
 
     private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =

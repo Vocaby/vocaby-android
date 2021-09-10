@@ -74,34 +74,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/logo_boxed" />
-
-        <EditText
-            android:id="@+id/search_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            android:background="@drawable/edittext"
-            android:drawableStart="@drawable/ic_search_gray"
-            android:drawablePadding="12dp"
-            android:elevation="8dp"
-            android:ems="10"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:hint="@string/search_hint"
-            android:imeActionLabel="Search"
-            android:imeOptions="actionSearch"
-            android:imeActionId="3"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:singleLine="true"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.804" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:floatingSearch_searchBarMarginTop="64dp"
+        app:floatingSearch_searchBarMarginLeft="@dimen/container_side_margin"
+        app:floatingSearch_searchBarMarginRight="@dimen/container_side_margin"
+        app:floatingSearch_close_search_on_keyboard_dismiss="true"
+        app:floatingSearch_searchHint="@string/search_hint"
+        app:floatingSearch_suggestionsListAnimDuration="250"
+        app:floatingSearch_leftActionMode="showSearch"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
