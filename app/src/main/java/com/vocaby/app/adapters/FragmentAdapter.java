@@ -8,33 +8,33 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.vocaby.app.ui.DictionaryFragment;
+import com.vocaby.app.ui.DictionaryHomeFragment;
 import com.vocaby.app.ui.MyEntryFragment;
 import com.vocaby.app.ui.ProfileFragment;
-import com.vocaby.app.ui.ProfileHomeFragment;
 import com.vocaby.app.ui.SavesFragment;
 
-import java.util.ArrayList;
-
 public class FragmentAdapter extends FragmentStateAdapter {
-    private ArrayList<Fragment> fragments = new ArrayList<>();
     public FragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
-        fragments.add(new DictionaryFragment());
-        fragments.add(new MyEntryFragment());
-        fragments.add(new SavesFragment());
-        fragments.add(new ProfileFragment());
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return fragments.get(position);
+        switch (position) {
+            case 3:
+                return new ProfileFragment();
+            case 2:
+                return new SavesFragment();
+            case 1:
+                return new MyEntryFragment();
+            default:
+                return new DictionaryFragment();
+        }
     }
 
     @Override
     public int getItemCount() {
         return 4;
     }
-
-
 }

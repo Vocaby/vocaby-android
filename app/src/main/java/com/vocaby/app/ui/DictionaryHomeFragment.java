@@ -62,8 +62,8 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
         // Random Word of the Day
         wordView = view.findViewById(R.id.word_header);
         posView = view.findViewById(R.id.pos);
-        definition = view.findViewById(R.id.definition);
-        sentence = view.findViewById(R.id.sentence);
+        definition = view.findViewById(R.id.card_definition);
+        sentence = view.findViewById(R.id.card_sentence);
         wordBox = view.findViewById(R.id.word_box);
         progressBar = view.findViewById(R.id.randomword_progress);
 

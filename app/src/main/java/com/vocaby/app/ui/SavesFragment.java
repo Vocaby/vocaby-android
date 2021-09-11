@@ -62,12 +62,12 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
         userStateText = view.findViewById(R.id.network_status_text);
         userStateIndicator = view.findViewById(R.id.network_indicator);
         syncDataButton = view.findViewById(R.id.sync_data_button);
-        progressBar = view.findViewById(R.id.progressBar);
+        progressBar = view.findViewById(R.id.saves_progressBar);
 
         // Navigation
         ImageButton navButton = view.findViewById(R.id.nav_button);
         navButton.setOnClickListener(v -> {
-            DrawerLayout drawer = requireActivity().findViewById(R.id.drawer);
+            DrawerLayout drawer = requireActivity().findViewById(R.id.main_drawer);
             drawer.openDrawer(GravityCompat.END);
         });
 

@@ -39,19 +39,19 @@ public class DictionaryFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        searchView = view.findViewById(R.id.search_bar);
+        searchView = view.findViewById(R.id.vocaby_search_bar);
         searchView.setOnSearchListener(searchListener);
         searchView.setOnQueryChangeListener(queryChangeListener);
 
         // Navigation
         ImageButton navButton = view.findViewById(R.id.nav_button);
         navButton.setOnClickListener(v -> {
-            DrawerLayout drawer = requireActivity().findViewById(R.id.drawer);
+            DrawerLayout drawer = requireActivity().findViewById(R.id.main_drawer);
             drawer.openDrawer(GravityCompat.END);
         });
 
         if(savedInstanceState == null) {
-            getChildFragmentManager().beginTransaction().replace(R.id.search_fragment_container,
+            getChildFragmentManager().beginTransaction().replace(R.id.dictionary_fragment_container,
                     new DictionaryHomeFragment()).commit();
         }
 
@@ -92,7 +92,7 @@ public class DictionaryFragment extends Fragment {
                             R.anim.enter_bottom_to_top,
                             R.anim.exit_top_to_bottom
                     )
-                    .add(R.id.search_fragment_container,
+                    .add(R.id.dictionary_fragment_container,
                             SearchResultsFragment.newInstance(search)
                     ).commit();
         }

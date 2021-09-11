@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setUserInputEnabled(false);
         navigationView = findViewById(R.id.navigation_view);
         navigationView.bringToFront();
-        DrawerLayout drawer = findViewById(R.id.drawer);
+        DrawerLayout drawer = findViewById(R.id.main_drawer);
         navigationView.setNavigationItemSelectedListener(item -> {
             drawer.closeDrawer(GravityCompat.END);
             int current = item.getItemId();

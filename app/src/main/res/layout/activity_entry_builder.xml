@@ -14,9 +14,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/custom_entry_header"
-        android:paddingTop="@dimen/container_side_margin">
+        android:paddingTop="@dimen/header_padding">
         <LinearLayout
-            android:id="@+id/builder_nav_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="14dp"

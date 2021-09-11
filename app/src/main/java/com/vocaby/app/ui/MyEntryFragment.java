@@ -53,7 +53,7 @@ public class MyEntryFragment extends Fragment {
         // Navigation
         ImageButton navButton = view.findViewById(R.id.nav_button);
         navButton.setOnClickListener(v -> {
-            DrawerLayout drawer = requireActivity().findViewById(R.id.drawer);
+            DrawerLayout drawer = requireActivity().findViewById(R.id.main_drawer);
             drawer.openDrawer(GravityCompat.END);
         });
 
