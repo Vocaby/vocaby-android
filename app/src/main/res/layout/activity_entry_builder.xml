@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.EntryBuilderActivity"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/custom_entry_header"
+        android:paddingTop="@dimen/container_side_margin">
+        <LinearLayout
+            android:id="@+id/builder_nav_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/back_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_close"
+                android:drawablePadding="10dp"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="@string/close"
+                android:textColor="@color/colorPrimary_header"
+                android:textSize="12sp"
+                tools:ignore="SmallSp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/new_dictionary_entry"
+                android:textSize="14sp"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:textColor="@color/colorPrimary_header" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/save_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_check"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/colorPrimary_header"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="@string/save_button_unsaved"
+                android:textColor="@color/colorPrimary_header"
+                android:textSize="12sp"
+                tools:ignore="SmallSp" />
+        </LinearLayout>
+        <EditText
+            android:id="@+id/entry_header_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/playfairdisplay_mid"
+            android:hint="@string/custom_entry_header_hint"
+            android:inputType="text"
+            android:importantForAutofill="no"
+            android:imeOptions="actionDone"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:paddingBottom="18dp"
+            android:textColor="@color/colorPrimary_header"
+            android:textSize="28sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:text="Definition Groups"
+            android:textAllCaps="true"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/add_def_group_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimary"
+            android:drawableStart="@drawable/ic_add"
+            android:drawableTint="@color/white"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="@string/add_new_group"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            app:backgroundTint="@color/black" />
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/custom_entry_group_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin" />
+</LinearLayout>

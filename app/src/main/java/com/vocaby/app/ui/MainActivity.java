@@ -112,8 +112,10 @@ public class MainActivity extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.END);
             int current = item.getItemId();
             if(current == R.id.profileFragment) {
-                viewPager.setCurrentItem(2, false);
+                viewPager.setCurrentItem(3, false);
             } else if(current == R.id.savesFragment) {
+                viewPager.setCurrentItem(2, false);
+            } else if(current == R.id.customEntryFragment) {
                 viewPager.setCurrentItem(1, false);
             } else {
                 viewPager.setCurrentItem(0, false);

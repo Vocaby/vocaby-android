@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.vocaby.app.ui.DictionaryFragment;
+import com.vocaby.app.ui.MyEntryFragment;
 import com.vocaby.app.ui.ProfileFragment;
 import com.vocaby.app.ui.ProfileHomeFragment;
 import com.vocaby.app.ui.SavesFragment;
@@ -19,6 +20,7 @@ public class FragmentAdapter extends FragmentStateAdapter {
     public FragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
         fragments.add(new DictionaryFragment());
+        fragments.add(new MyEntryFragment());
         fragments.add(new SavesFragment());
         fragments.add(new ProfileFragment());
     }
@@ -31,7 +33,7 @@ public class FragmentAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 4;
     }
 
 

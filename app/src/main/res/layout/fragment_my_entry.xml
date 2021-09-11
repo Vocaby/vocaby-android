@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/saves_fragment"
+    android:id="@+id/custom_entry_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.SavesFragment"
+    tools:context=".ui.MyEntryFragment"
     android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,7 +37,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/container_side_margin"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="@string/app_header_saves"
+            android:text="@string/app_header_custom_entries"
             android:textColor="@color/white"
             android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@+id/imageView"
@@ -71,7 +71,7 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/saves_container"
+        android:id="@+id/custom_entry_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/container_side_margin"
@@ -114,7 +114,7 @@
             android:layout_marginStart="8dp"
             android:text="@string/local"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/dark_gray"
+            android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -150,7 +150,7 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/saves_count"
+            android:id="@+id/entry_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcesanspro_regular"
@@ -165,13 +165,29 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="@string/saved_words"
-            android:textColor="@color/colorPrimary"
+            android:text="@string/custom_entries"
+            android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/saves_count"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.02"
             app:layout_constraintStart_toEndOf="@+id/saves_count" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/add_entry_button"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:textColor="@color/white"
+            android:drawableTint="@color/white"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:backgroundTint="@color/colorPrimary_header"
+            android:textAllCaps="false"
+            android:drawableStart="@drawable/ic_add"
+            android:text="@string/add_entry_button" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

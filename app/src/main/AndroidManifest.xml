@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.vocaby.app">
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -15,27 +16,32 @@
         android:screenOrientation="sensorPortrait"
         android:theme="@style/Theme.VocabyAndroid">
         <activity
-            android:name=".ui.AuthActivity"
-            android:launchMode="singleInstance"
+            android:name=".ui.EntryGroupBuilderActivity"
             android:exported="true" />
-
         <activity
-            android:launchMode="singleTop"
+            android:name=".ui.EntryBuilderActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.AuthActivity"
+            android:exported="true"
+            android:launchMode="singleInstance" />
+        <activity
             android:name=".ui.MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing"
             tools:ignore="LockedOrientationActivity" />
-
         <activity
             android:name=".ui.SplashScreenActivity"
-            android:theme="@style/Theme.VocabyAndroid.Splash"
             android:exported="true"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.VocabyAndroid.Splash"
             android:windowSoftInputMode="adjustNothing"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -67,4 +73,5 @@
             </intent-filter>
         </receiver>
     </application>
+
 </manifest>

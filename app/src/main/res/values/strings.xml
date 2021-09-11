@@ -81,4 +81,21 @@
     <string name="saved_words">Saved Words</string>
     <string name="zero">0</string>
     <string name="app_label">Vocaby</string>
+    <string name="custom_entries">Custom Entries</string>
+    <string name="app_header_custom_entries">MY ENTRIES</string>
+    <string name="nav_custom_entries">My Entries</string>
+    <string name="add_entry_button">Add</string>
+    <string name="custom_entry_header_hint">Word / Phrase</string>
+    <string name="new_dictionary_entry">Custom Dictionary Entry</string>
+    <string name="add_new_group">Add a group</string>
+    <string name="new_definition_group">New Definition Group</string>
+    <string name="add_a_definition">Add a definition</string>
+    <string name="add">add</string>
+    <string name="definition_alert">You must enter a definition</string>
+    <string name="definition_header">Definition</string>
+    <string name="example_header">Example</string>
+    <string name="custom_type_hint">Please select a type</string>
+    <string name="type_header">Type / Part Of Speech</string>
+    <string name="type_header_alert">Please select a type</string>
+    <string name="definitions_header">Definitions</string>
 </resources>
