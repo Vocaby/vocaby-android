@@ -68,6 +68,21 @@
         <item name="android:gravity">left|center_vertical</item>
     </style>
 
+    <style name="Theme.VocabyAndroid.RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:background">@drawable/type_radio_item</item>
+        <item name="android:button">@null</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:fontFamily">@font/playfairdisplay_mid</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/type_item_colors</item>
+    </style>
+
     <style name="Theme.VocabyAndroid.BottomSheetDialog"
         parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>

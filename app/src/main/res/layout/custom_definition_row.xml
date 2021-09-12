@@ -1,30 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="@dimen/custom_entry_card_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="8dp"
-    android:backgroundTint="@color/very_light_gray">
+    app:cardCornerRadius="@dimen/radius"
+    app:strokeColor="@color/light_gray"
+    app:strokeWidth="1dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="12dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/definition"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimary_header"
-            android:textSize="16sp"
-            android:fontFamily="@font/sourcesanspro_regular" />
-        <TextView
-            android:id="@+id/example"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:textColor="@color/black" />
+        android:minHeight="@dimen/custom_entry_card_height"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+        <FrameLayout
+            android:id="@+id/drag_handle"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:minHeight="@dimen/custom_entry_card_height"
+            android:background="@color/very_light_gray">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_drag_indicator"
+                android:contentDescription="@string/drag_icon" />
+        </FrameLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/definition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary_header"
+                android:textSize="16sp"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/sourcesanspro_regular" />
+            <TextView
+                android:id="@+id/example"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/sourcesanspro_regular"
+                android:textColor="@color/dark_gray" />
+        </LinearLayout>
+        <FrameLayout
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingEnd="20dp"
+            android:minHeight="@dimen/custom_entry_card_height"
+            android:background="@color/white">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_trash"
+                app:tint="@color/color_tertiary"
+                android:contentDescription="@string/trash_icon" />
+        </FrameLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

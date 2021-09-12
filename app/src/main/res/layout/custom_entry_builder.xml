@@ -13,26 +13,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/custom_entry_header"
-        android:paddingTop="@dimen/header_padding">
+        android:background="@drawable/box_bottom_stroke">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:paddingStart="14dp"
             android:paddingEnd="14dp">
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/back_button"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_close"
-                android:drawablePadding="10dp"
                 android:fontFamily="@font/sourcesanspro_semibold"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
-                android:text="@string/close"
-                android:textColor="@color/colorPrimary_header"
-                android:textSize="12sp"
+                android:text="@string/nav_close"
+                android:textAllCaps="false"
+                android:textColor="@color/dark_gray"
+                android:textSize="14sp"
                 tools:ignore="SmallSp" />
 
             <Space
@@ -43,10 +44,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/new_dictionary_entry"
-                android:textSize="14sp"
                 android:fontFamily="@font/sourcesanspro_semibold"
-                android:textColor="@color/colorPrimary_header" />
+                android:text="@string/new_dictionary_entry"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
             <Space
                 android:layout_width="0dp"
@@ -58,35 +59,16 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_check"
-                android:drawablePadding="4dp"
-                android:drawableTint="@color/colorPrimary_header"
                 android:fontFamily="@font/sourcesanspro_semibold"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
-                android:text="@string/save_button_unsaved"
+                android:text="@string/nav_save"
+                android:textAllCaps="false"
                 android:textColor="@color/colorPrimary_header"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:ignore="SmallSp" />
         </LinearLayout>
-        <EditText
-            android:id="@+id/entry_header_edit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/playfairdisplay_mid"
-            android:hint="@string/custom_entry_header_hint"
-            android:inputType="text"
-            android:importantForAutofill="no"
-            android:imeOptions="actionDone"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            android:paddingBottom="18dp"
-            android:textColor="@color/colorPrimary_header"
-            android:textSize="28sp" />
-
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,43 +76,83 @@
         android:layout_marginEnd="@dimen/container_side_margin"
         android:layout_marginTop="8dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header">
+        android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="Definition Groups"
-            android:textAllCaps="true"/>
+            android:text="@string/custom_entry_word_header" />
 
         <Space
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/add_def_group_button"
+            android:id="@+id/edit_custom_word_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorPrimary"
-            android:drawableStart="@drawable/ic_add"
-            android:drawableTint="@color/white"
             android:fontFamily="@font/sourcesanspro_semibold"
             android:minWidth="0dp"
             android:minHeight="0dp"
-            android:text="@string/add_new_group"
+            android:text="@string/edit"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="12sp"
             app:backgroundTint="@color/black" />
     </LinearLayout>
+    <TextView
+        android:id="@+id/entry_header_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="@font/playfairdisplay_mid"
+        android:hint="@string/custom_entry_header_hint"
+        android:textColor="@color/colorPrimary_header"
+        android:textSize="22sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="@font/sourcesanspro_semibold"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:text="@string/custom_definition_group_header" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_def_group_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin"
+        android:background="@drawable/rounded_background"
+        android:text="@string/custom_group_add_button"
+        android:textSize="12sp"
+        android:textColor="@color/dark_gray"
+        android:textAllCaps="false"
+        android:fontFamily="@font/sourcesanspro_semibold"
+        app:backgroundTint="@color/white"
+        app:icon="@drawable/ic_add"
+        app:iconGravity="textStart"
+        app:iconTint="@color/dark_gray"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/custom_entry_group_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/container_side_margin"
-        android:layout_marginEnd="@dimen/container_side_margin" />
+        android:clipToPadding="false"
+        android:requiresFadingEdge="none"
+        android:overScrollMode="never"
+        android:paddingTop="8dp"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin" />
 </LinearLayout>

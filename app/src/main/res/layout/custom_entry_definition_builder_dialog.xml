@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:id="@+id/custom_entry_definition_dialog"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/white_background"
+    android:background="@drawable/rounded_background"
     android:orientation="vertical"
-    android:padding="8dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/box_bottom_stroke"
+        android:padding="8dp">
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/close_button"
             style="?android:attr/borderlessButtonStyle"
@@ -19,23 +22,16 @@
             android:fontFamily="@font/sourcesanspro_semibold"
             android:minWidth="0dp"
             android:minHeight="0dp"
-            android:text="@string/close"
-            android:textColor="@color/dark_gray"
-            android:textSize="12sp"
+            android:text="@string/nav_close"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="14sp"
             tools:ignore="SmallSp" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="New Definition"
-            android:textColor="@color/colorPrimary_header"
-            android:textSize="14sp" />
 
         <Space
             android:layout_width="0dp"
@@ -50,9 +46,10 @@
             android:fontFamily="@font/sourcesanspro_semibold"
             android:minWidth="0dp"
             android:minHeight="0dp"
-            android:text="@string/add"
+            android:text="@string/add_definition_button"
+            android:textAllCaps="false"
             android:textColor="@color/colorPrimary_header"
-            android:textSize="12sp"
+            android:textSize="14sp"
             tools:ignore="SmallSp" />
     </LinearLayout>
 
@@ -60,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/container_side_margin"
-        android:padding="12dp"
+        android:padding="18dp"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="wrap_content"

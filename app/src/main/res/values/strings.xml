@@ -85,7 +85,7 @@
     <string name="app_header_custom_entries">MY ENTRIES</string>
     <string name="nav_custom_entries">My Entries</string>
     <string name="add_entry_button">Add</string>
-    <string name="custom_entry_header_hint">Word / Phrase</string>
+    <string name="custom_entry_header_hint">Please enter a word or phrase</string>
     <string name="new_dictionary_entry">Custom Dictionary Entry</string>
     <string name="add_new_group">Add a group</string>
     <string name="new_definition_group">New Definition Group</string>
@@ -98,4 +98,16 @@
     <string name="type_header">Type / Part Of Speech</string>
     <string name="type_header_alert">Please select a type</string>
     <string name="definitions_header">Definitions</string>
+    <string name="nav_close">Close</string>
+    <string name="add_definition_button">Add Definition</string>
+    <string name="nav_save">Save</string>
+    <string name="custom_entry_word_header">Word / Phrase</string>
+    <string name="edit">Edit</string>
+    <string name="custom_definition_group_header">Definition Groups</string>
+    <string name="custom_group_add_button">Add a group</string>
+    <string name="create">Create</string>
+    <string name="custom_definition_add_button">Add a definition</string>
+    <string name="trash_icon">trash icon</string>
+    <string name="drag_icon">drag icon</string>
+    <string name="definition_add_alert">Please add a definition to save</string>
 </resources>
