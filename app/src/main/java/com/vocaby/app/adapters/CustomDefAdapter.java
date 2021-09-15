@@ -10,14 +10,13 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.vocaby.app.R;
 import com.vocaby.app.models.DefinitionModel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,14 +31,12 @@ public class CustomDefAdapter extends RecyclerView.Adapter<CustomDefAdapter.Cust
         void onItemRemoved(int position);
     }
 
-    public CustomDefAdapter(Context ctx, LiveData<List<DefinitionModel>> definitionsLiveData,
-                            LifecycleOwner lifecycleOwner, DragStartListener dragStartListener,
+    public CustomDefAdapter(Context ctx, DragStartListener dragStartListener,
                             ItemInteractionListener itemInteractionListener) {
         this.ctx = ctx;
         this.dragStartListener = dragStartListener;
         this.itemInteractionListener = itemInteractionListener;
-
-        definitionsLiveData.observe(lifecycleOwner, definitionsList -> definitions = definitionsList);
+        definitions = new ArrayList<>();
     }
 
     @NonNull
@@ -67,13 +64,16 @@ public class CustomDefAdapter extends RecyclerView.Adapter<CustomDefAdapter.Cust
 
             return false;
         });
-
-        holder.deleteButton.setOnClickListener(v -> onItemDismiss(holder.getAdapterPosition()));
     }
 
     @Override
     public int getItemCount() {
         return definitions.size();
+    }
+
+    public void setList(List<DefinitionModel> newList) {
+        // soft copy
+        definitions = newList;
     }
 
     @Override
@@ -95,33 +95,33 @@ public class CustomDefAdapter extends RecyclerView.Adapter<CustomDefAdapter.Cust
     @Override
     public void onItemDismiss(int position) {
         itemInteractionListener.onItemRemoved(position);
-        notifyItemRemoved(position);
     }
 
     public void addItem() {
-        notifyItemInserted(definitions.size()-1);
+        notifyItemInserted(getItemCount()-1);
     }
 
     public static class CustomDefViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
         TextView definitionView;
         TextView exampleView;
         FrameLayout dragHandle;
-        FrameLayout deleteButton;
-        View itemView;
         Context ctx;
         public CustomDefViewHolder(@NonNull View itemView, Context ctx) {
             super(itemView);
-            this.itemView = itemView;
             definitionView = itemView.findViewById(R.id.definition);
             exampleView = itemView.findViewById(R.id.example);
             dragHandle = itemView.findViewById(R.id.drag_handle);
-            deleteButton = itemView.findViewById(R.id.delete_button);
             this.ctx = ctx;
         }
 
         @Override
-        public void onItemSelected() {
+        public void onItemDragged() {
             ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.colorPrimary_sub));
+        }
+
+        @Override
+        public void onItemSwiped() {
+            ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.color_tertiary));
         }
 
         @Override

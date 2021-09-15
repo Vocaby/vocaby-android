@@ -34,6 +34,7 @@ public class EntryBuilderActivity extends AppCompatActivity
     private EntryViewModel entryViewModel;
     private CustomGroupAdapter customGroupAdapter;
     private ItemTouchHelper itemTouchHelper;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +52,11 @@ public class EntryBuilderActivity extends AppCompatActivity
             } else if (result == EntryViewModel.EDIT_GROUP) {
                 customGroupAdapter.editItem(entryViewModel.getSelectedItemPosition());
             } else if (result == EntryViewModel.REMOVE_GROUP){
-                customGroupAdapter.removeItem(entryViewModel.getSelectedItemPosition());
+                customGroupAdapter.onItemDismiss(entryViewModel.getSelectedItemPosition());
             }
         });
+
+        entryViewModel.getGroups().observe(this, list -> customGroupAdapter.setList(list));
     }
 
     private void setupViewModel() {
@@ -134,11 +137,11 @@ public class EntryBuilderActivity extends AppCompatActivity
     }
 
     private void setupRecyclerView() {
-        customGroupAdapter = new CustomGroupAdapter(this, entryViewModel.getGroups(),
-                this, this, this);
-        RecyclerView recyclerView = findViewById(R.id.custom_entry_group_container);
-        recyclerView.setAdapter(customGroupAdapter);
+        recyclerView = findViewById(R.id.custom_entry_group_container);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        customGroupAdapter = new CustomGroupAdapter(this, this, this);
+        recyclerView.setAdapter(customGroupAdapter);
         ItemTouchHelper.Callback callback = new ItemTouchCallback(customGroupAdapter);
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -166,5 +169,24 @@ public class EntryBuilderActivity extends AppCompatActivity
         groupBuilderActivityData.putExtra("edit", true);
         groupBuilderActivity.launch(groupBuilderActivityData);
         entryViewModel.setSelectedItemPosition(position);
+    }
+
+    @Override
+    public void onItemRemoved(int position) {
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+
+        entryViewModel.removeGroup(position);
+        customGroupAdapter.notifyItemRemoved(position);
+
+        // Google's Implementation of ItemTouchHelper assumes that
+        // the swiped items are cleaned up. Because the view is recycled
+        // when swiped and not cleaned up with RecyclerView,
+        // the view is positioned outside the recyclerview when a new item is added.
+        // So we need to revert back the position by doing the following:
+        if(holder != null) {
+            holder.itemView.setVisibility(View.INVISIBLE);
+            customGroupAdapter.notifyItemChanged(position);
+            itemTouchHelper.startSwipe(holder);
+        }
     }
 }

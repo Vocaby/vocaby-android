@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -33,6 +32,7 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
     private EntryGroupViewModel entryGroupViewModel;
     private TextView typeHeader;
     private TextView saveAlert;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +46,11 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
         setupRecyclerView();
         entryGroupViewModel.handleIntent(getIntent());
         setupType();
+
+        entryGroupViewModel.getDefinitions().observe(
+                this,
+                list -> customDefAdapter.setList(list)
+        );
     }
 
     private void setupType() {
@@ -143,13 +148,12 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
     }
 
     private void setupRecyclerView() {
-        customDefAdapter = new CustomDefAdapter(this, entryGroupViewModel.getDefinitions(),
-                this, this, this);
-        RecyclerView recyclerView = findViewById(R.id.custom_entry_definition_container);
-        recyclerView.setAdapter(customDefAdapter);
+        recyclerView = findViewById(R.id.custom_entry_definition_container);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ItemTouchHelper.Callback callback = new ItemTouchCallback(customDefAdapter);
-        itemTouchHelper = new ItemTouchHelper(callback);
+        customDefAdapter = new CustomDefAdapter(this,this, this);
+        recyclerView.setAdapter(customDefAdapter);
+        itemTouchHelper = new ItemTouchHelper(new ItemTouchCallback(customDefAdapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
@@ -165,6 +169,24 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
 
     @Override
     public void onItemRemoved(int position) {
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+
         entryGroupViewModel.removeDefinition(position);
+        customDefAdapter.notifyItemRemoved(position);
+
+        // Google's Implementation of ItemTouchHelper assumes that
+        // the swiped items are cleaned up. Because the view is recycled
+        // when swiped and not cleaned up with RecyclerView,
+        // the view is positioned outside the recyclerview when a new item is added.
+        // So we need to revert back the position by doing the following:
+        if(holder != null) {
+            holder.itemView.setVisibility(View.INVISIBLE);
+            customDefAdapter.notifyItemChanged(position);
+            itemTouchHelper.startSwipe(holder);
+        }
+
+        // Alternatively, I could remove the view from the layout manager
+        // by simply doing recyclerView.removeViewAt(position)
+        // but this would not make use of recycling.
     }
 }

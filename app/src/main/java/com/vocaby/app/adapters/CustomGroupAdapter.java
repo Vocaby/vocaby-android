@@ -17,11 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.card.MaterialCardView;
 import com.vocaby.app.R;
 import com.vocaby.app.models.CustomEntryGroupModel;
+import com.vocaby.app.models.DefinitionModel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.CustomDefViewHolder>
+public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.CustomGroupViewHolder>
         implements ItemTouchHelperAdapter {
     List<CustomEntryGroupModel> groups;
     DragStartListener dragStartListener;
@@ -30,30 +32,32 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
 
     public interface ItemInteractionListener {
         void onItemClicked(int position);
+        void onItemRemoved(int position);
     }
 
-    public CustomGroupAdapter(Context ctx, LiveData<List<CustomEntryGroupModel>> groupsLiveData,
-                              LifecycleOwner lifecycleOwner, DragStartListener dragStartListener,
+    public CustomGroupAdapter(Context ctx, DragStartListener dragStartListener,
                               ItemInteractionListener itemInteractionListener) {
         this.ctx = ctx;
         this.dragStartListener = dragStartListener;
         this.itemInteractionListener = itemInteractionListener;
 
-        groupsLiveData.observe(lifecycleOwner, groupsList -> {
-            groups = groupsList;
-        });
+        groups = new ArrayList<>();
+    }
+
+    public void setList(List<CustomEntryGroupModel> newList) {
+        groups = newList;
     }
 
     @NonNull
     @Override
-    public CustomDefViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CustomGroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_group_row, parent, false);
-        return new CustomDefViewHolder(view, ctx);
+        return new CustomGroupViewHolder(view, ctx);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void onBindViewHolder(@NonNull CustomDefViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CustomGroupViewHolder holder, int position) {
         holder.groupHeader.setText(groups.get(position).getType());
         String counter = "" + groups.get(position).getDefinitionData().size();
         holder.definitionCounter.setText(counter);
@@ -66,9 +70,9 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
             return false;
         });
 
-        holder.card.setOnClickListener(v -> {
-            itemInteractionListener.onItemClicked(holder.getAdapterPosition());
-        });
+        holder.container.setOnClickListener(v ->
+                itemInteractionListener.onItemClicked(holder.getAdapterPosition())
+        );
     }
 
     @Override
@@ -94,7 +98,7 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
 
     @Override
     public void onItemDismiss(int position) {
-        notifyItemRemoved(position);
+        itemInteractionListener.onItemRemoved(position);
     }
 
     public void addItem() {
@@ -105,30 +109,31 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
         notifyItemChanged(position);
     }
 
-    public void removeItem(int position) {
-        notifyItemRemoved(position);
-    }
-
-    public static class CustomDefViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+    public static class CustomGroupViewHolder extends RecyclerView.ViewHolder
+            implements ItemTouchHelperViewHolder {
         TextView groupHeader;
         TextView definitionCounter;
         FrameLayout dragHandle;
-        View itemView;
-        MaterialCardView card;
+        View container;
         Context ctx;
-        public CustomDefViewHolder(@NonNull View itemView, Context ctx) {
+
+        public CustomGroupViewHolder(@NonNull View itemView, Context ctx) {
             super(itemView);
-            this.itemView = itemView;
             groupHeader = itemView.findViewById(R.id.group_card_header);
             definitionCounter = itemView.findViewById(R.id.group_card_def_counter);
             dragHandle = itemView.findViewById(R.id.drag_handle);
-            card = itemView.findViewById(R.id.group_card);
+            container = itemView.findViewById(R.id.card_container);
             this.ctx = ctx;
         }
 
         @Override
-        public void onItemSelected() {
+        public void onItemDragged() {
             ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.colorPrimary_sub));
+        }
+
+        @Override
+        public void onItemSwiped() {
+            ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.color_tertiary));
         }
 
         @Override

@@ -81,7 +81,6 @@ public class EntryViewModel extends ViewModel {
                 CustomEntryGroupModel customEntryGroupModel = result.getData().getParcelableExtra("groupData");
                 if(customEntryGroupModel.isEmpty()) {
                     mResult.setValue(REMOVE_GROUP);
-                    removeGroup(selectedItemPosition);
                 } else {
                     boolean add = true;
                     for (int i = 0; i < currentGroups.size(); i++) {

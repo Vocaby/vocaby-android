@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/custom_entry_card_height"
@@ -32,6 +33,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:padding="12dp"
+            android:gravity="center_vertical"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/definition"
@@ -49,20 +51,5 @@
                 android:fontFamily="@font/sourcesanspro_regular"
                 android:textColor="@color/dark_gray" />
         </LinearLayout>
-        <FrameLayout
-            android:id="@+id/delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingEnd="20dp"
-            android:minHeight="@dimen/custom_entry_card_height"
-            android:background="@color/white">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_trash"
-                app:tint="@color/color_tertiary"
-                android:contentDescription="@string/trash_icon" />
-        </FrameLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

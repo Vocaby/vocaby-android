@@ -1,12 +1,11 @@
 package com.vocaby.app.adapters;
 
-import android.graphics.Canvas;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
 
 public class ItemTouchCallback extends ItemTouchHelper.Callback {
     private final ItemTouchHelperAdapter mAdapter;
@@ -17,10 +16,16 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSelectedChanged(@Nullable @org.jetbrains.annotations.Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
-        if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
             if (viewHolder instanceof ItemTouchHelperViewHolder) {
                 ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-                itemViewHolder.onItemSelected();
+                itemViewHolder.onItemDragged();
+            }
+        }
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            if (viewHolder instanceof ItemTouchHelperViewHolder) {
+                ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
+                itemViewHolder.onItemSwiped();
             }
         }
 
@@ -34,6 +39,8 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
             itemViewHolder.onItemDone();
         }
     }
+
+
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
@@ -50,5 +57,10 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+    }
+
+    @Override
+    public boolean isLongPressDragEnabled() {
+        return false;
     }
 }

@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../../../layout/custom_preview.xml" value="0.18425925925925926" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable-xxhdpi/gray_background_profile_button.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/black_background.xml" value="0.23125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/bottom_navigation_button.xml" value="0.403125" />
@@ -79,6 +80,10 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/xml/notification_preferences.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/xml/preferences.xml" value="0.2368659420289855" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/xml/type_radio_button.xml" value="0.38697916666666665" />
+        <entry key="app/src/main/res/layout/custom_definition_row.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/custom_entry_group_builder_activity.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/custom_group_row.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_dictionary_main.xml" value="0.10587639311043566" />
       </map>
     </option>
   </component>
