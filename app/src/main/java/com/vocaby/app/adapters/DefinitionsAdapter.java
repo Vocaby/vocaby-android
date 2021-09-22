@@ -13,10 +13,13 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vocaby.app.R;
-import com.vocaby.app.models.WordModel;
+import com.vocaby.app.models.DefinitionModel;
+import com.vocaby.app.models.EntryModel;
+
+import java.util.List;
 
 public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.DefinitionsViewHolder> {
-    private WordModel wordModelData;
+    private EntryModel entryData;
     private final Context ctx;
 
     public DefinitionsAdapter(Context ctx) {
@@ -32,23 +35,22 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setWordData(WordModel wordModelData) {
-        this.wordModelData = wordModelData;
+    public void setWordData(EntryModel entryData) {
+        this.entryData = entryData;
         this.notifyDataSetChanged();
     }
 
     @Override
     public void onBindViewHolder(@NonNull DefinitionsAdapter.DefinitionsViewHolder holder, int position) {
-        if(wordModelData != null) {
-            String selectedPos = wordModelData.getAllowedPos()[position];
-            String[] definitions = wordModelData.getDefinitions(selectedPos);
-            String[] sentences = wordModelData.getSentences(selectedPos);
+        if(entryData != null) {
+            String selectedPos = entryData.getTypes().get(position);
+            List<DefinitionModel> definitions = entryData.getDefinitions(selectedPos);
             holder.pos.setText(selectedPos);
 
             LayoutInflater inflater = LayoutInflater.from(ctx);
-            for(int i = 0; i < definitions.length; i++) {
-                String def = definitions[i];
-                String sen = sentences[i];
+            for(int i = 0; i < definitions.size(); i++) {
+                String def = definitions.get(i).toString();
+                String sen = definitions.get(i).getFirstExample();
                 CardView card = (CardView) inflater.inflate(R.layout.definition_row, null);
                 TextView definition = card.findViewById(R.id.definition);
                 TextView sentence = card.findViewById(R.id.sentence);
@@ -70,7 +72,7 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
 
     @Override
     public int getItemCount() {
-        return wordModelData == null ? 0 : wordModelData.getAllowedPos().length;
+        return entryData == null ? 0 : entryData.getTypes().size();
     }
 
     public static class DefinitionsViewHolder extends RecyclerView.ViewHolder {

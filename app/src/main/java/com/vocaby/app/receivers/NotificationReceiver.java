@@ -8,18 +8,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.R;
-import com.vocaby.app.models.WordModel;
+import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
 import com.vocaby.app.utils.WordService;
 
-import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -55,10 +53,10 @@ public class NotificationReceiver extends BroadcastReceiver {
 
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
                 }).subscribe(wordDefinitions -> {
-                    WordModel wordData= WordService.convertToWordModel(wordDefinitions);
+                    EntryModel wordData= WordService.convertToWordModel(wordDefinitions);
                     String word = wordData.getWord();
-                    String pos = wordData.getAllowedPos()[0];
-                    String message = wordData.getDefinitions(pos)[0];
+                    String pos = wordData.getFirstType();
+                    String message = wordData.getDefinitions(pos).get(0).toString();
 
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("NOTIF_PREV_SELECT", word);

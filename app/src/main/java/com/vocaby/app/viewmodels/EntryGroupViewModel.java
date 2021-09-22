@@ -1,14 +1,11 @@
 package com.vocaby.app.viewmodels;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.util.Log;
 
-import androidx.activity.result.ActivityResult;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.vocaby.app.models.CustomEntryGroupModel;
+import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
 import com.vocaby.app.utils.SingleLiveEvent;
 
@@ -30,8 +27,8 @@ public class EntryGroupViewModel extends ViewModel {
         isEdit = false;
     }
 
-    public void addDefinition(String definition, String sentence) {
-        definitions.add(new DefinitionModel(definition, sentence));
+    public void addDefinition(String definition, String type, String example) {
+        definitions.add(new DefinitionModel(definition, type.toLowerCase(), example));
         mDefinitions.setValue(definitions);
     }
 
@@ -61,11 +58,11 @@ public class EntryGroupViewModel extends ViewModel {
             String type = receivedIntent.getStringExtra("type");
             mType.setValue(type);
         } else if (receivedIntent.getParcelableExtra("definitionData") != null) {
-            if (receivedIntent.getParcelableExtra("definitionData") instanceof CustomEntryGroupModel) {
-                CustomEntryGroupModel customEntryGroupModel = receivedIntent.getParcelableExtra("definitionData");
-                definitions = customEntryGroupModel.getDefinitionData();
+            if (receivedIntent.getParcelableExtra("definitionData") instanceof DefinitionGroupModel) {
+                DefinitionGroupModel definitionGroup = receivedIntent.getParcelableExtra("definitionData");
+                definitions = definitionGroup.getDefinitionData();
                 mDefinitions.setValue(definitions);
-                mType.setValue(customEntryGroupModel.getType());
+                mType.setValue(definitionGroup.getType());
             }
         }
 

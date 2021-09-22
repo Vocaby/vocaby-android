@@ -110,4 +110,7 @@
     <string name="trash_icon">trash icon</string>
     <string name="drag_icon">drag icon</string>
     <string name="definition_add_alert">Please add a definition to save</string>
+    <string name="word_phrase_header">Word / Phrase</string>
+    <string name="entry_edit_hint">Enter a word or a phrase...</string>
+    <string name="group_header_alert">Please add a group</string>
 </resources>

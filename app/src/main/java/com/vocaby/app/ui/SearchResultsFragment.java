@@ -25,7 +25,7 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.DefinitionsAdapter;
 import com.vocaby.app.models.UserStateModel;
 import com.vocaby.app.models.WordDataPackage;
-import com.vocaby.app.models.WordModel;
+import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.utils.NetworkManager;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.SearchResultsViewModel;
@@ -148,7 +148,7 @@ public class SearchResultsFragment extends Fragment {
         Observer<WordDataPackage> observer = wordPackage -> {
             if (wordPackage != null) {
                 if(!populated.get()) {
-                    WordModel wordData = wordPackage.getWordModel();
+                    EntryModel wordData = wordPackage.getWordModel();
                     word.setVisibility(View.VISIBLE);
                     if(wordData.isEmpty()) {
                         populateNoDefinition();
@@ -204,13 +204,13 @@ public class SearchResultsFragment extends Fragment {
         dictionaryViewModel.popSearchStack();
     }
 
-    private void populateView(WordModel wordModelData) {
+    private void populateView(EntryModel entryData) {
         progressBar.setVisibility(View.GONE);
         word.setText(searchedWord);
         saveButton.setVisibility(View.VISIBLE);
         saveButton.setEnabled(true);
 
-        String pronunciationText = wordModelData.getPronunciation().replaceAll("\n","");
+        String pronunciationText = entryData.getPronunciation().replaceAll("\n","");
         if(!pronunciationText.isEmpty()) {
             pronunciation.setVisibility(View.VISIBLE);
             pronunciation.setText(pronunciationText);

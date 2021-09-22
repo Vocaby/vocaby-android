@@ -18,6 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:padding="8dp"
             android:paddingStart="14dp"
             android:paddingEnd="14dp">
@@ -54,6 +55,13 @@
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
+            <ProgressBar
+                android:id="@+id/save_progress_bar"
+                style="?android:attr/progressBarStyle"
+                android:visibility="invisible"
+                android:layout_width="18dp"
+                android:layout_height="18dp"/>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/save_button"
                 style="?android:attr/borderlessButtonStyle"
@@ -74,7 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/container_side_margin"
         android:gravity="center_vertical"
         android:orientation="horizontal">
         <TextView
@@ -84,29 +92,25 @@
             android:fontFamily="@font/sourcesanspro_semibold"
             android:text="@string/custom_entry_word_header" />
 
+        <TextView
+            android:id="@+id/entry_header_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:textColor="@color/color_tertiary"
+            android:textSize="12sp"
+            android:layout_marginStart="12dp"
+            android:labelFor="@+id/definition_edit"
+            android:text="@string/custom_entry_header_hint" />
+
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/edit_custom_word_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimary"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:text="@string/edit"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            app:backgroundTint="@color/black" />
     </LinearLayout>
     <TextView
-        android:id="@+id/entry_header_edit"
+        android:id="@+id/entry_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/container_side_margin"
@@ -118,15 +122,39 @@
         android:textColor="@color/colorPrimary_header"
         android:textSize="22sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:fontFamily="@font/sourcesanspro_semibold"
         android:layout_marginStart="@dimen/container_side_margin"
-        android:text="@string/custom_definition_group_header" />
+        android:layout_marginEnd="@dimen/container_side_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:text="@string/custom_definition_group_header" />
+
+        <TextView
+            android:id="@+id/group_header_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:textColor="@color/color_tertiary"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            android:layout_marginStart="12dp"
+            android:labelFor="@+id/definition_edit"
+            android:text="@string/group_header_alert" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/add_def_group_button"

@@ -50,7 +50,7 @@ public class CustomDefAdapter extends RecyclerView.Adapter<CustomDefAdapter.Cust
     @Override
     public void onBindViewHolder(@NonNull CustomDefViewHolder holder, int position) {
         holder.definitionView.setText(definitions.get(position).getDefinition());
-        String example = definitions.get(position).getExample();
+        String example = definitions.get(position).getFirstExample();
         if (example.isEmpty()) {
             holder.exampleView.setVisibility(View.GONE);
         } else {

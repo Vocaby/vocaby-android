@@ -6,30 +6,30 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomEntryGroupModel implements Parcelable {
+public class DefinitionGroupModel implements Parcelable {
     String type;
     List<DefinitionModel> definitionData;
 
-    public CustomEntryGroupModel(String type, List<DefinitionModel> definitionData) {
+    public DefinitionGroupModel(String type, List<DefinitionModel> definitionData) {
         this.type = type;
         this.definitionData = definitionData;
     }
 
-    protected CustomEntryGroupModel(Parcel in) {
+    protected DefinitionGroupModel(Parcel in) {
         definitionData = new ArrayList<>();
         type = in.readString();
         in.readTypedList(definitionData, DefinitionModel.CREATOR);
     }
 
-    public static final Creator<CustomEntryGroupModel> CREATOR = new Creator<CustomEntryGroupModel>() {
+    public static final Creator<DefinitionGroupModel> CREATOR = new Creator<DefinitionGroupModel>() {
         @Override
-        public CustomEntryGroupModel createFromParcel(Parcel in) {
-            return new CustomEntryGroupModel(in);
+        public DefinitionGroupModel createFromParcel(Parcel in) {
+            return new DefinitionGroupModel(in);
         }
 
         @Override
-        public CustomEntryGroupModel[] newArray(int size) {
-            return new CustomEntryGroupModel[size];
+        public DefinitionGroupModel[] newArray(int size) {
+            return new DefinitionGroupModel[size];
         }
     };
 

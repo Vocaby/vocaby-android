@@ -207,10 +207,9 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
             if (currentUser.isLoggedIn()) {
                 mSyncStatus.setValue(false);
                 syncFromRemote(currentUser, userState.isSynced());
-                setSavedWordsFromDatabase();
-            } else {
-                setSavedWordsFromDatabase();
             }
+
+            setSavedWordsFromDatabase();
         }
     }
 

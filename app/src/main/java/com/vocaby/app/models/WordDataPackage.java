@@ -4,21 +4,21 @@ import com.vocaby.app.utils.WordService;
 import com.vocaby.app.data.entity.WordDefinitions;
 
 public class WordDataPackage {
-    private final WordModel wordModel;
+    private final EntryModel entryData;
     private boolean saved;
 
-    public WordDataPackage(WordModel wordModel, boolean saved) {
-        this.wordModel = wordModel;
+    public WordDataPackage(EntryModel entryData, boolean saved) {
+        this.entryData = entryData;
         this.saved = saved;
     }
 
     public WordDataPackage(WordDefinitions wordDefinitions, int result) {
-        this.wordModel = WordService.convertToWordModel(wordDefinitions);
+        this.entryData = WordService.convertToWordModel(wordDefinitions);
         this.saved = result == 1;
     }
 
-    public WordModel getWordModel() {
-        return this.wordModel;
+    public EntryModel getWordModel() {
+        return this.entryData;
     }
 
     public Boolean saved() {

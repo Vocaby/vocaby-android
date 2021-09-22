@@ -13,9 +13,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -25,6 +25,8 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomGroupAdapter;
 import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
+import com.vocaby.app.data.entity.Type;
+import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.EntryViewModel;
 
 public class EntryBuilderActivity extends AppCompatActivity
@@ -35,77 +37,69 @@ public class EntryBuilderActivity extends AppCompatActivity
     private CustomGroupAdapter customGroupAdapter;
     private ItemTouchHelper itemTouchHelper;
     private RecyclerView recyclerView;
+    private TextView entry;
+    private ProgressBar saveProgresBar;
+    private TextView headerAlert;
+    private TextView groupAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_entry_builder);
 
+        entry = findViewById(R.id.entry_header);
+        Intent receivedIntent = getIntent();
+        String header = receivedIntent.getStringExtra("entry");
+        entry.setText(StringFormatter.firstLetterUpperOnly(header));
+        headerAlert = findViewById(R.id.entry_header_alert);
+        groupAlert = findViewById(R.id.group_header_alert);
+
+        entryViewModel = new ViewModelProvider(this).get(EntryViewModel.class);
+
+        if (receivedIntent.hasExtra("entryId")) {
+            entryViewModel.getEntry(receivedIntent.getIntExtra("entryId", 1));
+        }
+
         setUpGroupBuilder();
         setupButtons();
-        setupViewModel();
         setupRecyclerView();
+
+        entryViewModel.setEntry(entry.getText().toString());
+
+        Intent resultIntent = new Intent();
+        entryViewModel.getEntryId().observe(this, id -> resultIntent.putExtra("entryId", id));
+
 
         entryViewModel.getResult().observe(this, result -> {
             if (result == EntryViewModel.ADD_GROUP) {
+                groupAlert.setVisibility(View.INVISIBLE);
                 customGroupAdapter.addItem();
             } else if (result == EntryViewModel.EDIT_GROUP) {
                 customGroupAdapter.editItem(entryViewModel.getSelectedItemPosition());
             } else if (result == EntryViewModel.REMOVE_GROUP){
                 customGroupAdapter.onItemDismiss(entryViewModel.getSelectedItemPosition());
+            } else if (result == EntryViewModel.CREATE_ENTRY) {
+                resultIntent.putExtra("entryText", entry.getText().toString());
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
+            } else if (result == EntryViewModel.EMPTY_ENTRY) {
+                groupAlert.setVisibility(View.VISIBLE);
+                saveProgresBar.setVisibility(View.INVISIBLE);
             }
         });
 
         entryViewModel.getGroups().observe(this, list -> customGroupAdapter.setList(list));
     }
 
-    private void setupViewModel() {
-        entryViewModel = new ViewModelProvider(this).get(EntryViewModel.class);
-    }
-
     private void setUpGroupBuilder() {
         groupBuilder = new BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog);
         groupBuilder.setContentView(R.layout.custom_entry_group_builder_dialog);
         radioGroup = groupBuilder.findViewById(R.id.type_radio_container);
-    }
-
-    private void setupButtons() {
-        Button closeButton = findViewById(R.id.back_button);
-        closeButton.setOnClickListener(v -> finish());
 
         Button button = groupBuilder.findViewById(R.id.close_button);
         if (button != null) {
             button.setOnClickListener(v -> groupBuilder.dismiss());
         }
-
-        // Edit word / phrase
-        Button editWordButton = findViewById(R.id.edit_custom_word_button);
-
-        // Add new group button
-        Button addGroupButton = findViewById(R.id.add_def_group_button);
-        addGroupButton.setOnClickListener(v -> {
-            radioGroup.removeAllViews();
-
-            // Temporary Types
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(12, 8, 12, 8);
-            String[] types = getResources().getStringArray(R.array.type);
-
-            for(String type : types) {
-                if(!entryViewModel.getGroupTypes().contains(type)) {
-                    RadioButton radioButton = new RadioButton(new ContextThemeWrapper(this,
-                            R.style.Theme_VocabyAndroid_RadioButton), null, 0);
-                    radioButton.setText(type);
-                    radioButton.setId(View.generateViewId());
-                    if (radioGroup != null) {
-                        radioGroup.addView(radioButton, layoutParams);
-                    }
-                }
-            }
-
-            groupBuilder.show();
-        });
 
         // Create group button
         TextView typeCreatorAlert = groupBuilder.findViewById(R.id.type_creator_alert);
@@ -124,7 +118,7 @@ public class EntryBuilderActivity extends AppCompatActivity
                     if (radioButton == null) {
                         if (typeCreatorAlert != null) typeCreatorAlert.setVisibility(View.VISIBLE);
                     } else {
-                        String type = radioButton.getText().toString();
+                        String type = radioButton.getText().toString().toLowerCase();
                         radioGroup.clearCheck();
                         groupBuilderActivityData.putExtra("type", type);
                         groupBuilderActivityData.putExtra("edit", false);
@@ -134,6 +128,43 @@ public class EntryBuilderActivity extends AppCompatActivity
                 }
             });
         }
+    }
+
+    private void setupButtons() {
+        Button closeButton = findViewById(R.id.back_button);
+        closeButton.setOnClickListener(v -> finish());
+
+        // Save Button
+        Button saveButton = findViewById(R.id.save_button);
+        saveProgresBar = findViewById(R.id.save_progress_bar);
+        saveButton.setOnClickListener(v -> {
+            saveProgresBar.setVisibility(View.VISIBLE);
+            entryViewModel.createNewEntry();
+        });
+
+        // Add new group button
+        Button addGroupButton = findViewById(R.id.add_def_group_button);
+        entryViewModel.getTypes().observe(this, types -> addGroupButton.setOnClickListener(v -> {
+            radioGroup.removeAllViews();
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(12, 8, 12, 8);
+
+            for(Type type : types) {
+                if(!entryViewModel.getGroupTypes().contains(type.getType())) {
+                    RadioButton radioButton = new RadioButton(new ContextThemeWrapper(this,
+                            R.style.Theme_VocabyAndroid_RadioButton), null, 0);
+                    radioButton.setText(type.getType().toUpperCase());
+                    radioButton.setId(View.generateViewId());
+                    if (radioGroup != null) {
+                        radioGroup.addView(radioButton, layoutParams);
+                    }
+                }
+            }
+
+            groupBuilder.show();
+        }));
     }
 
     private void setupRecyclerView() {
@@ -151,11 +182,6 @@ public class EntryBuilderActivity extends AppCompatActivity
             new ActivityResultContracts.StartActivityForResult(),
             result -> entryViewModel.handleResult(result)
     );
-
-    private void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
 
     @Override
     public void onDragStart(RecyclerView.ViewHolder viewHolder) {

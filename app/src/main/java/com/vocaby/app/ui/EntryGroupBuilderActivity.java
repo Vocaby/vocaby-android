@@ -21,7 +21,8 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomDefAdapter;
 import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
-import com.vocaby.app.models.CustomEntryGroupModel;
+import com.vocaby.app.models.DefinitionGroupModel;
+import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.EntryGroupViewModel;
 
 public class EntryGroupBuilderActivity extends AppCompatActivity
@@ -55,7 +56,7 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
 
     private void setupType() {
         entryGroupViewModel.getType().observe(this, type -> {
-            String header = type + " Definitions";
+            String header = StringFormatter.firstLetterUpperOnly(type) + " Definitions";
             TextView activityHeader = findViewById(R.id.custom_group_activity_header);
             activityHeader.setText(header);
 
@@ -93,12 +94,12 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
                 saveAlert.setVisibility(View.INVISIBLE);
                 Intent saveIntent = new Intent();
                 String type = typeHeader.getText().toString();
-                CustomEntryGroupModel customEntryGroupModel = new CustomEntryGroupModel(
+                DefinitionGroupModel definitionGroup = new DefinitionGroupModel(
                         type,
                         entryGroupViewModel.getCurrentData()
                 );
 
-                saveIntent.putExtra("groupData", customEntryGroupModel);
+                saveIntent.putExtra("groupData", definitionGroup);
                 setResult(Activity.RESULT_OK, saveIntent);
                 finish();
             }
@@ -120,7 +121,7 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
                 EditText definitionView = definitionBuilder.findViewById(R.id.definition_edit);
                 EditText exampleView = definitionBuilder.findViewById(R.id.example_edit);
                 TextView alert = definitionBuilder.findViewById(R.id.definition_header_alert);
-                String definition = definitionView != null ? definitionView.getText().toString() : "null";
+                String definition = definitionView != null ? definitionView.getText().toString() : "";
                 String example = exampleView != null ? exampleView.getText().toString() : "";
                 if(definition.isEmpty()) {
                     if (alert != null) {
@@ -131,15 +132,17 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
                         alert.setVisibility(View.INVISIBLE);
                     }
 
-                    if (exampleView != null && definitionView != null) {
+                    if (exampleView != null) {
                         definitionView.getText().clear();
                         definitionView.clearFocus();
                         exampleView.getText().clear();
                         exampleView.clearFocus();
                     }
 
+                    String type = typeHeader.getText().toString();
+
                     saveAlert.setVisibility(View.INVISIBLE);
-                    entryGroupViewModel.addDefinition(definition, example);
+                    entryGroupViewModel.addDefinition(definition, type, example);
                     customDefAdapter.addItem();
                     definitionBuilder.dismiss();
                 }

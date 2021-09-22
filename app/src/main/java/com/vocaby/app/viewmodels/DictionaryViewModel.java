@@ -14,7 +14,7 @@ import com.vocaby.app.data.DataManager;
 import com.vocaby.app.data.entity.Definition;
 import com.vocaby.app.data.entity.WordDefinitions;
 import com.vocaby.app.models.SearchSuggestionItem;
-import com.vocaby.app.models.WordModel;
+import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 import com.vocaby.app.utils.VocabyAlgo;
@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 public class DictionaryViewModel extends AndroidViewModel {
     private final SingleLiveEvent<String> search;
     private final Stack<String> searchStack;
-    private final SingleLiveEvent<WordModel> mWordModel;
+    private final SingleLiveEvent<EntryModel> mWordModel;
     private final CompositeDisposable compositeDisposable;
     private final DataManager dataManager;
     private final MutableLiveData<List<String>> searchHistory;
@@ -93,8 +93,8 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
-    private WordModel makeWordData(WordDefinitions wordDefinitions) {
-        WordModel wordData = new WordModel(wordDefinitions.word.getWord());
+    private EntryModel makeWordData(WordDefinitions wordDefinitions) {
+        EntryModel wordData = new EntryModel(wordDefinitions.word.getWord());
         if (wordDefinitions.word.getPronunciation() != null) {
             wordData.setPronunciation(wordDefinitions.word.getPronunciation());
         } else {
@@ -102,8 +102,7 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
 
         for (Definition data : wordDefinitions.definitions) {
-            wordData.addDefinition(data.getPos(), data.getDefinition());
-            wordData.addSentence(data.getPos(), data.getSentence());
+            wordData.addDefinition(data.getPos(), data.getDefinition(), data.getSentence());
         }
 
         return wordData;
@@ -160,7 +159,7 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
-    public LiveData<WordModel> getRandomWord() {
+    public LiveData<EntryModel> getRandomWord() {
         return mWordModel;
     }
 

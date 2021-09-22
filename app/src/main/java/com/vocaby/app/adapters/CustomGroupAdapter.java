@@ -10,14 +10,11 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.vocaby.app.R;
-import com.vocaby.app.models.CustomEntryGroupModel;
-import com.vocaby.app.models.DefinitionModel;
+import com.vocaby.app.models.DefinitionGroupModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +22,7 @@ import java.util.List;
 
 public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.CustomGroupViewHolder>
         implements ItemTouchHelperAdapter {
-    List<CustomEntryGroupModel> groups;
+    List<DefinitionGroupModel> groups;
     DragStartListener dragStartListener;
     ItemInteractionListener itemInteractionListener;
     Context ctx;
@@ -44,8 +41,9 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
         groups = new ArrayList<>();
     }
 
-    public void setList(List<CustomEntryGroupModel> newList) {
+    public void setList(List<DefinitionGroupModel> newList) {
         groups = newList;
+        notifyDataSetChanged();
     }
 
     @NonNull

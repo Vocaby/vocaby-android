@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -86,11 +83,11 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
 
         dictionaryViewModel.getRandomWord().observe(getViewLifecycleOwner(), wordModel -> {
             progressBar.setVisibility(View.INVISIBLE);
-            String pos = wordModel.getAllowedPos()[0];
+            String pos = wordModel.getFirstType();
             wordView.setText(wordModel.getWord());
             posView.setText(pos);
-            definition.setText(wordModel.getDefinitions(pos)[0]);
-            sentence.setText(wordModel.getSentences(pos)[0]);
+            definition.setText(wordModel.getDefinitions(pos).get(0).toString());
+            sentence.setText(wordModel.getDefinitions(pos).get(0).getFirstExample());
             wordBox.setOnClickListener(v -> dictionaryViewModel.setSearch(wordModel.getWord()));
         });
 

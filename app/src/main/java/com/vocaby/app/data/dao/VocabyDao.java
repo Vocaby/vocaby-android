@@ -7,8 +7,14 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
+import com.vocaby.app.data.entity.CustomDefinition;
+import com.vocaby.app.data.entity.CustomEntry;
+import com.vocaby.app.data.entity.CustomEntryGroup;
+import com.vocaby.app.data.entity.CustomExample;
+import com.vocaby.app.data.entity.EntryWithDefinitions;
 import com.vocaby.app.data.entity.OfflineAddedSaves;
 import com.vocaby.app.data.entity.OfflineRemovedSaves;
+import com.vocaby.app.data.entity.Type;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
@@ -116,4 +122,36 @@ public abstract class VocabyDao {
 
     @Query("DELETE FROM offline_removed")
     public abstract Completable clearOfflineRemoved();
+
+    // CUSTOM ENTRY
+    @Insert
+    public abstract Single<Long> insertCustomEntry(CustomEntry customEntry);
+
+    @Insert
+    public abstract Single<List<Long>> insertCustomEntryGroups(List<CustomEntryGroup> customEntryGroups);
+
+    @Insert
+    public abstract Single<List<Long>> insertCustomDefinitions(List<CustomDefinition> customDefinitions);
+
+    @Insert
+    public abstract Completable insertCustomExamples(List<CustomExample> customExamples);
+
+    @Query("DELETE FROM custom_user_entry WHERE user_id = :id AND entry = :entry")
+    public abstract Completable deleteUserEntry(int id, String entry);
+
+    @Query("SELECT * FROM custom_user_entry WHERE user_id = :id AND entry = :entry")
+    public abstract Single<EntryWithDefinitions> getUserEntryData(int id, String entry);
+
+    @Query("SELECT * FROM custom_user_entry WHERE custom_entry_id = :entryId")
+    public abstract Single<EntryWithDefinitions> getUserEntryData(int entryId);
+
+    @Query("SELECT * FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
+    public abstract Single<List<CustomEntry>> getUserEntries(int id);
+
+    // Type
+    @Insert
+    public abstract Completable insertTypes(List<Type> types);
+
+    @Query("SELECT * FROM entry_type")
+    public abstract Single<List<Type>> getTypes();
 }

@@ -6,8 +6,14 @@ import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.data.VocabyDatabase;
 import com.vocaby.app.data.dao.VocabyDao;
+import com.vocaby.app.data.entity.CustomDefinition;
+import com.vocaby.app.data.entity.CustomEntry;
+import com.vocaby.app.data.entity.CustomEntryGroup;
+import com.vocaby.app.data.entity.CustomExample;
+import com.vocaby.app.data.entity.EntryWithDefinitions;
 import com.vocaby.app.data.entity.OfflineAddedSaves;
 import com.vocaby.app.data.entity.OfflineRemovedSaves;
+import com.vocaby.app.data.entity.Type;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
@@ -199,6 +205,62 @@ public class VocabyRepository {
     private Single<List<String>> getOfflineRemoved() {
         return vocabyDao.getOfflineRemoved()
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    // CUSTOM USER SAVES
+    public Completable deleteUserEntry(int userId, String entry) {
+        return vocabyDao.deleteUserEntry(userId, entry)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<Long> insertCustomEntry(int userId, String entry, long date) {
+        return vocabyDao.insertCustomEntry(new CustomEntry(userId, entry, date))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<List<Long>> insertCustomEntryGroups(List<CustomEntryGroup> groups) {
+        return vocabyDao.insertCustomEntryGroups(groups)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<List<Long>> insertCustomDefinitions(List<CustomDefinition> definitions) {
+        return vocabyDao.insertCustomDefinitions(definitions)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable insertCustomExamples(List<CustomExample> examples) {
+        return vocabyDao.insertCustomExamples(examples)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<EntryWithDefinitions> getEntryData(int entryId) {
+        return vocabyDao.getUserEntryData(entryId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<List<CustomEntry>> getUserEntries(int userId) {
+        return vocabyDao.getUserEntries(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    // Type mainthread
+    public Completable insertTypes(List<Type> types) {
+        return vocabyDao.insertTypes(types)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<List<Type>> getTypes() {
+        return vocabyDao.getTypes()
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

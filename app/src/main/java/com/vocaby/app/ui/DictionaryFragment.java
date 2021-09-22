@@ -1,5 +1,7 @@
 package com.vocaby.app.ui;
 
+import static com.vocaby.app.utils.StringFormatter.cleanText;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -96,10 +98,6 @@ public class DictionaryFragment extends Fragment {
                             SearchResultsFragment.newInstance(search)
                     ).commit();
         }
-    }
-
-    private String cleanText(String text) {
-        return text.toLowerCase().trim().replaceAll("[^0-9a-z-'._ ]", "");
     }
 
     private final FloatingSearchView.OnSearchListener searchListener = new FloatingSearchView.OnSearchListener() {

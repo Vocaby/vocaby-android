@@ -17,10 +17,11 @@ import androidx.room.rxjava3.EmptyResultSetException;
 import com.vocaby.app.R;
 import com.vocaby.app.exceptions.SaveRepetitionException;
 import com.vocaby.app.utils.WordService;
-import com.vocaby.app.models.WordModel;
+import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -86,10 +87,10 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
 
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
                 }).subscribe(wordDefinitions -> {
-                    WordModel wordData= WordService.convertToWordModel(wordDefinitions);
-                    String pos = wordData.getAllowedPos()[0];
-                    String definition = wordData.getDefinitions(pos)[0];
-                    String[] examples = wordData.getSentences(pos);
+                    EntryModel wordData= WordService.convertToWordModel(wordDefinitions);
+                    String pos = wordData.getFirstType();
+                    String definition = wordData.getDefinitions(pos).get(0).toString();
+                    List<String> examples = wordData.getDefinitions(pos).get(0).getExamples();
 
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString(WIDGET_PREV_KEY+id, wordData.getWord());
@@ -98,8 +99,8 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
                     remoteViews.setTextViewText(R.id.widget_word, wordData.getWord());
                     remoteViews.setTextViewText(R.id.widget_definition, definition);
 
-                    if(examples.length > 0) {
-                        remoteViews.setTextViewText(R.id.widget_sentence, examples[0]);
+                    if(examples.size() > 0) {
+                        remoteViews.setTextViewText(R.id.widget_sentence, examples.get(0));
                     }
 
                     Intent openIntent = new Intent(context, MainActivity.class);

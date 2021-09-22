@@ -14,7 +14,7 @@ import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.models.WordDataPackage;
-import com.vocaby.app.models.WordModel;
+import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 
@@ -68,7 +68,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                             return vocabyRepository.getWordDataPackageLocally(searched, userId);
                         }).subscribe(mWordPackage::setValue, error -> {
                             if (error instanceof EmptyResultSetException) {
-                                mWordPackage.setValue(new WordDataPackage(new WordModel(searched), false));
+                                mWordPackage.setValue(new WordDataPackage(new EntryModel(searched), false));
                             }
 
                             Bugsnag.notify(error);

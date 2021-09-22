@@ -2,14 +2,12 @@ package com.vocaby.app.api;
 
 import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.WordDataPackage;
-import com.vocaby.app.models.WordModel;
 
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 
-import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;

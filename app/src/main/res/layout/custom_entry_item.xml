@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:backgroundTint="@color/very_light_gray"
+    app:cardElevation="0dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:gravity="center"
+        android:weightSum="10">
+        <TextView
+            android:id="@+id/custom_entry_item_header"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:autoSizeMaxTextSize="26sp"
+            android:autoSizeMinTextSize="18sp"
+            android:autoSizeStepGranularity="4sp"
+            android:autoSizeTextType="uniform"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:fontFamily="@font/playfair_display"
+            android:padding="8dp"
+            android:layout_weight="9"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary_header" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="28dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="-2dp"
+            android:layout_weight="1"
+            android:background="@drawable/ic_trash"
+            android:backgroundTint="@color/color_tertiary"
+            android:contentDescription="@string/unsave_button_desc" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
