@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "custom_entry_group", foreignKeys = {
@@ -13,7 +14,8 @@ import androidx.room.PrimaryKey;
                 childColumns = "custom_entry_id"),
         @ForeignKey(entity = Type.class,
                 parentColumns = "type_id",
-                childColumns = "type_id")})
+                childColumns = "type_id")},
+        indices = {@Index("custom_entry_id")})
 public class CustomEntryGroup {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "custom_entry_group_id")

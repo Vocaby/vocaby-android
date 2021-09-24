@@ -3,6 +3,7 @@ package com.vocaby.app.viewmodels;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -15,9 +16,12 @@ import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.repositories.VocabyRepository;
+import com.vocaby.app.ui.EntryBuilderActivity;
 import com.vocaby.app.utils.SingleLiveEvent;
+import com.vocaby.app.utils.StringFormatter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -52,6 +56,19 @@ public class MyEntryViewModel extends AndroidViewModel {
 
     public LiveData<List<CustomEntry>> getEntries() {
         return mEntries;
+    }
+
+    public Intent addEntryIdToIntent(Intent intent, String entry) {
+        int id = customEntries.stream()
+                .filter(customEntry -> {
+                    String e = StringFormatter.cleanText(customEntry.getEntry());
+                    String other = StringFormatter.cleanText(entry);
+                    return e.equals(other);
+                }).findFirst().orElse(new CustomEntry()).getEntryId();
+
+        intent.putExtra("entryId", id);
+
+        return intent;
     }
 
 //    public void handleResult(ActivityResult result) {

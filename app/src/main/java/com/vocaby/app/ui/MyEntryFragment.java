@@ -129,8 +129,10 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
                         entryAlert.setVisibility(View.INVISIBLE);
                         entryEditDialog.dismiss();
 
+
                         Intent startEntryBuilderIntent = new Intent(requireActivity(), EntryBuilderActivity.class);
                         startEntryBuilderIntent.putExtra("entry", entry);
+                        startEntryBuilderIntent = entryViewModel.addEntryIdToIntent(startEntryBuilderIntent, entry);
                         entryBuilderActivity.launch(startEntryBuilderIntent);
                     }
                 }
@@ -145,6 +147,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
                     String entry = result.getData().getStringExtra("entryText");
                     int entryId = result.getData().getIntExtra("entryId", 0);
                     customEntryAdapter.addEntry(entryId, entry);
+                    updateCount();
                     recyclerView.smoothScrollToPosition(0);
                 }
 

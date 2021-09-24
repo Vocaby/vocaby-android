@@ -3,6 +3,7 @@ package com.vocaby.app.viewmodels;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -21,6 +22,7 @@ import com.vocaby.app.data.entity.Type;
 import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
 import com.vocaby.app.repositories.VocabyRepository;
+import com.vocaby.app.ui.EntryBuilderActivity;
 import com.vocaby.app.utils.SingleLiveEvent;
 import com.vocaby.app.utils.StringFormatter;
 
@@ -70,8 +72,8 @@ public class EntryViewModel extends AndroidViewModel {
         mEntryId = new SingleLiveEvent<>();
 
         compositeDisposable.add(
-            vocabyRepository.getTypes()
-                    .subscribe(mTypes::setValue)
+                vocabyRepository.getTypes()
+                        .subscribe(mTypes::setValue)
         );
 
         // Used to notify adapter
@@ -79,17 +81,19 @@ public class EntryViewModel extends AndroidViewModel {
     }
 
     public void getEntry(int entryId) {
-        compositeDisposable.add(
-                vocabyRepository.getEntryData(entryId)
-                        .subscribe(entryData -> {
-                                currentGroups = convertEntryData(entryData);
-                                mGroups.setValue(currentGroups);
-                            }, error -> {
-                                error.printStackTrace();
-                                Bugsnag.notify(error);
-                            }
-                        )
-        );
+        if(entryId > -1) {
+            compositeDisposable.add(
+                    vocabyRepository.getEntryData(entryId)
+                            .subscribe(entryData -> {
+                                        currentGroups = convertEntryData(entryData);
+                                        mGroups.setValue(currentGroups);
+                                    }, error -> {
+                                        error.printStackTrace();
+                                        Bugsnag.notify(error);
+                                    }
+                            )
+            );
+        }
     }
 
 
@@ -105,8 +109,8 @@ public class EntryViewModel extends AndroidViewModel {
             for (EntryDefinitionWithExamples definitionWithExamples : group.definitions) {
                 String definition = definitionWithExamples.customDefinition.getDefinition();
                 List<String> examples = definitionWithExamples.examples.stream()
-                        .map( Object::toString )
-                        .collect(Collectors.toList() );
+                        .map(Object::toString)
+                        .collect(Collectors.toList());
                 definitionModels.add(new DefinitionModel(definition, type, examples));
             }
 
@@ -177,7 +181,7 @@ public class EntryViewModel extends AndroidViewModel {
         if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
             if (result.getData().getParcelableExtra("groupData") instanceof DefinitionGroupModel) {
                 DefinitionGroupModel definitionGroup = result.getData().getParcelableExtra("groupData");
-                if(definitionGroup.isEmpty()) {
+                if (definitionGroup.isEmpty()) {
                     // Todo: Remove group from the local database
                     mResult.setValue(REMOVE_GROUP);
                 } else {
@@ -233,7 +237,6 @@ public class EntryViewModel extends AndroidViewModel {
                                 }
 
                                 return vocabyRepository.insertCustomEntryGroups(entryGroups);
-
                             }).flatMap(ids -> {
                         List<CustomDefinition> definitions = new ArrayList<>();
                         for (int i = 0; i < ids.size(); i++) {

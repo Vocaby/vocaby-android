@@ -21,7 +21,7 @@ public class CustomEntryAdapter extends RecyclerView.Adapter<CustomEntryAdapter.
     private ItemTouchListener itemTouchListener;
 
     public interface ItemTouchListener {
-        public void onItemTouch(CustomEntry entry);
+        void onItemTouch(CustomEntry entry);
     }
 
     public CustomEntryAdapter(ItemTouchListener itemTouchListener) {
@@ -38,9 +38,11 @@ public class CustomEntryAdapter extends RecyclerView.Adapter<CustomEntryAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull EntryViewHolder holder, int position) {
-        holder.setIsRecyclable(false);
         holder.itemView.setOnClickListener(view -> {
-            itemTouchListener.onItemTouch(customEntries.get(position));
+            // You want to use getAdapterPosition instead of position
+            // in the listener because onBindViewHolder will not be called again
+            // from structural changes.
+            itemTouchListener.onItemTouch(customEntries.get(holder.getAdapterPosition()));
         });
 
         holder.header.setText(customEntries.get(position).getEntry());
@@ -56,7 +58,6 @@ public class CustomEntryAdapter extends RecyclerView.Adapter<CustomEntryAdapter.
     public void addEntry(int entryId, String entry) {
         customEntries.add(0, new CustomEntry(entryId, 0, entry, System.currentTimeMillis()));
         notifyItemInserted(0);
-        // notifyItemRangeChanged(0, getItemCount());
     }
 
     @Override

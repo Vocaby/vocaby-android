@@ -5,6 +5,10 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.vocaby.app.utils.StringFormatter;
+
+import java.util.Objects;
+
 @Entity(tableName = "custom_user_entry")
 public class CustomEntry {
     @PrimaryKey(autoGenerate = true)
@@ -20,7 +24,9 @@ public class CustomEntry {
     private long date;
 
     public CustomEntry() {
-
+        entryId = -1;
+        userId = -1;
+        date = -1;
     }
 
     @Ignore

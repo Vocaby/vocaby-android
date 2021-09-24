@@ -139,9 +139,11 @@ public abstract class VocabyDao {
     @Query("DELETE FROM custom_user_entry WHERE user_id = :id AND entry = :entry")
     public abstract Completable deleteUserEntry(int id, String entry);
 
+    @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :id AND entry = :entry")
     public abstract Single<EntryWithDefinitions> getUserEntryData(int id, String entry);
 
+    @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE custom_entry_id = :entryId")
     public abstract Single<EntryWithDefinitions> getUserEntryData(int entryId);
 

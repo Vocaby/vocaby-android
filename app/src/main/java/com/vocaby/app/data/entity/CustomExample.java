@@ -3,13 +3,15 @@ package com.vocaby.app.data.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "custom_user_example", foreignKeys = {
         @ForeignKey(onDelete = ForeignKey.CASCADE,
                 entity = CustomDefinition.class,
                 parentColumns = "custom_definition_id",
-                childColumns = "custom_definition_id")})
+                childColumns = "custom_definition_id")},
+        indices = {@Index("custom_definition_id")})
 public class CustomExample {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "custom_example_id")
