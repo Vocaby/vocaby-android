@@ -3,6 +3,7 @@ package com.vocaby.app.data.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -12,7 +13,7 @@ import androidx.room.PrimaryKey;
                 parentColumns = "custom_entry_group_id",
                 childColumns = "custom_entry_group_id")},
         indices = @Index("custom_entry_group_id"))
-public class CustomDefinition {
+public class CustomDefinition implements Comparable<CustomDefinition> {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "custom_definition_id")
     private int definitionId;
@@ -21,12 +22,22 @@ public class CustomDefinition {
     private int groupId;
 
     private String definition;
+    private String example;
     private int order;
 
+    public CustomDefinition(int groupId, String definition, String example, int order) {
+        this.groupId = groupId;
+        this.definition = definition;
+        this.order = order;
+        this.example = example;
+    }
+
+    @Ignore
     public CustomDefinition(int groupId, String definition, int order) {
         this.groupId = groupId;
         this.definition = definition;
         this.order = order;
+        example = "";
     }
 
     public int getDefinitionId() {
@@ -53,11 +64,24 @@ public class CustomDefinition {
         this.definition = definition;
     }
 
+    public String getExample() {
+        return example;
+    }
+
+    public void setExample(String example) {
+        this.example = example;
+    }
+
     public int getOrder() {
         return order;
     }
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    @Override
+    public int compareTo(CustomDefinition customDefinition) {
+        return Integer.compare(order, customDefinition.getOrder());
     }
 }

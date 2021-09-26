@@ -10,17 +10,23 @@ import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.data.entity.CustomEntryGroup;
 import com.vocaby.app.data.entity.CustomExample;
-import com.vocaby.app.data.entity.EntryWithDefinitions;
+import com.vocaby.app.data.entity.EntryGroupWithDefinitions;
+import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.OfflineAddedSaves;
 import com.vocaby.app.data.entity.OfflineRemovedSaves;
-import com.vocaby.app.data.entity.Type;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
+import com.vocaby.app.models.DefinitionGroupModel;
+import com.vocaby.app.models.DefinitionModel;
+import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.WordDataPackage;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
@@ -28,13 +34,12 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VocabyRepository {
-    private VocabyDatabase vocabyDatabase;
-    private ApiManager apiManager;
-    private VocabyDao vocabyDao;
+    private final ApiManager apiManager;
+    private final VocabyDao vocabyDao;
 
 
     public VocabyRepository(Application application) {
-        vocabyDatabase = VocabyDatabase.getDatabase(application);
+        VocabyDatabase vocabyDatabase = VocabyDatabase.getDatabase(application);
         vocabyDao = vocabyDatabase.vocabyDao();
         apiManager = ApiManager.getInstance();
     }
@@ -215,6 +220,38 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Single<Integer> insertNewEntry(int userId, EntryModel entryData, long date) {
+        AtomicInteger entryId = new AtomicInteger();
+        return vocabyDao.insertCustomEntry(new CustomEntry(userId, entryData.getEntry(), date))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(result -> {
+                    int id = result.intValue();
+                    entryId.set(id);
+                    List<CustomEntryGroup> entryGroups = new ArrayList<>();
+                    for (DefinitionGroupModel group : entryData.getDefinitionGroups()) {
+                        CustomEntryGroup entryGroup = new CustomEntryGroup(id, group.getType(), group.getOrder());
+                        entryGroups.add(entryGroup);
+                    }
+
+                    return insertCustomEntryGroups(entryGroups);
+                }).flatMap(ids -> {
+                    List<CustomDefinition> definitions = new ArrayList<>();
+                    for (int i = 0; i < ids.size(); i++) {
+                        int groupId = ids.get(i).intValue();
+                        List<DefinitionModel> d = entryData.getDefinitionGroups().get(i).getDefinitionData();
+                        for (int j = 0; j < d.size(); j++) {
+                            CustomDefinition definition = new CustomDefinition(
+                                    groupId, d.get(j).toString(), d.get(i).getExample(), j);
+                            definitions.add(definition);
+                        }
+                    }
+
+                    return insertCustomDefinitions(definitions)
+                            .map(list -> entryId.get());
+                });
+    }
+
     public Single<Long> insertCustomEntry(int userId, String entry, long date) {
         return vocabyDao.insertCustomEntry(new CustomEntry(userId, entry, date))
                 .subscribeOn(Schedulers.io())
@@ -239,9 +276,10 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<EntryWithDefinitions> getEntryData(int entryId) {
+    public Single<EntryModel> getEntryData(int entryId) {
         return vocabyDao.getUserEntryData(entryId)
-                .subscribeOn(Schedulers.io())
+                .map(this::convertEntryData)
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -251,17 +289,40 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    // Type mainthread
-    public Completable insertTypes(List<Type> types) {
-        return vocabyDao.insertTypes(types)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
+    private EntryModel convertEntryData(EntryWithData data) {
+        EntryModel entryData = new EntryModel(
+                data.customEntry.getEntryId(),
+                data.customEntry.getEntry()
+        );
 
-    public Single<List<Type>> getTypes() {
-        return vocabyDao.getTypes()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread());
+        List<DefinitionGroupModel> groups = new ArrayList<>();
+        for (EntryGroupWithDefinitions group : data.groups) {
+            DefinitionGroupModel groupModel = new DefinitionGroupModel(
+                    group.entryGroup.getType(),
+                    group.entryGroup.getOrder()
+            );
+
+            List<DefinitionModel> definitions = new ArrayList<>();
+            for (CustomDefinition definitionData : group.definitions) {
+                DefinitionModel definitionModel = new DefinitionModel(
+                        definitionData.getDefinitionId(),
+                        group.entryGroup.getType(),
+                        definitionData.getDefinition(),
+                        definitionData.getExample(),
+                        definitionData.getOrder()
+                );
+
+                definitions.add(definitionModel);
+            }
+
+            Collections.sort(definitions);
+            groupModel.setDefinitionData(definitions);
+            groups.add(groupModel);
+        }
+
+        entryData.setDefinitionGroups(groups);
+
+        return entryData;
     }
 
     // UTIL

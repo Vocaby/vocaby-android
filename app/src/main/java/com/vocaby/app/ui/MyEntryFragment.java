@@ -131,8 +131,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
 
 
                         Intent startEntryBuilderIntent = new Intent(requireActivity(), EntryBuilderActivity.class);
-                        startEntryBuilderIntent.putExtra("entry", entry);
-                        startEntryBuilderIntent = entryViewModel.addEntryIdToIntent(startEntryBuilderIntent, entry);
+                        startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry);
                         entryBuilderActivity.launch(startEntryBuilderIntent);
                     }
                 }
@@ -158,8 +157,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     @Override
     public void onItemTouch(CustomEntry entry) {
         Intent startEntryBuilderIntent = new Intent(requireActivity(), EntryBuilderActivity.class);
-        startEntryBuilderIntent.putExtra("entry", entry.getEntry());
-        startEntryBuilderIntent.putExtra("entryId", entry.getEntryId());
+        startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry);
         entryBuilderActivity.launch(startEntryBuilderIntent);
     }
 }

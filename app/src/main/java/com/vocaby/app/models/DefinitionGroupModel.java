@@ -4,21 +4,30 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class DefinitionGroupModel implements Parcelable {
-    String type;
-    List<DefinitionModel> definitionData;
+public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGroupModel> {
+    private int id;
+    private String type;
+    private List<DefinitionModel> definitionData;
+    private int order;
 
-    public DefinitionGroupModel(String type, List<DefinitionModel> definitionData) {
+    public DefinitionGroupModel(String type, int order) {
+        this.id = -1;
         this.type = type;
-        this.definitionData = definitionData;
+        this.definitionData = new ArrayList<>();
+        this.order = order;
     }
 
     protected DefinitionGroupModel(Parcel in) {
         definitionData = new ArrayList<>();
+
+        id = in.readInt();
         type = in.readString();
         in.readTypedList(definitionData, DefinitionModel.CREATOR);
+        order = in.readInt();
     }
 
     public static final Creator<DefinitionGroupModel> CREATOR = new Creator<DefinitionGroupModel>() {
@@ -41,6 +50,44 @@ public class DefinitionGroupModel implements Parcelable {
         return definitionData;
     }
 
+    public void setDefinitionData(List<DefinitionModel> newList) {
+        definitionData = newList;
+    }
+
+    public void addDefinition(String definition, String example) {
+        definitionData.add(new DefinitionModel(type, definition, example, definitionData.size()));
+    }
+
+    // TODO: Override list remove
+    public void removeDefinition(int position) {
+        definitionData.remove(position);
+        if(position < definitionData.size()) {
+            for(int i = position; i < definitionData.size(); i++) {
+                definitionData.get(i).setOrder(i);
+            }
+        }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -48,11 +95,18 @@ public class DefinitionGroupModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
         parcel.writeString(type);
         parcel.writeTypedList(definitionData);
+        parcel.writeInt(order);
     }
 
     public boolean isEmpty() {
         return definitionData.isEmpty();
+    }
+
+    @Override
+    public int compareTo(DefinitionGroupModel otherGroup) {
+        return Integer.compare(order, otherGroup.getOrder());
     }
 }

@@ -93,13 +93,7 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
             } else {
                 saveAlert.setVisibility(View.INVISIBLE);
                 Intent saveIntent = new Intent();
-                String type = typeHeader.getText().toString();
-                DefinitionGroupModel definitionGroup = new DefinitionGroupModel(
-                        type,
-                        entryGroupViewModel.getCurrentData()
-                );
-
-                saveIntent.putExtra("groupData", definitionGroup);
+                saveIntent = entryGroupViewModel.addSaveDataToIntent(saveIntent);
                 setResult(Activity.RESULT_OK, saveIntent);
                 finish();
             }

@@ -78,6 +78,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
         );
     }
 
+    // TODO: Change offlineEditor.putString to offlineEditor.putStringSet
     public void saveWord(String word, boolean isConnected) {
         if (mWordPackage.getValue() != null) {
             int userId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
@@ -131,6 +132,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
         }
     }
 
+    // TODO: Change offlineEditor.putString to offlineEditor.putStringSet
     public void removeSave(String word, Boolean isConnected) {
         if (mWordPackage.getValue() != null) {
             int userId = userSharedPreference.getInt("CURRENT_USER_ID", 1);

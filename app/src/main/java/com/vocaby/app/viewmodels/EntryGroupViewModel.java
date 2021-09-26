@@ -14,22 +14,20 @@ import java.util.List;
 
 public class EntryGroupViewModel extends ViewModel {
 
-    private List<DefinitionModel> definitions;
+    private DefinitionGroupModel definitionGroup;
     private final SingleLiveEvent<String> mType;
     private final SingleLiveEvent<List<DefinitionModel>> mDefinitions;
     private boolean isEdit;
 
     public EntryGroupViewModel() {
-        definitions = new ArrayList<>();
         mDefinitions = new SingleLiveEvent<>();
         mType = new SingleLiveEvent<>();
-        mDefinitions.setValue(definitions);
         isEdit = false;
     }
 
     public void addDefinition(String definition, String type, String example) {
-        definitions.add(new DefinitionModel(definition, type.toLowerCase(), example));
-        mDefinitions.setValue(definitions);
+        definitionGroup.addDefinition(definition, example);
+        mDefinitions.setValue(definitionGroup.getDefinitionData());
     }
 
     public LiveData<List<DefinitionModel>> getDefinitions() {
@@ -37,8 +35,13 @@ public class EntryGroupViewModel extends ViewModel {
     }
 
     public void removeDefinition(int position) {
-        definitions.remove(position);
-        mDefinitions.setValue(definitions);
+        definitionGroup.removeDefinition(position);
+        mDefinitions.setValue(definitionGroup.getDefinitionData());
+    }
+
+    public Intent addSaveDataToIntent(Intent intent) {
+        intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup);
+        return intent;
     }
 
     public List<DefinitionModel> getCurrentData() {
@@ -54,18 +57,16 @@ public class EntryGroupViewModel extends ViewModel {
     }
 
     public void handleIntent(Intent receivedIntent) {
-        if (receivedIntent.getStringExtra("type") != null) {
-            String type = receivedIntent.getStringExtra("type");
-            mType.setValue(type);
-        } else if (receivedIntent.getParcelableExtra("definitionData") != null) {
-            if (receivedIntent.getParcelableExtra("definitionData") instanceof DefinitionGroupModel) {
-                DefinitionGroupModel definitionGroup = receivedIntent.getParcelableExtra("definitionData");
-                definitions = definitionGroup.getDefinitionData();
-                mDefinitions.setValue(definitions);
+        if (receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY) != null) {
+            if (receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY) instanceof DefinitionGroupModel) {
+                definitionGroup = receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY);
+                mDefinitions.setValue(definitionGroup.getDefinitionData());
                 mType.setValue(definitionGroup.getType());
             }
-        }
 
-        isEdit = receivedIntent.getBooleanExtra("edit", false);
+            if (!definitionGroup.isEmpty()) {
+                isEdit = true;
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vocaby.app.R;
+import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
 import com.vocaby.app.models.EntryModel;
 
@@ -43,14 +44,14 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
     @Override
     public void onBindViewHolder(@NonNull DefinitionsAdapter.DefinitionsViewHolder holder, int position) {
         if(entryData != null) {
-            String selectedPos = entryData.getTypes().get(position);
-            List<DefinitionModel> definitions = entryData.getDefinitions(selectedPos);
-            holder.pos.setText(selectedPos);
+            DefinitionGroupModel group = entryData.getDefinitionGroups().get(position);
+            List<DefinitionModel> definitions = group.getDefinitionData();
+            holder.pos.setText(group.getType());
 
             LayoutInflater inflater = LayoutInflater.from(ctx);
             for(int i = 0; i < definitions.size(); i++) {
-                String def = definitions.get(i).toString();
-                String sen = definitions.get(i).getFirstExample();
+                String def = definitions.get(i).getDefinition();
+                String sen = definitions.get(i).getExample();
                 CardView card = (CardView) inflater.inflate(R.layout.definition_row, null);
                 TextView definition = card.findViewById(R.id.definition);
                 TextView sentence = card.findViewById(R.id.sentence);
@@ -72,7 +73,7 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
 
     @Override
     public int getItemCount() {
-        return entryData == null ? 0 : entryData.getTypes().size();
+        return entryData == null ? 0 : entryData.getDefinitionGroups().size();
     }
 
     public static class DefinitionsViewHolder extends RecyclerView.ViewHolder {

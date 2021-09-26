@@ -25,7 +25,6 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomGroupAdapter;
 import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
-import com.vocaby.app.data.entity.Type;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.EntryViewModel;
 
@@ -37,7 +36,7 @@ public class EntryBuilderActivity extends AppCompatActivity
     private CustomGroupAdapter customGroupAdapter;
     private ItemTouchHelper itemTouchHelper;
     private RecyclerView recyclerView;
-    private TextView entry;
+    private TextView entryView;
     private ProgressBar saveProgresBar;
     private TextView headerAlert;
     private TextView groupAlert;
@@ -47,28 +46,16 @@ public class EntryBuilderActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_entry_builder);
 
-        entry = findViewById(R.id.entry_header);
-        Intent receivedIntent = getIntent();
-        String header = receivedIntent.getStringExtra("entry");
-        entry.setText(StringFormatter.firstLetterUpperOnly(header));
+        entryView = findViewById(R.id.entry_header);
+        entryViewModel = new ViewModelProvider(this).get(EntryViewModel.class);
+        String entry = entryViewModel.parseRetrieved(getIntent());
+        entryView.setText(StringFormatter.firstLetterUpperOnly(entry));
         headerAlert = findViewById(R.id.entry_header_alert);
         groupAlert = findViewById(R.id.group_header_alert);
-
-        entryViewModel = new ViewModelProvider(this).get(EntryViewModel.class);
-
-        if (receivedIntent.hasExtra("entryId")) {
-            entryViewModel.getEntry(receivedIntent.getIntExtra("entryId", 1));
-        }
 
         setUpGroupBuilder();
         setupButtons();
         setupRecyclerView();
-
-        entryViewModel.setEntry(entry.getText().toString());
-
-        Intent resultIntent = new Intent();
-        entryViewModel.getEntryId().observe(this, id -> resultIntent.putExtra("entryId", id));
-
 
         entryViewModel.getResult().observe(this, result -> {
             if (result == EntryViewModel.ADD_GROUP) {
@@ -79,7 +66,8 @@ public class EntryBuilderActivity extends AppCompatActivity
             } else if (result == EntryViewModel.REMOVE_GROUP){
                 customGroupAdapter.onItemDismiss(entryViewModel.getSelectedItemPosition());
             } else if (result == EntryViewModel.CREATE_ENTRY) {
-                resultIntent.putExtra("entryText", entry.getText().toString());
+                Intent resultIntent = new Intent();
+                resultIntent = entryViewModel.addResultDataToIntent(resultIntent);
                 setResult(Activity.RESULT_OK, resultIntent);
                 finish();
             } else if (result == EntryViewModel.EMPTY_ENTRY) {
@@ -104,7 +92,7 @@ public class EntryBuilderActivity extends AppCompatActivity
         // Create group button
         TextView typeCreatorAlert = groupBuilder.findViewById(R.id.type_creator_alert);
         Button createGroupButton = groupBuilder.findViewById(R.id.create_group_button);
-        Intent groupBuilderActivityData = new Intent(this, EntryGroupBuilderActivity.class);
+
         if (createGroupButton != null) {
             createGroupButton.setOnClickListener(v -> {
                 int id = radioGroup.getCheckedRadioButtonId();
@@ -120,8 +108,8 @@ public class EntryBuilderActivity extends AppCompatActivity
                     } else {
                         String type = radioButton.getText().toString().toLowerCase();
                         radioGroup.clearCheck();
-                        groupBuilderActivityData.putExtra("type", type);
-                        groupBuilderActivityData.putExtra("edit", false);
+                        Intent groupBuilderActivityData = new Intent(this, EntryGroupBuilderActivity.class);
+                        groupBuilderActivityData = entryViewModel.addGroupDataToIntent(groupBuilderActivityData, type);
                         groupBuilder.dismiss();
                         groupBuilderActivity.launch(groupBuilderActivityData);
                     }
@@ -144,18 +132,19 @@ public class EntryBuilderActivity extends AppCompatActivity
 
         // Add new group button
         Button addGroupButton = findViewById(R.id.add_def_group_button);
-        entryViewModel.getTypes().observe(this, types -> addGroupButton.setOnClickListener(v -> {
+        addGroupButton.setOnClickListener(view -> {
+            String[] types = getResources().getStringArray(R.array.type);
             radioGroup.removeAllViews();
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(12, 8, 12, 8);
 
-            for(Type type : types) {
-                if(!entryViewModel.getGroupTypes().contains(type.getType())) {
+            for(String type : types) {
+                if(!entryViewModel.entryHasType(type)) {
                     RadioButton radioButton = new RadioButton(new ContextThemeWrapper(this,
                             R.style.Theme_VocabyAndroid_RadioButton), null, 0);
-                    radioButton.setText(type.getType().toUpperCase());
+                    radioButton.setText(type.toUpperCase());
                     radioButton.setId(View.generateViewId());
                     if (radioGroup != null) {
                         radioGroup.addView(radioButton, layoutParams);
@@ -164,7 +153,7 @@ public class EntryBuilderActivity extends AppCompatActivity
             }
 
             groupBuilder.show();
-        }));
+        });
     }
 
     private void setupRecyclerView() {
@@ -191,8 +180,7 @@ public class EntryBuilderActivity extends AppCompatActivity
     @Override
     public void onItemClicked(int position) {
         Intent groupBuilderActivityData = new Intent(this, EntryGroupBuilderActivity.class);
-        groupBuilderActivityData.putExtra("definitionData", entryViewModel.getCurrentData().get(position));
-        groupBuilderActivityData.putExtra("edit", true);
+        groupBuilderActivityData = entryViewModel.addGroupDataToIntent(groupBuilderActivityData, position);
         groupBuilderActivity.launch(groupBuilderActivityData);
         entryViewModel.setSelectedItemPosition(position);
     }
@@ -200,7 +188,6 @@ public class EntryBuilderActivity extends AppCompatActivity
     @Override
     public void onItemRemoved(int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
-
         entryViewModel.removeGroup(position);
         customGroupAdapter.notifyItemRemoved(position);
 

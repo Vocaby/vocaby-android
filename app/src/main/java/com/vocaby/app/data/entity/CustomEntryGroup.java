@@ -11,10 +11,7 @@ import androidx.room.PrimaryKey;
         @ForeignKey(onDelete = ForeignKey.CASCADE,
                 entity = CustomEntry.class,
                 parentColumns = "custom_entry_id",
-                childColumns = "custom_entry_id"),
-        @ForeignKey(entity = Type.class,
-                parentColumns = "type_id",
-                childColumns = "type_id")},
+                childColumns = "custom_entry_id")},
         indices = {@Index("custom_entry_id")})
 public class CustomEntryGroup {
     @PrimaryKey(autoGenerate = true)
@@ -24,8 +21,8 @@ public class CustomEntryGroup {
     @ColumnInfo(name = "custom_entry_id")
     private int entryId;
 
-    @ColumnInfo(name = "type_id")
-    private int type_id;
+    @ColumnInfo(name = "type")
+    private String type;
 
     private int order;
 
@@ -34,9 +31,9 @@ public class CustomEntryGroup {
     }
 
     @Ignore
-    public CustomEntryGroup(int entryId, int type_id, int order) {
+    public CustomEntryGroup(int entryId, String type, int order) {
         this.entryId = entryId;
-        this.type_id = type_id;
+        this.type = type;
         this.order = order;
     }
 
@@ -56,12 +53,12 @@ public class CustomEntryGroup {
         this.entryId = entryId;
     }
 
-    public int getType_id() {
-        return type_id;
+    public String getType() {
+        return type;
     }
 
-    public void setType_id(int type_id) {
-        this.type_id = type_id;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getOrder() {

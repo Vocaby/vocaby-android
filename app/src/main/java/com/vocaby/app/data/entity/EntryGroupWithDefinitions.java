@@ -14,14 +14,7 @@ public class EntryGroupWithDefinitions implements Comparable<EntryGroupWithDefin
             entityColumn = "custom_entry_group_id",
             entity = CustomDefinition.class
     )
-    public List<EntryDefinitionWithExamples> definitions;
-
-    @Relation(
-            parentColumn = "type_id",
-            entityColumn = "type_id",
-            entity = Type.class
-    )
-    public Type type;
+    public List<CustomDefinition> definitions;
 
     @Override
     public int compareTo(EntryGroupWithDefinitions e) {

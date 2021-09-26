@@ -21,7 +21,6 @@ import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
 
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -88,19 +87,19 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
                 }).subscribe(wordDefinitions -> {
                     EntryModel wordData= WordService.convertToWordModel(wordDefinitions);
-                    String pos = wordData.getFirstType();
-                    String definition = wordData.getDefinitions(pos).get(0).toString();
-                    List<String> examples = wordData.getDefinitions(pos).get(0).getExamples();
+                    String pos = wordData.getFirstGroup().getType();
+                    String definition = wordData.getFirstGroup().getDefinitionData().get(0).toString();
+                    String example = wordData.getFirstGroup().getDefinitionData().get(0).getExample();
 
                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putString(WIDGET_PREV_KEY+id, wordData.getWord());
+                    editor.putString(WIDGET_PREV_KEY+id, wordData.getEntry());
                     editor.apply();
 
-                    remoteViews.setTextViewText(R.id.widget_word, wordData.getWord());
+                    remoteViews.setTextViewText(R.id.widget_word, wordData.getEntry());
                     remoteViews.setTextViewText(R.id.widget_definition, definition);
 
-                    if(examples.size() > 0) {
-                        remoteViews.setTextViewText(R.id.widget_sentence, examples.get(0));
+                    if(!example.isEmpty()) {
+                        remoteViews.setTextViewText(R.id.widget_sentence, example);
                     }
 
                     Intent openIntent = new Intent(context, MainActivity.class);

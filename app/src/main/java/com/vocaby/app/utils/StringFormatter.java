@@ -6,6 +6,7 @@ public class StringFormatter {
     }
 
     public static String firstLetterUpperOnly(String text) {
-        return text.substring(0,1).toUpperCase() + text.substring(1).toLowerCase();
+        return text.length() < 1 ?
+                text.toUpperCase() : text.substring(0,1).toUpperCase() + text.substring(1).toLowerCase();
     }
 }

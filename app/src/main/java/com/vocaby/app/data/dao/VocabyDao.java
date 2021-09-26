@@ -11,10 +11,9 @@ import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.data.entity.CustomEntryGroup;
 import com.vocaby.app.data.entity.CustomExample;
-import com.vocaby.app.data.entity.EntryWithDefinitions;
+import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.OfflineAddedSaves;
 import com.vocaby.app.data.entity.OfflineRemovedSaves;
-import com.vocaby.app.data.entity.Type;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
@@ -141,19 +140,12 @@ public abstract class VocabyDao {
 
     @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :id AND entry = :entry")
-    public abstract Single<EntryWithDefinitions> getUserEntryData(int id, String entry);
+    public abstract Single<EntryWithData> getUserEntryData(int id, String entry);
 
     @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE custom_entry_id = :entryId")
-    public abstract Single<EntryWithDefinitions> getUserEntryData(int entryId);
+    public abstract Single<EntryWithData> getUserEntryData(int entryId);
 
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
     public abstract Single<List<CustomEntry>> getUserEntries(int id);
-
-    // Type
-    @Insert
-    public abstract Completable insertTypes(List<Type> types);
-
-    @Query("SELECT * FROM entry_type")
-    public abstract Single<List<Type>> getTypes();
 }

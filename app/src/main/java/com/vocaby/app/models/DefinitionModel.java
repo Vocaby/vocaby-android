@@ -8,37 +8,35 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefinitionModel implements Parcelable {
-    private String definition;
+public class DefinitionModel implements Parcelable, Comparable<DefinitionModel> {
+    private int id;
     private String type;
-    private List<String> examples;
+    private String definition;
+    private String example;
+    private int order;
 
-    public DefinitionModel(String definition, String type, List<String> examples) {
-        this.definition = definition;
+    public DefinitionModel(int id, String type, String definition, String example, int order) {
+        this.id = id;
         this.type = type;
-        this.examples = examples;
+        this.definition = definition;
+        this.example = example;
+        this.order = order;
     }
 
-    public DefinitionModel(String definition, String type, String example) {
-        this.definition = definition;
+    public DefinitionModel(String type, String definition, String example, int order) {
+        this.id = -1;
         this.type = type;
-        this.examples = new ArrayList<>();
-        examples.add(example);
-    }
-
-    public DefinitionModel(String definition, String type) {
         this.definition = definition;
-        this.type = type;
-        this.examples = new ArrayList<>();
+        this.example = example;
+        this.order = order;
     }
 
     protected DefinitionModel(Parcel in) {
-        if (examples == null) {
-            examples = new ArrayList<>();
-        }
-
+        id = in.readInt();
+        type = in.readString();
         definition = in.readString();
-        in.readStringList(examples);
+        example = in.readString();
+        order = in.readInt();
     }
 
     public static final Creator<DefinitionModel> CREATOR = new Creator<DefinitionModel>() {
@@ -61,24 +59,36 @@ public class DefinitionModel implements Parcelable {
         this.definition = definition;
     }
 
-    public List<String> getExamples() {
-        return examples;
+    public String getExample() {
+        return example;
     }
 
-    public String getFirstExample() {
-        if (examples.size() == 0) {
-            return "";
-        } else {
-            return examples.get(0);
-        }
+    public int getId() {
+        return id;
     }
 
-    public void addExample(String example) {
-        examples.add(example);
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void removeExample(String example) {
-        examples.remove(example);
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setExample(String example) {
+        this.example = example;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     @Override
@@ -88,13 +98,21 @@ public class DefinitionModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(type);
         parcel.writeString(definition);
-        parcel.writeStringList(examples);
+        parcel.writeString(example);
+        parcel.writeInt(order);
     }
 
     @NonNull
     @Override
     public String toString() {
         return definition;
+    }
+
+    @Override
+    public int compareTo(DefinitionModel definitionModel) {
+        return Integer.compare(order, definitionModel.getOrder());
     }
 }

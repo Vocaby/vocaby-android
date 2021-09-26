@@ -54,9 +54,9 @@ public class NotificationReceiver extends BroadcastReceiver {
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
                 }).subscribe(wordDefinitions -> {
                     EntryModel wordData= WordService.convertToWordModel(wordDefinitions);
-                    String word = wordData.getWord();
-                    String pos = wordData.getFirstType();
-                    String message = wordData.getDefinitions(pos).get(0).toString();
+                    String word = wordData.getEntry();
+                    String pos = wordData.getFirstGroup().getType();
+                    String message = wordData.getFirstGroup().getDefinitionData().get(0).toString();
 
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("NOTIF_PREV_SELECT", word);

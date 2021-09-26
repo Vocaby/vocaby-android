@@ -1,23 +1,52 @@
 package com.vocaby.app.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-public class EntryModel {
-    private final String word;
+public class EntryModel implements Parcelable {
+    private int id;
+    private final String entry;
     private String pronunciation;
-    private final Map<String, List<DefinitionModel>> mDefinitions;
-    private final List<String> types;
+    // TODO: Change List to Hashmap?
+    private List<DefinitionGroupModel> definitionGroups;
 
-    public EntryModel(String word) {
-        this.word = word;
+    public EntryModel(int id, String entry) {
+        this.id = id;
+        this.entry = entry;
         pronunciation = "";
-        types = new ArrayList<>();
-        mDefinitions = new HashMap<>();
+        definitionGroups = new ArrayList<>();
     }
+
+    public EntryModel(String entry) {
+        id = -1;
+        this.entry = entry;
+        pronunciation = "";
+        definitionGroups = new ArrayList<>();
+    }
+
+    protected EntryModel(Parcel in) {
+        definitionGroups = new ArrayList<>();
+
+        id = in.readInt();
+        entry = in.readString();
+        pronunciation = in.readString();
+        in.readTypedList(definitionGroups, DefinitionGroupModel.CREATOR);
+    }
+
+    public static final Creator<EntryModel> CREATOR = new Creator<EntryModel>() {
+        @Override
+        public EntryModel createFromParcel(Parcel in) {
+            return new EntryModel(in);
+        }
+
+        @Override
+        public EntryModel[] newArray(int size) {
+            return new EntryModel[size];
+        }
+    };
 
     public void setPronunciation(String pronunciation) {
         this.pronunciation = pronunciation;
@@ -25,66 +54,100 @@ public class EntryModel {
 
     public String getPronunciation() { return this.pronunciation; }
 
-    public String getWord() { return word; }
+    public String getEntry() { return entry; }
 
     public boolean isEmpty() {
-        return mDefinitions.isEmpty();
+        return definitionGroups.isEmpty();
     }
 
-    public void setDefinitions(String type, List<DefinitionModel> newDefinitions) {
-        if (mDefinitions.containsKey(type)) {
-            mDefinitions.replace(type, newDefinitions);
-        } else {
-            types.add(type);
-            mDefinitions.put(type, newDefinitions);
-        }
+    public void setDefinitionGroups(List<DefinitionGroupModel> newGroups) {
+        definitionGroups = newGroups;
     }
 
-    public void removeDefinitions(String type) {
-        mDefinitions.remove(type);
+    public void addDefinitionGroup(String type) {
+       definitionGroups.add(new DefinitionGroupModel(type, definitionGroups.size()));
     }
 
-    public void addDefinition(String type, String definition, List<String> examples) {
-        if(mDefinitions.containsKey(type)) {
-            List<DefinitionModel> definitions = mDefinitions.get(type);
-            if (definitions != null) {
-                definitions.add(new DefinitionModel(definition, type, examples));
+    public void addDefinitionGroup(DefinitionGroupModel definitionGroupModel) {
+        definitionGroups.add(definitionGroupModel);
+    }
+
+    public void replaceDefinitionGroup(String type, DefinitionGroupModel newGroup) {
+        int index = getGroupIndex(type);
+        definitionGroups.set(index, newGroup);
+    }
+
+    // TODO: Override list remove
+    public void removeGroup(int position) {
+        definitionGroups.remove(position);
+        if(position < definitionGroups.size()) {
+            for(int i = position; i < definitionGroups.size(); i++) {
+                definitionGroups.get(i).setOrder(i);
             }
-        } else {
-            types.add(type);
-            List<DefinitionModel> definitions = new LinkedList<>();
-            definitions.add(new DefinitionModel(definition, type, examples));
-            mDefinitions.put(type, definitions);
         }
     }
 
     public void addDefinition(String type, String definition, String example) {
-        if(mDefinitions.containsKey(type)) {
-            List<DefinitionModel> definitions = mDefinitions.get(type);
-            if (definitions != null) {
-                definitions.add(new DefinitionModel(definition, type, example));
+        int index = getGroupIndex(type);
+        if(index != -1) {
+            DefinitionGroupModel group = definitionGroups.get(index);
+            if (group != null) {
+                group.addDefinition(definition, example);
             }
         } else {
-            types.add(type);
-            List<DefinitionModel> definitions = new LinkedList<>();
-            definitions.add(new DefinitionModel(definition, type, example));
-            mDefinitions.put(type, definitions);
+            DefinitionGroupModel newGroup = new DefinitionGroupModel(type, definitionGroups.size());
+            newGroup.addDefinition(definition, example);
+            definitionGroups.add(newGroup);
         }
     }
 
-    public List<String> getTypes() {
-        return types;
+    public List<DefinitionGroupModel> getDefinitionGroups() {
+        return definitionGroups;
     }
 
-    public String getFirstType() {
-        if (types.size() == 0) {
-            return "";
-        } else {
-            return types.get(0);
+    public DefinitionGroupModel getFirstGroup() {
+        return definitionGroups.isEmpty() ? null : definitionGroups.get(0);
+    }
+
+    public DefinitionGroupModel getLastGroup() {
+        return definitionGroups.get(definitionGroups.size()-1);
+    }
+
+    public DefinitionGroupModel getDefinitionGroup(int index) {
+        return definitionGroups.get(index);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    public boolean hasGroup(String type) {
+        return getGroupIndex(type) != -1;
+    }
+
+    private int getGroupIndex(String type) {
+        for(int i = 0; i < definitionGroups.size(); i++) {
+            if (definitionGroups.get(i).getType().equals(type)) return i;
         }
+
+        return -1;
     }
 
-    public List<DefinitionModel> getDefinitions(String pos) {
-        return mDefinitions.get(pos);
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(entry);
+        parcel.writeString(pronunciation);
+        parcel.writeTypedList(definitionGroups);
     }
 }

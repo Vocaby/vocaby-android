@@ -5,7 +5,7 @@ import androidx.room.Relation;
 
 import java.util.List;
 
-public class EntryWithDefinitions {
+public class EntryWithData {
     @Embedded
     public CustomEntry customEntry;
 

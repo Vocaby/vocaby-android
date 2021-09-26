@@ -83,12 +83,12 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
 
         dictionaryViewModel.getRandomWord().observe(getViewLifecycleOwner(), wordModel -> {
             progressBar.setVisibility(View.INVISIBLE);
-            String pos = wordModel.getFirstType();
-            wordView.setText(wordModel.getWord());
+            String pos = wordModel.getFirstGroup().getType();
+            wordView.setText(wordModel.getEntry());
             posView.setText(pos);
-            definition.setText(wordModel.getDefinitions(pos).get(0).toString());
-            sentence.setText(wordModel.getDefinitions(pos).get(0).getFirstExample());
-            wordBox.setOnClickListener(v -> dictionaryViewModel.setSearch(wordModel.getWord()));
+            definition.setText(wordModel.getFirstGroup().getDefinitionData().get(0).toString());
+            sentence.setText(wordModel.getFirstGroup().getDefinitionData().get(0).getExample());
+            wordBox.setOnClickListener(v -> dictionaryViewModel.setSearch(wordModel.getEntry()));
         });
 
         dictionaryViewModel.getSearchHistory().observe(getViewLifecycleOwner(), searchHistory -> {
