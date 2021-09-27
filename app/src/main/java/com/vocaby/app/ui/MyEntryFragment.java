@@ -28,6 +28,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomEntryAdapter;
 import com.vocaby.app.data.entity.CustomEntry;
+import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.MyEntryViewModel;
 
 public class MyEntryFragment extends Fragment implements CustomEntryAdapter.ItemTouchListener {
@@ -121,7 +122,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
             saveButton.setText(R.string.create);
             saveButton.setOnClickListener(v -> {
                 if (entryEdit != null && entryAlert != null) {
-                    String entry = entryEdit.getText().toString();
+                    String entry = StringFormatter.cleanText(entryEdit.getText().toString());
                     if (entry.isEmpty()) {
                         entryAlert.setVisibility(View.VISIBLE);
                     } else {

@@ -50,7 +50,7 @@ public class EntryBuilderActivity extends AppCompatActivity
         entryView = findViewById(R.id.entry_header);
         entryViewModel = new ViewModelProvider(this).get(EntryViewModel.class);
         String entry = entryViewModel.parseRetrieved(getIntent());
-        entryView.setText(StringFormatter.firstLetterUpperOnly(entry));
+        entryView.setText(entry.toUpperCase());
         headerAlert = findViewById(R.id.entry_header_alert);
         groupAlert = findViewById(R.id.group_header_alert);
 

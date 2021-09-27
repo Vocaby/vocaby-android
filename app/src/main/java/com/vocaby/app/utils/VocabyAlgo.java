@@ -1,19 +1,16 @@
 package com.vocaby.app.utils;
 
-import android.util.Log;
-
 import java.util.List;
-import java.util.Locale;
 
 public class VocabyAlgo {
     public static int BinarySearchPrefix(List<String> list, String search) {
-        return BinarySearchPrefix(0, list.size()-1, search, list);
+        return BinarySearchPrefix(0, list.size()-1, search.toLowerCase(), list);
     }
 
     private static int BinarySearchPrefix(int start, int end, String search, List<String> list) {
         if(start <= end) {
             int mid = (start + end) / 2;
-            String midEntry = list.get(mid);
+            String midEntry = list.get(mid).toLowerCase();
             int compResult = search.compareTo(midEntry);
             if(compResult == 0) {
                 return mid;
@@ -23,7 +20,7 @@ public class VocabyAlgo {
                 if(mid-1 == -1) {
                     return 0;
                 } else if (mid-1 > -1) {
-                    if(list.get(mid-1).startsWith(search)) {
+                    if(list.get(mid-1).toLowerCase().startsWith(search)) {
                         return BinarySearchPrefix(start, mid-1, search, list);
                     } else {
                         return mid;

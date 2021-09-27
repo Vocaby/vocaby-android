@@ -62,15 +62,6 @@ public class DictionaryViewModel extends AndroidViewModel {
         );
     }
 
-    public void getDictionaryEntriesByLetter(String letter) {
-        compositeDisposable.add(
-                vocabyRepository.getDictionaryEntriesByLetter(letter)
-                    .subscribe(entries -> {
-                        dictionaryEntries = entries;
-                    }, Throwable::printStackTrace)
-        );
-    }
-
     public void updateRandomWord() {
         SharedPreferences randomWordPicker =
                 PreferenceManager.getDefaultSharedPreferences(getApplication());
@@ -106,21 +97,23 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
+
+
     public List<SearchSuggestionItem> getSearchSuggestion(String newQuery, int threshold) {
         List<SearchSuggestionItem> searchSuggestions = new ArrayList<>();
         if (!newQuery.isEmpty()) {
             int index = VocabyAlgo.BinarySearchPrefix(dictionaryEntries, newQuery);
-            Log.d("vocabydebug", "getSearchSuggestion: " + index);
             if (index > -1 && index < dictionaryEntries.size()) {
                 Iterator<String> it = dictionaryEntries.listIterator(index);
                 int count = 0;
                 while (it.hasNext() && count < threshold) {
                     String entry = it.next();
-                    if (entry.contains(newQuery)) {
+                    if (entry.toLowerCase().contains(newQuery)) {
                         searchSuggestions.add(new SearchSuggestionItem(entry));
                     }
 
                     count++;
+                    index++;
                 }
 
                 return searchSuggestions;

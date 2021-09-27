@@ -26,12 +26,12 @@ import io.reactivex.rxjava3.core.Single;
 
 @Dao
 public abstract class VocabyDao {
-    @Query("SELECT word FROM dictionary_word UNION ALL " +
+    @Query("SELECT word FROM dictionary_word UNION " +
             "SELECT entry FROM custom_user_entry " +
-            "ORDER BY word ASC")
+            "ORDER BY word COLLATE NOCASE ASC")
     public abstract Single<List<String>> getDictionaryEntries();
 
-    @Query("SELECT word FROM dictionary_word UNION ALL " +
+    @Query("SELECT word FROM dictionary_word UNION " +
             "SELECT entry FROM custom_user_entry WHERE entry LIKE :letter || '%' " +
             "ORDER BY word ASC")
     public abstract Single<List<String>> getDictionaryEntriesByLetter(String letter);

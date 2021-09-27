@@ -29,7 +29,6 @@
             android:fontFamily="@font/playfair_display"
             android:padding="8dp"
             android:layout_weight="9"
-            android:textAllCaps="true"
             android:textColor="@color/colorPrimary_header" />
 
         <ImageButton

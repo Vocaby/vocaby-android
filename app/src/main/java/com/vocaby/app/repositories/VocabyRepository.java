@@ -51,7 +51,7 @@ public class VocabyRepository {
     // Gets data from UI Thread
     public Single<List<String>> getDictionaryEntries() {
         return vocabyDao.getDictionaryEntries()
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -89,7 +89,13 @@ public class VocabyRepository {
                 getWordDataFromDatabase(word),
                 getEntryData(userId, word),
                 hasSave(word, userId),
-                WordDataPackage::new
+                (entryModel, customEntryModel, save) -> {
+                    EntryModel dataToSend = entryModel;
+                    if (!customEntryModel.isEmpty())
+                        dataToSend = customEntryModel;
+
+                    return new WordDataPackage(dataToSend, save);
+                }
         );
     }
 
@@ -274,7 +280,7 @@ public class VocabyRepository {
         Single<Long> entryInsert = Single.just((long) groupChanges.getEntryId());
 
         if (groupChanges.getEntryId() == -1) {
-            entryInsert = vocabyDao.insertCustomEntry(new CustomEntry(userId, entry.toLowerCase(), System.currentTimeMillis()));
+            entryInsert = vocabyDao.insertCustomEntry(new CustomEntry(userId, entry, System.currentTimeMillis()));
         }
 
         return entryInsert

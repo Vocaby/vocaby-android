@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 public class EntryGroupViewModel extends ViewModel {
-
     private DefinitionGroupModel definitionGroup;
     private final SingleLiveEvent<String> mType;
     private final SingleLiveEvent<List<DefinitionModel>> mDefinitions;

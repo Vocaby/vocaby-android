@@ -17,6 +17,7 @@ import com.vocaby.app.utils.SingleLiveEvent;
 import com.vocaby.app.utils.StringFormatter;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
