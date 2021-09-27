@@ -25,7 +25,16 @@ public class CustomDefinition implements Comparable<CustomDefinition> {
     private String example;
     private int order;
 
+    @Ignore
     public CustomDefinition(int groupId, String definition, String example, int order) {
+        this.groupId = groupId;
+        this.definition = definition;
+        this.order = order;
+        this.example = example;
+    }
+
+    public CustomDefinition(int definitionId, int groupId, String definition, String example, int order) {
+        this.definitionId = definitionId;
         this.groupId = groupId;
         this.definition = definition;
         this.order = order;

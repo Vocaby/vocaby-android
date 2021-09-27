@@ -1,25 +1,27 @@
 package com.vocaby.app.models;
 
-import com.vocaby.app.utils.WordService;
-import com.vocaby.app.data.entity.WordDefinitions;
-
 public class WordDataPackage {
     private final EntryModel entryData;
+    private final EntryModel customEntryData;
     private boolean saved;
 
     public WordDataPackage(EntryModel entryData, boolean saved) {
         this.entryData = entryData;
+        customEntryData = new EntryModel(entryData.getEntry());
         this.saved = saved;
     }
 
-    public WordDataPackage(WordDefinitions wordDefinitions, int result) {
-        this.entryData = WordService.convertToWordModel(wordDefinitions);
+    public WordDataPackage(EntryModel entryData, EntryModel customEntryData, int result) {
+        this.entryData = entryData;
+        this.customEntryData = customEntryData;
         this.saved = result == 1;
     }
 
     public EntryModel getWordModel() {
         return this.entryData;
     }
+
+    public EntryModel getCustomEntryData() { return customEntryData; }
 
     public Boolean saved() {
         return this.saved;

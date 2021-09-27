@@ -1,6 +1,7 @@
 package com.vocaby.app.repositories;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.VocabyApiService;
@@ -9,7 +10,7 @@ import com.vocaby.app.data.dao.VocabyDao;
 import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.data.entity.CustomEntryGroup;
-import com.vocaby.app.data.entity.CustomExample;
+import com.vocaby.app.data.entity.Definition;
 import com.vocaby.app.data.entity.EntryGroupWithDefinitions;
 import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.OfflineAddedSaves;
@@ -17,20 +18,23 @@ import com.vocaby.app.data.entity.OfflineRemovedSaves;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
+import com.vocaby.app.models.DefinitionChanges;
 import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
 import com.vocaby.app.models.EntryModel;
+import com.vocaby.app.models.GroupChanges;
 import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.WordDataPackage;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VocabyRepository {
@@ -47,20 +51,61 @@ public class VocabyRepository {
     // Gets data from UI Thread
     public Single<List<String>> getDictionaryEntries() {
         return vocabyDao.getDictionaryEntries()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<List<String>> getDictionaryEntriesByLetter(String letter) {
+        return vocabyDao.getDictionaryEntriesByLetter(letter)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<EntryModel> getWordDataFromDatabase(String word) {
+        return vocabyDao.getWordData(word)
+                .map(this::covertToEntryModel)
+                .onErrorReturnItem(new EntryModel(word))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<EntryModel> getWordDataFromDatabase(int id) {
+        return vocabyDao.getWordData(id)
+                .map(this::covertToEntryModel)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<EntryModel> getEntryData(int userId, String entry) {
+        return vocabyDao.getUserEntryData(userId, entry)
+                .map(this::convertEntryData)
+                .onErrorReturnItem(new EntryModel(entry))
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<WordDefinitions> getWordDataFromDatabase(String word) {
-        return vocabyDao.getWordData(word)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+    public Single<WordDataPackage> getWordDataPackageLocally(String word, int userId) {
+        return Single.zip(
+                getWordDataFromDatabase(word),
+                getEntryData(userId, word),
+                hasSave(word, userId),
+                WordDataPackage::new
+        );
     }
 
-    public Single<WordDefinitions> getWordDataFromDatabase(int id) {
-        return vocabyDao.getWordData(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+    private EntryModel covertToEntryModel(WordDefinitions wordDefinitions) {
+        EntryModel wordData = new EntryModel(wordDefinitions.word.getId(), wordDefinitions.word.getWord());
+        if(wordDefinitions.word.getPronunciation() != null) {
+            wordData.setPronunciation(wordDefinitions.word.getPronunciation());
+        } else {
+            wordData.setPronunciation("");
+        }
+
+        for(Definition data : wordDefinitions.definitions) {
+            wordData.addDefinition(data.getPos(), data.getDefinition(), data.getSentence());
+        }
+
+        return wordData;
     }
 
     public Single<Integer> hasSave(String word, int id) {
@@ -69,16 +114,9 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<WordDataPackage> getWordDataPackageLocally(String word, int userId) {
-        return Single.zip(
-                getWordDataFromDatabase(word),
-                hasSave(word, userId),
-                WordDataPackage::new
-        );
-    }
-
-    public Single<WordDefinitions> getRandomWord() {
+    public Single<EntryModel> getRandomWord() {
         return vocabyDao.getRandomWord()
+                .map(this::covertToEntryModel)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -113,13 +151,13 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Completable addUserSaves(List<UserSaves> saves){
+    public Completable addUserSaves(List<UserSaves> saves) {
         return vocabyDao.addSaves(saves)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Completable removeUserSaves(List<String> saves){
+    public Completable removeUserSaves(List<String> saves) {
         return vocabyDao.removeSaves(saves)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -213,42 +251,112 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    // CUSTOM USER SAVES
-    public Completable deleteUserEntry(int userId, String entry) {
-        return vocabyDao.deleteUserEntry(userId, entry)
+    // CUSTOM USER ENTRIES
+    public Completable deleteUserEntry(int entryId) {
+        return vocabyDao.deleteUserEntry(entryId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<Integer> insertNewEntry(int userId, EntryModel entryData, long date) {
-        AtomicInteger entryId = new AtomicInteger();
-        return vocabyDao.insertCustomEntry(new CustomEntry(userId, entryData.getEntry(), date))
+    public Completable deleteUserEntryGroups(List<CustomEntryGroup> groups) {
+        return vocabyDao.deleteCustomEntryGroups(groups)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(result -> {
-                    int id = result.intValue();
-                    entryId.set(id);
-                    List<CustomEntryGroup> entryGroups = new ArrayList<>();
-                    for (DefinitionGroupModel group : entryData.getDefinitionGroups()) {
-                        CustomEntryGroup entryGroup = new CustomEntryGroup(id, group.getType(), group.getOrder());
-                        entryGroups.add(entryGroup);
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable updateUserEntryGroups(List<CustomEntryGroup> groups) {
+        return vocabyDao.updateCustomEntryGroups(groups)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<Integer> insertOrUpdateEntry(int userId, String entry, GroupChanges groupChanges, Map<String, DefinitionChanges> definitionChangesMap) {
+        Single<Long> entryInsert = Single.just((long) groupChanges.getEntryId());
+
+        if (groupChanges.getEntryId() == -1) {
+            entryInsert = vocabyDao.insertCustomEntry(new CustomEntry(userId, entry.toLowerCase(), System.currentTimeMillis()));
+        }
+
+        return entryInsert
+                .flatMap(id -> {
+                    int entryId = id.intValue();
+                    List<CustomEntryGroup> deletedGroups = new ArrayList<>();
+                    for (DefinitionGroupModel group : groupChanges.getDeletedItems()) {
+                        deletedGroups.add(new CustomEntryGroup(group.getGroupId()));
                     }
 
-                    return insertCustomEntryGroups(entryGroups);
-                }).flatMap(ids -> {
-                    List<CustomDefinition> definitions = new ArrayList<>();
-                    for (int i = 0; i < ids.size(); i++) {
-                        int groupId = ids.get(i).intValue();
-                        List<DefinitionModel> d = entryData.getDefinitionGroups().get(i).getDefinitionData();
-                        for (int j = 0; j < d.size(); j++) {
-                            CustomDefinition definition = new CustomDefinition(
-                                    groupId, d.get(j).toString(), d.get(i).getExample(), j);
-                            definitions.add(definition);
+                    List<CustomEntryGroup> updatedGroups = new ArrayList<>();
+                    for (DefinitionGroupModel group : groupChanges.getUpdatedItems()) {
+                        updatedGroups.add(new CustomEntryGroup(
+                                group.getGroupId(),
+                                entryId,
+                                group.getType(),
+                                group.getOrder()
+                        ));
+                    }
+
+                    List<CustomEntryGroup> addedGroups = new ArrayList<>();
+                    for (DefinitionGroupModel group : groupChanges.getAddedItems()) {
+                        addedGroups.add(new CustomEntryGroup(
+                                entryId,
+                                group.getType(),
+                                group.getOrder()
+                        ));
+                    }
+
+                    List<CustomDefinition> deletedDefinitions = new ArrayList<>();
+                    for (DefinitionChanges definitionChanges : definitionChangesMap.values()) {
+                        for (DefinitionModel definitionModel : definitionChanges.getDeletedItems()) {
+                            deletedDefinitions.add(new CustomDefinition(
+                                    definitionModel.getId(),
+                                    definitionChanges.getGroupId(),
+                                    definitionModel.getDefinition(),
+                                    definitionModel.getExample(),
+                                    definitionModel.getOrder()
+                            ));
                         }
                     }
 
-                    return insertCustomDefinitions(definitions)
-                            .map(list -> entryId.get());
+                    List<CustomDefinition> updatedDefinitions = new ArrayList<>();
+                    for (DefinitionChanges definitionChanges : definitionChangesMap.values()) {
+                        for (DefinitionModel definitionModel : definitionChanges.getUpdatedItems()) {
+                            updatedDefinitions.add(new CustomDefinition(
+                                    definitionModel.getId(),
+                                    definitionChanges.getGroupId(),
+                                    definitionModel.getDefinition(),
+                                    definitionModel.getExample(),
+                                    definitionModel.getOrder()
+                            ));
+                        }
+                    }
+
+                    return deleteUserEntryGroups(deletedGroups)
+                            .andThen(updateUserEntryGroups(updatedGroups))
+                            .andThen(insertUserEntryGroups(addedGroups))
+                            .flatMapCompletable(ids -> {
+                                List<DefinitionGroupModel> newGroups = groupChanges.getAddedItems();
+                                for (int i = 0; i < newGroups.size(); i++) {
+                                    DefinitionChanges definitionChanges = definitionChangesMap.get(newGroups.get(i).getType());
+                                    if (definitionChanges != null)
+                                        definitionChanges.setGroupId(ids.get(i).intValue());
+                                }
+
+                                List<CustomDefinition> addedDefinitions = new ArrayList<>();
+                                for (DefinitionChanges definitionChanges : definitionChangesMap.values()) {
+                                    for (DefinitionModel definitionModel : definitionChanges.getAddedItems()) {
+                                        addedDefinitions.add(new CustomDefinition(
+                                                definitionChanges.getGroupId(),
+                                                definitionModel.getDefinition(),
+                                                definitionModel.getExample(),
+                                                definitionModel.getOrder())
+                                        );
+                                    }
+                                }
+
+                                return insertUserDefinitions(addedDefinitions);
+                            }).andThen(updateUserDefinitions(updatedDefinitions))
+                            .andThen(deleteUserDefinitions(deletedDefinitions))
+                            .andThen(Single.just(entryId));
                 });
     }
 
@@ -258,20 +366,26 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<List<Long>> insertCustomEntryGroups(List<CustomEntryGroup> groups) {
+    public Single<List<Long>> insertUserEntryGroups(List<CustomEntryGroup> groups) {
         return vocabyDao.insertCustomEntryGroups(groups)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<List<Long>> insertCustomDefinitions(List<CustomDefinition> definitions) {
+    public Completable insertUserDefinitions(List<CustomDefinition> definitions) {
         return vocabyDao.insertCustomDefinitions(definitions)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Completable insertCustomExamples(List<CustomExample> examples) {
-        return vocabyDao.insertCustomExamples(examples)
+    public Completable updateUserDefinitions(List<CustomDefinition> definitions) {
+        return vocabyDao.updateCustomDefinitions(definitions)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable deleteUserDefinitions(List<CustomDefinition> definitions) {
+        return vocabyDao.deleteCustomDefinitions(definitions)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -298,6 +412,7 @@ public class VocabyRepository {
         List<DefinitionGroupModel> groups = new ArrayList<>();
         for (EntryGroupWithDefinitions group : data.groups) {
             DefinitionGroupModel groupModel = new DefinitionGroupModel(
+                    group.entryGroup.getGroupId(),
                     group.entryGroup.getType(),
                     group.entryGroup.getOrder()
             );
@@ -320,6 +435,7 @@ public class VocabyRepository {
             groups.add(groupModel);
         }
 
+        Collections.sort(groups);
         entryData.setDefinitionGroups(groups);
 
         return entryData;

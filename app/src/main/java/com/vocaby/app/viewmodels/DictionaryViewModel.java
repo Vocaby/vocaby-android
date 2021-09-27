@@ -21,9 +21,12 @@ import com.vocaby.app.utils.VocabyAlgo;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
@@ -50,11 +53,21 @@ public class DictionaryViewModel extends AndroidViewModel {
         dictionaryEntries = new ArrayList<>();
     }
 
-    public void setupDictionary() {
+    public void getDictionaryEntries() {
         compositeDisposable.add(
                 vocabyRepository.getDictionaryEntries()
-                        .subscribe(entries -> dictionaryEntries = entries,
-                                Throwable::printStackTrace)
+                        .subscribe(entries -> {
+                            dictionaryEntries = entries;
+                        }, Throwable::printStackTrace)
+        );
+    }
+
+    public void getDictionaryEntriesByLetter(String letter) {
+        compositeDisposable.add(
+                vocabyRepository.getDictionaryEntriesByLetter(letter)
+                    .subscribe(entries -> {
+                        dictionaryEntries = entries;
+                    }, Throwable::printStackTrace)
         );
     }
 
@@ -68,10 +81,10 @@ public class DictionaryViewModel extends AndroidViewModel {
         if (today != lastTimeStarted) {
             compositeDisposable.add(
                     vocabyRepository.getRandomWord()
-                            .subscribe(wordDefinitions -> {
-                                editor.putInt("randomWordId", wordDefinitions.word.getId());
+                            .subscribe(wordData -> {
+                                editor.putInt("randomWordId", wordData.getId());
                                 editor.apply();
-                                mWordModel.setValue(makeWordData(wordDefinitions));
+                                mWordModel.setValue(wordData);
                             }, error -> {
                                 Bugsnag.notify(error);
                                 Log.e("DictionaryViewModel: ", error.getMessage());
@@ -84,7 +97,7 @@ public class DictionaryViewModel extends AndroidViewModel {
             int id = randomWordPicker.getInt("randomWordId", 100000);
             compositeDisposable.add(
                     vocabyRepository.getWordDataFromDatabase(id)
-                            .subscribe(wordDefinitions -> mWordModel.setValue(makeWordData(wordDefinitions)),
+                            .subscribe(mWordModel::setValue,
                                     error -> {
                                         Bugsnag.notify(error);
                                         Log.e("DictionaryViewModel: ", error.getMessage());
@@ -93,25 +106,11 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
-    private EntryModel makeWordData(WordDefinitions wordDefinitions) {
-        EntryModel wordData = new EntryModel(wordDefinitions.word.getWord());
-        if (wordDefinitions.word.getPronunciation() != null) {
-            wordData.setPronunciation(wordDefinitions.word.getPronunciation());
-        } else {
-            wordData.setPronunciation("");
-        }
-
-        for (Definition data : wordDefinitions.definitions) {
-            wordData.addDefinition(data.getPos(), data.getDefinition(), data.getSentence());
-        }
-
-        return wordData;
-    }
-
     public List<SearchSuggestionItem> getSearchSuggestion(String newQuery, int threshold) {
         List<SearchSuggestionItem> searchSuggestions = new ArrayList<>();
         if (!newQuery.isEmpty()) {
             int index = VocabyAlgo.BinarySearchPrefix(dictionaryEntries, newQuery);
+            Log.d("vocabydebug", "getSearchSuggestion: " + index);
             if (index > -1 && index < dictionaryEntries.size()) {
                 Iterator<String> it = dictionaryEntries.listIterator(index);
                 int count = 0;

@@ -143,9 +143,18 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-                    String entry = result.getData().getStringExtra("entryText");
-                    int entryId = result.getData().getIntExtra("entryId", 0);
-                    customEntryAdapter.addEntry(entryId, entry);
+                    String entry = result.getData().getStringExtra(MyEntryViewModel.ENTRY_TEXT_KEY);
+                    int entryId = result.getData().getIntExtra(MyEntryViewModel.ENTRY_ID_KEY, -1);
+                    boolean isEdit = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_EDIT, false);
+                    boolean delete = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_DELETE, false);
+                    if (!isEdit) {
+                        customEntryAdapter.addEntry(entryId, entry);
+                    }
+
+                    if(delete) {
+                        customEntryAdapter.deleteEntry(entryViewModel.getSelectedPosition());
+                    }
+
                     updateCount();
                     recyclerView.smoothScrollToPosition(0);
                 }

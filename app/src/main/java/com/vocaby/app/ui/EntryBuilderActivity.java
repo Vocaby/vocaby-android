@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
@@ -65,7 +66,7 @@ public class EntryBuilderActivity extends AppCompatActivity
                 customGroupAdapter.editItem(entryViewModel.getSelectedItemPosition());
             } else if (result == EntryViewModel.REMOVE_GROUP){
                 customGroupAdapter.onItemDismiss(entryViewModel.getSelectedItemPosition());
-            } else if (result == EntryViewModel.CREATE_ENTRY) {
+            } else if (result == EntryViewModel.SAVE_ENTRY) {
                 Intent resultIntent = new Intent();
                 resultIntent = entryViewModel.addResultDataToIntent(resultIntent);
                 setResult(Activity.RESULT_OK, resultIntent);
@@ -73,6 +74,8 @@ public class EntryBuilderActivity extends AppCompatActivity
             } else if (result == EntryViewModel.EMPTY_ENTRY) {
                 groupAlert.setVisibility(View.VISIBLE);
                 saveProgresBar.setVisibility(View.INVISIBLE);
+            } else if (result == EntryViewModel.CANCEL) {
+                finish();
             }
         });
 
@@ -127,7 +130,7 @@ public class EntryBuilderActivity extends AppCompatActivity
         saveProgresBar = findViewById(R.id.save_progress_bar);
         saveButton.setOnClickListener(v -> {
             saveProgresBar.setVisibility(View.VISIBLE);
-            entryViewModel.createNewEntry();
+            entryViewModel.saveUserEntry();
         });
 
         // Add new group button
@@ -151,7 +154,7 @@ public class EntryBuilderActivity extends AppCompatActivity
                     }
                 }
             }
-
+            groupAlert.setVisibility(View.INVISIBLE);
             groupBuilder.show();
         });
     }

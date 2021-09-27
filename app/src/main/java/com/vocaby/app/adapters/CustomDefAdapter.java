@@ -81,10 +81,14 @@ public class CustomDefAdapter extends RecyclerView.Adapter<CustomDefAdapter.Cust
         if (fromPosition < toPosition) {
             for (int i = fromPosition; i < toPosition; i++) {
                 Collections.swap(definitions, i, i+1);
+                definitions.get(i).setOrder(i+1);
+                definitions.get(i+1).setOrder(i);
             }
         } else {
             for (int i = fromPosition; i > toPosition; i--) {
                 Collections.swap(definitions, i, i-1);
+                definitions.get(i).setOrder(i-1);
+                definitions.get(i-1).setOrder(i);
             }
         }
 

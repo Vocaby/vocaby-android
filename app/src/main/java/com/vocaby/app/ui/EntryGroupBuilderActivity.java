@@ -21,7 +21,6 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomDefAdapter;
 import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
-import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.EntryGroupViewModel;
 
@@ -133,10 +132,8 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
                         exampleView.clearFocus();
                     }
 
-                    String type = typeHeader.getText().toString();
-
                     saveAlert.setVisibility(View.INVISIBLE);
-                    entryGroupViewModel.addDefinition(definition, type, example);
+                    entryGroupViewModel.addDefinition(definition, example);
                     customDefAdapter.addItem();
                     definitionBuilder.dismiss();
                 }

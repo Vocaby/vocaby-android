@@ -4,18 +4,23 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGroupModel> {
-    private int id;
+    private int groupId;
     private String type;
     private List<DefinitionModel> definitionData;
     private int order;
 
+    public DefinitionGroupModel(int groupId, String type, int order) {
+        this.groupId = groupId;
+        this.type = type;
+        this.definitionData = new ArrayList<>();
+        this.order = order;
+    }
+
     public DefinitionGroupModel(String type, int order) {
-        this.id = -1;
+        this.groupId = -1;
         this.type = type;
         this.definitionData = new ArrayList<>();
         this.order = order;
@@ -24,7 +29,7 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
     protected DefinitionGroupModel(Parcel in) {
         definitionData = new ArrayList<>();
 
-        id = in.readInt();
+        groupId = in.readInt();
         type = in.readString();
         in.readTypedList(definitionData, DefinitionModel.CREATOR);
         order = in.readInt();
@@ -54,26 +59,31 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
         definitionData = newList;
     }
 
-    public void addDefinition(String definition, String example) {
-        definitionData.add(new DefinitionModel(type, definition, example, definitionData.size()));
+    public DefinitionModel addDefinition(String definition, String example) {
+        DefinitionModel definitionToAdd = new DefinitionModel(type, definition, example, definitionData.size());
+        definitionData.add(definitionToAdd);
+        return definitionToAdd;
     }
 
     // TODO: Override list remove
-    public void removeDefinition(int position) {
+    public DefinitionModel removeDefinition(int position) {
+        DefinitionModel definitionToRemove = definitionData.get(position);
         definitionData.remove(position);
         if(position < definitionData.size()) {
             for(int i = position; i < definitionData.size(); i++) {
                 definitionData.get(i).setOrder(i);
             }
         }
+
+        return definitionToRemove;
     }
 
-    public int getId() {
-        return id;
+    public int getGroupId() {
+        return groupId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 
     public void setType(String type) {
@@ -95,7 +105,7 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
+        parcel.writeInt(groupId);
         parcel.writeString(type);
         parcel.writeTypedList(definitionData);
         parcel.writeInt(order);

@@ -6,6 +6,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 
 import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
@@ -25,8 +26,15 @@ import io.reactivex.rxjava3.core.Single;
 
 @Dao
 public abstract class VocabyDao {
-    @Query("SELECT word FROM dictionary_word ORDER BY word ASC")
+    @Query("SELECT word FROM dictionary_word UNION ALL " +
+            "SELECT entry FROM custom_user_entry " +
+            "ORDER BY word ASC")
     public abstract Single<List<String>> getDictionaryEntries();
+
+    @Query("SELECT word FROM dictionary_word UNION ALL " +
+            "SELECT entry FROM custom_user_entry WHERE entry LIKE :letter || '%' " +
+            "ORDER BY word ASC")
+    public abstract Single<List<String>> getDictionaryEntriesByLetter(String letter);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Single<Long> createUser(User user);
@@ -129,14 +137,26 @@ public abstract class VocabyDao {
     @Insert
     public abstract Single<List<Long>> insertCustomEntryGroups(List<CustomEntryGroup> customEntryGroups);
 
+    @Delete
+    public abstract Completable deleteCustomEntryGroups(List<CustomEntryGroup> customEntryGroups);
+
+    @Update
+    public abstract Completable updateCustomEntryGroups(List<CustomEntryGroup> customEntryGroups);
+
     @Insert
-    public abstract Single<List<Long>> insertCustomDefinitions(List<CustomDefinition> customDefinitions);
+    public abstract Completable insertCustomDefinitions(List<CustomDefinition> customDefinitions);
+
+    @Delete
+    public abstract Completable deleteCustomDefinitions(List<CustomDefinition> customDefinitions);
+
+    @Update
+    public abstract Completable updateCustomDefinitions(List<CustomDefinition> customDefinitions);
 
     @Insert
     public abstract Completable insertCustomExamples(List<CustomExample> customExamples);
 
-    @Query("DELETE FROM custom_user_entry WHERE user_id = :id AND entry = :entry")
-    public abstract Completable deleteUserEntry(int id, String entry);
+    @Query("DELETE FROM custom_user_entry WHERE custom_entry_id = :entryId")
+    public abstract Completable deleteUserEntry(int entryId);
 
     @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :id AND entry = :entry")

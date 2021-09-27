@@ -16,7 +16,6 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.R;
 import com.vocaby.app.exceptions.SaveRepetitionException;
-import com.vocaby.app.utils.WordService;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
@@ -85,8 +84,7 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
 
 
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
-                }).subscribe(wordDefinitions -> {
-                    EntryModel wordData= WordService.convertToWordModel(wordDefinitions);
+                }).subscribe(wordData -> {
                     String pos = wordData.getFirstGroup().getType();
                     String definition = wordData.getFirstGroup().getDefinitionData().get(0).toString();
                     String example = wordData.getFirstGroup().getDefinitionData().get(0).getExample();

@@ -3,6 +3,7 @@ package com.vocaby.app.utils;
 import android.util.Log;
 
 import java.util.List;
+import java.util.Locale;
 
 public class VocabyAlgo {
     public static int BinarySearchPrefix(List<String> list, String search) {

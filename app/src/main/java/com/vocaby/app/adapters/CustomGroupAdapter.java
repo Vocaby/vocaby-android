@@ -83,10 +83,14 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
         if (fromPosition < toPosition) {
             for (int i = fromPosition; i < toPosition; i++) {
                 Collections.swap(groups, i, i+1);
+                groups.get(i).setOrder(i+1);
+                groups.get(i+1).setOrder(i);
             }
         } else {
             for (int i = fromPosition; i > toPosition; i--) {
                 Collections.swap(groups, i, i-1);
+                groups.get(i).setOrder(i-1);
+                groups.get(i-1).setOrder(i);
             }
         }
 

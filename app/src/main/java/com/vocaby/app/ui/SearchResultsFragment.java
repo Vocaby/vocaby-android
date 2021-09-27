@@ -148,8 +148,10 @@ public class SearchResultsFragment extends Fragment {
         Observer<WordDataPackage> observer = wordPackage -> {
             if (wordPackage != null) {
                 if(!populated.get()) {
-                    EntryModel wordData = wordPackage.getWordModel();
+                    EntryModel wordData = wordPackage.getWordModel().isEmpty() ?
+                            wordPackage.getCustomEntryData() : wordPackage.getWordModel();
                     word.setVisibility(View.VISIBLE);
+
                     if(wordData.isEmpty()) {
                         populateNoDefinition();
                     } else {

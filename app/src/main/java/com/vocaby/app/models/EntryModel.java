@@ -78,13 +78,16 @@ public class EntryModel implements Parcelable {
     }
 
     // TODO: Override list remove
-    public void removeGroup(int position) {
+    public DefinitionGroupModel removeGroup(int position) {
+        DefinitionGroupModel groupToRemove = definitionGroups.get(position);
         definitionGroups.remove(position);
         if(position < definitionGroups.size()) {
             for(int i = position; i < definitionGroups.size(); i++) {
                 definitionGroups.get(i).setOrder(i);
             }
         }
+
+        return groupToRemove;
     }
 
     public void addDefinition(String type, String definition, String example) {

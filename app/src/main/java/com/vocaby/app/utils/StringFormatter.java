@@ -2,7 +2,7 @@ package com.vocaby.app.utils;
 
 public class StringFormatter {
     public static String cleanText(String text) {
-        return text.toLowerCase().trim().replaceAll("[^0-9a-z-'._ ]", "");
+        return text.trim().toLowerCase().replaceAll("[^0-9a-z'._ ]", "");
     }
 
     public static String firstLetterUpperOnly(String text) {

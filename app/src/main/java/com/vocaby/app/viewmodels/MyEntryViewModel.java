@@ -23,13 +23,16 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 public class MyEntryViewModel extends AndroidViewModel {
     public static final String ENTRY_TEXT_KEY = "ENTRY_TEXT";
     public static final String ENTRY_ID_KEY = "ENTRY_ID";
+    public static final String ENTRY_DELETE = "ENTRY_DELETE";
+    public static final String ENTRY_EDIT = "ENTRY_EDIT";
 
     private final VocabyRepository vocabyRepository;
     private final CompositeDisposable compositeDisposable;
     private List<CustomEntry> customEntries;
     private final SingleLiveEvent<List<CustomEntry>> mEntries;
-
     private final SharedPreferences userSharedPreference;
+
+    private int selectedPosition;
 
     public MyEntryViewModel(@NonNull Application application) {
         super(application);
@@ -37,6 +40,7 @@ public class MyEntryViewModel extends AndroidViewModel {
         vocabyRepository = new VocabyRepository(application);
         compositeDisposable = new CompositeDisposable();
         mEntries = new SingleLiveEvent<>();
+        selectedPosition = 0;
 
         int currentId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
         compositeDisposable.add(
@@ -56,14 +60,18 @@ public class MyEntryViewModel extends AndroidViewModel {
     }
 
     public Intent addEntryDataToIntent(Intent intent, String entry) {
-        int id = customEntries.stream()
-                .filter(customEntry -> {
-                    String e = StringFormatter.cleanText(customEntry.getEntry());
-                    String other = StringFormatter.cleanText(entry);
-                    return e.equals(other);
-                }).findFirst().orElse(new CustomEntry()).getEntryId();
+        String other = StringFormatter.cleanText(entry);
+        int entryId = -1;
+        selectedPosition = 0;
+        for (int i = 0; i < customEntries.size(); i++) {
+            String e = StringFormatter.cleanText(customEntries.get(i).getEntry());
+            if (e.equals(other)) {
+                entryId = customEntries.get(i).getEntryId();
+                selectedPosition = i;
+            }
+        }
 
-        intent.putExtra(ENTRY_ID_KEY, id);
+        intent.putExtra(ENTRY_ID_KEY, entryId);
         intent.putExtra(ENTRY_TEXT_KEY, entry);
         return intent;
     }
@@ -72,5 +80,9 @@ public class MyEntryViewModel extends AndroidViewModel {
         intent.putExtra(ENTRY_ID_KEY, entry.getEntryId());
         intent.putExtra(ENTRY_TEXT_KEY, entry.getEntry());
         return intent;
+    }
+
+    public int getSelectedPosition() {
+        return selectedPosition;
     }
 }

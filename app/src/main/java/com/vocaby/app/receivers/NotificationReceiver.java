@@ -16,7 +16,6 @@ import com.vocaby.app.R;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
-import com.vocaby.app.utils.WordService;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -52,8 +51,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                     }
 
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
-                }).subscribe(wordDefinitions -> {
-                    EntryModel wordData= WordService.convertToWordModel(wordDefinitions);
+                }).subscribe(wordData -> {
                     String word = wordData.getEntry();
                     String pos = wordData.getFirstGroup().getType();
                     String message = wordData.getFirstGroup().getDefinitionData().get(0).toString();

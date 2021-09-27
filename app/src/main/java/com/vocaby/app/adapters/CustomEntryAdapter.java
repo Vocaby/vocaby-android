@@ -60,6 +60,11 @@ public class CustomEntryAdapter extends RecyclerView.Adapter<CustomEntryAdapter.
         notifyItemInserted(0);
     }
 
+    public void deleteEntry(int position) {
+        customEntries.remove(position);
+        notifyItemRemoved(position);
+    }
+
     @Override
     public int getItemCount() {
         return customEntries.size();

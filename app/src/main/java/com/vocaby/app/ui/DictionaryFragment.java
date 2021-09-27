@@ -36,6 +36,12 @@ public class DictionaryFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        dictionaryViewModel.getDictionaryEntries();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -64,6 +70,8 @@ public class DictionaryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+        dictionaryViewModel.getDictionaryEntries();
+
         Observer<String> searchObserver = s -> {
             if(!s.isEmpty()) {
                 addResultsFragment(s, false);
@@ -120,6 +128,11 @@ public class DictionaryFragment extends Fragment {
             (oldQuery, newQuery) -> {
         oldQuery = cleanText(oldQuery);
         newQuery = cleanText(newQuery);
+
+        if(oldQuery.isEmpty() && newQuery.length() == 1) {
+            dictionaryViewModel.getDictionaryEntriesByLetter(newQuery);
+        }
+
         if(!oldQuery.equals(newQuery)) {
             List<SearchSuggestionItem> searchSuggestions =
                     dictionaryViewModel.getSearchSuggestion(newQuery,4);

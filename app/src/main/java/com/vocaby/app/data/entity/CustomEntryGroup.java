@@ -31,6 +31,19 @@ public class CustomEntryGroup {
     }
 
     @Ignore
+    public CustomEntryGroup(int groupId) {
+        this.groupId = groupId;
+    }
+
+    @Ignore
+    public CustomEntryGroup(int groupId, int entryId, String type, int order) {
+        this.groupId = groupId;
+        this.entryId = entryId;
+        this.type = type;
+        this.order = order;
+    }
+
+    @Ignore
     public CustomEntryGroup(int entryId, String type, int order) {
         this.entryId = entryId;
         this.type = type;

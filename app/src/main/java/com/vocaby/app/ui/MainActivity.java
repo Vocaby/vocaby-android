@@ -30,7 +30,6 @@ import com.google.android.material.shape.MaterialShapeDrawable;
 import com.vocaby.app.receivers.NotificationReceiver;
 import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.R;
-import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,9 +51,6 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.setupApplication();
-
-        DictionaryViewModel dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
-        dictionaryViewModel.setupDictionary();
 
         setupNotification();
         setupNavigation();
