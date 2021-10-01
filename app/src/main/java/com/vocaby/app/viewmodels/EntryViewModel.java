@@ -243,7 +243,7 @@ public class EntryViewModel extends AndroidViewModel {
                 mResult.setValue(EMPTY_ENTRY);
             } else {
                 compositeDisposable.add(
-                        vocabyRepository.deleteUserEntry(entryData.getId())
+                        vocabyRepository.deleteUserEntry(entryData.getId(), entryData.getEntry())
                             .subscribe(() -> {
                                 shouldDelete = true;
                                 mResult.setValue(SAVE_ENTRY);

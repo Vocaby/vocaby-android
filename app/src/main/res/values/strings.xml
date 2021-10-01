@@ -2,7 +2,7 @@
     <string name="app_name">Vocaby</string>
     <string name="app_logo">Vocaby Logo</string>
     <string name="app_header">VOCABY DICTIONARY</string>
-    <string name="search_hint">Look up a word&#8230;</string>
+    <string name="search_hint">Look up an entry&#8230;</string>
     <string name="gradient_bg">Gradient Background</string>
     <string name="nav_search">Dictionary</string>
     <string name="nav_saves">Saves</string>
@@ -111,6 +111,6 @@
     <string name="drag_icon">drag icon</string>
     <string name="definition_add_alert">Please add a definition to save</string>
     <string name="word_phrase_header">Word / Phrase</string>
-    <string name="entry_edit_hint">Enter a word or a phrase...</string>
+    <string name="entry_edit_hint">Enter a word or a phrase…</string>
     <string name="group_header_alert">Please add a group</string>
 </resources>

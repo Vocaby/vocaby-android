@@ -1,10 +1,10 @@
 package com.vocaby.app.repositories;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.VocabyApiService;
+import com.vocaby.app.data.DataManager;
 import com.vocaby.app.data.VocabyDatabase;
 import com.vocaby.app.data.dao.VocabyDao;
 import com.vocaby.app.data.entity.CustomDefinition;
@@ -30,29 +30,50 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.functions.BiFunction;
+import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VocabyRepository {
     private final ApiManager apiManager;
     private final VocabyDao vocabyDao;
+    private final DataManager dataManager;
 
 
     public VocabyRepository(Application application) {
         VocabyDatabase vocabyDatabase = VocabyDatabase.getDatabase(application);
         vocabyDao = vocabyDatabase.vocabyDao();
         apiManager = ApiManager.getInstance();
+        dataManager = DataManager.getInstance(application);
+    }
+
+    // HISTORY
+    public List<String> getHistory() {
+        return dataManager.getHistory();
+    }
+
+    public List<String> writeHistory(String word) {
+        return dataManager.writeHistory(word);
     }
 
     // Gets data from UI Thread
-    public Single<List<String>> getDictionaryEntries() {
+    public Single<List<String>> getDictionaryEntriesFromDB() {
         return vocabyDao.getDictionaryEntries()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<List<String>> populateDictionaryEntries() {
+        return dataManager.populateDictionaryEntries();
+    }
+
+    public List<String> getDictionaryEntries() {
+        return dataManager.getDictionaryEntries();
     }
 
     public Single<List<String>> getDictionaryEntriesByLetter(String letter) {
@@ -258,8 +279,9 @@ public class VocabyRepository {
     }
 
     // CUSTOM USER ENTRIES
-    public Completable deleteUserEntry(int entryId) {
+    public Completable deleteUserEntry(int entryId, String entry) {
         return vocabyDao.deleteUserEntry(entryId)
+                .andThen(Completable.fromAction(() -> dataManager.deleteEntryFromDictionary(entry)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -336,7 +358,8 @@ public class VocabyRepository {
                         }
                     }
 
-                    return deleteUserEntryGroups(deletedGroups)
+                    return Completable.fromAction(() -> dataManager.addEntryToDictionary(entry))
+                            .andThen(deleteUserEntryGroups(deletedGroups))
                             .andThen(updateUserEntryGroups(updatedGroups))
                             .andThen(insertUserEntryGroups(addedGroups))
                             .flatMapCompletable(ids -> {

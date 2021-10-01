@@ -19,6 +19,7 @@ public class CustomEntry {
     private int userId;
 
     private String entry;
+    private String pronunciation;
 
     @ColumnInfo(name = "last_updated")
     private long date;
@@ -74,5 +75,13 @@ public class CustomEntry {
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public String getPronunciation() {
+        return pronunciation;
+    }
+
+    public void setPronunciation(String pronunciation) {
+        this.pronunciation = pronunciation;
     }
 }

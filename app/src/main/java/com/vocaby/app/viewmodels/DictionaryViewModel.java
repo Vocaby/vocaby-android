@@ -10,9 +10,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.vocaby.app.data.DataManager;
-import com.vocaby.app.data.entity.Definition;
-import com.vocaby.app.data.entity.WordDefinitions;
 import com.vocaby.app.models.SearchSuggestionItem;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
@@ -21,12 +18,11 @@ import com.vocaby.app.utils.VocabyAlgo;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
@@ -35,7 +31,6 @@ public class DictionaryViewModel extends AndroidViewModel {
     private final Stack<String> searchStack;
     private final SingleLiveEvent<EntryModel> mWordModel;
     private final CompositeDisposable compositeDisposable;
-    private final DataManager dataManager;
     private final MutableLiveData<List<String>> searchHistory;
     private final VocabyRepository vocabyRepository;
     private List<String> dictionaryEntries;
@@ -46,20 +41,22 @@ public class DictionaryViewModel extends AndroidViewModel {
         searchStack = new Stack<>();
         mWordModel = new SingleLiveEvent<>();
         compositeDisposable = new CompositeDisposable();
-        dataManager = DataManager.getInstance(application);
-        searchHistory = new MutableLiveData<>();
-        searchHistory.setValue(dataManager.getHistory());
         vocabyRepository = new VocabyRepository(getApplication());
         dictionaryEntries = new ArrayList<>();
+
+        searchHistory = new MutableLiveData<>();
+        searchHistory.setValue(vocabyRepository.getHistory());
     }
 
-    public void getDictionaryEntries() {
+    public void populateDictionaryEntries() {
         compositeDisposable.add(
-                vocabyRepository.getDictionaryEntries()
-                        .subscribe(entries -> {
-                            dictionaryEntries = entries;
-                        }, Throwable::printStackTrace)
+                vocabyRepository.populateDictionaryEntries()
+                        .subscribe(entries -> dictionaryEntries = entries, Throwable::printStackTrace)
         );
+    }
+
+    public void refreshDictionaryEntries() {
+        dictionaryEntries = vocabyRepository.getDictionaryEntries();
     }
 
     public void updateRandomWord() {
@@ -156,7 +153,7 @@ public class DictionaryViewModel extends AndroidViewModel {
     }
 
     public void writeHistory(String word) {
-        List<String> newHistory = dataManager.writeHistory(word);
+        List<String> newHistory = vocabyRepository.writeHistory(word);
         searchHistory.setValue(newHistory);
     }
 

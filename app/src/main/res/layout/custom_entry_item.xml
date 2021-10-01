@@ -21,11 +21,12 @@
             android:layout_height="wrap_content"
             autofit:minTextSize="12sp"
             android:textSize="22sp"
-            android:maxLines="2"
+            android:maxLines="3"
             android:gravity="center_vertical"
             android:fontFamily="@font/playfair_display"
-            android:padding="8dp"
+            android:padding="12dp"
             android:layout_weight="9"
+            android:layout_gravity="center_vertical"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary_header" />
 

@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         userViewModel.setupApplication();
 
         DictionaryViewModel dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
-        dictionaryViewModel.getDictionaryEntries();
+        dictionaryViewModel.populateDictionaryEntries();
 
         setupNotification();
         setupNavigation();

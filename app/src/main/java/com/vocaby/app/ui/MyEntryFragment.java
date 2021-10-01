@@ -29,6 +29,7 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomEntryAdapter;
 import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.utils.StringFormatter;
+import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.MyEntryViewModel;
 
 public class MyEntryFragment extends Fragment implements CustomEntryAdapter.ItemTouchListener {
@@ -39,6 +40,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     private TextView entryAlert;
     private MyEntryViewModel entryViewModel;
     private RecyclerView recyclerView;
+    private DictionaryViewModel dictionaryViewModel;
 
     public MyEntryFragment() {
         // Required empty public constructor
@@ -90,6 +92,8 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
             customEntryAdapter.setList(customEntries);
             updateCount();
         });
+
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
     }
 
     private void setupRecyclerView(View view) {
@@ -150,10 +154,12 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
                     boolean delete = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_DELETE, false);
                     if (!isEdit) {
                         customEntryAdapter.addEntry(entryId, entry);
+                        dictionaryViewModel.refreshDictionaryEntries();
                     }
 
                     if(delete) {
                         customEntryAdapter.deleteEntry(entryViewModel.getSelectedPosition());
+                        dictionaryViewModel.refreshDictionaryEntries();
                     }
 
                     updateCount();

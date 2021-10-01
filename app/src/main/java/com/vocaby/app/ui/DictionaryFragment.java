@@ -16,9 +16,12 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.vocaby.app.R;
 import com.vocaby.app.models.SearchSuggestionItem;
@@ -125,6 +128,5 @@ public class DictionaryFragment extends Fragment {
 
             searchView.swapSuggestions(searchSuggestions);
         }
-
     };
 }
