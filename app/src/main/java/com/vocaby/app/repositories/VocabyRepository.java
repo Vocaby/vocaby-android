@@ -13,8 +13,6 @@ import com.vocaby.app.data.entity.CustomEntryGroup;
 import com.vocaby.app.data.entity.Definition;
 import com.vocaby.app.data.entity.EntryGroupWithDefinitions;
 import com.vocaby.app.data.entity.EntryWithData;
-import com.vocaby.app.data.entity.OfflineAddedSaves;
-import com.vocaby.app.data.entity.OfflineRemovedSaves;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
@@ -23,20 +21,16 @@ import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.models.GroupChanges;
-import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.WordDataPackage;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VocabyRepository {
@@ -228,54 +222,6 @@ public class VocabyRepository {
 
     public VocabyApiService getVocabyApiService(int type) {
         return apiManager.getVocabyApiService(type);
-    }
-
-    // OFFLINE
-    public Completable addOfflineAddedSave(String word) {
-        return vocabyDao.addOfflineAddedSave(new OfflineAddedSaves(word))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Completable addOfflineDeletedSave(String word) {
-        return vocabyDao.addOfflineRemovedSave(new OfflineRemovedSaves(word))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Completable removeOfflineAddedSave(String word) {
-        return vocabyDao.removeOfflineAddedSave(word)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Completable removeOfflineDeletedSave(String word) {
-        return vocabyDao.removeOfflineRemovedSave(word)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<OfflineDataModel> getOfflineData() {
-        return Single.zip(getOfflineAdded(), getOfflineRemoved(), OfflineDataModel::new);
-    }
-
-    public Completable clearOfflineDataInDatabase() {
-        return vocabyDao.clearOfflineRemoved()
-                .andThen(vocabyDao.clearOfflineAdded())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    private Single<List<String>> getOfflineAdded() {
-        return vocabyDao.getOfflineAdded()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    private Single<List<String>> getOfflineRemoved() {
-        return vocabyDao.getOfflineRemoved()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 
     // CUSTOM USER ENTRIES

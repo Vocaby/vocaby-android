@@ -12,16 +12,13 @@ import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.data.entity.CustomEntryGroup;
 import com.vocaby.app.data.entity.CustomExample;
 import com.vocaby.app.data.entity.Definition;
-import com.vocaby.app.data.entity.OfflineAddedSaves;
-import com.vocaby.app.data.entity.OfflineRemovedSaves;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.Word;
 
 @Database(entities = {
         Word.class, User.class, Definition.class, UserSaves.class,
-        CustomEntry.class, CustomEntryGroup.class, CustomDefinition.class, CustomExample.class,
-        OfflineAddedSaves.class, OfflineRemovedSaves.class},
+        CustomEntry.class, CustomEntryGroup.class, CustomDefinition.class, CustomExample.class},
         version = 1, exportSchema = false
 )
 public abstract class VocabyDatabase extends RoomDatabase {
