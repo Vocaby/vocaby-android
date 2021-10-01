@@ -2,6 +2,7 @@ package com.vocaby.app.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.vocaby.app.Constants;
 import com.vocaby.app.models.WordDataPackage;
 
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
@@ -9,7 +10,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiManager {
-    String BASE_URL = "https://api.vocaby.app/";
+    final String BASE_URL = Constants.VOCABY_API_SERVER;
     private static ApiManager instance;
     private static VocabyApiService apiService;
 

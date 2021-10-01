@@ -2,26 +2,41 @@ package com.vocaby.app.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class OfflineDataModel {
+public class OfflineDataModel<T> {
     @SerializedName("offline_added")
-    final List<String> offlineAdded;
+    final List<T> offlineAdded;
 
     @SerializedName("offline_removed")
-    final List<String> offlineRemoved;
+    final List<T> offlineRemoved;
 
-    public OfflineDataModel(List<String> offlineAdded, List<String> offlineRemoved) {
+    @SerializedName("offline_updated")
+    final List<T> offlineUpdated;
+
+    public OfflineDataModel(List<T> offlineAdded, List<T> offlineRemoved) {
         this.offlineAdded = offlineAdded;
         this.offlineRemoved = offlineRemoved;
+        this.offlineUpdated = new ArrayList<>();
     }
 
-    public List<String> getOfflineAdded() {
+    public OfflineDataModel(List<T> offlineAdded, List<T> offlineRemoved, List<T> offlineUpdated) {
+        this.offlineAdded = offlineAdded;
+        this.offlineRemoved = offlineRemoved;
+        this.offlineUpdated = offlineUpdated;
+    }
+
+    public List<T> getOfflineAdded() {
         return this.offlineAdded;
     }
 
-    public List<String> getOfflineRemoved() {
+    public List<T> getOfflineRemoved() {
         return this.offlineRemoved;
+    }
+
+    public List<T> getOfflineUpdated() {
+        return offlineUpdated;
     }
 
     public int getOfflineAddedCount() {

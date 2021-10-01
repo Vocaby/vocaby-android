@@ -1,23 +1,23 @@
 package com.vocaby.app.viewmodels;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.bugsnag.android.Bugsnag;
-import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 import com.vocaby.app.utils.StringFormatter;
 
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
@@ -29,9 +29,10 @@ public class MyEntryViewModel extends AndroidViewModel {
 
     private final VocabyRepository vocabyRepository;
     private final CompositeDisposable compositeDisposable;
-    private List<CustomEntry> customEntries;
-    private final SingleLiveEvent<List<CustomEntry>> mEntries;
+    private List<String> customEntries;
+    private final SingleLiveEvent<List<String>> mEntries;
     private final SharedPreferences userSharedPreference;
+    private final SingleLiveEvent<Integer> mResult;
 
     private int selectedPosition;
 
@@ -41,6 +42,7 @@ public class MyEntryViewModel extends AndroidViewModel {
         vocabyRepository = new VocabyRepository(application);
         compositeDisposable = new CompositeDisposable();
         mEntries = new SingleLiveEvent<>();
+        mResult = new SingleLiveEvent<>();
         selectedPosition = 0;
 
         int currentId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
@@ -56,31 +58,45 @@ public class MyEntryViewModel extends AndroidViewModel {
         );
     }
 
-    public LiveData<List<CustomEntry>> getEntries() {
+    public LiveData<List<String>> getEntries() {
         return mEntries;
     }
 
-    public Intent addEntryDataToIntent(Intent intent, String entry) {
-        String other = StringFormatter.cleanText(entry);
-        int entryId = -1;
-        selectedPosition = 0;
-        for (int i = 0; i < customEntries.size(); i++) {
-            String e = StringFormatter.cleanText(customEntries.get(i).getEntry());
-            if (e.equals(other)) {
-                entryId = customEntries.get(i).getEntryId();
-                selectedPosition = i;
+    public Intent addEntryDataToIntent(Intent intent, String entry, int position) {
+        if (position == -1) {
+            String other = StringFormatter.cleanText(entry);
+            for (int i = 0; i < customEntries.size(); i++) {
+                String e = StringFormatter.cleanText(customEntries.get(i));
+                if (e.equals(other)) {
+                    position = i;
+                }
             }
         }
 
-        intent.putExtra(ENTRY_ID_KEY, entryId);
+        selectedPosition = position;
+
         intent.putExtra(ENTRY_TEXT_KEY, entry);
         return intent;
     }
 
-    public Intent addEntryDataToIntent(Intent intent, CustomEntry entry) {
-        intent.putExtra(ENTRY_ID_KEY, entry.getEntryId());
-        intent.putExtra(ENTRY_TEXT_KEY, entry.getEntry());
-        return intent;
+    public void handleResult(ActivityResult result) {
+        if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
+            String entry = result.getData().getStringExtra(MyEntryViewModel.ENTRY_TEXT_KEY);
+            boolean isEdit = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_EDIT, false);
+            boolean delete = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_DELETE, false);
+
+            // deleting the entry
+            if(delete) {
+
+            } else {
+                // Adding a new entry
+                if (!isEdit) {
+
+                } else {
+                    // Updating an existing entry
+                }
+            }
+        }
     }
 
     public int getSelectedPosition() {

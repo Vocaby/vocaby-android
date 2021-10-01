@@ -13,15 +13,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vocaby.app.R;
 import com.vocaby.app.data.entity.CustomEntry;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CustomEntryAdapter extends RecyclerView.Adapter<CustomEntryAdapter.EntryViewHolder> {
-    private List<CustomEntry> customEntries;
+    private List<String> customEntries;
     private ItemTouchListener itemTouchListener;
 
     public interface ItemTouchListener {
-        void onItemTouch(CustomEntry entry);
+        void onItemTouch(String entry, int position);
     }
 
     public CustomEntryAdapter(ItemTouchListener itemTouchListener) {
@@ -42,27 +44,32 @@ public class CustomEntryAdapter extends RecyclerView.Adapter<CustomEntryAdapter.
             // You want to use getAdapterPosition instead of position
             // in the listener because onBindViewHolder will not be called again
             // from structural changes.
-            itemTouchListener.onItemTouch(customEntries.get(holder.getAdapterPosition()));
+            itemTouchListener.onItemTouch(
+                    customEntries.get(holder.getAdapterPosition()),
+                    holder.getAdapterPosition()
+            );
         });
 
-        holder.header.setText(customEntries.get(position).getEntry());
+        holder.header.setText(customEntries.get(position));
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     // The list is only set on create
-    public void setList(List<CustomEntry> newList) {
+    public void setList(List<String> newList) {
         customEntries = newList;
         notifyDataSetChanged();
     }
 
-    public void addEntry(int entryId, String entry) {
-        customEntries.add(0, new CustomEntry(entryId, 0, entry, System.currentTimeMillis()));
+    public void addEntry(String entry) {
+        customEntries.add(0, entry);
         notifyItemInserted(0);
     }
 
-    public void deleteEntry(int position) {
-        customEntries.remove(position);
-        notifyItemRemoved(position);
+    public void deleteEntry(String entry) {
+        int index = customEntries.indexOf(entry);
+        if (index != -1) {
+            customEntries.remove(index);
+            notifyItemRemoved(index);
+        }
     }
 
     @Override

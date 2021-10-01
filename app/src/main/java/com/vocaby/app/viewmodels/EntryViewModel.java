@@ -71,33 +71,6 @@ public class EntryViewModel extends AndroidViewModel {
         mResult = new SingleLiveEvent<>();
     }
 
-    public void getEntry(int entryId, String entry) {
-        if (entryId > -1) {
-            compositeDisposable.add(
-                    vocabyRepository.getEntryData(entryId)
-                            .subscribe(entryData -> {
-                                        this.entryData = entryData;
-                                        initialGroups = new ArrayList<>(entryData.getDefinitionGroups());
-                                        groupChanges.setEntryId(entryId);
-                                        mGroups.setValue(entryData.getDefinitionGroups());
-
-                                        for (DefinitionGroupModel group : entryData.getDefinitionGroups()) {
-                                            definitionChangesMap.put(group.getType(), new DefinitionChanges(group.getGroupId()));
-                                        }
-
-                                        isEdit = true;
-                                    }, error -> {
-                                        error.printStackTrace();
-                                        Bugsnag.notify(error);
-                                    }
-                            )
-            );
-        } else {
-            entryData = new EntryModel(entry);
-            mGroups.setValue(entryData.getDefinitionGroups());
-        }
-    }
-
     // User is editing a group
     public Intent addGroupDataToIntent(Intent intent, int position) {
         intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position));
@@ -186,7 +159,29 @@ public class EntryViewModel extends AndroidViewModel {
 
     public String parseRetrieved(Intent intent) {
         String entry = intent.getStringExtra(MyEntryViewModel.ENTRY_TEXT_KEY);
-        getEntry(intent.getIntExtra(MyEntryViewModel.ENTRY_ID_KEY, -1), entry);
+        int userId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
+
+        compositeDisposable.add(
+                vocabyRepository.getEntryData(userId, entry)
+                        .subscribe(entryData -> {
+                                    this.entryData = entryData;
+                                    initialGroups = new ArrayList<>(entryData.getDefinitionGroups());
+                                    groupChanges.setEntryId(entryData.getId());
+                                    mGroups.setValue(entryData.getDefinitionGroups());
+
+                                    for (DefinitionGroupModel group : entryData.getDefinitionGroups()) {
+                                        definitionChangesMap.put(group.getType(), new DefinitionChanges(group.getGroupId()));
+                                    }
+
+                                    if (entryData.getId() == -1) {
+                                        isEdit = false;
+                                    }
+                                }, error -> {
+                                    error.printStackTrace();
+                                    Bugsnag.notify(error);
+                                }
+                        )
+        );
 
         return entry;
     }

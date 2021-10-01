@@ -238,7 +238,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                                 SharedPreferences offlineSharedPreferences =
                                         getApplication().getSharedPreferences(Constants.SPREFS_OFFLINE_SAVES, Context.MODE_PRIVATE);
 
-                                OfflineDataModel offlineData = new OfflineDataModel(
+                                OfflineDataModel<String> offlineData = new OfflineDataModel<>(
                                         new ArrayList<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_ADDED, new HashSet<>())),
                                         new ArrayList<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_DELETED, new HashSet<>()))
                                 );

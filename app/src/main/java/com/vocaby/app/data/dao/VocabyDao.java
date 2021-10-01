@@ -139,6 +139,6 @@ public abstract class VocabyDao {
     @Query("SELECT * FROM custom_user_entry WHERE custom_entry_id = :entryId")
     public abstract Single<EntryWithData> getUserEntryData(int entryId);
 
-    @Query("SELECT * FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
-    public abstract Single<List<CustomEntry>> getUserEntries(int id);
+    @Query("SELECT entry FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
+    public abstract Single<List<String>> getUserEntries(int id);
 }

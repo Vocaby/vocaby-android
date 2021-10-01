@@ -87,13 +87,13 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     @Override
     public void onViewCreated(@NonNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         entryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
+
         entryViewModel.getEntries().observe(getViewLifecycleOwner(), customEntries -> {
             customEntryAdapter.setList(customEntries);
             updateCount();
         });
-
-        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
     }
 
     private void setupRecyclerView(View view) {
@@ -136,7 +136,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
 
 
                         Intent startEntryBuilderIntent = new Intent(requireActivity(), EntryBuilderActivity.class);
-                        startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry);
+                        startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, -1);
                         entryBuilderActivity.launch(startEntryBuilderIntent);
                     }
                 }
@@ -149,31 +149,26 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
             result -> {
                 if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
                     String entry = result.getData().getStringExtra(MyEntryViewModel.ENTRY_TEXT_KEY);
-                    int entryId = result.getData().getIntExtra(MyEntryViewModel.ENTRY_ID_KEY, -1);
                     boolean isEdit = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_EDIT, false);
                     boolean delete = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_DELETE, false);
-                    if (!isEdit) {
-                        customEntryAdapter.addEntry(entryId, entry);
-                        dictionaryViewModel.refreshDictionaryEntries();
-                    }
 
                     if(delete) {
-                        customEntryAdapter.deleteEntry(entryViewModel.getSelectedPosition());
-                        dictionaryViewModel.refreshDictionaryEntries();
+                        customEntryAdapter.deleteEntry(entry);
+                    } else {
+                        if (!isEdit) {
+                            customEntryAdapter.addEntry(entry);
+                        }
                     }
-
-                    updateCount();
-                    recyclerView.smoothScrollToPosition(0);
                 }
 
-                // entryViewModel.handleResult(result);
+                entryViewModel.handleResult(result);
             }
     );
 
     @Override
-    public void onItemTouch(CustomEntry entry) {
+    public void onItemTouch(String entry, int position) {
         Intent startEntryBuilderIntent = new Intent(requireActivity(), EntryBuilderActivity.class);
-        startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry);
+        startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, position);
         entryBuilderActivity.launch(startEntryBuilderIntent);
     }
 }

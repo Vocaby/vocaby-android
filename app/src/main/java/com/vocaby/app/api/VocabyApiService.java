@@ -51,5 +51,5 @@ public interface VocabyApiService {
 
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("account/sync/")
-    Completable syncData(@Header("Authorization") String token, @Body OfflineDataModel offlineDataModel);
+    Completable syncData(@Header("Authorization") String token, @Body OfflineDataModel<String> offlineDataModel);
 }

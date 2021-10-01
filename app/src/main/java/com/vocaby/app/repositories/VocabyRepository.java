@@ -23,6 +23,8 @@ import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.models.GroupChanges;
 import com.vocaby.app.models.WordDataPackage;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -116,13 +118,13 @@ public class VocabyRepository {
 
     private EntryModel covertToEntryModel(WordDefinitions wordDefinitions) {
         EntryModel wordData = new EntryModel(wordDefinitions.word.getId(), wordDefinitions.word.getWord());
-        if(wordDefinitions.word.getPronunciation() != null) {
+        if (wordDefinitions.word.getPronunciation() != null) {
             wordData.setPronunciation(wordDefinitions.word.getPronunciation());
         } else {
             wordData.setPronunciation("");
         }
 
-        for(Definition data : wordDefinitions.definitions) {
+        for (Definition data : wordDefinitions.definitions) {
             wordData.addDefinition(data.getPos(), data.getDefinition(), data.getSentence());
         }
 
@@ -248,7 +250,11 @@ public class VocabyRepository {
         Single<Long> entryInsert = Single.just((long) groupChanges.getEntryId());
 
         if (groupChanges.getEntryId() == -1) {
-            entryInsert = vocabyDao.insertCustomEntry(new CustomEntry(userId, entry, System.currentTimeMillis()));
+            entryInsert = vocabyDao.insertCustomEntry(new CustomEntry(userId, entry, OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()))
+                    .flatMap(id -> Single.fromCallable(() -> {
+                        dataManager.addEntryToDictionary(entry);
+                        return id;
+                    }));
         }
 
         return entryInsert
@@ -304,8 +310,7 @@ public class VocabyRepository {
                         }
                     }
 
-                    return Completable.fromAction(() -> dataManager.addEntryToDictionary(entry))
-                            .andThen(deleteUserEntryGroups(deletedGroups))
+                    return deleteUserEntryGroups(deletedGroups)
                             .andThen(updateUserEntryGroups(updatedGroups))
                             .andThen(insertUserEntryGroups(addedGroups))
                             .flatMapCompletable(ids -> {
@@ -365,14 +370,7 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<EntryModel> getEntryData(int entryId) {
-        return vocabyDao.getUserEntryData(entryId)
-                .map(this::convertEntryData)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<List<CustomEntry>> getUserEntries(int userId) {
+    public Single<List<String>> getUserEntries(int userId) {
         return vocabyDao.getUserEntries(userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
