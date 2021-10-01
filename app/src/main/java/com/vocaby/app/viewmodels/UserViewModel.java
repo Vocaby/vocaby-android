@@ -14,10 +14,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.bugsnag.android.Bugsnag;
+import com.vocaby.app.Constants;
 import com.vocaby.app.adapters.OnSaveItemButtonTouch;
 import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
+import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.UserSavesSyncModel;
 import com.vocaby.app.models.UserStateModel;
 import com.vocaby.app.repositories.VocabyRepository;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
@@ -232,29 +235,33 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                                 return vocabyRepository.addUserSaves(wordsToUpdateLocally.getWordsToAddLocally())
                                         .andThen(vocabyRepository.removeUserSaves(wordsToUpdateLocally.getWordsToRemoveLocally()));
                             } else {
-                                return vocabyRepository.getOfflineData()
-                                        .flatMapCompletable(offlineData -> {
-                                            UserSavesSyncModel wordsToUpdateLocally = getWordsToUpdateLocally(
-                                                    remoteSaves,
-                                                    offlineData.getOfflineRemoved(),
-                                                    offlineData.getOfflineAdded(),
-                                                    currentUser.getUserId()
-                                            );
+                                SharedPreferences offlineSharedPreferences =
+                                        getApplication().getSharedPreferences(Constants.SPREFS_OFFLINE_SAVES, Context.MODE_PRIVATE);
 
-                                            return vocabyRepository.getVocabyApiService(VocabyApiService.DEFAULT).syncData(currentUser.getToken(), offlineData)
-                                                    .subscribeOn(Schedulers.io())
-                                                    .observeOn(AndroidSchedulers.mainThread())
-                                                    .andThen(vocabyRepository.addUserSaves(wordsToUpdateLocally.getWordsToAddLocally()))
-                                                    .andThen(vocabyRepository.removeUserSaves(wordsToUpdateLocally.getWordsToRemoveLocally()))
-                                                    .andThen(vocabyRepository.clearOfflineDataInDatabase())
-                                                    .andThen(vocabyRepository.setUserSyncStatus(true, currentUser.getUserId()));
-                                        });
+                                OfflineDataModel offlineData = new OfflineDataModel(
+                                        new ArrayList<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_ADDED, new HashSet<>())),
+                                        new ArrayList<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_DELETED, new HashSet<>()))
+                                );
+
+                                UserSavesSyncModel wordsToUpdateLocally = getWordsToUpdateLocally(
+                                        remoteSaves,
+                                        offlineData.getOfflineRemoved(),
+                                        offlineData.getOfflineAdded(),
+                                        currentUser.getUserId()
+                                );
+
+                                return vocabyRepository.getVocabyApiService(VocabyApiService.DEFAULT).syncData(currentUser.getToken(), offlineData)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .andThen(vocabyRepository.addUserSaves(wordsToUpdateLocally.getWordsToAddLocally()))
+                                        .andThen(vocabyRepository.removeUserSaves(wordsToUpdateLocally.getWordsToRemoveLocally()))
+                                        .andThen(vocabyRepository.setUserSyncStatus(true, currentUser.getUserId()));
                             }
                         }).andThen(vocabyRepository.setUserSyncStatus(true, currentUser.getUserId()))
                         .subscribe(() -> {
                             userState.setValue(new UserStateModel(false, true));
                             SharedPreferences.Editor offlineEditor =
-                                    getApplication().getSharedPreferences("OFFLINE", Context.MODE_PRIVATE).edit();
+                                    getApplication().getSharedPreferences(Constants.SPREFS_OFFLINE_SAVES, Context.MODE_PRIVATE).edit();
                             offlineEditor.clear();
                             offlineEditor.apply();
                             mSyncStatus.setValue(true);
@@ -332,21 +339,27 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
                                     }
 
                                     SharedPreferences offlineSharedPreferences =
-                                            getApplication().getSharedPreferences("OFFLINE", Context.MODE_PRIVATE);
+                                            getApplication().getSharedPreferences(Constants.SPREFS_OFFLINE_SAVES, Context.MODE_PRIVATE);
 
-                                    if (offlineSharedPreferences.contains("#!new-" + word)) {
-                                        return vocabyRepository.removeOfflineAddedSave(word)
-                                                .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
-                                                .andThen(setSync);
-                                    } else {
+                                    Set<String> offlineAdded = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_ADDED, new HashSet<>()));
+                                    if (offlineAdded.contains(word)) {
+                                        offlineAdded.remove(word);
                                         SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
-                                        offlineEditor.putString("#!original-" + word, word);
+                                        offlineEditor.putStringSet(Constants.OFFLINE_SAVES_ADDED, offlineAdded);
                                         offlineEditor.apply();
 
-                                        return vocabyRepository.addOfflineDeletedSave(word)
-                                                .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
-                                                .andThen(setSync);
+                                    } else {
+                                        // Words that existed before the user went offline need
+                                        // to be removed first.
+                                        Set<String> offlineDeleted = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_DELETED, new HashSet<>()));
+                                        offlineDeleted.add(word);
+                                        SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
+                                        offlineEditor.putStringSet(Constants.OFFLINE_SAVES_DELETED, offlineDeleted);
+                                        offlineEditor.apply();
+
                                     }
+                                    return vocabyRepository.removeSave(currentUser.getUserId(), word)
+                                            .andThen(setSync);
                                 }
                             } else {
                                 return vocabyRepository.removeSave(currentUser.getUserId(), word);

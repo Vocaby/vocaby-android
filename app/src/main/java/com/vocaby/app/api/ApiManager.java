@@ -9,7 +9,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiManager {
-    String BASE_URL = "https://django.ontarion.net/";
+    String BASE_URL = "https://api.vocaby.app/";
     private static ApiManager instance;
     private static VocabyApiService apiService;
 

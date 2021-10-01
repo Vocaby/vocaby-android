@@ -11,12 +11,16 @@ import androidx.lifecycle.LiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.bugsnag.android.Bugsnag;
+import com.vocaby.app.Constants;
 import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.models.WordDataPackage;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
@@ -35,7 +39,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
     public SearchResultsViewModel(@NonNull Application application) {
         super(application);
         userSharedPreference = application.getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
-        offlineSharedPreferences = application.getSharedPreferences("OFFLINE", Context.MODE_PRIVATE);
+        offlineSharedPreferences = application.getSharedPreferences(Constants.SPREFS_OFFLINE_SAVES, Context.MODE_PRIVATE);
         compositeDisposable = new CompositeDisposable();
         vocabyRepository = new VocabyRepository(application);
         mWordPackage = new SingleLiveEvent<>();
@@ -100,20 +104,25 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                             setSync = Completable.complete();
                                         }
 
-                                        if (offlineSharedPreferences.contains("#!original-" + word)) {
+                                        Set<String> offlineDeleted = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_DELETED, new HashSet<>()));
+                                        if (offlineDeleted.contains(word)) {
                                             // The word was saved before the user went offline.
-                                            return vocabyRepository.removeOfflineDeletedSave(word)
-                                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
-                                                    .andThen(setSync);
-                                        } else {
+                                            offlineDeleted.remove(word);
                                             SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
-                                            offlineEditor.putString("#!new-" + word, word);
+                                            offlineEditor.putStringSet(Constants.OFFLINE_SAVES_DELETED, offlineDeleted);
                                             offlineEditor.apply();
 
-                                            return vocabyRepository.addOfflineAddedSave(word)
-                                                    .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)))
-                                                    .andThen(setSync);
+                                        } else {
+                                            Set<String> offlineAdded = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_ADDED, new HashSet<>()));
+                                            offlineAdded.add(word);
+                                            SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
+                                            offlineEditor.putStringSet(Constants.OFFLINE_SAVES_ADDED, offlineAdded);
+                                            offlineEditor.apply();
+
                                         }
+
+                                        return vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word))
+                                                .andThen(setSync);
                                     }
                                 } else {
                                     // User is local
@@ -155,21 +164,24 @@ public class SearchResultsViewModel extends AndroidViewModel {
                                             setSync = Completable.complete();
                                         }
 
-                                        if (offlineSharedPreferences.contains("#!new-" + word)) {
-                                            return vocabyRepository.removeOfflineAddedSave(word)
-                                                    .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
-                                                    .andThen(setSync);
+                                        Set<String> offlineAdded = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_ADDED, new HashSet<>()));
+                                        if (offlineAdded.contains(word)) {
+                                            offlineAdded.remove(word);
+                                            SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
+                                            offlineEditor.putStringSet(Constants.OFFLINE_SAVES_ADDED, offlineAdded);
+                                            offlineEditor.apply();
                                         } else {
                                             // Words that existed before the user went offline need
                                             // to be removed first.
+                                            Set<String> offlineDeleted = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_DELETED, new HashSet<>()));
+                                            offlineDeleted.add(word);
                                             SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
-                                            offlineEditor.putString("#!original-" + word, word);
+                                            offlineEditor.putStringSet(Constants.OFFLINE_SAVES_DELETED, offlineDeleted);
                                             offlineEditor.apply();
-
-                                            return vocabyRepository.addOfflineDeletedSave(word)
-                                                    .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word))
-                                                    .andThen(setSync);
                                         }
+
+                                        return vocabyRepository.removeSave(currentUser.getUserId(), word)
+                                                .andThen(setSync);
                                     }
                                 } else {
                                     // User is local
