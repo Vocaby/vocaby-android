@@ -64,7 +64,7 @@ public abstract class VocabyDao {
     @Insert
     public abstract Single<List<Long>> insertSavedWords(List<UserSaves> userSaves);
 
-    @Query("SELECT word FROM saves where user_id = :id")
+    @Query("SELECT word FROM saves WHERE user_id = :id ORDER BY id DESC")
     public abstract Single<List<String>> getSaves(int id);
 
     @Query("SELECT word FROM saves where user_id = :id ORDER BY RANDOM() LIMIT 1")
@@ -83,12 +83,6 @@ public abstract class VocabyDao {
     @Transaction
     @Query("SELECT * FROM vocaby_user WHERE user_id = :id")
     public abstract Single<User> getCurrentUser(int id);
-
-    @Query("SELECT synced FROM vocaby_user WHERE user_id = :id")
-    public abstract Single<Boolean> getSyncStatus(int id);
-
-    @Query("UPDATE vocaby_user SET synced = :synced WHERE user_id = :id")
-    public abstract Completable setUserSyncStatus(boolean synced, int id);
 
     @Transaction
     @Query("SELECT * FROM dictionary_word WHERE word = :word")
@@ -124,9 +118,6 @@ public abstract class VocabyDao {
 
     @Update
     public abstract Completable updateCustomDefinitions(List<CustomDefinition> customDefinitions);
-
-    @Insert
-    public abstract Completable insertCustomExamples(List<CustomExample> customExamples);
 
     @Query("DELETE FROM custom_user_entry WHERE custom_entry_id = :entryId")
     public abstract Completable deleteUserEntry(int entryId);

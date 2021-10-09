@@ -62,7 +62,7 @@
                 android:layout_marginTop="16dp"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:textColor="@color/colorPrimary_header"
+                android:textColor="@color/colorPrimary"
                 android:fontFamily="@font/playfairdisplay_mid"
                 android:textSize="18sp"
                 android:gravity="center_horizontal"
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:textColor="@color/color_tertiary"
+                android:textColor="@color/colorHeadline"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/word_header" />

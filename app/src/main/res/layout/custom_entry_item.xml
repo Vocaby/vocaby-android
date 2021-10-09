@@ -28,7 +28,7 @@
             android:layout_weight="9"
             android:layout_gravity="center_vertical"
             android:textAllCaps="true"
-            android:textColor="@color/colorPrimary_header" />
+            android:textColor="@color/colorPrimary" />
 
         <ImageButton
             android:id="@+id/delete_button"
@@ -38,7 +38,7 @@
             android:layout_marginTop="-2dp"
             android:layout_weight="1"
             android:background="@drawable/ic_trash"
-            android:backgroundTint="@color/color_tertiary"
+            android:backgroundTint="@color/colorHeadline"
             android:contentDescription="@string/unsave_button_desc" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

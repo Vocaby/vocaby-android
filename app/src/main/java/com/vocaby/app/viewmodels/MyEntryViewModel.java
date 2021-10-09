@@ -13,6 +13,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.bugsnag.android.Bugsnag;
+import com.vocaby.app.Constants;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 import com.vocaby.app.utils.StringFormatter;
@@ -38,14 +39,14 @@ public class MyEntryViewModel extends AndroidViewModel {
 
     public MyEntryViewModel(@NonNull Application application) {
         super(application);
-        userSharedPreference = getApplication().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
+        userSharedPreference = getApplication().getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
         vocabyRepository = new VocabyRepository(application);
         compositeDisposable = new CompositeDisposable();
         mEntries = new SingleLiveEvent<>();
         mResult = new SingleLiveEvent<>();
         selectedPosition = 0;
 
-        int currentId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
+        int currentId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
         compositeDisposable.add(
                 vocabyRepository.getUserEntries(currentId)
                         .subscribe(list -> {

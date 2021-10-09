@@ -21,7 +21,7 @@ import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.models.GroupChanges;
-import com.vocaby.app.models.WordDataPackage;
+import com.vocaby.app.models.EntryDataPackage;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -101,7 +101,7 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<WordDataPackage> getWordDataPackageLocally(String word, int userId) {
+    public Single<EntryDataPackage> getWordDataPackageLocally(String word, int userId) {
         return Single.zip(
                 getWordDataFromDatabase(word),
                 getEntryData(userId, word),
@@ -111,7 +111,7 @@ public class VocabyRepository {
                     if (!customEntryModel.isEmpty())
                         dataToSend = customEntryModel;
 
-                    return new WordDataPackage(dataToSend, save);
+                    return new EntryDataPackage(dataToSend, save);
                 }
         );
     }
@@ -169,8 +169,9 @@ public class VocabyRepository {
     }
 
     public Single<List<String>> getUserSaves(int id) {
+        // Main Thread
         return vocabyDao.getSaves(id)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -200,18 +201,6 @@ public class VocabyRepository {
 
     public Completable deleteUser(User user) {
         return vocabyDao.removeUser(user)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<Boolean> getUserSyncStatus(int userId) {
-        return vocabyDao.getSyncStatus(userId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Completable setUserSyncStatus(boolean isSynced, int userId) {
-        return vocabyDao.setUserSyncStatus(isSynced, userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

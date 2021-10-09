@@ -12,6 +12,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.bugsnag.android.Bugsnag;
+import com.vocaby.app.Constants;
 import com.vocaby.app.models.DefinitionChanges;
 import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
@@ -56,7 +57,7 @@ public class EntryViewModel extends AndroidViewModel {
         super(application);
         vocabyRepository = new VocabyRepository(application);
         compositeDisposable = new CompositeDisposable();
-        userSharedPreference = getApplication().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
+        userSharedPreference = getApplication().getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
 
         selectedItemPosition = 0;
         mGroups = new SingleLiveEvent<>();
@@ -159,7 +160,7 @@ public class EntryViewModel extends AndroidViewModel {
 
     public String parseRetrieved(Intent intent) {
         String entry = intent.getStringExtra(MyEntryViewModel.ENTRY_TEXT_KEY);
-        int userId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
+        int userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
 
         compositeDisposable.add(
                 vocabyRepository.getEntryData(userId, entry)
@@ -231,7 +232,7 @@ public class EntryViewModel extends AndroidViewModel {
     public void saveUserEntry() {
         checkForUpdatedItems();
         fixItemOrdering();
-        int userId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
+        int userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
 
         if (entryData.getDefinitionGroups().isEmpty()) {
             if (entryData.getId() == -1) {

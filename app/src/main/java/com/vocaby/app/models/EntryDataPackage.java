@@ -1,15 +1,15 @@
 package com.vocaby.app.models;
 
-public class WordDataPackage {
+public class EntryDataPackage {
     private final EntryModel entryData;
-    private boolean saved;
+    private final boolean saved;
 
-    public WordDataPackage(EntryModel entryData, boolean saved) {
+    public EntryDataPackage(EntryModel entryData, boolean saved) {
         this.entryData = entryData;
         this.saved = saved;
     }
 
-    public WordDataPackage(EntryModel entryData, int result) {
+    public EntryDataPackage(EntryModel entryData, int result) {
         this.entryData = entryData;
         this.saved = result == 1;
     }
@@ -20,10 +20,5 @@ public class WordDataPackage {
 
     public Boolean saved() {
         return this.saved;
-    }
-
-    public WordDataPackage setSave(Boolean saved) {
-        this.saved = saved;
-        return this;
     }
 }

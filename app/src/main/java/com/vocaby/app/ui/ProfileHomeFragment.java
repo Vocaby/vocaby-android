@@ -41,14 +41,6 @@ public class ProfileHomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_main, container, false);
-
-        // Navigation
-        ImageButton navButton = view.findViewById(R.id.nav_button);
-        navButton.setOnClickListener(v -> {
-            DrawerLayout drawer = requireActivity().findViewById(R.id.main_drawer);
-            drawer.openDrawer(GravityCompat.END);
-        });
-
         Button notificationButton = view.findViewById(R.id.notification_button);
         notificationButton.setOnClickListener(v -> getParentFragmentManager()
                 .beginTransaction()

@@ -28,7 +28,7 @@
             android:padding="12dp"
             android:layout_weight="9"
             android:textAllCaps="true"
-            android:textColor="@color/colorPrimary_header" />
+            android:textColor="@color/colorPrimary" />
 
         <ImageButton
             android:id="@+id/unsave_button"

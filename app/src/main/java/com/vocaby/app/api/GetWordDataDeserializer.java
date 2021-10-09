@@ -6,15 +6,15 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.vocaby.app.models.WordDataPackage;
+import com.vocaby.app.models.EntryDataPackage;
 import com.vocaby.app.models.EntryModel;
 
 
 import java.lang.reflect.Type;
 
-public class GetWordDataDeserializer implements JsonDeserializer<WordDataPackage> {
+public class GetWordDataDeserializer implements JsonDeserializer<EntryDataPackage> {
     @Override
-    public WordDataPackage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public EntryDataPackage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
         String status = jsonObject.get("status").getAsString();
         String word = jsonObject.get("word").getAsString();
@@ -38,6 +38,6 @@ public class GetWordDataDeserializer implements JsonDeserializer<WordDataPackage
             }
         }
 
-        return new WordDataPackage(entryData, saved);
+        return new EntryDataPackage(entryData, saved);
     }
 }

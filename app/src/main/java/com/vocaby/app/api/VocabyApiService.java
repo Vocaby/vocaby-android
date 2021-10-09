@@ -1,7 +1,7 @@
 package com.vocaby.app.api;
 
 import com.vocaby.app.models.OfflineDataModel;
-import com.vocaby.app.models.WordDataPackage;
+import com.vocaby.app.models.EntryDataPackage;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public interface VocabyApiService {
 
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("authdictionary/{word}")
-    Single<WordDataPackage> getWordData(@Header("Authorization") String token, @Path("word") String word);
+    Single<EntryDataPackage> getWordData(@Header("Authorization") String token, @Path("word") String word);
 
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @POST("login/")

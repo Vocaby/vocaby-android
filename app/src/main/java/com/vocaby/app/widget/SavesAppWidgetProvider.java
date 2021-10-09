@@ -14,6 +14,7 @@ import android.widget.RemoteViews;
 
 import androidx.room.rxjava3.EmptyResultSetException;
 
+import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.exceptions.SaveRepetitionException;
 import com.vocaby.app.models.EntryModel;
@@ -55,9 +56,9 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         VocabyRepository vocabyRepository = new VocabyRepository((Application) context.getApplicationContext());
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
         SharedPreferences sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE);
-        int currentId = sharedPreferences.getInt("CURRENT_USER_ID", 1);
+        int currentId = sharedPreferences.getInt(Constants.CURRENT_USER_ID_KEY, 1);
 
         remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE);
         remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", false);

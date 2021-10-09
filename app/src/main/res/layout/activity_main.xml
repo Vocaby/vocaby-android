@@ -1,48 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
-    android:id="@+id/main_drawer"
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.MainActivity">
-    <com.google.android.material.navigation.NavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:fitsSystemWindows="true"
-        android:clickable="true"
-        android:background="@color/very_light_gray"
-        app:headerLayout="@layout/nav_header"
-        app:itemTextColor="@color/nav_colors"
-        app:itemIconTint="@color/nav_colors"
-        app:itemBackground="@color/very_light_gray"
-        app:itemTextAppearance="@style/Theme.VocabyAndroid.NavigationDrawerStyle"
-        app:menu="@menu/navigation">
-
-        <TextView
-            android:id="@+id/loginout_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="18dp"
-            android:layout_gravity="bottom"
-            android:gravity="center_vertical"
-            android:drawablePadding="14dp"
-            android:textSize="14sp"
-            android:clickable="true"
-            android:textColor="@color/colorPrimary"
-            android:background="@drawable/bottom_navigation_button"
-            app:drawableStartCompat="@drawable/ic_auth"
-            app:drawableTint="@color/colorPrimary" />
-    </com.google.android.material.navigation.NavigationView>
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/navigation" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/fragment_container"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
-</androidx.drawerlayout.widget.DrawerLayout>
+        app:layout_constraintBottom_toTopOf="@+id/navigation_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bugsnag.android.Bugsnag;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.shape.CornerFamily;
 import com.google.android.material.shape.MaterialShapeDrawable;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private ViewPager2 viewPager;
     private SharedPreferences sharedPreferences;
-    private NavigationView navigationView;
+    private BottomNavigationView navigationView;
     private UserViewModel userViewModel;
 
     @SuppressLint("UseCompatTextViewDrawableApis")
@@ -58,29 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
         setupNotification();
         setupNavigation();
-
-        View headerView = navigationView.getHeaderView(0);
-        TextView firstName = headerView.findViewById(R.id.first_name);
-        TextView currentUser = headerView.findViewById(R.id.current_user);
-        TextView loginoutButton = findViewById(R.id.loginout_button);
-
-
-        userViewModel.getUser().observe(this, user -> {
-            firstName.setText(user.getFirstName());
-            currentUser.setText(user.getEmail());
-
-            if(user.isLoggedIn()) {
-                loginoutButton.setText(getString(R.string.log_out));
-                loginoutButton.setTextColor(getColor(R.color.color_tertiary));
-                loginoutButton.setCompoundDrawableTintList(ColorStateList.valueOf(getColor(R.color.color_tertiary)));
-                loginoutButton.setOnClickListener(v -> userViewModel.logout());
-            } else {
-                loginoutButton.setText(getString(R.string.log_in));
-                loginoutButton.setCompoundDrawableTintList(ColorStateList.valueOf(getColor(R.color.colorPrimary)));
-                loginoutButton.setTextColor(getColor(R.color.colorPrimary));
-                loginoutButton.setOnClickListener(v -> login());
-            }
-        });
     }
 
     @Override
@@ -107,9 +85,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setUserInputEnabled(false);
         navigationView = findViewById(R.id.navigation_view);
         navigationView.bringToFront();
-        DrawerLayout drawer = findViewById(R.id.main_drawer);
-        navigationView.setNavigationItemSelectedListener(item -> {
-            drawer.closeDrawer(GravityCompat.END);
+        navigationView.setOnItemSelectedListener(item -> {
             int current = item.getItemId();
             if(current == R.id.profileFragment) {
                 viewPager.setCurrentItem(3, false);
@@ -122,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return true;
-        }) ;
+        }); ;
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -142,15 +118,6 @@ public class MainActivity extends AppCompatActivity {
                 .build()
         );
     }
-
-    private void login() {
-        mGetLogin.launch(new Intent(this, AuthActivity.class));
-    }
-
-    private final ActivityResultLauncher<Intent> mGetLogin = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> userViewModel.handleActivityResult(result)
-    );
 
     @Override
     public void onBackPressed() {

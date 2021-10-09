@@ -1,8 +1,8 @@
 package com.vocaby.app;
 
 public class Constants {
-    public static final String SPREFS_OFFLINE_SAVES = "OFFLINE_SAVES";
-    public static final String OFFLINE_SAVES_ADDED = "OFFLINE_ADDED_SAVES";
-    public static final String OFFLINE_SAVES_DELETED = "OFFLINE_DELETED_SAVES";
+    public static final String DEBUG_TAG = "VOCABY DEBUG";
     public static final String VOCABY_API_SERVER = "https://api.vocaby.app/";
+    public static final String USER_ID_KEY = "USER_ID";
+    public static final String CURRENT_USER_ID_KEY = "CURRENT_USER_ID";
 }

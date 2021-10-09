@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import androidx.core.app.NotificationCompat;
 import androidx.room.rxjava3.EmptyResultSetException;
 
+import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
@@ -29,8 +30,8 @@ public class NotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         VocabyRepository vocabyRepository = new VocabyRepository((Application) context.getApplicationContext());
-        SharedPreferences sharedPreferences = context.getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
-        int currentId = sharedPreferences.getInt("CURRENT_USER_ID", 1);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
+        int currentId = sharedPreferences.getInt(Constants.CURRENT_USER_ID_KEY, 1);
         SharedPreferences sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE);
 
         disposable = vocabyRepository.getUserSaves(currentId)

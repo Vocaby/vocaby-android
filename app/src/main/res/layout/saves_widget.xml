@@ -22,7 +22,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAllCaps="true"
-            android:textColor="@color/colorPrimary_header"
+            android:textColor="@color/colorPrimary"
             android:textSize="20sp" />
 
         <ProgressBar

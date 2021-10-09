@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/type_header_alert"
-            android:textColor="@color/color_tertiary"
+            android:textColor="@color/colorHeadline"
             android:visibility="invisible" />
 
         <Space
@@ -54,7 +54,7 @@
             android:minHeight="0dp"
             android:text="@string/create"
             android:textAllCaps="false"
-            android:textColor="@color/colorPrimary_header"
+            android:textColor="@color/colorPrimary"
             android:textSize="14sp"
             tools:ignore="SmallSp,TouchTargetSizeCheck" />
     </LinearLayout>

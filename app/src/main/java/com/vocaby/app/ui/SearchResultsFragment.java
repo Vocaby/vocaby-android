@@ -23,8 +23,7 @@ import android.widget.TextView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.DefinitionsAdapter;
-import com.vocaby.app.models.UserStateModel;
-import com.vocaby.app.models.WordDataPackage;
+import com.vocaby.app.models.EntryDataPackage;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.utils.NetworkManager;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
@@ -46,11 +45,10 @@ public class SearchResultsFragment extends Fragment {
     private DefinitionsAdapter adapter;
     private ProgressBar progressBar;
     private ProgressBar saveProgress;
-    private View userStateIndicator;
-    private TextView userStateText;
 
     SearchResultsViewModel searchResultsViewModel;
     DictionaryViewModel dictionaryViewModel;
+    UserViewModel userViewModel;
 
     public SearchResultsFragment() {
         // Required empty public constructor
@@ -89,8 +87,6 @@ public class SearchResultsFragment extends Fragment {
         pronunciation = view.findViewById(R.id.pronunciation);
         saveProgress = view.findViewById(R.id.save_progress);
         saveProgress.setVisibility(View.VISIBLE);
-        userStateIndicator = view.findViewById(R.id.network_indicator);
-        userStateText = view.findViewById(R.id.network_status_text);
 
         RecyclerView recyclerView = view.findViewById(R.id.definitions_recycler_container);
         recyclerView.setEnabled(false);
@@ -107,87 +103,66 @@ public class SearchResultsFragment extends Fragment {
         dictionaryViewModel =
                 new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         searchResultsViewModel = new ViewModelProvider(this).get(SearchResultsViewModel.class);
+        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
+        searchResultsViewModel.retrieveWordDataFromRepo(searchedWord);
         observeWordPackageData();
-
-        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-        userViewModel.getUserState().observe(getViewLifecycleOwner(), userState -> {
-            if(userState != null) {
-                if(userState.isLocal()) {
-                    userStateText.setText(getString(R.string.local));
-                    userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.colorPrimary));
-                } else {
-                    if(userState.isSynced()) {
-                        userStateText.setText(getString(R.string.synced));
-                        userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.turquoise));
-                    } else {
-                        userStateText.setText(getString(R.string.unsynced));
-                        userStateIndicator.setBackgroundTintList(ctx.getColorStateList(R.color.color_tertiary));
-                    }
-                }
-            }
-        });
-
-        searchResultsViewModel.getRemoteSaveStatus().observe(getViewLifecycleOwner(),
-                remoteSaveSuccessful -> {
-                    if(!remoteSaveSuccessful) {
-                        userViewModel.setUserState(new UserStateModel(false, false));
-                    }
-        });
     }
 
     public void observeWordPackageData() {
-        searchResultsViewModel.retrieveWordDataFromRepo(searchedWord, NetworkManager.isConnectedToInternet(ctx));
+        searchResultsViewModel.getWordData().observe(getViewLifecycleOwner(), wordPackage -> {
+            if (wordPackage != null) {
+                EntryModel wordData = wordPackage.getWordModel();
+                word.setVisibility(View.VISIBLE);
+                if (wordData.isEmpty()) {
+                    populateNoDefinition();
+                } else {
+                    populateView(wordData);
+                    adapter.setWordData(wordData);
+                }
+
+                setupSaveButton(wordPackage.saved(), false);
+            }
+        });
+
+        searchResultsViewModel.getSavedStatus().observe(getViewLifecycleOwner(), saved -> {
+            setupSaveButton(saved, true);
+        });
+    }
+
+    private void setupSaveButton(boolean saved, boolean updateSave) {
         AtomicReference<Drawable> icon = new AtomicReference<>();
         icon.set(getDrawable(ctx, R.drawable.ic_bookmark_disabled));
         saveButton.setEnabled(false);
         saveButton.setTextColor(ctx.getColor(R.color.dark_gray));
         saveProgress.setVisibility(View.INVISIBLE);
-        AtomicBoolean populated = new AtomicBoolean(false);
 
-        Observer<WordDataPackage> observer = wordPackage -> {
-            if (wordPackage != null) {
-                if(!populated.get()) {
-                    EntryModel wordData = wordPackage.getWordModel();
-                    word.setVisibility(View.VISIBLE);
+        if(saved) {
+            icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved));
+            saveButton.setText(ctx.getString(R.string.save_button_saved));
+            saveButton.setOnClickListener(v -> {
+                searchResultsViewModel.removeSave(searchedWord);
+                saveProgress.setVisibility(View.VISIBLE);
+                disableSaveButton(icon);
+            });
 
-                    if(wordData.isEmpty()) {
-                        populateNoDefinition();
-                    } else {
-                        populateView(wordData);
-                        adapter.setWordData(wordData);
-                    }
+            if (updateSave) userViewModel.addSaveItem(searchedWord);
+        } else {
+            icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved));
+            saveButton.setText(getResources().getString(R.string.save_button_unsaved));
+            saveButton.setOnClickListener(v -> {
+                searchResultsViewModel.saveWord(searchedWord);
+                saveProgress.setVisibility(View.VISIBLE);
+                disableSaveButton(icon);
+            });
 
-                    populated.set(true);
-                }
+            if (updateSave) userViewModel.removeSaveItem(searchedWord);
+        }
 
-
-                if(wordPackage.saved()) {
-                    icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved));
-                    saveButton.setText(ctx.getString(R.string.save_button_saved));
-                    saveButton.setOnClickListener(v -> {
-                        searchResultsViewModel.removeSave(searchedWord, NetworkManager.isConnectedToInternet(ctx));
-                        saveProgress.setVisibility(View.VISIBLE);
-                        disableSaveButton(icon);
-                    });
-                } else {
-                    icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved));
-                    saveButton.setText(getResources().getString(R.string.save_button_unsaved));
-                    saveButton.setOnClickListener(v -> {
-                        searchResultsViewModel.saveWord(searchedWord, NetworkManager.isConnectedToInternet(ctx));
-                        saveProgress.setVisibility(View.VISIBLE);
-                        disableSaveButton(icon);
-                    });
-                }
-
-                saveProgress.setVisibility(View.INVISIBLE);
-                saveButton.setEnabled(true);
-                saveButton.setTextColor(ctx.getColor(R.color.colorPrimary_header));
-                saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
-            }
-        };
-
-        searchResultsViewModel.getWordData().observe(getViewLifecycleOwner(), observer);
+        saveProgress.setVisibility(View.INVISIBLE);
+        saveButton.setEnabled(true);
+        saveButton.setTextColor(ctx.getColor(R.color.colorPrimary));
+        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
     }
 
     private void disableSaveButton(AtomicReference<Drawable> icon) {

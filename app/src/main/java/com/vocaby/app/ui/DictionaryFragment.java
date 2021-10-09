@@ -48,13 +48,6 @@ public class DictionaryFragment extends Fragment {
         searchView.setOnSearchListener(searchListener);
         searchView.setOnQueryChangeListener(queryChangeListener);
 
-        // Navigation
-        ImageButton navButton = view.findViewById(R.id.nav_button);
-        navButton.setOnClickListener(v -> {
-            DrawerLayout drawer = requireActivity().findViewById(R.id.main_drawer);
-            drawer.openDrawer(GravityCompat.END);
-        });
-
         if(savedInstanceState == null) {
             getChildFragmentManager().beginTransaction().replace(R.id.dictionary_fragment_container,
                     new DictionaryHomeFragment()).commit();

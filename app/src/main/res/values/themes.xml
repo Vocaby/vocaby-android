@@ -21,7 +21,7 @@
 
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
 
-        <item name="colorAccent">@color/colorPrimary_header</item>
+        <item name="colorAccent">@color/colorPrimary</item>
 
         <item name="android:fontFamily">@font/sourcesanspro_regular</item>
         <item name="android:textColor">@color/black</item>
@@ -44,12 +44,12 @@
 
     <style name="Theme.VocabyAndroid.ProfileButton" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="iconTint">@color/colorPrimary_header</item>
+        <item name="iconTint">@color/colorPrimary</item>
         <item name="fontFamily">@font/sourcesanspro_semibold</item>
         <item name="android:textSize">18sp</item>
         <item name="android:paddingBottom">18dp</item>
         <item name="android:paddingTop">18dp</item>
-        <item name="android:textColor">@color/colorPrimary_header</item>
+        <item name="android:textColor">@color/colorPrimary</item>
         <item name="textAllCaps">false</item>
         <item name="android:drawablePadding">28dp</item>
         <item name="android:paddingLeft">32dp</item>

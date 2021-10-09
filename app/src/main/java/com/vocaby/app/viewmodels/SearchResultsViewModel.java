@@ -14,65 +14,47 @@ import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.Constants;
 import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.data.entity.UserSaves;
-import com.vocaby.app.models.WordDataPackage;
+import com.vocaby.app.models.EntryDataPackage;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import retrofit2.HttpException;
 
 public class SearchResultsViewModel extends AndroidViewModel {
     private final CompositeDisposable compositeDisposable;
     private final VocabyRepository vocabyRepository;
-    private final SingleLiveEvent<WordDataPackage> mWordPackage;
+    private final SingleLiveEvent<EntryDataPackage> mEntryPackage;
+    private final SingleLiveEvent<Boolean> mEntrySavedStatus;
     private final SharedPreferences userSharedPreference;
-    private final SharedPreferences offlineSharedPreferences;
-    private final SingleLiveEvent<Boolean> remoteSaveSuccessful;
 
     public SearchResultsViewModel(@NonNull Application application) {
         super(application);
-        userSharedPreference = application.getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
-        offlineSharedPreferences = application.getSharedPreferences(Constants.SPREFS_OFFLINE_SAVES, Context.MODE_PRIVATE);
+        userSharedPreference = application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
         compositeDisposable = new CompositeDisposable();
         vocabyRepository = new VocabyRepository(application);
-        mWordPackage = new SingleLiveEvent<>();
-        remoteSaveSuccessful = new SingleLiveEvent<>();
+        mEntryPackage = new SingleLiveEvent<>();
+        mEntrySavedStatus = new SingleLiveEvent<>();
     }
 
-    public LiveData<WordDataPackage> getWordData() {
-        return mWordPackage;
+    public LiveData<EntryDataPackage> getWordData() {
+        return mEntryPackage;
     }
 
-    public LiveData<Boolean> getRemoteSaveStatus() {
-        return remoteSaveSuccessful;
+    public LiveData<Boolean> getSavedStatus() {
+        return mEntrySavedStatus;
     }
 
-    public void retrieveWordDataFromRepo(String searched, Boolean isConnected) {
-        int userId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
-        VocabyApiService vocabyApi = vocabyRepository.getVocabyApiService(VocabyApiService.DEFINITION);
-
+    public void retrieveWordDataFromRepo(String searched) {
+        int userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
         compositeDisposable.add(
                 vocabyRepository.getUser(userId)
                         .flatMap(user -> {
-                            if (user.isLoggedIn()) {
-                                if (isConnected) {
-                                    return vocabyApi.getWordData(user.getToken(), searched)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread());
-                                }
-                            }
                             // Get Local Definitions and Local Saves if above check fails
                             return vocabyRepository.getWordDataPackageLocally(searched, userId);
-                        }).subscribe(mWordPackage::setValue, error -> {
+                        }).subscribe(mEntryPackage::setValue, error -> {
                             if (error instanceof EmptyResultSetException) {
-                                mWordPackage.setValue(new WordDataPackage(new EntryModel(searched), false));
+                                mEntryPackage.setValue(new EntryDataPackage(new EntryModel(searched), false));
                             }
 
                             Bugsnag.notify(error);
@@ -82,57 +64,16 @@ public class SearchResultsViewModel extends AndroidViewModel {
         );
     }
 
-    // TODO: Change offlineEditor.putString to offlineEditor.putStringSet
-    public void saveWord(String word, boolean isConnected) {
-        if (mWordPackage.getValue() != null) {
-            int userId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
+    public void saveWord(String word) {
+        if (mEntryPackage.getValue() != null) {
+            int userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
             compositeDisposable.add(
                     vocabyRepository.getUser(userId)
-                            .flatMapCompletable(currentUser -> {
-                                if (currentUser.isLoggedIn()) {
-                                    if (isConnected) {
-                                        // Add to remote save and then add to local save
-                                        return vocabyRepository.getVocabyApiService(VocabyApiService.DEFAULT).save(currentUser.getToken(), word)
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread())
-                                                .andThen(vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word)));
-                                    } else {
-                                        // Offline Added Save.
-                                        remoteSaveSuccessful.setValue(false);
-                                        Completable setSync = vocabyRepository.setUserSyncStatus(false, currentUser.getUserId());
-                                        if(!currentUser.isSynced()) {
-                                            setSync = Completable.complete();
-                                        }
-
-                                        Set<String> offlineDeleted = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_DELETED, new HashSet<>()));
-                                        if (offlineDeleted.contains(word)) {
-                                            // The word was saved before the user went offline.
-                                            offlineDeleted.remove(word);
-                                            SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
-                                            offlineEditor.putStringSet(Constants.OFFLINE_SAVES_DELETED, offlineDeleted);
-                                            offlineEditor.apply();
-
-                                        } else {
-                                            Set<String> offlineAdded = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_ADDED, new HashSet<>()));
-                                            offlineAdded.add(word);
-                                            SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
-                                            offlineEditor.putStringSet(Constants.OFFLINE_SAVES_ADDED, offlineAdded);
-                                            offlineEditor.apply();
-
-                                        }
-
-                                        return vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word))
-                                                .andThen(setSync);
-                                    }
-                                } else {
-                                    // User is local
-                                    return vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word));
-                                }
-                            }).subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(true)),
+                            .flatMapCompletable(currentUser ->
+                                    vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), word))
+                            ).subscribe(() -> mEntrySavedStatus.setValue(true),
                                     error -> {
-                                        if (error instanceof HttpException) {
-                                            mWordPackage.setValue(mWordPackage.getValue().setSave(false));
-                                        }
+                                        mEntrySavedStatus.setValue(false);
 
                                         Bugsnag.notify(error);
                                         Log.e("saveWord: ", error.getMessage());
@@ -141,57 +82,16 @@ public class SearchResultsViewModel extends AndroidViewModel {
         }
     }
 
-    // TODO: Change offlineEditor.putString to offlineEditor.putStringSet
-    public void removeSave(String word, Boolean isConnected) {
-        if (mWordPackage.getValue() != null) {
-            int userId = userSharedPreference.getInt("CURRENT_USER_ID", 1);
+    public void removeSave(String word) {
+        if (mEntryPackage.getValue() != null) {
+            int userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
             compositeDisposable.add(
                     vocabyRepository.getUser(userId)
-                            .flatMapCompletable(currentUser -> {
-                                if (currentUser.isLoggedIn()) {
-                                    if (isConnected) {
-                                        // Remove in remote save and then remove in local save
-                                        return vocabyRepository.getVocabyApiService(VocabyApiService.DEFAULT).removeSave(currentUser.getToken(), word)
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread())
-                                                .andThen(vocabyRepository.removeSave(currentUser.getUserId(), word));
-                                    } else {
-                                        // Offline Removed Save
-                                        remoteSaveSuccessful.setValue(false);
-
-                                        Completable setSync = vocabyRepository.setUserSyncStatus(false, currentUser.getUserId());
-                                        if(!currentUser.isSynced()) {
-                                            setSync = Completable.complete();
-                                        }
-
-                                        Set<String> offlineAdded = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_ADDED, new HashSet<>()));
-                                        if (offlineAdded.contains(word)) {
-                                            offlineAdded.remove(word);
-                                            SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
-                                            offlineEditor.putStringSet(Constants.OFFLINE_SAVES_ADDED, offlineAdded);
-                                            offlineEditor.apply();
-                                        } else {
-                                            // Words that existed before the user went offline need
-                                            // to be removed first.
-                                            Set<String> offlineDeleted = new HashSet<>(offlineSharedPreferences.getStringSet(Constants.OFFLINE_SAVES_DELETED, new HashSet<>()));
-                                            offlineDeleted.add(word);
-                                            SharedPreferences.Editor offlineEditor = offlineSharedPreferences.edit();
-                                            offlineEditor.putStringSet(Constants.OFFLINE_SAVES_DELETED, offlineDeleted);
-                                            offlineEditor.apply();
-                                        }
-
-                                        return vocabyRepository.removeSave(currentUser.getUserId(), word)
-                                                .andThen(setSync);
-                                    }
-                                } else {
-                                    // User is local
-                                    return vocabyRepository.removeSave(currentUser.getUserId(), word);
-                                }
-                            }).subscribe(() -> mWordPackage.setValue(mWordPackage.getValue().setSave(false)),
+                            .flatMapCompletable(currentUser ->
+                                    vocabyRepository.removeSave(currentUser.getUserId(), word)
+                            ).subscribe(() -> mEntrySavedStatus.setValue(false),
                                     error -> {
-                                        if (error instanceof HttpException) {
-                                            mWordPackage.setValue(mWordPackage.getValue().setSave(true));
-                                        }
+                                        mEntrySavedStatus.setValue(true);
 
                                         Bugsnag.notify(error);
                                         Log.e("saveWord: ", error.getMessage());

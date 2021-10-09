@@ -30,7 +30,7 @@
             android:minHeight="0dp"
             android:padding="8dp"
             android:text="@string/close"
-            android:textColor="@color/colorPrimary_header"
+            android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             tools:ignore="SmallSp" />
 
@@ -43,31 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_gravity="center">
-            <View
-                android:id="@+id/network_indicator"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/network_indicator"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/network_status_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/local"
-                android:textColor="@color/dark_gray"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/network_indicator"
-                app:layout_constraintTop_toTopOf="parent" />
-        </LinearLayout>
+            android:layout_gravity="center"/>
 
         <Space
             android:layout_width="0dp"
@@ -97,7 +73,7 @@
                 android:minHeight="0dp"
                 android:padding="8dp"
                 android:text="@string/save_button_unsaved"
-                android:textColor="@color/colorPrimary_header"
+                android:textColor="@color/colorPrimary"
                 android:textSize="12sp"
                 tools:ignore="SmallSp" />
         </LinearLayout>
@@ -121,7 +97,7 @@
             android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            android:indeterminateTint="@color/colorPrimary_header"
+            android:indeterminateTint="@color/colorPrimary"
             android:scaleY="1.2" />
 
         <me.grantland.widget.AutofitTextView
@@ -137,7 +113,7 @@
             android:visibility="gone"
             android:textAllCaps="true"
             android:gravity="center"
-            android:textColor="@color/colorPrimary_header"/>
+            android:textColor="@color/colorPrimary"/>
 
         <TextView
             android:id="@+id/pronunciation"

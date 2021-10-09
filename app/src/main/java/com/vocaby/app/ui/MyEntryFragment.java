@@ -58,13 +58,6 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
 
         setupEntryBuilder();
 
-        // Navigation
-        ImageButton navButton = view.findViewById(R.id.nav_button);
-        navButton.setOnClickListener(v -> {
-            DrawerLayout drawer = requireActivity().findViewById(R.id.main_drawer);
-            drawer.openDrawer(GravityCompat.END);
-        });
-
         // Add Entry
         Button addButton = view.findViewById(R.id.add_entry_button);
         addButton.setOnClickListener(v -> {

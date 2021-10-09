@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHolder> {
-    private final List<String> saves;
+    private List<String> saves;
     private final Context ctx;
     private final OnSaveItemButtonTouch onSaveItemButtonTouchListener;
     private final OnSaveItemTouch onSaveItemTouch;
@@ -45,9 +45,8 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void updateSavedWords(List<String> newSavedWords) {
-        saves.clear();
-        saves.addAll(newSavedWords);
+    public void setSavedWords(List<String> newSavedWords) {
+        saves = newSavedWords;
         this.notifyDataSetChanged();
     }
 
@@ -83,7 +82,7 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         AlertDialog alert = builder.create();
         alert.show();
         Button negativeButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        negativeButton.setTextColor(ctx.getColor(R.color.color_tertiary));
+        negativeButton.setTextColor(ctx.getColor(R.color.colorHeadline));
 
     }
 

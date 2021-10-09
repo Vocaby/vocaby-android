@@ -3,7 +3,7 @@ package com.vocaby.app.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vocaby.app.Constants;
-import com.vocaby.app.models.WordDataPackage;
+import com.vocaby.app.models.EntryDataPackage;
 
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
 import retrofit2.Retrofit;
@@ -41,7 +41,7 @@ public class ApiManager {
         // Adding custom deserializers
         switch(type) {
             case VocabyApiService.DEFINITION:
-                gsonBuilder.registerTypeAdapter(WordDataPackage.class, new GetWordDataDeserializer());
+                gsonBuilder.registerTypeAdapter(EntryDataPackage.class, new GetWordDataDeserializer());
                 break;
             case VocabyApiService.LOGIN:
                 gsonBuilder.registerTypeAdapter(AuthResponse.class, new GetAuthDeserializer());
