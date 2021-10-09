@@ -1,8 +1,11 @@
 package com.vocaby.app.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class StringFormatter {
     public static String cleanText(String text) {
-        return text.trim().replaceAll("[^0-9a-zA-Z'-._ ]", "").toLowerCase();
+        return text.trim().replaceAll("[^\\p{L}0-9'-._ ]", "").toLowerCase();
     }
 
     public static String firstLetterUpperOnly(String text) {

@@ -18,9 +18,7 @@ import com.vocaby.app.utils.VocabyAlgo;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -53,10 +51,6 @@ public class DictionaryViewModel extends AndroidViewModel {
                 vocabyRepository.populateDictionaryEntries()
                         .subscribe(entries -> dictionaryEntries = entries, Throwable::printStackTrace)
         );
-    }
-
-    public void refreshDictionaryEntries() {
-        dictionaryEntries = vocabyRepository.getDictionaryEntries();
     }
 
     public void updateRandomWord() {

@@ -54,6 +54,10 @@ public class DictionaryHomeFragment extends Fragment {
         wordBox = view.findViewById(R.id.word_box);
         progressBar = view.findViewById(R.id.randomword_progress);
 
+        definition.setVisibility(View.GONE);
+        sentence.setVisibility(View.GONE);
+        posView.setVisibility(View.GONE);
+
         return view;
     }
 
@@ -63,7 +67,10 @@ public class DictionaryHomeFragment extends Fragment {
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
 
         dictionaryViewModel.getRandomWord().observe(getViewLifecycleOwner(), wordModel -> {
-            progressBar.setVisibility(View.INVISIBLE);
+            definition.setVisibility(View.VISIBLE);
+            sentence.setVisibility(View.VISIBLE);
+            posView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             String pos = wordModel.getFirstGroup().getType();
             wordView.setText(wordModel.getEntry());
             posView.setText(pos);

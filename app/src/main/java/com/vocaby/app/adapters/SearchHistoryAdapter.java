@@ -19,6 +19,9 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
     private final Context ctx;
     private final OnItemTouchListener onItemTouchListener;
 
+    private static final int STATIC_CARD = 0;
+    private static final int DYNAMIC_CARD = 1;
+
     public interface OnItemTouchListener {
         void onItemTouch(int position);
     }
@@ -30,6 +33,9 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
     }
 
     public void updateSearchHistory(List<String> newHistory) {
+        if(newHistory.size() == 0)
+            newHistory.add("HISTORY");
+
         this.history = newHistory;
         notifyDataSetChanged();
     }
@@ -38,12 +44,31 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
     @Override
     public HistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(ctx);
-        View view = inflater.inflate(R.layout.history_item, parent, false);
-        return new HistoryViewHolder(view, onItemTouchListener);
+        View view;
+        if (viewType == STATIC_CARD) {
+            view = inflater.inflate(R.layout.history_static_item, parent, false);
+        } else {
+            view = inflater.inflate(R.layout.history_item, parent, false);
+        }
+
+        return new HistoryViewHolder(view);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return STATIC_CARD;
+        } else {
+            return DYNAMIC_CARD;
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull SearchHistoryAdapter.HistoryViewHolder holder, int position) {
+        if (holder.getAdapterPosition() != 0)
+            holder.itemView.setOnClickListener(v -> {
+                onItemTouchListener.onItemTouch(holder.getAdapterPosition());
+            });
         holder.word.setText(history.get(position));
     }
 
@@ -52,20 +77,12 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
         return history.size();
     }
 
-    public static class HistoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
         TextView word;
-        OnItemTouchListener onItemTouchListener;
 
-        public HistoryViewHolder(@NonNull View itemView, OnItemTouchListener onItemTouchListener) {
+        public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
             word = itemView.findViewById(R.id.history_item);
-            this.onItemTouchListener = onItemTouchListener;
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            onItemTouchListener.onItemTouch(getAdapterPosition());
         }
     }
 }

@@ -12,14 +12,14 @@
         android:layout_height="wrap_content"
         android:theme="@style/Theme.VocabyAndroid.TextHeadline"
         android:text="@string/daily_selection_header"
-        android:layout_marginTop="@dimen/container_side_margin"
+        android:layout_marginTop="12dp"
         android:textColor="@color/black" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/word_box"
-        android:layout_width="330dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/container_side_margin"
+        android:layout_marginTop="12dp"
         android:layout_gravity="center_horizontal"
         android:elevation="4dp"
         app:cardCornerRadius="@dimen/radius">
@@ -90,9 +90,9 @@
                     android:id="@+id/randomword_progress"
                     style="?android:attr/progressBarStyle"
                     android:layout_width="50dp"
-                    android:layout_height="0dp"
+                    android:layout_height="50dp"
                     android:layout_gravity="center"
-                    android:layout_weight="0"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

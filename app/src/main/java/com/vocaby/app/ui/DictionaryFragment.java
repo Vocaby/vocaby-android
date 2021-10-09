@@ -1,46 +1,35 @@
 package com.vocaby.app.ui;
 
-import static com.vocaby.app.utils.StringFormatter.cleanText;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.arlib.floatingsearchview.FloatingSearchView;
-import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.arlib.floatingsearchview.util.view.SearchInputView;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.models.SearchSuggestionItem;
@@ -48,16 +37,18 @@ import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 import java.util.List;
 
+import static com.vocaby.app.utils.StringFormatter.cleanText;
+
 
 public class DictionaryFragment extends Fragment implements SearchHistoryAdapter.OnItemTouchListener{
     private DictionaryViewModel dictionaryViewModel;
     private FloatingSearchView searchView;
     private Context ctx;
     private SearchHistoryAdapter searchHistoryAdapter;
-    private TextView dictionaryHeader;
-    private LinearLayout header;
+    private TextView dictionaryHeaderBig;
     OnBackPressedCallback backPressedCallback;
     private RecyclerView historyContainer;
+    private TextView dictionaryHeaderSmall;
 
     public DictionaryFragment() {
         // Required empty public constructor
@@ -79,8 +70,8 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
         searchView = view.findViewById(R.id.vocaby_search_bar);
         searchView.setOnSearchListener(searchListener);
         searchView.setOnQueryChangeListener(queryChangeListener);
-        dictionaryHeader = view.findViewById(R.id.dictionary_header);
-        header = view.findViewById(R.id.vocaby_header);
+        dictionaryHeaderBig = view.findViewById(R.id.dictionary_header);
+        dictionaryHeaderSmall = view.findViewById(R.id.header_dictionary);
 
         if(savedInstanceState == null) {
             getChildFragmentManager().beginTransaction().replace(R.id.dictionary_fragment_container,
@@ -121,44 +112,27 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
         dictionaryViewModel.getSearch().observe(getViewLifecycleOwner(), searchObserver);
 
         dictionaryViewModel.getSearchHistory().observe(getViewLifecycleOwner(), searchHistory -> {
-            if(searchHistory.size() > 0) {
-
-            } else {
-
-            }
-
             searchHistoryAdapter.updateSearchHistory(searchHistory);
         });
     }
 
     public void slideUpHeader() {
-        dictionaryHeader.animate()
+        dictionaryHeaderBig.animate()
                 .alpha(0.0f)
-                .translationY(-dictionaryHeader.getHeight())
+                .translationY(-dictionaryHeaderBig.getHeight())
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .setDuration(200)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        dictionaryHeader.setVisibility(View.INVISIBLE);
+                        dictionaryHeaderBig.setVisibility(View.INVISIBLE);
                     }
                 });
 
-        final ConstraintLayout.LayoutParams headerParams = (ConstraintLayout.LayoutParams) header.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(headerParams.topMargin, (int) -header.getHeight());
-        animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.addUpdateListener(valueAnimator -> {
-            headerParams.topMargin = (Integer) valueAnimator.getAnimatedValue();
-            header.setLayoutParams(headerParams);
-        });
-        animator.setStartDelay(200);
-        animator.setDuration(300);
-        animator.start();
-
         CardView inputView = searchView.findViewById(R.id.search_query_section);
         final FrameLayout.LayoutParams searchParams = (FrameLayout.LayoutParams) inputView.getLayoutParams();
-        animator = ValueAnimator.ofInt(searchParams.topMargin, (int) getResources().getDimension(R.dimen.search_margin_after_slide));
+        ValueAnimator animator = ValueAnimator.ofInt(searchParams.topMargin, (int) getResources().getDimension(R.dimen.search_margin_after_slide));
         animator.addUpdateListener(valueAnimator -> {
             searchParams.topMargin = (Integer) valueAnimator.getAnimatedValue();
             inputView.setLayoutParams(searchParams);
@@ -180,11 +154,23 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
         animator.setStartDelay(200);
         animator.setDuration(300);
         animator.start();
+
+        final LinearLayout.LayoutParams headerParams = (LinearLayout.LayoutParams) dictionaryHeaderSmall.getLayoutParams();
+        animator = ValueAnimator.ofInt(params.topMargin, 0);
+        animator.addUpdateListener(valueAnimator -> {
+            headerParams.topMargin = (Integer) valueAnimator.getAnimatedValue();
+            dictionaryHeaderSmall.setLayoutParams(headerParams);
+        });
+
+        animator.setInterpolator(new DecelerateInterpolator());
+        animator.setStartDelay(500);
+        animator.setDuration(600);
+        animator.start();
     }
 
     public void slideDownHeader() {
-        dictionaryHeader.setVisibility(View.VISIBLE);
-        dictionaryHeader.animate()
+        dictionaryHeaderBig.setVisibility(View.VISIBLE);
+        dictionaryHeaderBig.animate()
                 .alpha(1.0f)
                 .translationY(0)
                 .setDuration(300)
@@ -197,20 +183,9 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
                     }
                 });
 
-        final ConstraintLayout.LayoutParams headerParams = (ConstraintLayout.LayoutParams) header.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(headerParams.topMargin, 0);
-        animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.addUpdateListener(valueAnimator -> {
-            headerParams.topMargin = (Integer) valueAnimator.getAnimatedValue();
-            header.setLayoutParams(headerParams);
-        });
-
-        animator.setDuration(300);
-        animator.start();
-
         CardView inputView = searchView.findViewById(R.id.search_query_section);
         final FrameLayout.LayoutParams searchParams = (FrameLayout.LayoutParams) inputView.getLayoutParams();
-        animator = ValueAnimator.ofInt(searchParams.topMargin, (int) getResources().getDimension(R.dimen.search_margin_before_slide));
+        ValueAnimator animator = ValueAnimator.ofInt(searchParams.topMargin, (int) getResources().getDimension(R.dimen.search_margin_before_slide));
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.addUpdateListener(valueAnimator -> {
             searchParams.topMargin = (Integer) valueAnimator.getAnimatedValue();
@@ -227,6 +202,18 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
             historyContainer.setLayoutParams(params);
         });
 
+        animator.setDuration(300);
+        animator.start();
+
+        final LinearLayout.LayoutParams headerParams = (LinearLayout.LayoutParams) dictionaryHeaderSmall.getLayoutParams();
+        animator = ValueAnimator.ofInt(0, (int) getResources().getDimension(R.dimen.dictionary_header_margin_before_slide));
+        animator.addUpdateListener(valueAnimator -> {
+            headerParams.topMargin = (Integer) valueAnimator.getAnimatedValue();
+            dictionaryHeaderSmall.setLayoutParams(headerParams);
+        });
+
+        animator.setInterpolator(new AccelerateInterpolator());
+        animator.setStartDelay(300);
         animator.setDuration(300);
         animator.start();
     }

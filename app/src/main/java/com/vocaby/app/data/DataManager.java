@@ -51,6 +51,7 @@ public class DataManager {
             }
         } else {
             history = new LinkedList<>();
+            history.add("HISTORY");
             try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(history);
@@ -71,9 +72,9 @@ public class DataManager {
     }
 
     public List<String> writeHistory(String word) {
-        history.add(0, word);
-        if(history.size() > 5) {
-            history.remove(5);
+        history.add(1, word);
+        if(history.size() > 6) {
+            history.remove(6);
         }
 
         new Thread(() -> {

@@ -3,6 +3,7 @@ package com.vocaby.app.ui;
 import static androidx.appcompat.content.res.AppCompatResources.*;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -35,7 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SearchResultsFragment extends Fragment {
     private static final String WORD = "PASSED_WORD_KEY";
-    private static final String FROM_SAVES = "fromSaves";
     private String searchedWord;
 
     private Context ctx;
