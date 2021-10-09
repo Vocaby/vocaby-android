@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="radius">6dp</dimen>
+    <dimen name="radius">4dp</dimen>
     <dimen name="header_padding">6dp</dimen>
     <dimen name="custom_entry_card_height">50dp</dimen>
+    <dimen name="header_margin_before_slide">66dp</dimen>
+    <dimen name="header_margin_after_slide">22dp</dimen>
+    <dimen name="search_margin_before_slide">104dp</dimen>
+    <dimen name="search_margin_after_slide">12dp</dimen>
+    <dimen name="card_content_margin">12dp</dimen>
+    <dimen name="flag_offset">15dp</dimen>
 </resources>

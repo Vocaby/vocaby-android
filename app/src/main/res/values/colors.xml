@@ -6,10 +6,10 @@
     <color name="colorPrimary_selected">#F3FFF4</color>
     <color name="colorHeadline">#D83A56</color>
     <color name="very_light_gray">#FAFAFA</color>
-    <color name="light_gray">#F3F3F3</color>
+    <color name="light_gray">#EAEAEA</color>
     <color name="gray">#C1C1C1</color>
     <color name="dark_gray">#777777</color>
-    <color name="black">#2C2C2C</color>
+    <color name="black">#404040</color>
     <color name="white">#FFFFFFFF</color>
     <color name="turquoise">#30D5C8</color>
     <color name="orange">#FF8000</color>

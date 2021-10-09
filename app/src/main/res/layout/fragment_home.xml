@@ -11,68 +11,99 @@
         android:layout_height="0dp"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocaby_header"
+        app:layout_constraintTop_toBottomOf="@+id/search_container"
         app:layout_constraintWidth_percent="0.92" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="0dp"
-        android:layout_height="130dp"
+        android:layout_height="50dp"
+        android:background="@drawable/box_bottom_stroke_gray"
+        android:gravity="center_vertical"
+        android:translationZ="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/header_background"
-            android:layout_width="0dp"
-            android:layout_height="90dp"
-            android:contentDescription="@string/gradient_bg"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/vocaby_header_logo"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:contentDescription="@string/app_logo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/green_gradient" />
+            app:srcCompat="@drawable/ic_vocaby_logo" />
 
         <TextView
             android:id="@+id/header_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="@dimen/container_side_margin"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="@string/app_header"
-            android:textColor="@color/white"
-            android:textSize="20sp"
+            android:text="@string/app_name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:theme="@style/Theme.VocabyAndroid.TextHeadline"
+            app:layout_constraintStart_toEndOf="@+id/vocaby_header_logo"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/search_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:background="@drawable/box_bottom_stroke_white"
+        android:translationZ="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vocaby_header">
+
+        <TextView
+            android:id="@+id/dictionary_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/Theme.VocabyAndroid.TextHeaderWithShadow"
+            android:text="@string/dictionary_header"
+            android:textColor="@color/colorPrimary"
+            android:textSize="36sp"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
             app:layout_constraintStart_toEndOf="@+id/vocaby_header_logo"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/vocaby_header_logo"
-            android:layout_width="30dp"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_history_container"
+            android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_marginTop="@dimen/container_side_margin"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:contentDescription="@string/app_logo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/logo_boxed" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:paddingStart="@dimen/container_side_margin"
+            android:paddingEnd="@dimen/container_side_margin"
+            android:clipToPadding="false"
+            android:layout_marginTop="@dimen/header_margin_before_slide"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal" />
+    </LinearLayout>
 
     <com.arlib.floatingsearchview.FloatingSearchView
         android:id="@+id/vocaby_search_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:floatingSearch_searchBarMarginTop="64dp"
+        android:translationZ="1dp"
+        app:floatingSearch_searchBarMarginTop="@dimen/search_margin_before_slide"
         app:floatingSearch_searchBarMarginLeft="@dimen/container_side_margin"
         app:floatingSearch_searchBarMarginRight="@dimen/container_side_margin"
-        app:floatingSearch_close_search_on_keyboard_dismiss="true"
+        app:floatingSearch_close_search_on_keyboard_dismiss="false"
+        app:floatingSearch_dimBackground="true"
         app:floatingSearch_searchHint="@string/search_hint"
         app:floatingSearch_suggestionsListAnimDuration="250"
         app:floatingSearch_leftActionMode="showSearch"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -72,8 +72,8 @@ public class DataManager {
 
     public List<String> writeHistory(String word) {
         history.add(0, word);
-        if(history.size() > 3) {
-            history.remove(3);
+        if(history.size() > 5) {
+            history.remove(5);
         }
 
         new Thread(() -> {

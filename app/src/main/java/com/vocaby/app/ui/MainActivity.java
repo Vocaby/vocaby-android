@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return true;
-        }); ;
+        });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -117,22 +117,6 @@ public class MainActivity extends AppCompatActivity {
                 .setTopLeftCorner(CornerFamily.ROUNDED, radius)
                 .build()
         );
-    }
-
-    @Override
-    public void onBackPressed() {
-        FragmentManager fm = getSupportFragmentManager();
-        for (Fragment frag : fm.getFragments()) {
-            if (frag.isVisible()) {
-                FragmentManager childFm = frag.getChildFragmentManager();
-                if (childFm.getBackStackEntryCount() > 0) {
-                    childFm.popBackStack();
-                    return;
-                }
-            }
-        }
-
-        super.onBackPressed();
     }
 
     private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =

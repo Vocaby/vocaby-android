@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -56,11 +57,18 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
                 TextView definition = card.findViewById(R.id.definition);
                 TextView sentence = card.findViewById(R.id.sentence);
                 TextView counter = card.findViewById(R.id.definition_counter);
+                TextView exampleHeader = card.findViewById(R.id.example_header);
+
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+                layoutParams.setMargins(12, 8, 12, 8);
+                card.setLayoutParams(layoutParams);
 
                 if(sen.length() > 0) {
                     sentence.setText(sen);
                 } else {
                     sentence.setVisibility(View.GONE);
+                    exampleHeader.setVisibility(View.GONE);
                 }
 
                 String numbering = i+1 + ". ";

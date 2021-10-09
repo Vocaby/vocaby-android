@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,25 +20,16 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 
-public class DictionaryHomeFragment extends Fragment implements SearchHistoryAdapter.OnItemTouchListener {
-    private Context ctx;
-    private SearchHistoryAdapter searchHistoryAdapter;
+public class DictionaryHomeFragment extends Fragment {
     private DictionaryViewModel dictionaryViewModel;
 
     private TextView wordView;
     private TextView posView;
     private TextView definition;
     private TextView sentence;
-    private TextView historyAlert;
 
     private View wordBox;
     private ProgressBar progressBar;
-
-    @Override
-    public void onItemTouch(int position) {
-        String word = dictionaryViewModel.getHistoryWord(position);
-        dictionaryViewModel.setSearch(word);
-    }
 
     public DictionaryHomeFragment() {
         // Required empty public constructor
@@ -48,7 +38,7 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ctx = requireActivity().getApplicationContext();
+
     }
 
     @Override
@@ -63,15 +53,6 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
         sentence = view.findViewById(R.id.card_sentence);
         wordBox = view.findViewById(R.id.word_box);
         progressBar = view.findViewById(R.id.randomword_progress);
-
-
-        // History
-        historyAlert = view.findViewById(R.id.history_alert);
-        RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
-        searchHistoryAdapter = new SearchHistoryAdapter(ctx,this);
-        historyContainer.setAdapter(searchHistoryAdapter);
-        historyContainer.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
-        historyContainer.setLayoutManager(new LinearLayoutManager(ctx));
 
         return view;
     }
@@ -89,14 +70,6 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
             definition.setText(wordModel.getFirstGroup().getDefinitionData().get(0).toString());
             sentence.setText(wordModel.getFirstGroup().getDefinitionData().get(0).getExample());
             wordBox.setOnClickListener(v -> dictionaryViewModel.setSearch(wordModel.getEntry()));
-        });
-
-        dictionaryViewModel.getSearchHistory().observe(getViewLifecycleOwner(), searchHistory -> {
-            if(searchHistory.size() > 0) {
-                historyAlert.setVisibility(View.INVISIBLE);
-            }
-
-            searchHistoryAdapter.updateSearchHistory(searchHistory);
         });
     }
 
