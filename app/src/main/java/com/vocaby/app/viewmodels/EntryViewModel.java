@@ -65,7 +65,7 @@ public class EntryViewModel extends AndroidViewModel {
 
         groupChanges = new GroupChanges(-1);
         initialGroups = new ArrayList<>();
-        isEdit = false;
+        isEdit = true;
         shouldDelete = false;
 
         // Used to notify adapter
@@ -246,6 +246,7 @@ public class EntryViewModel extends AndroidViewModel {
                                 shouldDelete = true;
                                 mResult.setValue(SAVE_ENTRY);
                             }, error -> {
+                                Bugsnag.notify(error);
                                 Log.d("vocabydebug", error.getMessage());
                             })
                 );
@@ -258,6 +259,7 @@ public class EntryViewModel extends AndroidViewModel {
                                 entryData.setId(id);
                                 mResult.setValue(SAVE_ENTRY);
                             }, error -> {
+                                Bugsnag.notify(error);
                                 Log.d("vocabydebug", error.getMessage());
                             })
             );
