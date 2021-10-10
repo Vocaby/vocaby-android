@@ -25,7 +25,6 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
     private Context ctx;
     private TextView savesCount;
     private SavesAdapter savesAdapter;
-    private ProgressBar progressBar;
 
     private UserViewModel userViewModel;
 
@@ -49,7 +48,6 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
         savesCount = view.findViewById(R.id.saves_count);
-        progressBar = view.findViewById(R.id.saves_progressBar);
 
         return view;
     }

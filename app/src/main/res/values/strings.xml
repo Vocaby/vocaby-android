@@ -78,7 +78,7 @@
     <string name="clear_saves">Clear Saves</string>
     <string name="profile_background">Profile Background</string>
     <string name="sync_your_data">Sync your data</string>
-    <string name="saved_words">Saved Words</string>
+    <string name="saved_entries">Saved Entries</string>
     <string name="zero">0</string>
     <string name="app_label">Vocaby</string>
     <string name="custom_entries">Custom Entries</string>
@@ -117,4 +117,5 @@
     <string name="entries_header">ENTRIES</string>
     <string name="original">ORIGINAL</string>
     <string name="custom">CUSTOM</string>
+    <string name="entry">entry</string>
 </resources>

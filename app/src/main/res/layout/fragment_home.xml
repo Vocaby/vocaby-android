@@ -19,7 +19,7 @@
     <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:gravity="center_vertical"
         android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:textColor="@color/colorSecondary"
-            android:textSize="11sp" />
+            android:textSize="12sp" />
 
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -79,7 +79,7 @@
             android:layout_marginEnd="@dimen/container_side_margin"
             android:textColor="@color/black"
             android:text="@string/entries_header"
-            android:textSize="11sp" />
+            android:textSize="12sp" />
     </LinearLayout>
 
     <LinearLayout
