@@ -114,4 +114,7 @@
     <string name="entry_edit_hint">Enter a word or a phrase…</string>
     <string name="group_header_alert">Please add a group</string>
     <string name="dictionary_header">Dictionary</string>
+    <string name="entries_header">ENTRIES</string>
+    <string name="original">ORIGINAL</string>
+    <string name="custom">CUSTOM</string>
 </resources>

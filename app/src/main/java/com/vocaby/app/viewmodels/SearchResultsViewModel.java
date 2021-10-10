@@ -12,7 +12,6 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.Constants;
-import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.models.EntryDataPackage;
 import com.vocaby.app.models.EntryModel;
@@ -54,7 +53,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                             return vocabyRepository.getWordDataPackageLocally(searched, userId);
                         }).subscribe(mEntryPackage::setValue, error -> {
                             if (error instanceof EmptyResultSetException) {
-                                mEntryPackage.setValue(new EntryDataPackage(new EntryModel(searched), false));
+                                mEntryPackage.setValue(new EntryDataPackage(new EntryModel(searched), new EntryModel(searched), false));
                             }
 
                             Bugsnag.notify(error);

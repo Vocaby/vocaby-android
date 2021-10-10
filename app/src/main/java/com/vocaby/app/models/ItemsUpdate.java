@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+// TODO: Can I use a SparseArray here?
 public abstract class ItemsUpdate<T> implements Parcelable {
     private Map<String, T> itemsAdded;
     private Map<String, T> itemsDeleted;

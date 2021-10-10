@@ -9,14 +9,14 @@
             android:checked="true"/>
 
         <item
-            android:id="@+id/customEntryFragment"
-            android:icon="@drawable/ic_entry"
-            android:title="@string/nav_custom_entries" />
-
-        <item
             android:id="@+id/savesFragment"
             android:icon="@drawable/nav_saves"
             android:title="@string/nav_saves" />
+
+        <item
+            android:id="@+id/customEntryFragment"
+            android:icon="@drawable/ic_entry"
+            android:title="@string/nav_custom_entries" />
 
         <item
             android:id="@+id/profileFragment"

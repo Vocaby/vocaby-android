@@ -25,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomEntryAdapter;
 import com.vocaby.app.data.entity.CustomEntry;
@@ -98,6 +99,8 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     }
 
     public void updateCount() {
+        Log.d(Constants.DEBUG_TAG, "Hit");
+        dictionaryViewModel.resetDictionaryEntries();
         String count = "" + customEntryAdapter.getItemCount();
         entryCountView.setText(count);
     }

@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingStart="12dp"
-    android:paddingBottom="6dp"
-    android:paddingEnd="12dp"
-    android:paddingTop="4dp"
     android:layout_marginEnd="8dp"
-    android:background="@drawable/box_white_stroked_gray">
-
-    <TextView
-        android:id="@+id/history_item"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="@dimen/radius">
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.VocabyAndroid.TextHeader"
-        android:textColor="@color/black"
-        android:gravity="center_vertical" />
-</LinearLayout>
+        android:paddingStart="12dp"
+        android:paddingBottom="6dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="4dp"
+        android:background="@drawable/box_white_stroked_gray">
+
+        <TextView
+            android:id="@+id/history_item"
+            style="@style/Theme.VocabyAndroid.TextHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

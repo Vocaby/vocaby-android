@@ -19,6 +19,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,7 +34,6 @@ public class DataManager {
     private static DataManager dataManager = null;
     private static Context ctx;
     private static final String HISTORY_DATA_FILE_NAME = "hVocaby";
-    private static final String ENTRIES_DATA_FILE_NAME = "dictEntriesVocaby";
     private static List<String> history;
     private List<String> dictionaryEntries;
 
@@ -73,8 +73,9 @@ public class DataManager {
 
     public List<String> writeHistory(String word) {
         history.add(1, word);
-        if(history.size() > 6) {
-            history.remove(6);
+
+        if(history.size() > 5) {
+            history.remove(5);
         }
 
         new Thread(() -> {
@@ -132,7 +133,9 @@ public class DataManager {
     public void addEntryToDictionary(String entry) {
         int index = VocabyAlgo.BinarySearchPrefix(dictionaryEntries, entry.substring(0, 1));
         for (int i = index; i < dictionaryEntries.size(); i++) {
-            if (dictionaryEntries.get(i).compareTo(entry) > 0) {
+            if (dictionaryEntries.get(i).equals(entry)) {
+              break;
+            } else if (dictionaryEntries.get(i).compareTo(entry) > 0) {
                 dictionaryEntries.add(i, entry);
                 break;
             }
@@ -142,7 +145,7 @@ public class DataManager {
     }
 
     public void deleteEntryFromDictionary(String entry) {
-        int index = VocabyAlgo.BinarySearchPrefix(dictionaryEntries, entry);
+        int index = Collections.binarySearch(dictionaryEntries, entry);
         if (index != -1) dictionaryEntries.remove(index);
 
         replaceDictionaryEntries(dictionaryEntries);

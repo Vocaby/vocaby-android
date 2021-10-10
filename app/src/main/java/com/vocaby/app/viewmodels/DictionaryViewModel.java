@@ -31,7 +31,7 @@ public class DictionaryViewModel extends AndroidViewModel {
     private final CompositeDisposable compositeDisposable;
     private final MutableLiveData<List<String>> searchHistory;
     private final VocabyRepository vocabyRepository;
-    private List<String> dictionaryEntries;
+    private final MutableLiveData<List<String>> mDictionaryEntries;
 
     public DictionaryViewModel(Application application) {
         super(application);
@@ -40,7 +40,7 @@ public class DictionaryViewModel extends AndroidViewModel {
         mWordModel = new SingleLiveEvent<>();
         compositeDisposable = new CompositeDisposable();
         vocabyRepository = new VocabyRepository(getApplication());
-        dictionaryEntries = new ArrayList<>();
+        mDictionaryEntries = new MutableLiveData<>(new ArrayList<>());
 
         searchHistory = new MutableLiveData<>();
         searchHistory.setValue(vocabyRepository.getHistory());
@@ -49,8 +49,16 @@ public class DictionaryViewModel extends AndroidViewModel {
     public void populateDictionaryEntries() {
         compositeDisposable.add(
                 vocabyRepository.populateDictionaryEntries()
-                        .subscribe(entries -> dictionaryEntries = entries, Throwable::printStackTrace)
+                        .subscribe(mDictionaryEntries::setValue, Throwable::printStackTrace)
         );
+    }
+
+    public void resetDictionaryEntries() {
+        mDictionaryEntries.setValue(mDictionaryEntries.getValue());
+    }
+
+    public LiveData<List<String>> getDictionaryEntries() {
+        return mDictionaryEntries;
     }
 
     public void updateRandomWord() {
@@ -92,10 +100,10 @@ public class DictionaryViewModel extends AndroidViewModel {
 
     public List<SearchSuggestionItem> getSearchSuggestion(String newQuery, int threshold) {
         List<SearchSuggestionItem> searchSuggestions = new ArrayList<>();
-        if (!newQuery.isEmpty()) {
-            int index = VocabyAlgo.BinarySearchPrefix(dictionaryEntries, newQuery);
-            if (index > -1 && index < dictionaryEntries.size()) {
-                Iterator<String> it = dictionaryEntries.listIterator(index);
+        if (!newQuery.isEmpty() && mDictionaryEntries.getValue() != null) {
+            int index = VocabyAlgo.BinarySearchPrefix(mDictionaryEntries.getValue(), newQuery);
+            if (index > -1 && index < mDictionaryEntries.getValue().size()) {
+                Iterator<String> it = mDictionaryEntries.getValue().listIterator(index);
                 int count = 0;
                 while (it.hasNext() && count < threshold) {
                     String entry = it.next();

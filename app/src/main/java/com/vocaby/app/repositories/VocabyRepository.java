@@ -106,13 +106,7 @@ public class VocabyRepository {
                 getWordDataFromDatabase(word),
                 getEntryData(userId, word),
                 hasSave(word, userId),
-                (entryModel, customEntryModel, save) -> {
-                    EntryModel dataToSend = entryModel;
-                    if (!customEntryModel.isEmpty())
-                        dataToSend = customEntryModel;
-
-                    return new EntryDataPackage(dataToSend, save);
-                }
+                EntryDataPackage::new
         );
     }
 

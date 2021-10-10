@@ -25,9 +25,9 @@ public class FragmentAdapter extends FragmentStateAdapter {
             case 3:
                 return new ProfileFragment();
             case 2:
-                return new SavesFragment();
-            case 1:
                 return new MyEntryFragment();
+            case 1:
+                return new SavesFragment();
             default:
                 return new DictionaryFragment();
         }

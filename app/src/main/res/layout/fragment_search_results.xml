@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:autofit="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:clickable="true">
 
@@ -12,8 +11,10 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,12 +24,12 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="-8dp"
             android:drawableStart="@drawable/ic_close"
             android:drawablePadding="10dp"
             android:fontFamily="@font/sourcesanspro_semibold"
             android:minWidth="0dp"
             android:minHeight="0dp"
-            android:layout_marginStart="-8dp"
             android:padding="8dp"
             android:text="@string/close"
             android:textColor="@color/colorPrimary"
@@ -40,6 +41,41 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
+        <RadioGroup
+            android:id="@+id/dictionary_selector"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:background="@drawable/box_gray"
+            android:checkedButton="@+id/selection_custom"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/selection_custom"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/toggle_widget_background"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/custom"
+                android:textColor="@color/dark_gray"
+                android:textSize="12sp" />
+            <RadioButton
+                android:id="@+id/selection_original"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/toggle_widget_background"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/original"
+                android:textColor="@color/dark_gray"
+                android:textSize="12sp" />
+        </RadioGroup>
+
         <Space
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -48,25 +84,26 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
             <ProgressBar
                 android:id="@+id/save_progress"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_weight="0"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/save_button"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="-8dp"
                 android:drawableStart="@drawable/ic_bookmark_unsaved"
                 android:drawablePadding="4dp"
                 android:fontFamily="@font/sourcesanspro_semibold"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
-                android:layout_marginEnd="-8dp"
                 android:padding="8dp"
                 android:text="@string/save_button_unsaved"
                 android:textColor="@color/colorPrimary"
@@ -75,64 +112,28 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/word_box"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/search_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:minHeight="84dp"
-        android:background="@drawable/box_entry_header"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:paddingTop="@dimen/flag_offset"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        android:indeterminate="true"
+        android:indeterminateTint="@color/colorPrimary"
+        android:scaleY="1.2"
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/search_results_body_pager"
+        app:layout_constraintStart_toStartOf="@+id/search_results_body_pager"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-        <ProgressBar
-            android:id="@+id/search_progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:indeterminateTint="@color/colorPrimary"
-            android:scaleY="1.2" />
-
-        <me.grantland.widget.AutofitTextView
-            android:id="@+id/word_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/Theme.VocabyAndroid.TextHeader"
-            android:layout_marginTop="-4dp"
-            android:maxLines="4"
-            autofit:minTextSize="12sp"
-            android:textSize="24sp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:visibility="gone"
-            android:textAllCaps="true"
-            android:gravity="center"
-            android:textColor="@color/colorPrimary"/>
-
-        <TextView
-            android:id="@+id/pronunciation"
-            android:theme="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:textSize="12sp"
-            android:textColor="@color/black" />
-
-    </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/definitions_recycler_container"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/search_results_body_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/word_box"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:layout_constraintVertical_bias="0.0" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

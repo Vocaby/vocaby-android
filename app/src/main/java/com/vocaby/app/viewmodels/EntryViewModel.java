@@ -236,8 +236,10 @@ public class EntryViewModel extends AndroidViewModel {
 
         if (entryData.getDefinitionGroups().isEmpty()) {
             if (entryData.getId() == -1) {
+                // New entry should have at least one group when saving
                 mResult.setValue(EMPTY_ENTRY);
             } else {
+                // Delete the existing entry
                 compositeDisposable.add(
                         vocabyRepository.deleteUserEntry(entryData.getId(), entryData.getEntry())
                             .subscribe(() -> {
@@ -249,6 +251,7 @@ public class EntryViewModel extends AndroidViewModel {
                 );
             }
         } else {
+            // Save
             compositeDisposable.add(
                     vocabyRepository.insertOrUpdateEntry(userId, entryData.getEntry(), groupChanges, definitionChangesMap)
                             .subscribe((id) -> {

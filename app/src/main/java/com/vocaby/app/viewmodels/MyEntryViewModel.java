@@ -81,23 +81,7 @@ public class MyEntryViewModel extends AndroidViewModel {
     }
 
     public void handleResult(ActivityResult result) {
-        if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-            String entry = result.getData().getStringExtra(MyEntryViewModel.ENTRY_TEXT_KEY);
-            boolean isEdit = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_EDIT, false);
-            boolean delete = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_DELETE, false);
-
-            // deleting the entry
-            if(delete) {
-
-            } else {
-                // Adding a new entry
-                if (!isEdit) {
-
-                } else {
-                    // Updating an existing entry
-                }
-            }
-        }
+        mEntries.setValue(customEntries);
     }
 
     public int getSelectedPosition() {

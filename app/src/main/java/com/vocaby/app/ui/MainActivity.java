@@ -1,16 +1,5 @@
 package com.vocaby.app.ui;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
@@ -18,19 +7,20 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bugsnag.android.Bugsnag;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.shape.CornerFamily;
 import com.google.android.material.shape.MaterialShapeDrawable;
-import com.vocaby.app.receivers.NotificationReceiver;
-import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.R;
+import com.vocaby.app.adapters.FragmentAdapter;
+import com.vocaby.app.receivers.NotificationReceiver;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
@@ -40,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private SharedPreferences sharedPreferences;
     private BottomNavigationView navigationView;
-    private UserViewModel userViewModel;
 
     @SuppressLint("UseCompatTextViewDrawableApis")
     @Override
@@ -51,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         Bugsnag.start(this);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.setupApplication();
 
         DictionaryViewModel dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
@@ -89,9 +78,9 @@ public class MainActivity extends AppCompatActivity {
             int current = item.getItemId();
             if(current == R.id.profileFragment) {
                 viewPager.setCurrentItem(3, false);
-            } else if(current == R.id.savesFragment) {
-                viewPager.setCurrentItem(2, false);
             } else if(current == R.id.customEntryFragment) {
+                viewPager.setCurrentItem(2, false);
+            } else if(current == R.id.savesFragment) {
                 viewPager.setCurrentItem(1, false);
             } else {
                 viewPager.setCurrentItem(0, false);

@@ -10,9 +10,9 @@
         android:id="@+id/dictionary_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
+        android:background="@color/very_light_gray"
         android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,12 +23,12 @@
         android:id="@+id/vocaby_header"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="@drawable/box_bottom_stroke_gray"
         android:gravity="center_vertical"
-        android:translationZ="2dp"
+        android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/search_container">
 
         <ImageView
             android:id="@+id/vocaby_header_logo"
@@ -42,24 +42,47 @@
 
         <TextView
             android:id="@+id/header_text"
+            style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/app_name"
             android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            android:theme="@style/Theme.VocabyAndroid.TextHeadline"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/header_dictionary"
+            style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dictionary_header_margin_before_slide"
             android:layout_marginStart="4dp"
             android:text="@string/dictionary_header"
             android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            android:theme="@style/Theme.VocabyAndroid.TextHeadline" />
+            android:textSize="16sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/header_dictionary_counter"
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/colorSecondary"
+            android:textSize="11sp" />
+
+        <TextView
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:textColor="@color/black"
+            android:text="@string/entries_header"
+            android:textSize="11sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -69,46 +92,42 @@
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:background="@drawable/box_bottom_stroke_white"
-        android:translationZ="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocaby_header">
+        app:layout_constraintTop_toBottomOf="@+id/vocaby_header"
+        app:layout_constraintBottom_toTopOf="@id/dictionary_fragment_container">
 
-        <TextView
-            android:id="@+id/dictionary_header"
+        <ImageView
+            android:id="@+id/search_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:theme="@style/Theme.VocabyAndroid.TextHeaderWithShadow"
-            android:text="@string/dictionary_header"
-            android:textColor="@color/colorPrimary"
-            android:textSize="36sp"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            app:layout_constraintStart_toEndOf="@+id/vocaby_header_logo"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:contentDescription="@string/nav_search"
+            android:layout_gravity="center"
+            android:src="@drawable/search_background"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_history_container"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
+            android:paddingBottom="12dp"
+            android:layout_marginTop="@dimen/header_margin_before_slide"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
             android:paddingStart="@dimen/container_side_margin"
             android:paddingEnd="@dimen/container_side_margin"
-            android:clipToPadding="false"
-            android:layout_marginTop="@dimen/header_margin_before_slide"
-            android:layout_marginBottom="16dp"
-            android:orientation="horizontal" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dictionary_header" />
     </LinearLayout>
 
     <com.arlib.floatingsearchview.FloatingSearchView
         android:id="@+id/vocaby_search_bar"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="match_parent"
-        android:translationZ="1dp"
+        app:floatingSearch_dimBackground="false"
         app:floatingSearch_searchBarMarginTop="@dimen/search_margin_before_slide"
-        app:floatingSearch_searchBarMarginLeft="@dimen/container_side_margin"
-        app:floatingSearch_searchBarMarginRight="@dimen/container_side_margin"
         app:floatingSearch_close_search_on_keyboard_dismiss="false"
-        app:floatingSearch_dimBackground="true"
         app:floatingSearch_searchHint="@string/search_hint"
         app:floatingSearch_suggestionsListAnimDuration="250"
         app:floatingSearch_leftActionMode="showSearch"

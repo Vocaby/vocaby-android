@@ -4,26 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="match_parent">
     <TextView
         android:id="@+id/randomword_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.VocabyAndroid.TextHeadline"
+        style="@style/Theme.VocabyAndroid.TextHeadline"
         android:text="@string/daily_selection_header"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="18dp"
         android:textColor="@color/black" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/word_box"
-        android:layout_width="300dp"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="18dp"
         android:layout_gravity="center_horizontal"
-        android:elevation="4dp"
+        app:cardElevation="4dp"
         app:cardCornerRadius="@dimen/radius">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -31,37 +29,35 @@
             android:background="@drawable/box_daily_entry">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:layout_height="62dp"
                 android:orientation="vertical"
                 android:gravity="center_vertical"
-                android:background="@color/very_light_gray"
                 android:layout_marginStart="@dimen/flag_offset">
                 <TextView
                     android:id="@+id/word_header"
-                    android:theme="@style/Theme.VocabyAndroid.TextHeader"
+                    style="@style/Theme.VocabyAndroid.TextHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/card_content_margin"
                     android:layout_marginEnd="@dimen/card_content_margin"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="20sp" />
+                    android:textColor="@color/black"
+                    android:textSize="28sp" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="122dp"
+                android:minHeight="142dp"
                 android:layout_marginStart="@dimen/flag_offset"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/pos"
-                    android:theme="@style/Theme.VocabyAndroid.TextHeadline"
+                    style="@style/Theme.VocabyAndroid.TextHeadline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:layout_marginStart="@dimen/card_content_margin"
                     android:textColor="@color/colorHeadline"
-                    android:textSize="12sp"
+                    android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/word_header" />
 
@@ -72,6 +68,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="@dimen/card_content_margin"
                     android:layout_marginStart="@dimen/card_content_margin"
+                    android:textSize="16sp"
                     android:ellipsize="end"
                     android:maxLines="4"
                     android:textColor="@color/black" />
@@ -83,6 +80,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="@dimen/card_content_margin"
                     android:layout_marginStart="@dimen/card_content_margin"
+                    android:textSize="16sp"
                     android:ellipsize="end"
                     android:maxLines="1"/>
 
@@ -92,12 +90,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.378" />
+                    android:layout_marginTop="8dp" />
             </LinearLayout>
         </LinearLayout>
 

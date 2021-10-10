@@ -1,6 +1,5 @@
 package com.vocaby.app.api;
 
-import com.vocaby.app.models.OfflineDataModel;
 import com.vocaby.app.models.EntryDataPackage;
 
 import java.util.List;
@@ -48,8 +47,4 @@ public interface VocabyApiService {
     @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
     @GET("account/saves/")
     Single<List<String>> getSaves(@Header("Authorization") String token);
-
-    @Headers("Vocaby-Api-Key: CXPQmDpU.dSA8RCV0BdwsULIoMPjwDAHmmk4jMI3S")
-    @POST("account/sync/")
-    Completable syncData(@Header("Authorization") String token, @Body OfflineDataModel<String> offlineDataModel);
 }

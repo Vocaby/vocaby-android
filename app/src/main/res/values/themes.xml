@@ -54,9 +54,10 @@
 
     <style name="Theme.VocabyAndroid.TextHeaderWithShadow" parent="Widget.AppCompat.TextView">
         <item name="android:fontFamily">@font/playfairdisplay_black</item>
-        <item name="android:shadowColor">@color/colorTertiary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:shadowColor">@color/colorPrimary</item>
         <item name="android:shadowDx">6</item>
-        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowRadius">0.1</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
