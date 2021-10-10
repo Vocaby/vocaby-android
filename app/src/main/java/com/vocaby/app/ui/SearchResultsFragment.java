@@ -18,6 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.vocaby.app.R;
@@ -89,6 +90,8 @@ public class SearchResultsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewPager.setPageTransformer(new MarginPageTransformer(40));
+
         dictionaryViewModel =
                 new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         searchResultsViewModel = new ViewModelProvider(this).get(SearchResultsViewModel.class);
