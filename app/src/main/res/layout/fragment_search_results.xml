@@ -7,14 +7,17 @@
     android:background="@color/white"
     android:clickable="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:clipToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,7 +27,6 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="-8dp"
             android:drawableStart="@drawable/ic_close"
             android:drawablePadding="10dp"
             android:fontFamily="@font/sourcesanspro_semibold"
@@ -34,12 +36,13 @@
             android:text="@string/close"
             android:textColor="@color/colorPrimary"
             android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/dictionary_selector"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
             tools:ignore="SmallSp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
         <RadioGroup
             android:id="@+id/dictionary_selector"
@@ -47,7 +50,12 @@
             android:layout_height="30dp"
             android:background="@drawable/box_gray"
             android:checkedButton="@+id/selection_custom"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
             <RadioButton
                 android:id="@+id/selection_custom"
                 style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -61,6 +69,7 @@
                 android:text="@string/custom"
                 android:textColor="@color/dark_gray"
                 android:textSize="12sp" />
+
             <RadioButton
                 android:id="@+id/selection_original"
                 style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -76,14 +85,16 @@
                 android:textSize="12sp" />
         </RadioGroup>
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
         <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/dictionary_selector"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ProgressBar
                 android:id="@+id/save_progress"
@@ -98,19 +109,18 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="-8dp"
                 android:drawableStart="@drawable/ic_bookmark_unsaved"
                 android:drawablePadding="4dp"
                 android:fontFamily="@font/sourcesanspro_semibold"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:text="@string/save_button_unsaved"
                 android:textColor="@color/colorPrimary"
                 android:textSize="12sp"
                 tools:ignore="SmallSp" />
         </LinearLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/search_progress"

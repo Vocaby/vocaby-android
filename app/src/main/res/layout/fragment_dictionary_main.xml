@@ -2,6 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingStart="@dimen/container_side_margin"
+    android:paddingEnd="@dimen/container_side_margin"
+    android:clipToPadding="false"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent">

@@ -54,7 +54,7 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_entry_builder.xml" value="0.5" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_entry_group_builder_activity.xml" value="0.25" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_login.xml" value="0.24479166666666666" />
-        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_main.xml" value="0.3810952738184546" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_definition_row.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_entry_builder.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_entry_definition_builder_dialog.xml" value="0.33" />
@@ -75,7 +75,7 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_profile_main.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_saves.xml" value="0.5" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search.xml" value="0.33" />
-        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results.xml" value="0.33" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results.xml" value="0.2" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results_body.xml" value="0.2546875" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results_body2.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_successful_creation.xml" value="0.33" />
