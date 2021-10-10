@@ -8,8 +8,8 @@
         <item name="android:windowExitAnimation">@anim/popup_hide</item>
     </style>
 
-    <style name="SwitchText" parent="TextAppearance.AppCompat.Widget.Switch">
-        <item name="fontFamily">@font/sourcesanspro_black</item>
+    <style name="Headline" parent="android:Widget.TextView">
+        <item name="fontFamily">@font/sourcesanspro_semibold</item>
         <item name="android:textSize">12sp</item>
     </style>
 </resources>
