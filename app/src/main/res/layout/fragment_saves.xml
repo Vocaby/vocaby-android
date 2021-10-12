@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.SavesFragment"
+    android:orientation="vertical"
     android:background="@color/white">
 
     <LinearLayout
         android:id="@+id/vocaby_header"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
         android:gravity="center_vertical"
-        android:background="@drawable/box_bottom_stroke_white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@drawable/box_bottom_stroke_white">
 
         <ImageView
             android:id="@+id/vocaby_header_logo"
@@ -24,8 +22,6 @@
             android:layout_height="20dp"
             android:layout_marginStart="@dimen/container_side_margin"
             android:contentDescription="@string/app_logo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_vocaby_logo" />
 
         <TextView
@@ -61,21 +57,38 @@
             android:textColor="@color/black"
             android:textSize="12sp" />
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/saves_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
         android:background="@color/very_light_gray"
-        android:paddingTop="@dimen/container_side_margin"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocaby_header" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/empty_card"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:background="@drawable/box_white_stroked_dash_gray">
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_saves"
+                android:textAllCaps="true"
+                android:textColor="@color/gray"/>
+        </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/saves_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:background="@color/very_light_gray"
+            android:paddingTop="@dimen/container_side_margin"
+            android:paddingStart="@dimen/container_side_margin"
+            android:paddingEnd="@dimen/container_side_margin" />
+    </LinearLayout>
+</LinearLayout>

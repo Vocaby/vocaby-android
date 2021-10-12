@@ -94,13 +94,21 @@
         app:layout_constraintTop_toBottomOf="@+id/vocaby_header"
         app:layout_constraintBottom_toTopOf="@id/dictionary_fragment_container">
 
-        <ImageView
-            android:id="@+id/search_background"
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/nav_search"
-            android:layout_gravity="center"
-            android:src="@drawable/search_background"/>
+            app:cardCornerRadius="@dimen/radius"
+            android:layout_marginStart="@dimen/container_side_margin_offset"
+            android:layout_marginEnd="@dimen/container_side_margin_offset"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/search_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:contentDescription="@string/nav_search"
+                android:src="@drawable/search_background"/>
+        </androidx.cardview.widget.CardView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_history_container"
@@ -120,10 +128,12 @@
 
     <com.arlib.floatingsearchview.FloatingSearchView
         android:id="@+id/vocaby_search_bar"
-        android:layout_width="350dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:floatingSearch_dimBackground="false"
+        app:floatingSearch_dimBackground="true"
         app:floatingSearch_searchBarMarginTop="@dimen/search_margin_before_slide"
+        app:floatingSearch_searchBarMarginLeft="@dimen/container_side_margin"
+        app:floatingSearch_searchBarMarginRight="@dimen/container_side_margin"
         app:floatingSearch_close_search_on_keyboard_dismiss="false"
         app:floatingSearch_searchHint="@string/search_hint"
         app:floatingSearch_suggestionsListAnimDuration="250"

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.vocaby.app.R;
@@ -21,10 +21,11 @@ import com.vocaby.app.adapters.SavesAdapter;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 
-public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTouch {
+public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouchListener {
     private Context ctx;
     private TextView savesCount;
     private SavesAdapter savesAdapter;
+    private LinearLayout emptyCard;
 
     private UserViewModel userViewModel;
 
@@ -48,6 +49,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
         savesCount = view.findViewById(R.id.saves_count);
+        emptyCard = view.findViewById(R.id.empty_card);
 
         return view;
     }
@@ -57,11 +59,13 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
         super.onViewCreated(view, savedInstanceState);
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
         RecyclerView recyclerView = view.findViewById(R.id.saves_container);
-        savesAdapter = new SavesAdapter(ctx, this, userViewModel, getActivity());
+        savesAdapter = new SavesAdapter(ctx, this, getActivity());
         recyclerView.setAdapter(savesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
 
         userViewModel.getSavedWords().observe(getViewLifecycleOwner(), savedWords -> {
+            if (savedWords.size() != 0) emptyCard.setVisibility(View.GONE);
+            else emptyCard.setVisibility(View.VISIBLE);
             savesAdapter.setSavedWords(savedWords);
             setSavesCount(savedWords.size());
         });
@@ -72,12 +76,17 @@ public class SavesFragment extends Fragment implements SavesAdapter.OnSaveItemTo
     }
 
     @Override
-    public void changeSaveCount(int size) {
+    public void onItemDelete(int position, int size) {
         setSavesCount(size);
     }
 
     @Override
     public void getDefinition(int position) {
         ((MainActivity) requireActivity()).showDefinition(userViewModel.getSaveItem(position));
+    }
+
+    @Override
+    public void onLastItemDeleted() {
+        emptyCard.setVisibility(View.VISIBLE);
     }
 }
