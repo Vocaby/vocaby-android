@@ -72,7 +72,7 @@
                 android:minHeight="0dp"
                 android:text="@string/nav_save"
                 android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryAccent"
                 android:textSize="14sp"
                 tools:ignore="SmallSp" />
         </LinearLayout>
@@ -119,7 +119,7 @@
         android:layout_marginBottom="12dp"
         android:fontFamily="@font/playfairdisplay_mid"
         android:hint="@string/custom_entry_header_hint"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorPrimaryAccent"
         android:textSize="22sp" />
 
     <LinearLayout

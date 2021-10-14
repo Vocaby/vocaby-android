@@ -37,7 +37,7 @@
             android:layout_marginEnd="10dp"
             android:textAllCaps="true"
             android:gravity="center"
-            android:textColor="@color/black"/>
+            android:textColor="@color/colorPrimaryAccent"/>
 
         <TextView
             android:id="@+id/pronunciation"

@@ -1,6 +1,5 @@
 package com.vocaby.app.adapters;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +9,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.vocaby.app.Constants;
 import com.vocaby.app.R;
-import com.vocaby.app.data.entity.CustomEntry;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 

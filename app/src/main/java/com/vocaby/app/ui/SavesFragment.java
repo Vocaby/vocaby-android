@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SavesAdapter;
+import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 
@@ -40,11 +41,6 @@ public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouc
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
@@ -58,6 +54,7 @@ public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouc
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+
         RecyclerView recyclerView = view.findViewById(R.id.saves_container);
         savesAdapter = new SavesAdapter(ctx, this, getActivity());
         recyclerView.setAdapter(savesAdapter);
@@ -67,17 +64,17 @@ public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouc
             if (savedWords.size() != 0) emptyCard.setVisibility(View.GONE);
             else emptyCard.setVisibility(View.VISIBLE);
             savesAdapter.setSavedWords(savedWords);
-            setSavesCount(savedWords.size());
         });
-    }
 
-    public void setSavesCount(int size) {
-        savesCount.setText(String.valueOf(size));
+        userViewModel.getSaveCount().observe(getViewLifecycleOwner(), count ->
+                savesCount.setText(StringFormatter.cleanNumber(count))
+        );
     }
 
     @Override
-    public void onItemDelete(int position, int size) {
-        setSavesCount(size);
+    public void onItemDelete(String entry, int size) {
+        userViewModel.removeSave(entry);
+        userViewModel.setSavesCount();
     }
 
     @Override

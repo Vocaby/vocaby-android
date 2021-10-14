@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/card_content_margin"
                     android:layout_marginEnd="@dimen/card_content_margin"
-                    android:textColor="@color/black"
+                    android:textColor="@color/colorPrimaryAccent"
                     android:textSize="28sp" />
             </LinearLayout>
             <LinearLayout

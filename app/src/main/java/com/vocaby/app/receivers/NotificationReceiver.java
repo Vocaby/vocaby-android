@@ -14,7 +14,6 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.Constants;
 import com.vocaby.app.R;
-import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
 
@@ -83,7 +82,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification_white)
-                .setColor(context.getColor(R.color.colorPrimary))
+                .setColor(context.getColor(R.color.colorPrimaryAccent))
                 .setContentTitle(title.toUpperCase())
                 .setContentIntent(resultPendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle()

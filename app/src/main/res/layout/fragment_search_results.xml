@@ -34,7 +34,7 @@
             android:minHeight="0dp"
             android:padding="8dp"
             android:text="@string/close"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorPrimaryAccent"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/dictionary_selector"
@@ -116,7 +116,7 @@
                 android:minHeight="0dp"
                 android:padding="4dp"
                 android:text="@string/save_button_unsaved"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryAccent"
                 android:textSize="12sp"
                 tools:ignore="SmallSp" />
         </LinearLayout>
@@ -128,7 +128,7 @@
         android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:indeterminateTint="@color/colorPrimary"
+        android:indeterminateTint="@color/colorPrimaryAccent"
         android:scaleY="1.2"
         app:layout_constraintVertical_bias="0.3"
         app:layout_constraintBottom_toBottomOf="parent"

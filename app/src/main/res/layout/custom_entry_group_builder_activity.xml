@@ -65,7 +65,7 @@
                 android:minHeight="0dp"
                 android:text="@string/nav_save"
                 android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryAccent"
                 android:textSize="14sp"
                 tools:ignore="SmallSp" />
         </LinearLayout>
@@ -80,7 +80,7 @@
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
         android:layout_marginTop="@dimen/container_side_margin"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorPrimaryAccent"
         android:textSize="34sp"
         android:textAllCaps="true"
         android:fontFamily="@font/playfairdisplay_mid"/>

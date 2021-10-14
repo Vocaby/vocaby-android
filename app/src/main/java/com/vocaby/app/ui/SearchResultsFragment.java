@@ -138,6 +138,11 @@ public class SearchResultsFragment extends Fragment {
                 entryData.add(wordPackage.getOriginalData());
                 RadioButton button = dictionarySelector.findViewById(R.id.selection_custom);
                 dictionarySelector.removeView(button);
+
+                if (wordPackage.getOriginalData().isEmpty()) {
+                    saveButton.setVisibility(View.GONE);
+                }
+
             }
 
             viewPager.setAdapter(new FragmentAdapter(this, entryData));
@@ -183,7 +188,7 @@ public class SearchResultsFragment extends Fragment {
 
         saveProgress.setVisibility(View.INVISIBLE);
         saveButton.setEnabled(true);
-        saveButton.setTextColor(ctx.getColor(R.color.colorPrimary));
+        saveButton.setTextColor(ctx.getColor(R.color.colorPrimaryAccent));
         saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
     }
 

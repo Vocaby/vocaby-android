@@ -1,6 +1,7 @@
 package com.vocaby.app.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -8,8 +9,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,26 +20,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomEntryAdapter;
-import com.vocaby.app.data.entity.CustomEntry;
+import com.vocaby.app.models.CustomEntryPackage;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.MyEntryViewModel;
 
 public class MyEntryFragment extends Fragment implements CustomEntryAdapter.ItemTouchListener {
+    private Context ctx;
+
     private BottomSheetDialog entryEditDialog;
     private CustomEntryAdapter customEntryAdapter;
     private TextView entryCountView;
     private EditText entryEdit;
     private TextView entryAlert;
     private MyEntryViewModel entryViewModel;
-    private RecyclerView recyclerView;
     private DictionaryViewModel dictionaryViewModel;
 
     public MyEntryFragment() {
@@ -48,15 +47,15 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ctx = requireActivity().getApplicationContext();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_entry, container, false);
-
         setupEntryBuilder();
 
         // Add Entry
@@ -73,8 +72,6 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
 
         entryCountView = view.findViewById(R.id.entry_count);
 
-        setupRecyclerView(view);
-
         return view;
     }
 
@@ -83,26 +80,22 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
         super.onViewCreated(view, savedInstanceState);
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         entryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
+        setupRecyclerView(view);
 
         entryViewModel.getEntries().observe(getViewLifecycleOwner(), customEntries -> {
             customEntryAdapter.setList(customEntries);
-            updateCount();
         });
+
+        entryViewModel.getCustomEntryCount().observe(getViewLifecycleOwner(), count ->
+                entryCountView.setText(StringFormatter.cleanNumber(count))
+        );
     }
 
     private void setupRecyclerView(View view) {
-        recyclerView = view.findViewById(R.id.custom_entry_container);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext()));
+        RecyclerView recyclerView = view.findViewById(R.id.custom_entry_container);
         customEntryAdapter = new CustomEntryAdapter(this);
         recyclerView.setAdapter(customEntryAdapter);
-    }
-
-    public void updateCount() {
-        Log.d(Constants.DEBUG_TAG, "Hit");
-        dictionaryViewModel.resetDictionaryEntries();
-        String count = "" + customEntryAdapter.getItemCount();
-        entryCountView.setText(count);
+        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
     }
 
     private void setupEntryBuilder() {
@@ -144,19 +137,18 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-                    String entry = result.getData().getStringExtra(MyEntryViewModel.ENTRY_TEXT_KEY);
-                    boolean isEdit = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_EDIT, false);
-                    boolean delete = result.getData().getBooleanExtra(MyEntryViewModel.ENTRY_DELETE, false);
-
-                    if(delete) {
-                        customEntryAdapter.deleteEntry(entry);
+                    CustomEntryPackage customEntryPackage =
+                            result.getData().getParcelableExtra(MyEntryViewModel.CUSTOM_ENTRY_PACKAGE_KEY);
+                    if(customEntryPackage.isDelete()) {
+                        customEntryAdapter.deleteEntry(customEntryPackage.getEntry());
                     } else {
-                        if (!isEdit) {
-                            customEntryAdapter.addEntry(entry);
+                        if (!customEntryPackage.isEdit()) {
+                            customEntryAdapter.addEntry(customEntryPackage.getEntry());
                         }
                     }
                 }
 
+                dictionaryViewModel.resetDictionaryEntries();
                 entryViewModel.handleResult(result);
             }
     );

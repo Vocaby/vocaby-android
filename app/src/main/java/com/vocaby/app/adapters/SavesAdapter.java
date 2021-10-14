@@ -31,7 +31,7 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     private final MaterialAlertDialogBuilder builder;
 
     public interface SaveItemTouchListener {
-        void onItemDelete(int position, int size);
+        void onItemDelete(String entry, int size);
         void getDefinition(int position);
         void onLastItemDeleted();
     }
@@ -75,8 +75,8 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     }
 
     public void removeWord(int position) {
+        saveItemTouchListener.onItemDelete(saves.get(position), saves.size());
         saves.remove(position);
-        saveItemTouchListener.onItemDelete(position, saves.size());
         notifyItemRemoved(position);
 
         if (saves.size() == 0) saveItemTouchListener.onLastItemDeleted();

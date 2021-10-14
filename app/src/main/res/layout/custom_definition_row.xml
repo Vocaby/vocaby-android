@@ -39,7 +39,7 @@
                 android:id="@+id/definition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryAccent"
                 android:textSize="16sp"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/sourcesanspro_regular" />

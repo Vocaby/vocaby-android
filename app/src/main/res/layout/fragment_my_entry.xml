@@ -119,7 +119,7 @@
             android:textColor="@color/white"
             android:drawableTint="@color/white"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTint="@color/colorPrimaryAccent"
             android:textAllCaps="false"
             android:drawableStart="@drawable/ic_add"
             android:text="@string/add_entry_button" />

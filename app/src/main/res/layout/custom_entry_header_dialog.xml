@@ -48,7 +48,7 @@
             android:minHeight="0dp"
             android:text="@string/nav_save"
             android:textAllCaps="false"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorPrimaryAccent"
             android:textSize="14sp"
             tools:ignore="SmallSp" />
     </LinearLayout>
@@ -95,7 +95,7 @@
             android:hint="@string/entry_edit_hint"
             android:importantForAutofill="no"
             android:imeOptions="actionDone"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorPrimaryAccent"
             android:fontFamily="@font/playfairdisplay_mid"
             android:background="@drawable/gray_background"
             android:textSize="22sp"

@@ -1,7 +1,10 @@
 package com.vocaby.app.repositories;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 
+import com.vocaby.app.Constants;
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.data.DataManager;
@@ -39,6 +42,7 @@ public class VocabyRepository {
     private final ApiManager apiManager;
     private final VocabyDao vocabyDao;
     private final DataManager dataManager;
+    private final SharedPreferences userSharedPreference;
 
 
     public VocabyRepository(Application application) {
@@ -46,6 +50,20 @@ public class VocabyRepository {
         vocabyDao = vocabyDatabase.vocabyDao();
         apiManager = ApiManager.getInstance();
         dataManager = DataManager.getInstance(application);
+        userSharedPreference = application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
+    }
+
+    public Single<Integer> getCurrentUserId() {
+        return Single.just(userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1));
+    }
+
+    public Completable writeUserId(int id) {
+        return Completable.fromAction(() -> {
+            SharedPreferences.Editor editor = userSharedPreference.edit();
+            editor.putInt("LOCAL_USER_ID", id);
+            editor.putInt(Constants.CURRENT_USER_ID_KEY, id);
+            editor.apply();
+        });
     }
 
     // HISTORY

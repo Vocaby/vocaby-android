@@ -21,6 +21,7 @@ import com.google.android.material.shape.MaterialShapeDrawable;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.receivers.NotificationReceiver;
+import com.vocaby.app.utils.Logger;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
@@ -36,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Bugsnag.start(this);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.fragment_container);
         viewPager.setAdapter(new FragmentAdapter(this));
         viewPager.setUserInputEnabled(false);
+        viewPager.setOffscreenPageLimit(1);
         navigationView = findViewById(R.id.navigation_view);
         navigationView.bringToFront();
         navigationView.setOnItemSelectedListener(item -> {

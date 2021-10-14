@@ -36,7 +36,7 @@
             android:textAllCaps="true"
             android:textSize="20sp"
             android:fontFamily="@font/playfairdisplay_mid"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimaryAccent"/>
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"

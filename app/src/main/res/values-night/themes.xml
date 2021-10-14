@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.VocabyAndroid.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/splash</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorPrimaryAccent</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryAccent</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/white</item>
@@ -12,8 +12,8 @@
     <!-- Base application theme. -->
     <style name="Theme.VocabyAndroid" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorPrimaryAccent</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryAccent</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="android:windowBackground">@color/white</item>
 
@@ -22,7 +22,7 @@
 
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
 
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorPrimaryAccent</item>
 
         <item name="android:fontFamily">@font/sourcesanspro_regular</item>
         <item name="android:textColor">@color/black</item>
@@ -41,12 +41,12 @@
 
     <style name="Theme.VocabyAndroid.ProfileButton" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="iconTint">@color/colorPrimary</item>
+        <item name="iconTint">@color/colorPrimaryAccent</item>
         <item name="fontFamily">@font/sourcesanspro_semibold</item>
         <item name="android:textSize">18sp</item>
         <item name="android:paddingBottom">18dp</item>
         <item name="android:paddingTop">18dp</item>
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorPrimaryAccent</item>
         <item name="textAllCaps">false</item>
         <item name="android:drawablePadding">28dp</item>
         <item name="android:paddingLeft">32dp</item>

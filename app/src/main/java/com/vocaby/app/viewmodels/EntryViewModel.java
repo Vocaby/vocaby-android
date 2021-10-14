@@ -2,23 +2,20 @@ package com.vocaby.app.viewmodels;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.bugsnag.android.Bugsnag;
-import com.vocaby.app.Constants;
+import com.vocaby.app.models.CustomEntryPackage;
 import com.vocaby.app.models.DefinitionChanges;
 import com.vocaby.app.models.DefinitionGroupModel;
-import com.vocaby.app.models.DefinitionModel;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.models.GroupChanges;
 import com.vocaby.app.repositories.VocabyRepository;
+import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 
 import java.util.ArrayList;
@@ -45,19 +42,16 @@ public class EntryViewModel extends AndroidViewModel {
     private List<DefinitionGroupModel> initialGroups;
     private final SingleLiveEvent<Integer> mResult;
     private final SingleLiveEvent<List<DefinitionGroupModel>> mGroups;
-    private final SharedPreferences userSharedPreference;
 
     private int selectedItemPosition;
     private GroupChanges groupChanges;
     private Map<String, DefinitionChanges> definitionChangesMap;
-    private boolean isEdit;
-    private boolean shouldDelete;
+    private CustomEntryPackage customEntryPackage;
 
     public EntryViewModel(Application application) {
         super(application);
         vocabyRepository = new VocabyRepository(application);
         compositeDisposable = new CompositeDisposable();
-        userSharedPreference = getApplication().getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
 
         selectedItemPosition = 0;
         mGroups = new SingleLiveEvent<>();
@@ -65,8 +59,6 @@ public class EntryViewModel extends AndroidViewModel {
 
         groupChanges = new GroupChanges(-1);
         initialGroups = new ArrayList<>();
-        isEdit = true;
-        shouldDelete = false;
 
         // Used to notify adapter
         mResult = new SingleLiveEvent<>();
@@ -90,10 +82,7 @@ public class EntryViewModel extends AndroidViewModel {
     }
 
     public Intent addResultDataToIntent(Intent intent) {
-        intent.putExtra(MyEntryViewModel.ENTRY_TEXT_KEY, entryData.getEntry());
-        intent.putExtra(MyEntryViewModel.ENTRY_ID_KEY, entryData.getId());
-        intent.putExtra(MyEntryViewModel.ENTRY_DELETE, shouldDelete);
-        intent.putExtra(MyEntryViewModel.ENTRY_EDIT, isEdit);
+        intent.putExtra(MyEntryViewModel.CUSTOM_ENTRY_PACKAGE_KEY, customEntryPackage);
 
         return intent;
     }
@@ -135,7 +124,6 @@ public class EntryViewModel extends AndroidViewModel {
                 String type = definitionGroup.getType();
                 if (definitionGroup.isEmpty()) {
                     groupChanges.removeItem(definitionGroup.getType(), definitionGroup);
-                    shouldDelete = true;
                     mResult.setValue(REMOVE_GROUP);
                 } else {
                     if (entryData.hasGroup(type)) {
@@ -159,32 +147,28 @@ public class EntryViewModel extends AndroidViewModel {
     }
 
     public String parseRetrieved(Intent intent) {
-        String entry = intent.getStringExtra(MyEntryViewModel.ENTRY_TEXT_KEY);
-        int userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
+        customEntryPackage = intent.getParcelableExtra(MyEntryViewModel.CUSTOM_ENTRY_PACKAGE_KEY);
 
         compositeDisposable.add(
-                vocabyRepository.getEntryData(userId, entry)
-                        .subscribe(entryData -> {
-                                    this.entryData = entryData;
-                                    initialGroups = new ArrayList<>(entryData.getDefinitionGroups());
-                                    groupChanges.setEntryId(entryData.getId());
-                                    mGroups.setValue(entryData.getDefinitionGroups());
+                vocabyRepository.getCurrentUserId()
+                .flatMap(userId -> vocabyRepository.getEntryData(userId, customEntryPackage.getEntry()))
+                .subscribe(entryData -> {
+                            this.entryData = entryData;
+                            initialGroups = new ArrayList<>(entryData.getDefinitionGroups());
+                            groupChanges.setEntryId(entryData.getId());
+                            mGroups.setValue(entryData.getDefinitionGroups());
 
-                                    for (DefinitionGroupModel group : entryData.getDefinitionGroups()) {
-                                        definitionChangesMap.put(group.getType(), new DefinitionChanges(group.getGroupId()));
-                                    }
-
-                                    if (entryData.getId() == -1) {
-                                        isEdit = false;
-                                    }
-                                }, error -> {
-                                    error.printStackTrace();
-                                    Bugsnag.notify(error);
-                                }
-                        )
+                            for (DefinitionGroupModel group : entryData.getDefinitionGroups()) {
+                                definitionChangesMap.put(group.getType(), new DefinitionChanges(group.getGroupId()));
+                            }
+                        }, error -> {
+                            error.printStackTrace();
+                            Logger.reportError(error);
+                        }
+                )
         );
 
-        return entry;
+        return customEntryPackage.getEntry();
     }
 
     private void checkForUpdatedItems() {
@@ -232,8 +216,6 @@ public class EntryViewModel extends AndroidViewModel {
     public void saveUserEntry() {
         checkForUpdatedItems();
         fixItemOrdering();
-        int userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
-
         if (entryData.getDefinitionGroups().isEmpty()) {
             if (entryData.getId() == -1) {
                 // New entry should have at least one group when saving
@@ -243,10 +225,10 @@ public class EntryViewModel extends AndroidViewModel {
                 compositeDisposable.add(
                         vocabyRepository.deleteUserEntry(entryData.getId(), entryData.getEntry())
                             .subscribe(() -> {
-                                shouldDelete = true;
+                                customEntryPackage.setDelete(true);
                                 mResult.setValue(SAVE_ENTRY);
                             }, error -> {
-                                Bugsnag.notify(error);
+                                Logger.reportError(error);
                                 Log.d("vocabydebug", error.getMessage());
                             })
                 );
@@ -254,14 +236,15 @@ public class EntryViewModel extends AndroidViewModel {
         } else {
             // Save
             compositeDisposable.add(
-                    vocabyRepository.insertOrUpdateEntry(userId, entryData.getEntry(), groupChanges, definitionChangesMap)
-                            .subscribe((id) -> {
-                                entryData.setId(id);
-                                mResult.setValue(SAVE_ENTRY);
-                            }, error -> {
-                                Bugsnag.notify(error);
-                                Log.d("vocabydebug", error.getMessage());
-                            })
+                    vocabyRepository.getCurrentUserId()
+                    .flatMap(userId -> vocabyRepository.insertOrUpdateEntry(userId, entryData.getEntry(), groupChanges, definitionChangesMap))
+                    .subscribe((id) -> {
+                        entryData.setId(id);
+                        mResult.setValue(SAVE_ENTRY);
+                    }, error -> {
+                        Logger.reportError(error);
+                        Log.d("vocabydebug", error.getMessage());
+                    })
             );
         }
     }

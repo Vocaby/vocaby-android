@@ -119,4 +119,18 @@
     <string name="custom">CUSTOM</string>
     <string name="entry">entry</string>
     <string name="empty_saves">empty saves</string>
+    <string name="hi_vocabler">Hi Vocabler!</string>
+    <string name="nav_saved">saved</string>
+    <string name="save_icon_desc">Save Icon</string>
+    <string name="total_entries_icon_desc">Total entries icon</string>
+    <string name="custom_entries_icon_desc">Custom Entries Icon</string>
+    <string name="total_entries_header">total entries</string>
+    <string name="notification_icon_desc">notification icon</string>
+    <string name="notification_type_placeholder">Type</string>
+    <string name="notification_title_placeholder">This is a title</string>
+    <string name="notification_date_placeholder">10.14.2021</string>
+    <string name="nav_data_management">Data Management</string>
+    <string name="nav_support">Support</string>
+    <string name="nav_feedback_button">Feedback</string>
+    <string name="nav_danger_zone">Danger Zone</string>
 </resources>

@@ -9,10 +9,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
-import com.bugsnag.android.Bugsnag;
+// import com.bugsnag.android.Bugsnag;
 import com.vocaby.app.models.SearchSuggestionItem;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
+import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 import com.vocaby.app.utils.VocabyAlgo;
 
@@ -30,6 +31,7 @@ public class DictionaryViewModel extends AndroidViewModel {
     private final SingleLiveEvent<EntryModel> mWordModel;
     private final CompositeDisposable compositeDisposable;
     private final MutableLiveData<List<String>> searchHistory;
+    private final MutableLiveData<Integer> mEntryCount;
     private final VocabyRepository vocabyRepository;
     private final MutableLiveData<List<String>> mDictionaryEntries;
 
@@ -41,6 +43,7 @@ public class DictionaryViewModel extends AndroidViewModel {
         compositeDisposable = new CompositeDisposable();
         vocabyRepository = new VocabyRepository(getApplication());
         mDictionaryEntries = new MutableLiveData<>(new ArrayList<>());
+        mEntryCount = new MutableLiveData<>(0);
 
         searchHistory = new MutableLiveData<>();
         searchHistory.setValue(vocabyRepository.getHistory());
@@ -49,16 +52,26 @@ public class DictionaryViewModel extends AndroidViewModel {
     public void populateDictionaryEntries() {
         compositeDisposable.add(
                 vocabyRepository.populateDictionaryEntries()
-                        .subscribe(mDictionaryEntries::setValue, Throwable::printStackTrace)
+                        .subscribe(entries -> {
+                            mDictionaryEntries.setValue(entries);
+                            mEntryCount.setValue(entries.size());
+                        }, Throwable::printStackTrace)
         );
     }
 
     public void resetDictionaryEntries() {
-        mDictionaryEntries.setValue(mDictionaryEntries.getValue());
+        if (mDictionaryEntries.getValue() != null) {
+            mDictionaryEntries.setValue(mDictionaryEntries.getValue());
+            mEntryCount.setValue(mDictionaryEntries.getValue().size());
+        }
     }
 
     public LiveData<List<String>> getDictionaryEntries() {
         return mDictionaryEntries;
+    }
+
+    public LiveData<Integer> getEntryCount() {
+        return mEntryCount;
     }
 
     public void updateRandomWord() {
@@ -76,7 +89,7 @@ public class DictionaryViewModel extends AndroidViewModel {
                                 editor.apply();
                                 mWordModel.setValue(wordData);
                             }, error -> {
-                                Bugsnag.notify(error);
+                                Logger.reportError(error);
                                 Log.e("DictionaryViewModel: ", error.getMessage());
                             })
             );
@@ -89,7 +102,7 @@ public class DictionaryViewModel extends AndroidViewModel {
                     vocabyRepository.getWordDataFromDatabase(id)
                             .subscribe(mWordModel::setValue,
                                     error -> {
-                                        Bugsnag.notify(error);
+                                        Logger.reportError(error);
                                         Log.e("DictionaryViewModel: ", error.getMessage());
                                     })
             );

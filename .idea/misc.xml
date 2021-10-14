@@ -10,8 +10,14 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_bottom_stroke.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_bottom_stroke_gray.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_bottom_stroke_white.xml" value="0.403125" />
-        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_daily_entry.xml" value="0.2760416666666667" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_bottom_top_stroke_white.xml" value="0.29907407407407405" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_daily_entry.xml" value="1.0" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_entry_header.xml" value="0.2760416666666667" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_gray.xml" value="0.28072916666666664" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_green.xml" value="0.29907407407407405" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_pink.xml" value="0.35833333333333334" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_save_item.xml" value="0.2550925925925926" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_white.xml" value="0.28072916666666664" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_white_stroked_gray.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/custom_entry_header.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/edittext.xml" value="0.28802083333333334" />
@@ -22,9 +28,18 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_auth.xml" value="0.23489583333333333" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_bookmark_disabled.xml" value="0.25625" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_bookmark_saved.xml" value="0.25625" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_boxed_data_management.xml" value="0.35833333333333334" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_boxed_feedback.xml" value="0.35833333333333334" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_boxed_notification.xml" value="0.29907407407407405" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_boxed_support.xml" value="0.35833333333333334" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_boxed_warning.xml" value="0.35833333333333334" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_chevron_right.xml" value="0.35833333333333334" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_close.xml" value="0.28802083333333334" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_close_small.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_data.xml" value="0.35833333333333334" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_drag_indicator.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_feedback.xml" value="0.35833333333333334" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_help.xml" value="0.35833333333333334" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_left_arrow.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_menu.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_notifications.xml" value="0.23489583333333333" />
@@ -35,13 +50,16 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_search_gray.xml" value="0.29010416666666666" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_sync.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_trash.xml" value="0.23489583333333333" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_warning.xml" value="0.35833333333333334" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/ic_widget_preview.xml" value="0.28802083333333334" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/nav_saves.xml" value="0.29010416666666666" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/navigation_header.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/network_indicator.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/saves_container.xml" value="0.403125" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/search_background.xml" value="0.2734375" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/small_button.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/splash.xml" value="0.33" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/toggle_widget_background.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/type_radio_item.xml" value="0.2869791666666667" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/type_radio_items.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/white_background.xml" value="0.403125" />
@@ -50,7 +68,7 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_entry_builder.xml" value="0.5" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_entry_group_builder_activity.xml" value="0.25" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_login.xml" value="0.24479166666666666" />
-        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_definition_row.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_entry_builder.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_entry_definition_builder_dialog.xml" value="0.33" />
@@ -64,14 +82,16 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/definition_row.xml" value="0.67" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/entry_builder_popup_header.xml" value="0.22" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_dictionary_main.xml" value="0.5383194829178208" />
-        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_home.xml" value="0.5" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_home.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_my_entry.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_profile.xml" value="0.25" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_profile2.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_profile_main.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_saves.xml" value="0.5" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search.xml" value="0.33" />
-        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results.xml" value="0.25" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results.xml" value="0.2" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results_body.xml" value="0.2546875" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_search_results_body2.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/fragment_successful_creation.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/history_item.xml" value="0.67" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/nav_header.xml" value="0.33" />
@@ -80,7 +100,7 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/popup_group_builder.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/profile_login.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/profile_register.xml" value="0.33" />
-        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/save_item.xml" value="0.33" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/save_item.xml" value="0.25" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/saves_widget.xml" value="0.2318840579710145" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/section_row.xml" value="0.5" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/settings.xml" value="0.2368659420289855" />
@@ -89,16 +109,6 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/xml/notification_preferences.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/xml/preferences.xml" value="0.2368659420289855" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/xml/type_radio_button.xml" value="0.38697916666666665" />
-        <entry key="app/src/main/res/drawable/box_bottom_stroke_dotted_gray.xml" value="0.1" />
-        <entry key="app/src/main/res/drawable/box_white_stroked_dash_gray.xml" value="0.1" />
-        <entry key="app/src/main/res/font/headline.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_dictionary_main.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.18" />
-        <entry key="app/src/main/res/layout/fragment_my_entry.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_saves.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_search_results.xml" value="0.15" />
-        <entry key="app/src/main/res/layout/history_item.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/history_static_item.xml" value="0.67" />
       </map>
     </option>
   </component>

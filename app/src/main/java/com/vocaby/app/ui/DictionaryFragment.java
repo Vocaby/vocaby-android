@@ -30,12 +30,14 @@ import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.models.SearchSuggestionItem;
+import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
+import static com.vocaby.app.utils.StringFormatter.cleanNumber;
 import static com.vocaby.app.utils.StringFormatter.cleanText;
 
 
@@ -48,7 +50,6 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
     private RecyclerView historyContainer;
     private TextView dictionaryHeaderSmall;
     private TextView entryCounter;
-    private ImageView searchBackground;
 
     public DictionaryFragment() {
         // Required empty public constructor
@@ -72,7 +73,6 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
         searchView.setOnQueryChangeListener(queryChangeListener);
         dictionaryHeaderSmall = view.findViewById(R.id.header_dictionary);
         entryCounter = view.findViewById(R.id.header_dictionary_counter);
-        searchBackground = view.findViewById(R.id.search_background);
 
         if (savedInstanceState == null) {
             getChildFragmentManager().beginTransaction().replace(R.id.dictionary_fragment_container,
@@ -117,10 +117,9 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
             searchHistoryAdapter.updateSearchHistory(searchHistory);
         });
 
-        dictionaryViewModel.getDictionaryEntries().observe(getViewLifecycleOwner(), dictionaryEntries -> {
-            String count = NumberFormat.getNumberInstance(Locale.US).format(dictionaryEntries.size());
-            entryCounter.setText(count);
-        });
+        dictionaryViewModel.getEntryCount().observe(getViewLifecycleOwner(), count ->
+                entryCounter.setText(StringFormatter.cleanNumber(count))
+        );
     }
 
     public void slideUpHeader() {

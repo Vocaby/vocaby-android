@@ -1,8 +1,6 @@
 package com.vocaby.app.viewmodels;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -11,51 +9,51 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
-import com.bugsnag.android.Bugsnag;
-import com.vocaby.app.Constants;
-import com.vocaby.app.adapters.OnSaveItemButtonTouch;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.repositories.VocabyRepository;
-import com.vocaby.app.utils.SingleLiveEvent;
+import com.vocaby.app.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
-public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonTouch {
+public class UserViewModel extends AndroidViewModel {
     private static final int ADD_SAVE = 1;
     private static final int REMOVE_SAVE = 2;
 
     private final VocabyRepository vocabyRepository;
     private final MutableLiveData<List<String>> mSavedWords;
+    private final MutableLiveData<Integer> mSaveCount;
     private final MutableLiveData<User> mUser;
     private final CompositeDisposable compositeDisposable;
-    SharedPreferences userSharedPreference;
 
     public UserViewModel(@NonNull Application application) {
         super(application);
         vocabyRepository = new VocabyRepository(application);
         mSavedWords = new MutableLiveData<>(new ArrayList<>());
         compositeDisposable = new CompositeDisposable();
-        userSharedPreference = getApplication().getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
+        mSaveCount = new MutableLiveData<>(0);
         mUser = new MutableLiveData<>();
     }
 
     public void setupApplication() {
-        int currentId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
         compositeDisposable.add(
-                vocabyRepository.getUser(currentId)
-                        .flatMap(user -> {
-                            mUser.setValue(user);
-                            return vocabyRepository.getUserSaves(user.getUserId());
-                        }).subscribe(mSavedWords::setValue, e -> {
-                            if (e instanceof EmptyResultSetException) {
-                                addDefaultUser();
-                            } else {
-                                Bugsnag.notify(e);
-                                Log.e("UserViewModel (current user): ", e.getMessage());
-                            }
+                vocabyRepository.getCurrentUserId()
+                .flatMap(vocabyRepository::getUser)
+                .flatMap(user -> {
+                    mUser.setValue(user);
+                    return vocabyRepository.getUserSaves(user.getUserId());
+                }).subscribe(saves -> {
+                    mSavedWords.setValue(saves);
+                    mSaveCount.setValue(saves.size());
+                }, e -> {
+                    if (e instanceof EmptyResultSetException) {
+                        addDefaultUser();
+                    } else {
+                        Logger.reportError(e);
+                        Log.e("UserViewModel (current user): ", e.getMessage());
+                    }
                 })
         );
     }
@@ -64,17 +62,15 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
         User user = new User();
         compositeDisposable.add(
                 vocabyRepository.createUser(user)
-                        .subscribe(id -> {
-                            int userId = id.intValue();
-                            SharedPreferences.Editor editor = userSharedPreference.edit();
-                            editor.putInt("LOCAL_USER_ID", userId);
-                            editor.putInt(Constants.CURRENT_USER_ID_KEY, userId);
-                            editor.apply();
-                            mUser.setValue(user);
-                        }, error -> {
-                            Bugsnag.notify(error);
-                            Log.e("UserViewModel (new user): ", error.getMessage());
-                        })
+                .flatMapCompletable(id -> {
+                    int userId = id.intValue();
+                    user.setUserId(userId);
+                    mUser.setValue(user);
+                    return vocabyRepository.writeUserId(userId);
+                }).subscribe(() -> {}, error -> {
+                    Logger.reportError(error);
+                    Log.e("UserViewModel (new user): ", error.getMessage());
+                })
         );
     }
 
@@ -84,6 +80,10 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
 
     public LiveData<List<String>> getSavedWords() {
         return mSavedWords;
+    }
+
+    public LiveData<Integer> getSaveCount() {
+        return mSaveCount;
     }
 
     public String getSaveItem(int position) {
@@ -99,6 +99,7 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
             List<String> list = mSavedWords.getValue();
             list.add(0, entry);
             mSavedWords.setValue(list);
+            mSaveCount.setValue(list.size());
         }
     }
 
@@ -107,7 +108,15 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
             List<String> list = mSavedWords.getValue();
             list.remove(entry);
             mSavedWords.setValue(list);
+            mSaveCount.setValue(list.size());
         }
+    }
+
+    public void setSavesCount() {
+        if (mSavedWords.getValue() != null) {
+            mSaveCount.setValue(mSavedWords.getValue().size());
+        }
+
     }
 
     @Override
@@ -116,15 +125,17 @@ public class UserViewModel extends AndroidViewModel implements OnSaveItemButtonT
         compositeDisposable.clear();
     }
 
-    @Override
     public void removeSave(String word) {
-        int userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
         compositeDisposable.add(
-                vocabyRepository.getUser(userId)
-                        .flatMapCompletable(currentUser ->
-                                vocabyRepository.removeSave(currentUser.getUserId(), word))
-                        .subscribe(() -> {
-                        }, Bugsnag::notify)
+                vocabyRepository.getCurrentUserId()
+                    .flatMap(vocabyRepository::getUser)
+                    .flatMapCompletable(currentUser -> {
+                            removeSaveItem(word);
+                            return vocabyRepository.removeSave(currentUser.getUserId(), word);
+                        }
+                    ).subscribe(() -> {
+                    }, Logger::reportError)
         );
     }
+
 }
