@@ -2,14 +2,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:key="notifications_category"
         app:title="NOTIFICATION SETTINGS">
         <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
             android:key="@string/pref_notification_key"
             android:title="Enable Saves Notification"
             android:summary="Get notified of the words that you saved for review"
             android:defaultValue="false" />
         <ListPreference
+            app:iconSpaceReserved="false"
             android:key="@string/pref_notification_frequency_key"
             android:title="Notification Frequency"
             android:entries="@array/pref_notification_frequency_entries"

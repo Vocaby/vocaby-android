@@ -6,17 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation_view"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        app:itemTextAppearanceActive="@style/Headline"
-        app:itemTextAppearanceInactive="@style/Headline"
+        app:itemIconTint="@color/nav_colors"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:labelVisibilityMode="auto"
-        app:menu="@menu/navigation" />
+        app:labelVisibilityMode="unlabeled"
+        app:menu="@menu/navigation" >
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/fragment_container"

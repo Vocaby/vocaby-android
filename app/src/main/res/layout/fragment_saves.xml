@@ -71,7 +71,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginStart="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin"
-            android:background="@drawable/box_white_stroked_dash_gray">
+            android:background="@drawable/box_gray_stroked_dash_gray">
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"

@@ -21,7 +21,6 @@ import com.google.android.material.shape.MaterialShapeDrawable;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.receivers.NotificationReceiver;
-import com.vocaby.app.utils.Logger;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 

@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -41,6 +42,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     private TextView entryAlert;
     private MyEntryViewModel entryViewModel;
     private DictionaryViewModel dictionaryViewModel;
+    private LinearLayout emptyCard;
 
     public MyEntryFragment() {
         // Required empty public constructor
@@ -56,6 +58,8 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_entry, container, false);
+        emptyCard = view.findViewById(R.id.empty_card);
+
         setupEntryBuilder();
 
         // Add Entry
@@ -83,6 +87,9 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
         setupRecyclerView(view);
 
         entryViewModel.getEntries().observe(getViewLifecycleOwner(), customEntries -> {
+            if (customEntries.size() == 0) emptyCard.setVisibility(View.VISIBLE);
+            else emptyCard.setVisibility(View.GONE);
+
             customEntryAdapter.setList(customEntries);
         });
 
@@ -147,6 +154,9 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
                         }
                     }
                 }
+
+                if (customEntryAdapter.getItemCount() == 0) emptyCard.setVisibility(View.VISIBLE);
+                else emptyCard.setVisibility(View.GONE);
 
                 dictionaryViewModel.resetDictionaryEntries();
                 entryViewModel.handleResult(result);

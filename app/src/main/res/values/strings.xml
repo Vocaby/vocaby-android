@@ -133,4 +133,6 @@
     <string name="nav_support">Support</string>
     <string name="nav_feedback_button">Feedback</string>
     <string name="nav_danger_zone">Danger Zone</string>
+    <string name="empty_custom_entry">Empty Custom Entry</string>
+    <string name="add_an_entry">Add An Entry</string>
 </resources>
