@@ -1,6 +1,5 @@
 package com.vocaby.app.ui;
 
-import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,8 +15,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.bugsnag.android.Bugsnag;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.shape.CornerFamily;
-import com.google.android.material.shape.MaterialShapeDrawable;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.FragmentAdapter;
 import com.vocaby.app.receivers.NotificationReceiver;
@@ -31,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private BottomNavigationView navigationView;
 
-    @SuppressLint("UseCompatTextViewDrawableApis")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         userViewModel.setupApplication();
 
         DictionaryViewModel dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
-        dictionaryViewModel.populateDictionaryEntries();
+        dictionaryViewModel.setupDictionaryEntries();
 
         setupNotification();
         setupNavigation();
@@ -96,16 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 navigationView.getMenu().getItem(position).setChecked(true);
             }
         });
-
-        MaterialShapeDrawable msd = (MaterialShapeDrawable) navigationView.getBackground();
-        float radius = getResources().getDimension(R.dimen.radius);
-        msd.setShapeAppearanceModel(
-                msd.getShapeAppearanceModel()
-                .toBuilder()
-                .setBottomLeftCorner(CornerFamily.ROUNDED, radius)
-                .setTopLeftCorner(CornerFamily.ROUNDED, radius)
-                .build()
-        );
     }
 
     private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
@@ -139,13 +125,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void showDefinition(String word) {
+    public void showDefinition(String entry) {
         viewPager.setCurrentItem(0);
         DictionaryFragment dictionaryFragment = (DictionaryFragment) getSupportFragmentManager()
                 .findFragmentByTag("f0");
 
         if(dictionaryFragment != null) {
-            dictionaryFragment.addResultsFragment(word, true);
+            dictionaryFragment.setSearch(entry);
         }
     }
 }

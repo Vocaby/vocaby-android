@@ -129,7 +129,7 @@ public class DataManager {
         int index = VocabyAlgo.BinarySearchPrefix(dictionaryEntries, entry.substring(0, 1));
         for (int i = index; i < dictionaryEntries.size(); i++) {
             if (dictionaryEntries.get(i).equals(entry)) {
-              break;
+                break;
             } else if (dictionaryEntries.get(i).compareTo(entry) > 0) {
                 dictionaryEntries.add(i, entry);
                 break;

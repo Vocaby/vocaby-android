@@ -3,9 +3,11 @@ package com.vocaby.app.data.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "custom_user_entry")
+@Entity(tableName = "custom_user_entry",
+        indices = {@Index("entry")})
 public class CustomEntry {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "custom_entry_id")

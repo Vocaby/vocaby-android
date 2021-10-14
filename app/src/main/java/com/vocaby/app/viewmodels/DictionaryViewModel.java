@@ -1,5 +1,7 @@
 package com.vocaby.app.viewmodels;
 
+import static com.vocaby.app.utils.StringFormatter.cleanText;
+
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -25,18 +27,19 @@ import java.util.Stack;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class DictionaryViewModel extends AndroidViewModel {
-    private final SingleLiveEvent<String> search;
-    private final Stack<String> searchStack;
+    private final SingleLiveEvent<String> mSearchedEntry;
     private final SingleLiveEvent<EntryModel> mWordModel;
-    private final CompositeDisposable compositeDisposable;
     private final MutableLiveData<List<String>> searchHistory;
     private final MutableLiveData<Integer> mEntryCount;
-    private final VocabyRepository vocabyRepository;
     private final MutableLiveData<List<String>> mDictionaryEntries;
+
+    private final VocabyRepository vocabyRepository;
+    private final CompositeDisposable compositeDisposable;
+    private final Stack<String> searchStack;
 
     public DictionaryViewModel(Application application) {
         super(application);
-        search = new SingleLiveEvent<>();
+        mSearchedEntry = new SingleLiveEvent<>();
         searchStack = new Stack<>();
         mWordModel = new SingleLiveEvent<>();
         compositeDisposable = new CompositeDisposable();
@@ -48,13 +51,13 @@ public class DictionaryViewModel extends AndroidViewModel {
         searchHistory.setValue(vocabyRepository.getHistory());
     }
 
-    public void populateDictionaryEntries() {
+    public void setupDictionaryEntries() {
         compositeDisposable.add(
                 vocabyRepository.populateDictionaryEntries()
-                        .subscribe(entries -> {
-                            mDictionaryEntries.setValue(entries);
-                            mEntryCount.setValue(entries.size());
-                        }, Throwable::printStackTrace)
+                    .subscribe(list -> {
+                        mDictionaryEntries.setValue(list);
+                        mEntryCount.setValue(list.size());
+                    }, Throwable::printStackTrace)
         );
     }
 
@@ -63,10 +66,6 @@ public class DictionaryViewModel extends AndroidViewModel {
             mDictionaryEntries.setValue(mDictionaryEntries.getValue());
             mEntryCount.setValue(mDictionaryEntries.getValue().size());
         }
-    }
-
-    public LiveData<List<String>> getDictionaryEntries() {
-        return mDictionaryEntries;
     }
 
     public LiveData<Integer> getEntryCount() {
@@ -108,18 +107,18 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
-
-
-    public List<SearchSuggestionItem> getSearchSuggestion(String newQuery, int threshold) {
+    public List<SearchSuggestionItem> getSearchSuggestion(String oldQuery, String newQuery, int threshold) {
+        newQuery = cleanText(newQuery);
         List<SearchSuggestionItem> searchSuggestions = new ArrayList<>();
-        if (!newQuery.isEmpty() && mDictionaryEntries.getValue() != null) {
+
+        if (mDictionaryEntries.getValue() != null) {
             int index = VocabyAlgo.BinarySearchPrefix(mDictionaryEntries.getValue(), newQuery);
             if (index > -1 && index < mDictionaryEntries.getValue().size()) {
                 Iterator<String> it = mDictionaryEntries.getValue().listIterator(index);
                 int count = 0;
                 while (it.hasNext() && count < threshold) {
                     String entry = it.next();
-                    if (entry.toLowerCase().contains(newQuery)) {
+                    if (entry.contains(newQuery)) {
                         searchSuggestions.add(new SearchSuggestionItem(entry));
                     }
 
@@ -135,12 +134,17 @@ public class DictionaryViewModel extends AndroidViewModel {
     }
 
     public LiveData<String> getSearch() {
-        return search;
+        return mSearchedEntry;
     }
 
-    public void setSearch(String word) {
-        if (!word.isEmpty()) {
-            search.setValue(word);
+    public void setSearch(String entry) {
+        entry = cleanText(entry);
+        if (!entry.isEmpty()) {
+            if (!isOpen(entry)) {
+                addToStack(entry);
+                writeHistory(entry);
+                mSearchedEntry.setValue(entry);
+            }
         }
     }
 
@@ -175,12 +179,12 @@ public class DictionaryViewModel extends AndroidViewModel {
         return searchHistory;
     }
 
-    public String getHistoryWord(int position) {
+    public void getHistoryDefinition(int position) {
         if (searchHistory.getValue() != null) {
-            return searchHistory.getValue().get(position);
+            mSearchedEntry.setValue(searchHistory.getValue().get(position));
         }
 
-        return "";
+        mSearchedEntry.setValue("");
     }
 
     @Override
