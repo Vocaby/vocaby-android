@@ -1,7 +1,5 @@
 package com.vocaby.app.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.util.Locale;
 

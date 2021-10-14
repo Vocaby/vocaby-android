@@ -9,7 +9,6 @@ import com.google.gson.JsonParseException;
 import com.vocaby.app.models.EntryDataPackage;
 import com.vocaby.app.models.EntryModel;
 
-
 import java.lang.reflect.Type;
 
 public class GetWordDataDeserializer implements JsonDeserializer<EntryDataPackage> {

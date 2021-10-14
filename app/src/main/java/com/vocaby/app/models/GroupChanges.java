@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class GroupChanges extends ItemsUpdate<DefinitionGroupModel> {
     int entryId;

@@ -3,9 +3,6 @@ package com.vocaby.app.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class CustomEntryPackage implements Parcelable {
     private String entry;
     private boolean isEdit;
@@ -39,16 +36,8 @@ public class CustomEntryPackage implements Parcelable {
         return entry;
     }
 
-    public void setEntry(String entry) {
-        this.entry = entry;
-    }
-
     public boolean isEdit() {
         return isEdit;
-    }
-
-    public void setEdit(boolean edit) {
-        isEdit = edit;
     }
 
     public boolean isDelete() {

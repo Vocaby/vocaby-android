@@ -22,9 +22,9 @@ import com.vocaby.app.data.entity.WordDefinitions;
 import com.vocaby.app.models.DefinitionChanges;
 import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
+import com.vocaby.app.models.EntryDataPackage;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.models.GroupChanges;
-import com.vocaby.app.models.EntryDataPackage;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -413,18 +413,5 @@ public class VocabyRepository {
         entryData.setDefinitionGroups(groups);
 
         return entryData;
-    }
-
-    // UTIL
-    public Single<Integer> getSavesCount() {
-        return vocabyDao.getSavesCount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<Integer> getUserCount() {
-        return vocabyDao.getUserCount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 }

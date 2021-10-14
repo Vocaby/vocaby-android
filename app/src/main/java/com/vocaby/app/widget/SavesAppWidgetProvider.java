@@ -17,7 +17,6 @@ import androidx.room.rxjava3.EmptyResultSetException;
 import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.exceptions.SaveRepetitionException;
-import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
 

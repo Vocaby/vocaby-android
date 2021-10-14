@@ -1,7 +1,6 @@
 package com.vocaby.app.viewmodels;
 
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;

@@ -9,9 +9,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
-// import com.bugsnag.android.Bugsnag;
-import com.vocaby.app.models.SearchSuggestionItem;
 import com.vocaby.app.models.EntryModel;
+import com.vocaby.app.models.SearchSuggestionItem;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;

@@ -11,7 +11,6 @@ import androidx.room.Update;
 import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.data.entity.CustomEntryGroup;
-import com.vocaby.app.data.entity.CustomExample;
 import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;

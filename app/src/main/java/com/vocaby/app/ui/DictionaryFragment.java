@@ -1,15 +1,15 @@
 package com.vocaby.app.ui;
 
+import static com.vocaby.app.utils.StringFormatter.cleanText;
+
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,19 +26,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SearchHistoryAdapter;
 import com.vocaby.app.models.SearchSuggestionItem;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
-
-import static com.vocaby.app.utils.StringFormatter.cleanNumber;
-import static com.vocaby.app.utils.StringFormatter.cleanText;
 
 
 public class DictionaryFragment extends Fragment implements SearchHistoryAdapter.OnItemTouchListener {

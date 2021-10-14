@@ -5,10 +5,6 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.vocaby.app.utils.StringFormatter;
-
-import java.util.Objects;
-
 @Entity(tableName = "custom_user_entry")
 public class CustomEntry {
     @PrimaryKey(autoGenerate = true)

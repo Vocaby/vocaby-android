@@ -1,14 +1,11 @@
 package com.vocaby.app.adapters;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.vocaby.app.ui.DictionaryFragment;
-import com.vocaby.app.ui.DictionaryHomeFragment;
 import com.vocaby.app.ui.MyEntryFragment;
 import com.vocaby.app.ui.ProfileFragment;
 import com.vocaby.app.ui.SavesFragment;
