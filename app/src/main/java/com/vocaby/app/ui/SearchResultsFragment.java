@@ -5,7 +5,6 @@ import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,33 +14,28 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.SearchResultsViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SearchResultsFragment extends Fragment {
+    private Context ctx;
     private static final String WORD = "PASSED_WORD_KEY";
     private String searchedWord;
 
-    private Context ctx;
     private ViewPager2 viewPager;
     private Button saveButton;
     private ProgressBar progressBar;
-    private ProgressBar saveProgress;
     private RadioGroup dictionarySelector;
 
     SearchResultsViewModel searchResultsViewModel;
@@ -76,14 +70,14 @@ public class SearchResultsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search_results, container, false);
         viewPager = view.findViewById(R.id.search_results_body_pager);
         progressBar = view.findViewById(R.id.search_progress);
+
         Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(backListener);
+
         saveButton = view.findViewById(R.id.save_button);
-        saveButton.setOnClickListener(saveListener);
-        saveButton.setVisibility(View.INVISIBLE);
-        saveButton.setEnabled(false);
-        saveProgress = view.findViewById(R.id.save_progress);
-        saveProgress.setVisibility(View.VISIBLE);
+        ProgressBar saveProgress = view.findViewById(R.id.save_progress);
+        saveProgress.setVisibility(View.GONE);
+
         dictionarySelector = view.findViewById(R.id.dictionary_selector);
 
         return view;
@@ -100,107 +94,66 @@ public class SearchResultsFragment extends Fragment {
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
         searchResultsViewModel.retrieveWordDataFromRepo(searchedWord);
-        observeWordPackageData();
-    }
 
-    public void observeWordPackageData() {
-        searchResultsViewModel.getWordData().observe(getViewLifecycleOwner(), wordPackage -> {
-            saveButton.setVisibility(View.VISIBLE);
-            saveButton.setEnabled(true);
-            List<EntryModel> entryData = new ArrayList<>();
-            if (wordPackage.bothDataAvailable()) {
-                entryData.add(wordPackage.getCustomData());
-                entryData.add(wordPackage.getOriginalData());
-
-                viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-                    @Override
-                    public void onPageSelected(int position) {
-                        super.onPageSelected(position);
-                        if (position == 0) {
-                            dictionarySelector.check(R.id.selection_custom);
-                        } else {
-                            dictionarySelector.check(R.id.selection_original);
-                        }
-                    }
-                });
-
-                dictionarySelector.setOnCheckedChangeListener((radioGroup, id) -> {
-                    if (id == R.id.selection_original) {
-                        viewPager.setCurrentItem(1);
-                    } else {
-                        viewPager.setCurrentItem(0);
-                    }
-                });
-            } else if (wordPackage.onlyCustomAvailable()) {
-                entryData.add(wordPackage.getCustomData());
-                RadioButton button = dictionarySelector.findViewById(R.id.selection_original);
-                dictionarySelector.removeView(button);
-            } else {
-                dictionarySelector.check(R.id.selection_original);
-                entryData.add(wordPackage.getOriginalData());
-                RadioButton button = dictionarySelector.findViewById(R.id.selection_custom);
-                dictionarySelector.removeView(button);
-
-                if (wordPackage.getOriginalData().isEmpty()) {
-                    saveButton.setVisibility(View.GONE);
+        // Observe changes to entry save state
+        searchResultsViewModel.getSaveState().observe(getViewLifecycleOwner(), saveState -> {
+            saveButton.setVisibility(saveState.getVisibility());
+            saveButton.setText(ctx.getString(saveState.getText()));
+            saveButton.setTextColor(ctx.getColor(saveState.getColor()));
+            saveButton.setEnabled(saveState.getEnabled());
+            Drawable icon = getDrawable(ctx, saveState.getIcon());
+            saveButton.setTextColor(ctx.getColor(R.color.colorPrimaryAccent));
+            saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+            saveButton.setOnClickListener(v -> {
+                if (saveState.getSaved()) {
+                    userViewModel.removeSave(searchedWord);
+                } else {
+                    userViewModel.addSaveItem(searchedWord);
                 }
 
-            }
+                searchResultsViewModel.updateEntrySave(searchedWord);
+            });
+        });
 
+        searchResultsViewModel.getDictionaryMissing().observe(getViewLifecycleOwner(), missingId -> {
+            RadioButton button = dictionarySelector.findViewById(missingId);
+            dictionarySelector.removeView(button);
+            dictionarySelector.check(dictionarySelector.getChildAt(0).getId());
+        });
+
+        observeWordData();
+    }
+
+    public void observeWordData() {
+        searchResultsViewModel.getWordData().observe(getViewLifecycleOwner(), entryData -> {
+            setupDictionary(entryData.size());
             viewPager.setAdapter(new FragmentAdapter(this, entryData));
-            if (wordPackage.customEntryAvailable()) dictionarySelector.check(R.id.selection_custom);
             progressBar.setVisibility(View.GONE);
-
-            setupSaveButton(wordPackage.saved(), false);
-        });
-
-        searchResultsViewModel.getSavedStatus().observe(getViewLifecycleOwner(), saved -> {
-            setupSaveButton(saved, true);
         });
     }
 
-    private void setupSaveButton(boolean saved, boolean updateSave) {
-        AtomicReference<Drawable> icon = new AtomicReference<>();
-        icon.set(getDrawable(ctx, R.drawable.ic_bookmark_disabled));
-        saveButton.setEnabled(false);
-        saveButton.setTextColor(ctx.getColor(R.color.dark_gray));
-        saveProgress.setVisibility(View.INVISIBLE);
-
-        if(saved) {
-            icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved));
-            saveButton.setText(ctx.getString(R.string.save_button_saved));
-            saveButton.setOnClickListener(v -> {
-                searchResultsViewModel.removeSave(searchedWord);
-                saveProgress.setVisibility(View.VISIBLE);
-                disableSaveButton(icon);
+    private void setupDictionary(int size) {
+        if (size > 1) {
+            viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    if (position == 0) {
+                        dictionarySelector.check(R.id.selection_custom);
+                    } else {
+                        dictionarySelector.check(R.id.selection_original);
+                    }
+                }
             });
 
-            if (updateSave) userViewModel.addSaveItem(searchedWord);
-        } else {
-            icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved));
-            saveButton.setText(getResources().getString(R.string.save_button_unsaved));
-            saveButton.setOnClickListener(v -> {
-                searchResultsViewModel.saveWord(searchedWord);
-                saveProgress.setVisibility(View.VISIBLE);
-                disableSaveButton(icon);
+            dictionarySelector.setOnCheckedChangeListener((radioGroup, id) -> {
+                if (id == R.id.selection_original) {
+                    viewPager.setCurrentItem(1);
+                } else {
+                    viewPager.setCurrentItem(0);
+                }
             });
-
-            if (updateSave) userViewModel.removeSaveItem(searchedWord);
         }
-
-        saveProgress.setVisibility(View.INVISIBLE);
-        saveButton.setEnabled(true);
-        saveButton.setTextColor(ctx.getColor(R.color.colorPrimaryAccent));
-        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
-    }
-
-    private void disableSaveButton(AtomicReference<Drawable> icon) {
-        saveButton.setEnabled(false);
-        saveButton.setTextColor(ctx.getColor(R.color.dark_gray));
-        icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_disabled));
-        icon.set(AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_disabled));
-        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
-        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon.get(), null, null, null);
     }
 
     @Override
@@ -211,13 +164,7 @@ public class SearchResultsFragment extends Fragment {
 
     private final View.OnClickListener backListener = v -> requireActivity().onBackPressed();
 
-    private final View.OnClickListener saveListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            saveButton.setEnabled(false);
-        }
-    };
-
+    // ViewPager Adapter for Different Dictionary Definitions
     private static class FragmentAdapter extends FragmentStateAdapter {
         List<EntryModel> entryData;
 
@@ -233,11 +180,9 @@ public class SearchResultsFragment extends Fragment {
                 if (position == 1) {
                     return SearchResultsBodyFragment.newInstance(entryData.get(1));
                 }
-
-                return SearchResultsBodyFragment.newInstance(entryData.get(0));
-            } else {
-                return SearchResultsBodyFragment.newInstance(entryData.get(0));
             }
+
+            return SearchResultsBodyFragment.newInstance(entryData.get(0));
         }
 
         @Override

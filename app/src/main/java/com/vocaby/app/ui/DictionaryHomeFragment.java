@@ -96,19 +96,18 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
         });
     }
 
-    // TODO: Need to account for duplicate search result in the backstack
     private void addResultsFragment(String search) {
         getParentFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(
-                        R.anim.enter_bottom_to_top,
-                        R.anim.exit_top_to_bottom,
-                        R.anim.enter_bottom_to_top,
-                        R.anim.exit_top_to_bottom
-                ).add(
+            .beginTransaction()
+            .setCustomAnimations(
+                R.anim.enter_bottom_to_top,
+                R.anim.exit_top_to_bottom,
+                R.anim.enter_bottom_to_top,
+                R.anim.exit_top_to_bottom
+            ).add(
                 R.id.dictionary_fragment_container,
                 SearchResultsFragment.newInstance(search)
-        ).addToBackStack(null).commit();
+            ).addToBackStack(null).commit();
     }
 
     private void setUpHistoryRecyclerView(View view) {
@@ -141,7 +140,7 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
 
     private final FloatingSearchView.OnQueryChangeListener queryChangeListener =
             (oldQuery, newQuery) -> searchView.swapSuggestions(
-                    dictionaryViewModel.getSearchSuggestion(oldQuery, newQuery, 4)
+                    dictionaryViewModel.getSearchSuggestion(newQuery, 4)
             );
 
     @Override

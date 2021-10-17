@@ -4,7 +4,6 @@ import static com.vocaby.app.utils.StringFormatter.cleanText;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -86,10 +85,7 @@ public class DictionaryViewModel extends AndroidViewModel {
                                 editor.putInt("randomWordId", wordData.getId());
                                 editor.apply();
                                 mWordModel.setValue(wordData);
-                            }, error -> {
-                                Logger.reportError(error);
-                                Log.e("DictionaryViewModel: ", error.getMessage());
-                            })
+                            }, Logger::reportError)
             );
 
             editor.putInt("appStarted", today);
@@ -98,16 +94,12 @@ public class DictionaryViewModel extends AndroidViewModel {
             int id = randomWordPicker.getInt("randomWordId", 100000);
             compositeDisposable.add(
                     vocabyRepository.getWordDataFromDatabase(id)
-                            .subscribe(mWordModel::setValue,
-                                    error -> {
-                                        Logger.reportError(error);
-                                        Log.e("DictionaryViewModel: ", error.getMessage());
-                                    })
+                            .subscribe(mWordModel::setValue, Logger::reportError)
             );
         }
     }
 
-    public List<SearchSuggestionItem> getSearchSuggestion(String oldQuery, String newQuery, int threshold) {
+    public List<SearchSuggestionItem> getSearchSuggestion(String newQuery, int threshold) {
         newQuery = cleanText(newQuery);
         List<SearchSuggestionItem> searchSuggestions = new ArrayList<>();
 
@@ -148,11 +140,11 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
-    public boolean isOpen(String word) {
+    public boolean isOpen(String entry) {
         if (searchStack.empty()) {
             return false;
         } else {
-            return searchStack.peek().equals(word);
+            return searchStack.peek().equals(entry);
         }
     }
 
@@ -181,9 +173,9 @@ public class DictionaryViewModel extends AndroidViewModel {
 
     public void getHistoryDefinition(int position) {
         if (searchHistory.getValue() != null) {
-            mSearchedEntry.setValue(searchHistory.getValue().get(position));
+            setSearch(searchHistory.getValue().get(position));
         } else {
-            mSearchedEntry.setValue("");
+            setSearch("");
         }
     }
 

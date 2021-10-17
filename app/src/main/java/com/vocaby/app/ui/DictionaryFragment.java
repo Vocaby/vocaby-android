@@ -13,20 +13,15 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.vocaby.app.R;
-import com.vocaby.app.utils.PaintUtil;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 
 public class DictionaryFragment extends Fragment {
-    private DictionaryViewModel dictionaryViewModel;
-
-    private TextView dictionaryHeaderVocaby;
     private TextView dictionaryHeaderDictionary;
     private TextView entryCounter;
 
@@ -53,7 +48,6 @@ public class DictionaryFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        dictionaryHeaderVocaby = view.findViewById(R.id.header_text);
         dictionaryHeaderDictionary = view.findViewById(R.id.header_dictionary);
         entryCounter = view.findViewById(R.id.header_dictionary_counter);
 
@@ -76,7 +70,8 @@ public class DictionaryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+        DictionaryViewModel dictionaryViewModel =
+                new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
 
         dictionaryViewModel.getSearch().observe(getViewLifecycleOwner(), string -> {
             if (getParentFragmentManager().getBackStackEntryCount() == 0) {
