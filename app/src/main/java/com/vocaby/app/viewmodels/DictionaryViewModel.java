@@ -27,7 +27,7 @@ import java.util.Stack;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class DictionaryViewModel extends AndroidViewModel {
-    private final SingleLiveEvent<String> mSearchedEntry;
+    private final MutableLiveData<String> mSearchedEntry;
     private final SingleLiveEvent<EntryModel> mWordModel;
     private final MutableLiveData<List<String>> searchHistory;
     private final MutableLiveData<Integer> mEntryCount;
@@ -39,7 +39,7 @@ public class DictionaryViewModel extends AndroidViewModel {
 
     public DictionaryViewModel(Application application) {
         super(application);
-        mSearchedEntry = new SingleLiveEvent<>();
+        mSearchedEntry = new MutableLiveData<>();
         searchStack = new Stack<>();
         mWordModel = new SingleLiveEvent<>();
         compositeDisposable = new CompositeDisposable();
@@ -182,9 +182,9 @@ public class DictionaryViewModel extends AndroidViewModel {
     public void getHistoryDefinition(int position) {
         if (searchHistory.getValue() != null) {
             mSearchedEntry.setValue(searchHistory.getValue().get(position));
+        } else {
+            mSearchedEntry.setValue("");
         }
-
-        mSearchedEntry.setValue("");
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.vocaby.app.ui;
 
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,29 +13,25 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.arlib.floatingsearchview.FloatingSearchView;
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.vocaby.app.R;
-import com.vocaby.app.adapters.SearchHistoryAdapter;
+import com.vocaby.app.utils.PaintUtil;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 
 
-public class DictionaryFragment extends Fragment implements SearchHistoryAdapter.OnItemTouchListener {
+public class DictionaryFragment extends Fragment {
     private DictionaryViewModel dictionaryViewModel;
-    private FloatingSearchView searchView;
-    private Context ctx;
-    private SearchHistoryAdapter searchHistoryAdapter;
-    OnBackPressedCallback backPressedCallback;
-    private TextView dictionaryHeaderSmall;
+
+    private TextView dictionaryHeaderVocaby;
+    private TextView dictionaryHeaderDictionary;
     private TextView entryCounter;
+
+    private OnBackPressedCallback backPressedCallback;
+
 
     public DictionaryFragment() {
         // Required empty public constructor
@@ -45,8 +40,6 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ctx = requireActivity().getApplicationContext();
     }
 
     @Override
@@ -60,20 +53,16 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        searchView = view.findViewById(R.id.vocaby_search_bar);
-        searchView.setOnSearchListener(searchListener);
-        searchView.setOnQueryChangeListener(queryChangeListener);
-        dictionaryHeaderSmall = view.findViewById(R.id.header_dictionary);
+        dictionaryHeaderVocaby = view.findViewById(R.id.header_text);
+        dictionaryHeaderDictionary = view.findViewById(R.id.header_dictionary);
         entryCounter = view.findViewById(R.id.header_dictionary_counter);
-
-        setUpHistoryRecyclerView(view);
 
         backPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 if (getChildFragmentManager().getBackStackEntryCount() == 1) slideDownHeader();
-                if (getChildFragmentManager().getBackStackEntryCount() > 0)
-                    getChildFragmentManager().popBackStack();
+                    if (getChildFragmentManager().getBackStackEntryCount() > 0)
+                        getChildFragmentManager().popBackStack();
                 if (getChildFragmentManager().getBackStackEntryCount() == 0) this.setEnabled(false);
             }
         };
@@ -84,24 +73,17 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
         return view;
     }
 
-    private void setUpHistoryRecyclerView(View view) {
-        RecyclerView historyContainer = view.findViewById(R.id.search_history_container);
-        searchHistoryAdapter = new SearchHistoryAdapter(ctx, this);
-        historyContainer.setAdapter(searchHistoryAdapter);
-        historyContainer.setLayoutManager(
-                new LinearLayoutManager(ctx, LinearLayoutManager.HORIZONTAL, false)
-        );
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
 
-        dictionaryViewModel.getSearch().observe(getViewLifecycleOwner(), this::addResultsFragment);
-
-        dictionaryViewModel.getSearchHistory().observe(getViewLifecycleOwner(), searchHistory ->
-                searchHistoryAdapter.updateSearchHistory(searchHistory));
+        dictionaryViewModel.getSearch().observe(getViewLifecycleOwner(), string -> {
+            if (getParentFragmentManager().getBackStackEntryCount() == 0) {
+                backPressedCallback.setEnabled(true);
+                slideUpHeader();
+            }
+        });
 
         dictionaryViewModel.getEntryCount().observe(getViewLifecycleOwner(), count ->
                 entryCounter.setText(StringFormatter.cleanNumber(count))
@@ -110,80 +92,29 @@ public class DictionaryFragment extends Fragment implements SearchHistoryAdapter
 
     public void slideUpHeader() {
         final LinearLayout.LayoutParams headerParams =
-                (LinearLayout.LayoutParams) dictionaryHeaderSmall.getLayoutParams();
+                (LinearLayout.LayoutParams) dictionaryHeaderDictionary.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(headerParams.topMargin, 0);
         animator.addUpdateListener(valueAnimator -> {
             headerParams.topMargin = (Integer) valueAnimator.getAnimatedValue();
-            dictionaryHeaderSmall.setLayoutParams(headerParams);
+            dictionaryHeaderDictionary.setLayoutParams(headerParams);
         });
 
         animator.setInterpolator(new DecelerateInterpolator());
-        animator.setDuration(600);
+        animator.setDuration(300);
         animator.start();
     }
 
     public void slideDownHeader() {
         final LinearLayout.LayoutParams headerParams =
-                (LinearLayout.LayoutParams) dictionaryHeaderSmall.getLayoutParams();
+                (LinearLayout.LayoutParams) dictionaryHeaderDictionary.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(0, (int) getResources().getDimension(R.dimen.dictionary_header_margin_before_slide));
         animator.addUpdateListener(valueAnimator -> {
             headerParams.topMargin = (Integer) valueAnimator.getAnimatedValue();
-            dictionaryHeaderSmall.setLayoutParams(headerParams);
+            dictionaryHeaderDictionary.setLayoutParams(headerParams);
         });
 
         animator.setInterpolator(new AccelerateInterpolator());
         animator.setDuration(300);
         animator.start();
-    }
-
-    public void setSearch(String entry) {
-        dictionaryViewModel.setSearch(entry);
-    }
-
-    // TODO: Need to account for duplicate search result in the backstack
-    private void addResultsFragment(String search) {
-        if (getChildFragmentManager().getBackStackEntryCount() == 0) {
-            backPressedCallback.setEnabled(true);
-            slideUpHeader();
-        }
-
-        FragmentManager fm = getChildFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        transaction
-        .setCustomAnimations(
-                R.anim.enter_bottom_to_top,
-                R.anim.exit_top_to_bottom,
-                R.anim.enter_bottom_to_top,
-                R.anim.exit_top_to_bottom
-        ).add(
-            R.id.dictionary_fragment_container,
-            SearchResultsFragment.newInstance(search),
-            search
-        ).addToBackStack(null).commit();
-    }
-
-    private final FloatingSearchView.OnSearchListener searchListener =
-            new FloatingSearchView.OnSearchListener() {
-        @Override
-        public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-            searchView.setSearchText(searchSuggestion.getBody());
-            searchView.clearSearchFocus();
-            setSearch(searchSuggestion.getBody());
-        }
-
-        @Override
-        public void onSearchAction(String currentQuery) {
-            setSearch(currentQuery);
-        }
-    };
-
-    private final FloatingSearchView.OnQueryChangeListener queryChangeListener =
-            (oldQuery, newQuery) -> searchView.swapSuggestions(
-                    dictionaryViewModel.getSearchSuggestion(oldQuery, newQuery, 4)
-            );
-
-    @Override
-    public void onItemTouch(int position) {
-        dictionaryViewModel.getHistoryDefinition(position);
     }
 }

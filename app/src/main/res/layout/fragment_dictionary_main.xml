@@ -1,104 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingStart="@dimen/container_side_margin"
-    android:paddingEnd="@dimen/container_side_margin"
-    android:clipToPadding="false"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/randomword_header"
-        style="@style/Theme.VocabyAndroid.TextHeadline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/daily_selection_header"
-        android:layout_marginTop="18dp"
-        android:textColor="@color/black" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/word_box"
-        android:layout_width="300dp"
+    <LinearLayout
+        android:id="@+id/search_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:layout_gravity="center_horizontal"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="@dimen/radius">
-        <LinearLayout
+        android:background="@drawable/box_bottom_stroke_white"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="@drawable/box_daily_entry">
-            <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/container_side_margin_offset"
+            android:layout_marginEnd="@dimen/container_side_margin_offset"
+            app:cardCornerRadius="@dimen/radius">
+
+            <ImageView
+                android:id="@+id/search_background"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/card_content_margin"
-                android:paddingBottom="@dimen/card_content_margin"
-                android:orientation="vertical"
-                android:gravity="center_vertical"
-                android:layout_marginStart="@dimen/flag_offset">
-                <TextView
-                    android:id="@+id/word_header"
-                    style="@style/Theme.VocabyAndroid.TextHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/card_content_margin"
-                    android:layout_marginEnd="@dimen/card_content_margin"
-                    android:textColor="@color/colorPrimaryAccent"
-                    android:textSize="28sp" />
-            </LinearLayout>
+                android:contentDescription="@string/nav_search"
+                android:scaleType="fitXY"
+                android:src="@drawable/search_background"
+                tools:ignore="ImageContrastCheck" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_history_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/header_margin_before_slide"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/container_side_margin"
+            android:paddingEnd="@dimen/container_side_margin"
+            android:paddingBottom="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dictionary_header" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_container">
+
+        <TextView
+            android:id="@+id/randomword_header"
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="@string/daily_selection_header"
+            android:textColor="@color/black" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/word_box"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="18dp"
+            app:cardCornerRadius="@dimen/radius"
+            app:cardElevation="4dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="142dp"
-                android:layout_marginStart="@dimen/flag_offset"
+                android:layout_height="match_parent"
+                android:background="@drawable/box_daily_entry"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/pos"
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/card_content_margin"
-                    android:textColor="@color/colorHeadline"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/word_header" />
-
-                <TextView
-                    android:id="@+id/card_definition"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="@dimen/card_content_margin"
-                    android:layout_marginStart="@dimen/card_content_margin"
-                    android:textSize="16sp"
-                    android:ellipsize="end"
-                    android:maxLines="4"
-                    android:textColor="@color/black" />
+                    android:layout_marginStart="@dimen/flag_offset"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/card_content_margin"
+                    android:paddingBottom="@dimen/card_content_margin">
 
-                <TextView
-                    android:id="@+id/card_sentence"
+                    <TextView
+                        android:id="@+id/word_header"
+                        style="@style/Theme.VocabyAndroid.TextHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/card_content_margin"
+                        android:layout_marginEnd="@dimen/card_content_margin"
+                        android:textColor="@color/colorPrimaryAccent"
+                        android:textSize="28sp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="@dimen/card_content_margin"
-                    android:layout_marginStart="@dimen/card_content_margin"
-                    android:layout_marginBottom="16dp"
-                    android:textSize="16sp"
-                    android:ellipsize="end"
-                    android:maxLines="1"/>
+                    android:layout_marginStart="@dimen/flag_offset"
+                    android:minHeight="142dp"
+                    android:orientation="vertical">
 
-                <ProgressBar
-                    android:id="@+id/randomword_progress"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="8dp" />
+                    <TextView
+                        android:id="@+id/pos"
+                        style="@style/Theme.VocabyAndroid.TextHeadline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/card_content_margin"
+                        android:textColor="@color/colorHeadline"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/word_header" />
+
+                    <TextView
+                        android:id="@+id/card_definition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/card_content_margin"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="@dimen/card_content_margin"
+                        android:ellipsize="end"
+                        android:maxLines="4"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/card_sentence"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/card_content_margin"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="@dimen/card_content_margin"
+                        android:layout_marginBottom="16dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textSize="16sp" />
+
+                    <ProgressBar
+                        android:id="@+id/randomword_progress"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
-</LinearLayout>
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/vocaby_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:floatingSearch_dimBackground="true"
+        app:floatingSearch_searchBarMarginTop="@dimen/search_margin_before_slide"
+        app:floatingSearch_searchBarMarginLeft="@dimen/container_side_margin"
+        app:floatingSearch_searchBarMarginRight="@dimen/container_side_margin"
+        app:floatingSearch_close_search_on_keyboard_dismiss="false"
+        app:floatingSearch_searchHint="@string/search_hint"
+        app:floatingSearch_suggestionsListAnimDuration="250"
+        app:floatingSearch_leftActionMode="showSearch"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@ import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.viewmodels.DictionaryViewModel;

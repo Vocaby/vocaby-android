@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private SharedPreferences sharedPreferences;
     private BottomNavigationView navigationView;
+    private DictionaryViewModel dictionaryViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.setupApplication();
 
-        DictionaryViewModel dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
+        dictionaryViewModel = new ViewModelProvider(this).get(DictionaryViewModel.class);
         dictionaryViewModel.setupDictionaryEntries();
 
         setupNotification();
@@ -127,11 +128,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void showDefinition(String entry) {
         viewPager.setCurrentItem(0);
-        DictionaryFragment dictionaryFragment = (DictionaryFragment) getSupportFragmentManager()
-                .findFragmentByTag("f0");
-
-        if(dictionaryFragment != null) {
-            dictionaryFragment.setSearch(entry);
-        }
+        dictionaryViewModel.setSearch(entry);
     }
 }
