@@ -1,4 +1,4 @@
-package com.vocaby.app.ui;
+package com.vocaby.app.ui.customentry;
 
 import android.app.Activity;
 import android.content.Intent;

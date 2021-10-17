@@ -1,7 +1,8 @@
-package com.vocaby.app.ui;
+package com.vocaby.app.ui.save;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SavesAdapter;
+import com.vocaby.app.models.ItemStatePayload;
+import com.vocaby.app.ui.MainActivity;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.UserViewModel;
 
@@ -52,37 +55,45 @@ public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouc
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupRecyclerView(view);
+
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-
-        RecyclerView recyclerView = view.findViewById(R.id.saves_container);
-        savesAdapter = new SavesAdapter(ctx, this, getActivity());
-        recyclerView.setAdapter(savesAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-
-        userViewModel.getSavedWords().observe(getViewLifecycleOwner(), savedWords -> {
-            if (savedWords.size() != 0) emptyCard.setVisibility(View.GONE);
-            else emptyCard.setVisibility(View.VISIBLE);
-            savesAdapter.setSavedWords(savedWords);
+        userViewModel.getItemStatePayload().observe(getViewLifecycleOwner(), payload -> {
+            if (payload.getState() == ItemStatePayload.ADD) {
+                savesAdapter.addWordToRV();
+            } else if (payload.getState() == ItemStatePayload.DELETE) {
+                savesAdapter.removeWordFromRV(payload.getPayload());
+            }
         });
+
+        userViewModel.getEmptyCardVisibility().observe(getViewLifecycleOwner(),
+                visibility -> emptyCard.setVisibility(visibility)
+        );
+
+        userViewModel.getSavedWords().observe(getViewLifecycleOwner(),
+                savedWords -> savesAdapter.setSavedWords(savedWords)
+        );
 
         userViewModel.getSaveCount().observe(getViewLifecycleOwner(), count ->
                 savesCount.setText(StringFormatter.cleanNumber(count))
         );
     }
 
+    private void setupRecyclerView(View view) {
+        RecyclerView recyclerView = view.findViewById(R.id.saves_container);
+        savesAdapter = new SavesAdapter(ctx, this, getActivity());
+        recyclerView.setAdapter(savesAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+    }
+
     @Override
-    public void onItemDelete(String entry, int size) {
-        userViewModel.removeSave(entry);
+    public void onItemDelete(String entry) {
+        userViewModel.removeSaveFromDB(entry);
         userViewModel.setSavesCount();
     }
 
     @Override
-    public void getDefinition(int position) {
-        ((MainActivity) requireActivity()).showDefinition(userViewModel.getSaveItem(position));
-    }
-
-    @Override
-    public void onLastItemDeleted() {
-        emptyCard.setVisibility(View.VISIBLE);
+    public void getDefinition(String entry) {
+        ((MainActivity) requireActivity()).showDefinition(entry);
     }
 }

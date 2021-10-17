@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.DictionaryFragment">
+    tools:context=".ui.dictionary.DictionaryFragment">
     <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"

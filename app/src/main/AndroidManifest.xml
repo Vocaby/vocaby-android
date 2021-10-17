@@ -16,10 +16,10 @@
         android:screenOrientation="sensorPortrait"
         android:theme="@style/Theme.VocabyAndroid">
         <activity
-            android:name=".ui.EntryGroupBuilderActivity"
+            android:name=".ui.customentry.EntryGroupBuilderActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.EntryBuilderActivity"
+            android:name=".ui.customentry.EntryBuilderActivity"
             android:exported="true" />
         <activity
             android:name=".ui.MainActivity"

@@ -1,7 +1,7 @@
 package com.vocaby.app.viewmodels;
 
 import android.app.Application;
-import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,8 +10,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.data.entity.User;
+import com.vocaby.app.models.ItemStatePayload;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.Logger;
+import com.vocaby.app.utils.SingleLiveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,22 +21,25 @@ import java.util.List;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class UserViewModel extends AndroidViewModel {
-    private static final int ADD_SAVE = 1;
-    private static final int REMOVE_SAVE = 2;
-
     private final VocabyRepository vocabyRepository;
+    private final CompositeDisposable compositeDisposable;
+
     private final MutableLiveData<List<String>> mSavedWords;
     private final MutableLiveData<Integer> mSaveCount;
     private final MutableLiveData<User> mUser;
-    private final CompositeDisposable compositeDisposable;
+    private final SingleLiveEvent<ItemStatePayload<String>> mItemChange;
+    private final SingleLiveEvent<Integer> mEmptyCardVisibility;
 
     public UserViewModel(@NonNull Application application) {
         super(application);
         vocabyRepository = new VocabyRepository(application);
-        mSavedWords = new MutableLiveData<>(new ArrayList<>());
         compositeDisposable = new CompositeDisposable();
+
+        mSavedWords = new MutableLiveData<>(new ArrayList<>());
         mSaveCount = new MutableLiveData<>(0);
         mUser = new MutableLiveData<>();
+        mItemChange = new SingleLiveEvent<>();
+        mEmptyCardVisibility = new SingleLiveEvent<>();
     }
 
     public void setupApplication() {
@@ -47,12 +52,17 @@ public class UserViewModel extends AndroidViewModel {
                 }).subscribe(saves -> {
                     mSavedWords.setValue(saves);
                     mSaveCount.setValue(saves.size());
+
+                    if (saves.size() > 0) {
+                        mEmptyCardVisibility.setValue(View.GONE);
+                    } else {
+                        mEmptyCardVisibility.setValue(View.VISIBLE);
+                    }
                 }, e -> {
                     if (e instanceof EmptyResultSetException) {
                         addDefaultUser();
                     } else {
                         Logger.reportError(e);
-                        Log.e("UserViewModel (current user): ", e.getMessage());
                     }
                 })
         );
@@ -67,48 +77,45 @@ public class UserViewModel extends AndroidViewModel {
                     user.setUserId(userId);
                     mUser.setValue(user);
                     return vocabyRepository.writeUserId(userId);
-                }).subscribe(() -> {}, error -> {
-                    Logger.reportError(error);
-                    Log.e("UserViewModel (new user): ", error.getMessage());
-                })
+                }).subscribe(() -> {}, Logger::reportError)
         );
     }
 
     public LiveData<User> getUser() {
         return mUser;
     }
-
     public LiveData<List<String>> getSavedWords() {
         return mSavedWords;
     }
-
     public LiveData<Integer> getSaveCount() {
         return mSaveCount;
     }
-
-    public String getSaveItem(int position) {
-        if (mSavedWords.getValue() != null) {
-            return mSavedWords.getValue().get(position);
-        }
-
-        return null;
-    }
+    public LiveData<ItemStatePayload<String>> getItemStatePayload() { return mItemChange; }
+    public LiveData<Integer> getEmptyCardVisibility() { return mEmptyCardVisibility; }
 
     public void addSaveItem(String entry) {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
+            ItemStatePayload<String> itemStatePayload =
+                    new ItemStatePayload<>(ItemStatePayload.ADD, entry);
+            mItemChange.setValue(itemStatePayload);
+
             list.add(0, entry);
-            mSavedWords.setValue(list);
             mSaveCount.setValue(list.size());
+            if (list.size() == 1) mEmptyCardVisibility.setValue(View.GONE);
         }
     }
 
     public void removeSaveItem(String entry) {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
+            ItemStatePayload<String> itemStatePayload =
+                    new ItemStatePayload<>(ItemStatePayload.DELETE, entry);
+            mItemChange.setValue(itemStatePayload);
+
             list.remove(entry);
-            mSavedWords.setValue(list);
             mSaveCount.setValue(list.size());
+            if (list.size() == 0) mEmptyCardVisibility.setValue(View.VISIBLE);
         }
     }
 
@@ -119,23 +126,19 @@ public class UserViewModel extends AndroidViewModel {
 
     }
 
+    public void removeSaveFromDB(String entry) {
+        compositeDisposable.add(
+                vocabyRepository.getCurrentUserId()
+                    .flatMap(vocabyRepository::getUser)
+                    .flatMapCompletable(currentUser ->
+                            vocabyRepository.removeSave(currentUser.getUserId(), entry)
+                    ).subscribe(() -> removeSaveItem(entry), Logger::reportError)
+        );
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.clear();
     }
-
-    public void removeSave(String word) {
-        compositeDisposable.add(
-                vocabyRepository.getCurrentUserId()
-                    .flatMap(vocabyRepository::getUser)
-                    .flatMapCompletable(currentUser -> {
-                            removeSaveItem(word);
-                            return vocabyRepository.removeSave(currentUser.getUserId(), word);
-                        }
-                    ).subscribe(() -> {
-                    }, Logger::reportError)
-        );
-    }
-
 }

@@ -1,4 +1,4 @@
-package com.vocaby.app.ui;
+package com.vocaby.app.ui.customentry;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,6 +25,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomEntryAdapter;
 import com.vocaby.app.models.CustomEntryPackage;
+import com.vocaby.app.ui.customentry.EntryBuilderActivity;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.MyEntryViewModel;

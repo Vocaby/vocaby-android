@@ -1,4 +1,4 @@
-package com.vocaby.app.ui;
+package com.vocaby.app.ui.dictionary;
 
 import android.animation.ValueAnimator;
 import android.os.Bundle;

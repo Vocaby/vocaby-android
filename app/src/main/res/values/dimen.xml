@@ -8,6 +8,7 @@
     <dimen name="dictionary_header_margin_before_slide">38dp</dimen>
     <dimen name="search_margin_before_slide">2dp</dimen>
     <dimen name="card_content_margin">12dp</dimen>
+    <dimen name="placeholdercard_margin_after">-50dp</dimen>
     <dimen name="flag_offset">12dp</dimen>
     <dimen name="box_stroke_width">1dp</dimen>
 </resources>

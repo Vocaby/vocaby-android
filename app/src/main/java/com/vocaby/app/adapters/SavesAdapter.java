@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +31,8 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     private final MaterialAlertDialogBuilder builder;
 
     public interface SaveItemTouchListener {
-        void onItemDelete(String entry, int size);
-        void getDefinition(int position);
-        void onLastItemDeleted();
+        void onItemDelete(String entry);
+        void getDefinition(String entry);
     }
 
     public SavesAdapter(Context ctx, SaveItemTouchListener saveItemTouchListener, Activity activity) {
@@ -46,7 +46,6 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     public void setSavedWords(List<String> newSavedWords) {
         saves = newSavedWords;
         this.notifyDataSetChanged();
-        if (newSavedWords.isEmpty()) saveItemTouchListener.onLastItemDeleted();
     }
 
     @NonNull
@@ -54,39 +53,42 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
     public SavesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(ctx);
         CardView card = (CardView) inflater.inflate(R.layout.save_item, parent, false);
-        return new SavesViewHolder(card, saveItemTouchListener);
+        return new SavesViewHolder(card);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SavesAdapter.SavesViewHolder holder, int position) {
         holder.cardView.setBackgroundTintList(ColorStateList.valueOf(ctx.getColor(R.color.very_light_gray)));
-        String word = saves.get(holder.getAdapterPosition());
-        holder.savedWord.setText(word);
+        String entry = saves.get(holder.getAdapterPosition());
+        holder.savedWord.setText(entry);
+
+        holder.itemView.setOnClickListener(v -> saveItemTouchListener.getDefinition(entry));
+
         holder.removeSaveButton.setOnClickListener(v -> {
             builder.setTitle("Are you sure you want to delete?")
-                    .setMessage(word)
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        removeWord(holder.getAdapterPosition());
-                    }).setNegativeButton("No", null);
+                    .setMessage(entry)
+                    .setPositiveButton("DELETE",
+                            (dialog, which) -> saveItemTouchListener.onItemDelete(entry))
+                    .setNegativeButton("No", null);
 
             showAlertDialog();
         });
     }
 
-    public void removeWord(int position) {
-        saveItemTouchListener.onItemDelete(saves.get(position), saves.size());
-        saves.remove(position);
-        notifyItemRemoved(position);
+    public void addWordToRV() {
+        notifyItemInserted(0);
+    }
 
-        if (saves.size() == 0) saveItemTouchListener.onLastItemDeleted();
+    public void removeWordFromRV(String entry) {
+        int position = saves.indexOf(entry);
+        if (position > -1) {
+            notifyItemRemoved(position);
+        }
     }
 
     private void showAlertDialog() {
         AlertDialog alert = builder.create();
         alert.show();
-        Button negativeButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        negativeButton.setTextColor(ctx.getColor(R.color.colorHeadline));
-
     }
 
     @Override
@@ -94,24 +96,15 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
         return saves.size();
     }
 
-    public static class SavesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class SavesViewHolder extends RecyclerView.ViewHolder {
         private final TextView savedWord;
         private final CardView cardView;
-        OnSaveItemButtonTouch onSaveItemButtonTouch;
         ImageButton removeSaveButton;
-        SaveItemTouchListener saveItemTouchListener;
-        public SavesViewHolder(@NonNull View itemView, SaveItemTouchListener saveItemTouchListener) {
+        public SavesViewHolder(@NonNull View itemView) {
             super(itemView);
             savedWord = itemView.findViewById(R.id.save_item);
             removeSaveButton = itemView.findViewById(R.id.unsave_button);
             cardView = itemView.findViewById(R.id.card_container);
-            this.saveItemTouchListener = saveItemTouchListener;
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            saveItemTouchListener.getDefinition(getAdapterPosition());
         }
     }
 }

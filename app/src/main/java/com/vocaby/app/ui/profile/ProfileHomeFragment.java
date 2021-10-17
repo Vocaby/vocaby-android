@@ -1,4 +1,4 @@
-package com.vocaby.app.ui;
+package com.vocaby.app.ui.profile;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

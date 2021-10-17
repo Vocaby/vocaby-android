@@ -1,4 +1,4 @@
-package com.vocaby.app.ui;
+package com.vocaby.app.ui.dictionary;
 
 import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
 
@@ -106,7 +106,7 @@ public class SearchResultsFragment extends Fragment {
             saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
             saveButton.setOnClickListener(v -> {
                 if (saveState.getSaved()) {
-                    userViewModel.removeSave(searchedWord);
+                    userViewModel.removeSaveItem(searchedWord);
                 } else {
                     userViewModel.addSaveItem(searchedWord);
                 }
