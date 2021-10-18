@@ -32,7 +32,7 @@ Vocaby provides tools that empower individuals learning the English language.
     - Users can view what's upcoming for Vocaby (Fetched from the API)
     - Users can view what the lastest version is for the Android app (Fetched from the API)
 
-**User-defined definitions with always be prioritized over Vocaby definitions.**
+**User-defined definitions will always be prioritized over Vocaby definitions.**
 
 ## Next Major Update (v2.0.0)
 1. User data is synced across platforms when logged in.
