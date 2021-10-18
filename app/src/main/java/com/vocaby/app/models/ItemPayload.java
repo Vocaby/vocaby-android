@@ -1,20 +1,20 @@
 package com.vocaby.app.models;
 
-public class ItemStatePayload<T> {
+public class ItemPayload<T> {
     public static final int UNCHANGED = -1;
     public static final int ADD = 0;
     public static final int DELETE = 1;
     public static final int UPDATE = 2;
 
     private int state;
-    private T payload;
+    private final T payload;
 
-    public ItemStatePayload(T payload) {
+    public ItemPayload(T payload) {
         this.state = UNCHANGED;
         this.payload = payload;
     }
 
-    public ItemStatePayload(int state, T payload) {
+    public ItemPayload(int state, T payload) {
         this.state = state;
         this.payload = payload;
     }

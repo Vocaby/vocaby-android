@@ -143,7 +143,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
         mSaveState.setValue(saveState);
     }
 
-    private  void setUnSaved(SaveStateModel saveState) {
+    private void setUnSaved(SaveStateModel saveState) {
         saveState.setEnabled(true);
         saveState.setSaved(false);
         mSaveState.setValue(saveState);

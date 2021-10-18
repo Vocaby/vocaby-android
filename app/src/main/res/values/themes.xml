@@ -32,6 +32,7 @@
     <style name="Theme.VocabyAndroid.MaterialDialogAlert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="android:fontFamily">@font/sourcesanspro_semibold</item>
         <item name="materialAlertDialogTitleTextStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Title</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Body</item>
         <item name="buttonBarPositiveButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Positive</item>
         <item name="buttonBarNegativeButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Negative</item>
         <item name="shapeAppearance">@style/ShapeAppearance.VocabyAndroid.SmallComponent</item>
@@ -41,15 +42,21 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="Theme.VocabyAndroid.MaterialDialogAlert.Body" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="Theme.VocabyAndroid.MaterialDialogAlert.Positive" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/colorHeadline</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="backgroundTint">@color/colorHeadlineSoft</item>
         <item name="shapeAppearance">@style/ShapeAppearance.VocabyAndroid.SmallComponent</item>
     </style>
 
     <style name="Theme.VocabyAndroid.MaterialDialogAlert.Negative" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textColor">@color/black</item>
     </style>
 

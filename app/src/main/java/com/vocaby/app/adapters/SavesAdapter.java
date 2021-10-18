@@ -69,7 +69,7 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
                     .setMessage(entry)
                     .setPositiveButton("DELETE",
                             (dialog, which) -> saveItemTouchListener.onItemDelete(entry))
-                    .setNegativeButton("No", null);
+                    .setNegativeButton("CANCEL", null);
 
             showAlertDialog();
         });

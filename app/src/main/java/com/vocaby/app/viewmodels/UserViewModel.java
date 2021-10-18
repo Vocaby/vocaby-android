@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.data.entity.User;
-import com.vocaby.app.models.ItemStatePayload;
+import com.vocaby.app.models.ItemPayload;
 import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
@@ -27,7 +27,7 @@ public class UserViewModel extends AndroidViewModel {
     private final MutableLiveData<List<String>> mSavedWords;
     private final MutableLiveData<Integer> mSaveCount;
     private final MutableLiveData<User> mUser;
-    private final SingleLiveEvent<ItemStatePayload<String>> mItemChange;
+    private final SingleLiveEvent<ItemPayload<String>> mItemChange;
     private final SingleLiveEvent<Integer> mEmptyCardVisibility;
 
     public UserViewModel(@NonNull Application application) {
@@ -90,15 +90,15 @@ public class UserViewModel extends AndroidViewModel {
     public LiveData<Integer> getSaveCount() {
         return mSaveCount;
     }
-    public LiveData<ItemStatePayload<String>> getItemStatePayload() { return mItemChange; }
+    public LiveData<ItemPayload<String>> getItemStatePayload() { return mItemChange; }
     public LiveData<Integer> getEmptyCardVisibility() { return mEmptyCardVisibility; }
 
     public void addSaveItem(String entry) {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
-            ItemStatePayload<String> itemStatePayload =
-                    new ItemStatePayload<>(ItemStatePayload.ADD, entry);
-            mItemChange.setValue(itemStatePayload);
+            ItemPayload<String> itemPayload =
+                    new ItemPayload<>(ItemPayload.ADD, entry);
+            mItemChange.setValue(itemPayload);
 
             list.add(0, entry);
             mSaveCount.setValue(list.size());
@@ -109,9 +109,9 @@ public class UserViewModel extends AndroidViewModel {
     public void removeSaveItem(String entry) {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
-            ItemStatePayload<String> itemStatePayload =
-                    new ItemStatePayload<>(ItemStatePayload.DELETE, entry);
-            mItemChange.setValue(itemStatePayload);
+            ItemPayload<String> itemPayload =
+                    new ItemPayload<>(ItemPayload.DELETE, entry);
+            mItemChange.setValue(itemPayload);
 
             list.remove(entry);
             mSaveCount.setValue(list.size());

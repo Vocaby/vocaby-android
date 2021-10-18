@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -97,17 +98,18 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
     }
 
     private void addResultsFragment(String search) {
-        getParentFragmentManager()
-            .beginTransaction()
-            .setCustomAnimations(
-                R.anim.enter_bottom_to_top,
-                R.anim.exit_top_to_bottom,
-                R.anim.enter_bottom_to_top,
-                R.anim.exit_top_to_bottom
-            ).add(
+        FragmentManager fm = getParentFragmentManager();
+        fm.popBackStackImmediate();
+        fm.beginTransaction()
+                .setCustomAnimations(
+                        R.anim.enter_bottom_to_top,
+                        R.anim.exit_top_to_bottom,
+                        R.anim.enter_bottom_to_top,
+                        R.anim.exit_top_to_bottom
+                ).add(
                 R.id.dictionary_fragment_container,
                 SearchResultsFragment.newInstance(search)
-            ).addToBackStack(null).commit();
+        ).addToBackStack(null).commit();
     }
 
     private void setUpHistoryRecyclerView(View view) {

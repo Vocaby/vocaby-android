@@ -34,6 +34,8 @@ public class DictionaryViewModel extends AndroidViewModel {
 
     private final VocabyRepository vocabyRepository;
     private final CompositeDisposable compositeDisposable;
+
+    // TODO: Allow multiple SearchResults fragment on top of each other
     private final Stack<String> searchStack;
 
     public DictionaryViewModel(Application application) {
@@ -141,11 +143,15 @@ public class DictionaryViewModel extends AndroidViewModel {
     }
 
     public boolean isOpen(String entry) {
-        if (searchStack.empty()) {
-            return false;
-        } else {
-            return searchStack.peek().equals(entry);
+        if (!searchStack.empty()) {
+            if (searchStack.peek().equals(entry)) {
+                return true;
+            }
+
+            popSearchStack();
         }
+
+        return false;
     }
 
     public void addToStack(String word) {
