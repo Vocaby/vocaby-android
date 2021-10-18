@@ -5,7 +5,6 @@ public interface ItemPayload<T> {
     int ADD = 0;
     int DELETE = 1;
     int UPDATE = 2;
-    int NEW = 3;
 
     int getState();
     void setState(int itemState);

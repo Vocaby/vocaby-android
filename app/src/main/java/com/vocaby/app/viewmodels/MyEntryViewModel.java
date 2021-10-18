@@ -79,7 +79,7 @@ public class MyEntryViewModel extends AndroidViewModel {
         }
 
         if (selectedPosition == -1) {
-            itemStringPayload.setState(ItemPayload.NEW);
+            itemStringPayload.setState(ItemPayload.ADD);
         } else {
             itemStringPayload.setState(ItemPayload.UPDATE);
         }
@@ -93,9 +93,8 @@ public class MyEntryViewModel extends AndroidViewModel {
             ItemStringPayload receivedPayload =
                     result.getData().getParcelableExtra(ITEM_PAYLOAD_KEY);
 
-            if (receivedPayload.getState() == ItemPayload.NEW) {
+            if (receivedPayload.getState() == ItemPayload.ADD) {
                 customEntries.add(0, receivedPayload.getPayload());
-                receivedPayload.setState(ItemPayload.ADD);
             } else if (receivedPayload.getState() == ItemPayload.DELETE){
                 if (selectedPosition != -1 ) customEntries.remove(selectedPosition);
                 else customEntries.remove(receivedPayload.getPayload());

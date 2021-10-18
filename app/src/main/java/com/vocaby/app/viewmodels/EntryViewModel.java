@@ -5,7 +5,6 @@ import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.lifecycle.AndroidViewModel;
@@ -138,7 +137,7 @@ public class EntryViewModel extends AndroidViewModel {
         }
 
         DefinitionGroupModel groupRemoved = entryData.removeGroup(position);
-        if (receivedEntryPayload.getState() == ItemPayload.NEW) {
+        if (receivedEntryPayload.getState() == ItemPayload.ADD) {
             groupChanges.addItem(groupRemoved.getType(), groupRemoved);
         } else {
             groupChanges.putItemDeleted(groupRemoved.getType(), groupRemoved);
@@ -156,7 +155,7 @@ public class EntryViewModel extends AndroidViewModel {
 
                 if (definitionGroup.isEmpty()) {
                     if (selectedGroup != -1) entryData.removeGroup(selectedGroup);
-                    if (receivedEntryPayload.getState() == ItemPayload.NEW) {
+                    if (receivedEntryPayload.getState() == ItemPayload.ADD) {
                         groupChanges.removeItem(definitionGroup.getType(), definitionGroup);
                     } else {
                         groupChanges.putItemDeleted(definitionGroup.getType(), definitionGroup);
@@ -169,7 +168,7 @@ public class EntryViewModel extends AndroidViewModel {
                         entryData.replaceDefinitionGroup(type, definitionGroup);
                         mGroupChange.setValue(new ItemIntPayload(ItemPayload.UPDATE, selectedGroup));
                     } else {
-                        if (receivedEntryPayload.getState() == ItemPayload.NEW) {
+                        if (receivedEntryPayload.getState() == ItemPayload.ADD) {
                             groupChanges.addItem(definitionGroup.getType(), definitionGroup);
                         } else {
                             groupChanges.putItemAdded(definitionGroup.getType(), definitionGroup);
@@ -204,7 +203,7 @@ public class EntryViewModel extends AndroidViewModel {
         checkForUpdatedItems();
         fixItemOrdering();
         if (entryData.getDefinitionGroups().isEmpty()) {
-            if (receivedEntryPayload.getState() == ItemPayload.NEW) {
+            if (receivedEntryPayload.getState() == ItemPayload.ADD) {
                 mSaveResult.setValue(false);
             } else {
                 // Delete the existing entry
