@@ -1,5 +1,7 @@
 package com.vocaby.app.viewmodels;
 
+import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
+
 import android.content.Intent;
 
 import androidx.lifecycle.LiveData;
@@ -8,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 import com.vocaby.app.models.DefinitionChanges;
 import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
+import com.vocaby.app.models.ItemPayload;
 import com.vocaby.app.utils.SingleLiveEvent;
 
 import java.util.ArrayList;
@@ -81,9 +84,9 @@ public class EntryGroupViewModel extends ViewModel {
         checkForUpdatedItems();
         fixItemOrdering();
 
-        intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup);
+        intent.putExtra(ITEM_PAYLOAD_KEY, ItemPayload.UPDATE);
         intent.putExtra(EntryViewModel.DEFINITION_CHANGES, definitionChanges);
-
+        intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup);
         return intent;
     }
 

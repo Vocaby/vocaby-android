@@ -146,12 +146,13 @@ public class EntryViewModel extends AndroidViewModel {
         mTypeChange.setValue(new ItemStringPayload(ItemPayload.ADD, groupRemoved.getType()));
     }
 
-    // BUG: Delete existing group and add the same group again
+    // BUG: Duplicate type on empty definition save
     public void handleResult(ActivityResult result) {
         if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
             if (result.getData().getParcelableExtra(GROUP_KEY) instanceof DefinitionGroupModel) {
                 DefinitionGroupModel definitionGroup = result.getData().getParcelableExtra(GROUP_KEY);
                 String type = definitionGroup.getType();
+                int resultState = result.getData().getIntExtra(ITEM_PAYLOAD_KEY, ItemPayload.UNCHANGED);
 
                 if (definitionGroup.isEmpty()) {
                     if (selectedGroup != -1) entryData.removeGroup(selectedGroup);

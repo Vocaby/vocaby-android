@@ -62,6 +62,13 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder
     @Override
     public void onBindViewHolder(@NonNull TypeViewHolder holder, int position) {
         holder.typeHeader.setText(types.get(holder.getAdapterPosition()));
+
+        holder.cardView.setOnClickListener(v -> {
+            lastCheckedPosition = holder.getAdapterPosition();
+            itemInteractionListener.onTypeClicked(types.get(lastCheckedPosition));
+            notifyDataSetChanged();
+        });
+
         holder.cardView.setSelected(position == lastCheckedPosition);
     }
 
@@ -70,7 +77,7 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder
         return types.size();
     }
 
-    public class TypeViewHolder extends RecyclerView.ViewHolder {
+    public static class TypeViewHolder extends RecyclerView.ViewHolder {
         TextView typeHeader;
         CardView cardView;
 
@@ -78,14 +85,6 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder
             super(itemView);
             typeHeader = itemView.findViewById(R.id.type_header);
             cardView = itemView.findViewById(R.id.card_container);
-
-            cardView.setOnClickListener(v -> {
-                int copyOfLastCheckedPosition = lastCheckedPosition;
-                lastCheckedPosition = getAdapterPosition();
-                notifyItemChanged(copyOfLastCheckedPosition);
-                notifyItemChanged(lastCheckedPosition);
-                itemInteractionListener.onTypeClicked(types.get(getAdapterPosition()));
-            });
         }
     }
 }
