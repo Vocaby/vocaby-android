@@ -120,6 +120,7 @@
         android:fontFamily="@font/playfairdisplay_mid"
         android:hint="@string/custom_entry_header_hint"
         android:textColor="@color/colorPrimaryAccent"
+        android:textAllCaps="true"
         android:textSize="22sp" />
 
     <LinearLayout

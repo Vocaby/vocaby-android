@@ -41,6 +41,7 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
         groups = new ArrayList<>();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setList(List<DefinitionGroupModel> newList) {
         groups = newList;
         notifyDataSetChanged();
@@ -100,11 +101,15 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
 
     @Override
     public void onItemDismiss(int position) {
-        itemInteractionListener.onItemRemoved(position);
+        if (position != -1) itemInteractionListener.onItemRemoved(position);
     }
 
     public void addItem() {
         notifyItemInserted(groups.size() - 1);
+    }
+
+    public void removeItem(int position) {
+        notifyItemRemoved(position);
     }
 
     public void editItem(int position) {

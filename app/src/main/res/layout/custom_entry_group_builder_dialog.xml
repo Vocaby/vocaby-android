@@ -58,16 +58,15 @@
             android:textSize="14sp"
             tools:ignore="SmallSp,TouchTargetSizeCheck" />
     </LinearLayout>
-    <HorizontalScrollView
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/type_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/container_side_margin">
-        <RadioGroup
-            android:id="@+id/type_radio_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="24dp"
-            android:orientation="horizontal">
-        </RadioGroup>
-    </HorizontalScrollView>
+        android:layout_marginTop="@dimen/header_margin_before_slide"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:paddingBottom="12dp" />
 </LinearLayout>

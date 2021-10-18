@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,13 +24,14 @@ import com.vocaby.app.viewmodels.EntryGroupViewModel;
 
 public class EntryGroupBuilderActivity extends AppCompatActivity
         implements DragStartListener, CustomDefAdapter.ItemInteractionListener {
-    private CustomDefAdapter customDefAdapter;
-    private BottomSheetDialog definitionBuilder;
-    private ItemTouchHelper itemTouchHelper;
     private EntryGroupViewModel entryGroupViewModel;
-    private TextView typeHeader;
-    private TextView saveAlert;
+    private ItemTouchHelper itemTouchHelper;
+
+    private BottomSheetDialog definitionBuilder;
     private RecyclerView recyclerView;
+    private CustomDefAdapter customDefAdapter;
+
+    private TextView saveAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +39,16 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
         setContentView(R.layout.custom_entry_group_builder_activity);
         saveAlert = findViewById(R.id.definition_add_alert);
 
-        setupBottomDialog();
-        setupButtons();
-        setupViewModel();
-        setupRecyclerView();
+        entryGroupViewModel = new ViewModelProvider(this).get(EntryGroupViewModel.class);
         entryGroupViewModel.handleIntent(getIntent());
-        setupType();
-
-        entryGroupViewModel.getDefinitions().observe(
-                this,
+        entryGroupViewModel.getDefinitions().observe(this,
                 list -> customDefAdapter.setList(list)
         );
+
+        setupDefinitionBuilder();
+        setupButtons();
+        setupRecyclerView();
+        setupType();
     }
 
     private void setupType() {
@@ -58,22 +56,49 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
             String header = StringFormatter.firstLetterUpperOnly(type) + " Definitions";
             TextView activityHeader = findViewById(R.id.custom_group_activity_header);
             activityHeader.setText(header);
-
-            typeHeader = findViewById(R.id.type_header);
+            TextView typeHeader = findViewById(R.id.type_header);
             typeHeader.setText(type);
         });
     }
 
-    private void setupViewModel() {
-        entryGroupViewModel = new ViewModelProvider(this).get(EntryGroupViewModel.class);
-    }
-
-    private void setupBottomDialog() {
+    private void setupDefinitionBuilder() {
         definitionBuilder = new BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog);
         definitionBuilder.setContentView(R.layout.custom_entry_definition_builder_dialog);
-        LinearLayout container = definitionBuilder.findViewById(R.id.custom_entry_definition_dialog);
-        if (container != null) {
-            container.setOnClickListener(this::hideKeyboard);
+        EditText definitionView = definitionBuilder.findViewById(R.id.definition_edit);
+        EditText exampleView = definitionBuilder.findViewById(R.id.example_edit);
+        Button closeButton = definitionBuilder.findViewById(R.id.close_button);
+        TextView alert = definitionBuilder.findViewById(R.id.definition_header_alert);
+
+        // Close Definition Builder Button
+        if (closeButton != null) closeButton.setOnClickListener(v -> definitionBuilder.dismiss());
+
+        definitionBuilder.setOnShowListener(dialogInterface -> {
+            if (definitionView != null && exampleView != null) {
+                definitionView.getText().clear();
+                definitionView.clearFocus();
+                exampleView.getText().clear();
+                exampleView.clearFocus();
+            }
+        });
+
+        // Add New Definition
+        Button addDefinitionButton = definitionBuilder.findViewById(R.id.create_definition_button);
+        if (addDefinitionButton != null) {
+            addDefinitionButton.setOnClickListener(v -> {
+                // null checking
+                String definition = definitionView != null ? definitionView.getText().toString() : "";
+                String example = exampleView != null ? exampleView.getText().toString() : "";
+
+                if(definition.isEmpty()) {
+                    if (alert != null) alert.setVisibility(View.VISIBLE);
+                } else {
+                    if (alert != null) alert.setVisibility(View.INVISIBLE);
+
+                    entryGroupViewModel.addDefinition(definition, example);
+                    customDefAdapter.addItem();
+                    definitionBuilder.dismiss();
+                }
+            });
         }
     }
 
@@ -84,61 +109,19 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
             finish();
         });
 
+        // Add Definition Button
+        Button addDefinitionButton = findViewById(R.id.add_definition_button);
+        addDefinitionButton.setOnClickListener(v -> definitionBuilder.show());
+
         // Save Button
         Button saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(v -> {
-            if (entryGroupViewModel.getCurrentData().size() == 0 && !entryGroupViewModel.isEdit()) {
-                saveAlert.setVisibility(View.VISIBLE);
-            } else {
-                saveAlert.setVisibility(View.INVISIBLE);
-                Intent saveIntent = new Intent();
-                saveIntent = entryGroupViewModel.addSaveDataToIntent(saveIntent);
-                setResult(Activity.RESULT_OK, saveIntent);
-                finish();
-            }
+            saveAlert.setVisibility(View.INVISIBLE);
+            Intent saveIntent = new Intent();
+            saveIntent = entryGroupViewModel.addSaveDataToIntent(saveIntent);
+            setResult(Activity.RESULT_OK, saveIntent);
+            finish();
         });
-
-        // Add Definition Setup
-        Button button = definitionBuilder.findViewById(R.id.close_button);
-        if (button != null) {
-            button.setOnClickListener(v -> definitionBuilder.dismiss());
-        }
-
-        Button addGroupButton = findViewById(R.id.add_definition_button);
-        addGroupButton.setOnClickListener(v -> definitionBuilder.show());
-
-        // Add New Definition
-        Button addDefinitionButton = definitionBuilder.findViewById(R.id.create_definition_button);
-        if (addDefinitionButton != null) {
-            addDefinitionButton.setOnClickListener(v -> {
-                EditText definitionView = definitionBuilder.findViewById(R.id.definition_edit);
-                EditText exampleView = definitionBuilder.findViewById(R.id.example_edit);
-                TextView alert = definitionBuilder.findViewById(R.id.definition_header_alert);
-                String definition = definitionView != null ? definitionView.getText().toString() : "";
-                String example = exampleView != null ? exampleView.getText().toString() : "";
-                if(definition.isEmpty()) {
-                    if (alert != null) {
-                        alert.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    if (alert != null) {
-                        alert.setVisibility(View.INVISIBLE);
-                    }
-
-                    if (exampleView != null) {
-                        definitionView.getText().clear();
-                        definitionView.clearFocus();
-                        exampleView.getText().clear();
-                        exampleView.clearFocus();
-                    }
-
-                    saveAlert.setVisibility(View.INVISIBLE);
-                    entryGroupViewModel.addDefinition(definition, example);
-                    customDefAdapter.addItem();
-                    definitionBuilder.dismiss();
-                }
-            });
-        }
     }
 
     private void setupRecyclerView() {
@@ -154,11 +137,6 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
     @Override
     public void onDragStart(RecyclerView.ViewHolder viewHolder) {
         itemTouchHelper.startDrag(viewHolder);
-    }
-
-    private void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override

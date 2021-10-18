@@ -13,9 +13,9 @@ import java.util.Set;
 
 // TODO: Can I use a SparseArray here?
 public abstract class ItemsUpdate<T> implements Parcelable {
-    private Map<String, T> itemsAdded;
-    private Map<String, T> itemsDeleted;
-    private Map<String, T> itemsUpdated;
+    private final Map<String, T> itemsAdded;
+    private final Map<String, T> itemsDeleted;
+    private final Map<String, T> itemsUpdated;
 
     public ItemsUpdate(Map<String, T> itemsAdded, Map<String, T> itemsDeleted,
                        Map<String, T> itemsUpdated) {
@@ -57,7 +57,7 @@ public abstract class ItemsUpdate<T> implements Parcelable {
 
 
     public void putItemAdded(String key, T item) {
-        itemsAdded.put(key, item);
+        if (!itemsAdded.containsKey(key)) itemsAdded.put(key, item);
     }
 
     public void removeItemAdded(String key) {
@@ -73,7 +73,7 @@ public abstract class ItemsUpdate<T> implements Parcelable {
     }
 
     public void putItemDeleted(String key, T item) {
-        itemsDeleted.put(key, item);
+        if (!itemsDeleted.containsKey(key)) itemsDeleted.put(key, item);
     }
 
     public void removeItemDeleted(String key) {
@@ -105,7 +105,7 @@ public abstract class ItemsUpdate<T> implements Parcelable {
     }
 
     public void addItem(String key, T item) {
-        if (hasItemDeleted(key)) {
+        if (itemsDeleted.containsKey(key)) {
             removeItemDeleted(key);
         } else {
             putItemAdded(key, item);
@@ -113,7 +113,7 @@ public abstract class ItemsUpdate<T> implements Parcelable {
     }
 
     public void removeItem(String key, T item) {
-        if (hasItemAdded(key)) {
+        if (itemsAdded.containsKey(key)) {
             removeItemAdded(key);
         } else {
             putItemDeleted(key, item);

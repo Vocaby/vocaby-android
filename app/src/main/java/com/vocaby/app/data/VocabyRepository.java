@@ -1,4 +1,4 @@
-package com.vocaby.app.repositories;
+package com.vocaby.app.data;
 
 import android.app.Application;
 import android.content.Context;
@@ -230,7 +230,22 @@ public class VocabyRepository {
     // CUSTOM USER ENTRIES
     public Completable deleteUserEntry(int entryId, String entry) {
         return vocabyDao.deleteUserEntry(entryId)
-                .andThen(Completable.fromAction(() -> dataManager.deleteEntryFromDictionary(entry)))
+                .andThen(vocabyDao.checkEntryExistence(entry))
+                .flatMapCompletable(exists -> {
+                    if (!exists) return Completable.fromAction(() -> dataManager.deleteEntryFromDictionary(entry));
+                    else return Completable.complete();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable deleteUserEntry(String entry) {
+        return vocabyDao.deleteUserEntry(entry)
+                .andThen(vocabyDao.checkEntryExistence(entry))
+                .flatMapCompletable(exists -> {
+                    if (!exists) return Completable.fromAction(() -> dataManager.deleteEntryFromDictionary(entry));
+                    else return Completable.complete();
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -250,12 +265,18 @@ public class VocabyRepository {
     public Single<Integer> insertOrUpdateEntry(int userId, String entry, GroupChanges groupChanges, Map<String, DefinitionChanges> definitionChangesMap) {
         Single<Long> entryInsert = Single.just((long) groupChanges.getEntryId());
 
+        // New entry
         if (groupChanges.getEntryId() == -1) {
             entryInsert = vocabyDao.insertCustomEntry(new CustomEntry(userId, entry, OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()))
-                    .flatMap(id -> Single.fromCallable(() -> {
-                        dataManager.addEntryToDictionary(entry);
-                        return id;
-                    }));
+                    .flatMap(id ->
+                        vocabyDao.checkEntryExistence(entry)
+                            .flatMap(exists ->
+                                Single.fromCallable(() -> {
+                                    if (!exists) dataManager.addEntryToDictionary(entry);
+                                    return id;
+                                })
+                            )
+                    );
         }
 
         return entryInsert
@@ -413,5 +434,11 @@ public class VocabyRepository {
         entryData.setDefinitionGroups(groups);
 
         return entryData;
+    }
+
+    public Single<List<String>> getAllTypes() {
+        return vocabyDao.getTypes()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }

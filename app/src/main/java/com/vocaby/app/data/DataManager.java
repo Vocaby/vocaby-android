@@ -8,7 +8,6 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
-import com.vocaby.app.repositories.VocabyRepository;
 import com.vocaby.app.utils.VocabyAlgo;
 
 import java.io.File;

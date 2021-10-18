@@ -1,6 +1,5 @@
 package com.vocaby.app.ui.customentry;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,8 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomEntryAdapter;
-import com.vocaby.app.models.CustomEntryPackage;
-import com.vocaby.app.ui.customentry.EntryBuilderActivity;
+import com.vocaby.app.models.ItemPayload;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.MyEntryViewModel;
@@ -33,14 +31,14 @@ import com.vocaby.app.viewmodels.MyEntryViewModel;
 public class MyEntryFragment extends Fragment implements CustomEntryAdapter.ItemTouchListener {
     private Context ctx;
 
+    private TextView entryCountView;
+    private ProgressBar deleteProgress;
+
     private BottomSheetDialog entryEditDialog;
     private CustomEntryAdapter customEntryAdapter;
-    private TextView entryCountView;
-    private EditText entryEdit;
-    private TextView entryAlert;
+
     private MyEntryViewModel entryViewModel;
     private DictionaryViewModel dictionaryViewModel;
-    private LinearLayout emptyCard;
 
     public MyEntryFragment() {
         // Required empty public constructor
@@ -56,23 +54,11 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_entry, container, false);
-        emptyCard = view.findViewById(R.id.empty_card);
-
-        setupEntryBuilder();
-
-        // Add Entry
-        Button addButton = view.findViewById(R.id.add_entry_button);
-        addButton.setOnClickListener(v -> {
-            if (entryEdit != null && entryAlert != null) {
-                    entryEdit.getText().clear();
-                    entryAlert.setVisibility(View.INVISIBLE);
-                    entryEditDialog.dismiss();
-            }
-
-            entryEditDialog.show();
-        });
-
         entryCountView = view.findViewById(R.id.entry_count);
+        deleteProgress = view.findViewById(R.id.progress_bar);
+
+        setupButtons(view);
+        setupEntryBuilder();
 
         return view;
     }
@@ -80,27 +66,46 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     @Override
     public void onViewCreated(@NonNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
-        entryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
         setupRecyclerView(view);
 
-        entryViewModel.getEntries().observe(getViewLifecycleOwner(), customEntries -> {
-            if (customEntries.size() == 0) emptyCard.setVisibility(View.VISIBLE);
-            else emptyCard.setVisibility(View.GONE);
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+        entryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
 
-            customEntryAdapter.setList(customEntries);
+        entryViewModel.getEntryResultPayload().observe(getViewLifecycleOwner(), payload -> {
+            if (payload.getState() == ItemPayload.ADD) {
+                customEntryAdapter.addEntry();
+            } else if (payload.getState() == ItemPayload.DELETE) {
+                customEntryAdapter.deleteEntry(payload.getPayload());
+            }
         });
 
-        entryViewModel.getCustomEntryCount().observe(getViewLifecycleOwner(), count ->
-                entryCountView.setText(StringFormatter.cleanNumber(count))
+        entryViewModel.getEntries().observe(getViewLifecycleOwner(),
+                customEntries -> customEntryAdapter.setList(customEntries)
         );
+
+        entryViewModel.getCustomEntryCount().observe(getViewLifecycleOwner(),
+                count -> entryCountView.setText(StringFormatter.cleanNumber(count))
+        );
+
+        entryViewModel.getDeleteStatus().observe(getViewLifecycleOwner(), deletePayload -> {
+            if (deletePayload.getState() == ItemPayload.DELETE) {
+                deleteProgress.setVisibility(View.GONE);
+                customEntryAdapter.deleteEntry(deletePayload.getPayload());
+                dictionaryViewModel.resetDictionaryEntries();
+            }
+        });
     }
 
     private void setupRecyclerView(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.custom_entry_container);
-        customEntryAdapter = new CustomEntryAdapter(this);
+        customEntryAdapter = new CustomEntryAdapter(getActivity(), this);
         recyclerView.setAdapter(customEntryAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+    }
+
+    private void setupButtons(View view) {
+        Button addButton = view.findViewById(R.id.add_entry_button);
+        addButton.setOnClickListener(v -> entryEditDialog.show());
     }
 
     private void setupEntryBuilder() {
@@ -108,14 +113,15 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
                 new BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog);
         entryEditDialog.setContentView(R.layout.custom_entry_header_dialog);
 
+        EditText entryEdit = entryEditDialog.findViewById(R.id.entry_edit);
+        TextView entryAlert = entryEditDialog.findViewById(R.id.entry_header_alert);
+
         Button button = entryEditDialog.findViewById(R.id.close_button);
         if (button != null) {
             button.setOnClickListener(v -> entryEditDialog.dismiss());
         }
 
         Button saveButton = entryEditDialog.findViewById(R.id.dialog_save_button);
-        entryEdit = entryEditDialog.findViewById(R.id.entry_edit);
-        entryAlert = entryEditDialog.findViewById(R.id.entry_header_alert);
         if (saveButton != null) {
             saveButton.setText(R.string.create);
             saveButton.setOnClickListener(v -> {
@@ -128,41 +134,42 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
                         entryAlert.setVisibility(View.INVISIBLE);
                         entryEditDialog.dismiss();
 
-
-                        Intent startEntryBuilderIntent = new Intent(requireActivity(), EntryBuilderActivity.class);
-                        startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, -1);
+                        Intent startEntryBuilderIntent =
+                                new Intent(requireActivity(), EntryBuilderActivity.class);
+                        startEntryBuilderIntent =
+                                entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, -1);
                         entryBuilderActivity.launch(startEntryBuilderIntent);
                     }
                 }
             });
         }
+
+        // Clear content on show
+        entryEditDialog.setOnShowListener(dialogInterface -> {
+            if (entryEdit != null && entryAlert != null) {
+                entryEdit.getText().clear();
+                entryAlert.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private final ActivityResultLauncher<Intent> entryBuilderActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-                    CustomEntryPackage customEntryPackage =
-                            result.getData().getParcelableExtra(MyEntryViewModel.CUSTOM_ENTRY_PACKAGE_KEY);
-                    if(customEntryPackage.isDelete()) {
-                        customEntryAdapter.deleteEntry(customEntryPackage.getEntry());
-                    } else {
-                        if (!customEntryPackage.isEdit()) {
-                            customEntryAdapter.addEntry(customEntryPackage.getEntry());
-                        }
-                    }
-                }
-
-                if (customEntryAdapter.getItemCount() == 0) emptyCard.setVisibility(View.VISIBLE);
-                else emptyCard.setVisibility(View.GONE);
-
                 dictionaryViewModel.resetDictionaryEntries();
                 entryViewModel.handleResult(result);
             }
     );
 
     @Override
+    public void onItemDelete(String entry, int position) {
+        deleteProgress.setVisibility(View.VISIBLE);
+        entryViewModel.removeCustomEntry(entry, position);
+    }
+
+    @Override
     public void onItemTouch(String entry, int position) {
+        entryViewModel.setSelectedPosition(position);
         Intent startEntryBuilderIntent = new Intent(requireActivity(), EntryBuilderActivity.class);
         startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, position);
         entryBuilderActivity.launch(startEntryBuilderIntent);

@@ -1,33 +1,13 @@
 package com.vocaby.app.models;
 
-public class ItemPayload<T> {
-    public static final int UNCHANGED = -1;
-    public static final int ADD = 0;
-    public static final int DELETE = 1;
-    public static final int UPDATE = 2;
+public interface ItemPayload<T> {
+    int UNCHANGED = -1;
+    int ADD = 0;
+    int DELETE = 1;
+    int UPDATE = 2;
+    int NEW = 3;
 
-    private int state;
-    private final T payload;
-
-    public ItemPayload(T payload) {
-        this.state = UNCHANGED;
-        this.payload = payload;
-    }
-
-    public ItemPayload(int state, T payload) {
-        this.state = state;
-        this.payload = payload;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int itemState) {
-        state = itemState;
-    }
-
-    public T getPayload() {
-        return payload;
-    }
+    int getState();
+    void setState(int itemState);
+    T getPayload();
 }

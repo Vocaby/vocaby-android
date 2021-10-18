@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,7 +26,6 @@ public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouc
     private Context ctx;
     private TextView savesCount;
     private SavesAdapter savesAdapter;
-    private LinearLayout emptyCard;
 
     private UserViewModel userViewModel;
 
@@ -46,7 +44,6 @@ public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouc
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saves, container, false);
         savesCount = view.findViewById(R.id.saves_count);
-        emptyCard = view.findViewById(R.id.empty_card);
 
         return view;
     }
@@ -65,16 +62,12 @@ public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouc
             }
         });
 
-        userViewModel.getEmptyCardVisibility().observe(getViewLifecycleOwner(),
-                visibility -> emptyCard.setVisibility(visibility)
-        );
-
         userViewModel.getSavedWords().observe(getViewLifecycleOwner(),
                 savedWords -> savesAdapter.setSavedWords(savedWords)
         );
 
-        userViewModel.getSaveCount().observe(getViewLifecycleOwner(), count ->
-                savesCount.setText(StringFormatter.cleanNumber(count))
+        userViewModel.getSaveCount().observe(getViewLifecycleOwner(),
+                count -> savesCount.setText(StringFormatter.cleanNumber(count))
         );
     }
 

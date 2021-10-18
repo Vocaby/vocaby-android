@@ -12,7 +12,7 @@ import androidx.preference.PreferenceManager;
 
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.models.SearchSuggestionItem;
-import com.vocaby.app.repositories.VocabyRepository;
+import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 import com.vocaby.app.utils.VocabyAlgo;

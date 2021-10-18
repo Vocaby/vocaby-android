@@ -15,6 +15,7 @@ import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
+import com.vocaby.app.data.entity.Type;
 
 import java.util.List;
 
@@ -32,6 +33,9 @@ public abstract class VocabyDao {
             "SELECT entry FROM custom_user_entry WHERE entry LIKE :letter || '%' " +
             "ORDER BY word ASC")
     public abstract Single<List<String>> getDictionaryEntriesByLetter(String letter);
+
+    @Query("SELECT EXISTS(SELECT 1 FROM dictionary_word WHERE word = :entry)")
+    public abstract Single<Boolean> checkEntryExistence(String entry);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Single<Long> createUser(User user);
@@ -71,13 +75,6 @@ public abstract class VocabyDao {
 
     @Query("DELETE FROM saves")
     public abstract Completable clearSaves();
-
-    @Transaction
-    @Query("SELECT COUNT(*) FROM vocaby_user")
-    public abstract Single<Integer> getUserCount();
-
-    @Query("SELECT COUNT(*) FROM saves")
-    public abstract Single<Integer> getSavesCount();
 
     @Transaction
     @Query("SELECT * FROM vocaby_user WHERE user_id = :id")
@@ -121,14 +118,19 @@ public abstract class VocabyDao {
     @Query("DELETE FROM custom_user_entry WHERE custom_entry_id = :entryId")
     public abstract Completable deleteUserEntry(int entryId);
 
+    @Query("DELETE FROM custom_user_entry WHERE entry = :entry")
+    public abstract Completable deleteUserEntry(String entry);
+
     @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :id AND entry = :entry")
     public abstract Single<EntryWithData> getUserEntryData(int id, String entry);
 
-    @Transaction
-    @Query("SELECT * FROM custom_user_entry WHERE custom_entry_id = :entryId")
-    public abstract Single<EntryWithData> getUserEntryData(int entryId);
-
     @Query("SELECT entry FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
     public abstract Single<List<String>> getUserEntries(int id);
+
+    @Insert
+    public abstract Completable insertTypes(List<Type> types);
+
+    @Query("SELECT type from entry_type")
+    public abstract Single<List<String>> getTypes();
 }

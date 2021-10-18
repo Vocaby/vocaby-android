@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGroupModel> {
     private int groupId;
@@ -118,5 +119,17 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
     @Override
     public int compareTo(DefinitionGroupModel otherGroup) {
         return Integer.compare(order, otherGroup.getOrder());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return type.equals(String.valueOf(o));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type);
     }
 }

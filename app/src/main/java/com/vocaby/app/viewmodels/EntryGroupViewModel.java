@@ -17,50 +17,73 @@ import java.util.Set;
 
 public class EntryGroupViewModel extends ViewModel {
     private DefinitionGroupModel definitionGroup;
+    private DefinitionChanges definitionChanges;
+
     private final SingleLiveEvent<String> mType;
     private final SingleLiveEvent<List<DefinitionModel>> mDefinitions;
-    private boolean isEdit;
-    private DefinitionChanges definitionChanges;
+
     private List<DefinitionModel> initialDefinitions;
-    private Set<String> initialAddedItems;
+    private Set<String> initialDataSet;
 
     public EntryGroupViewModel() {
-        mDefinitions = new SingleLiveEvent<>();
-        mType = new SingleLiveEvent<>();
-        isEdit = false;
         definitionChanges = new DefinitionChanges();
         initialDefinitions = new ArrayList<>();
-        initialAddedItems = new HashSet<>();
-    }
+        initialDataSet = new HashSet<>();
 
-    public void addDefinition(String definition, String example) {
-        DefinitionModel definitionAdded = definitionGroup.addDefinition(definition, example);
-        definitionChanges.addItem(definition, definitionAdded);
-        // mDefinitions.setValue(definitionGroup.getDefinitionData());
+        mDefinitions = new SingleLiveEvent<>();
+        mType = new SingleLiveEvent<>();
     }
 
     public LiveData<List<DefinitionModel>> getDefinitions() {
         return mDefinitions;
     }
+    public LiveData<String> getType() {
+        return mType;
+    }
+
+    public void handleIntent(Intent receivedIntent) {
+        if (receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY) != null) {
+            if (receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY) instanceof DefinitionGroupModel) {
+                definitionGroup = receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY);
+                mDefinitions.setValue(definitionGroup.getDefinitionData());
+                initialDefinitions = new ArrayList<>(definitionGroup.getDefinitionData());
+                mType.setValue(definitionGroup.getType());
+            }
+        }
+
+        if (receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES) != null) {
+            if (receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES) instanceof DefinitionChanges) {
+                definitionChanges = receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES);
+                initialDataSet = definitionChanges.getAddedKeySet();
+            }
+        }
+    }
+
+    public void addDefinition(String definition, String example) {
+        DefinitionModel definitionAdded = definitionGroup.addDefinition(definition, example);
+        definitionChanges.addItem(definition, definitionAdded);
+    }
 
     public void removeDefinition(int position) {
+        // Definitions have been offset by one so they should be marked as updated items
         for(int i = position+1; i < definitionGroup.getDefinitionData().size(); i++) {
             DefinitionModel d = definitionGroup.getDefinitionData().get(i);
             definitionChanges.putItemUpdated(d.getDefinition(), d);
         }
 
+        // Remove the definition
         DefinitionModel definitionRemoved = definitionGroup.removeDefinition(position);
+        // Add the removed definition to the changes model
         definitionChanges.removeItem(definitionRemoved.getDefinition(), definitionRemoved);
-        // mDefinitions.setValue(definitionGroup.getDefinitionData());
     }
 
-    // User is saving the definitions
     public Intent addSaveDataToIntent(Intent intent) {
         checkForUpdatedItems();
         fixItemOrdering();
 
         intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup);
         intent.putExtra(EntryViewModel.DEFINITION_CHANGES, definitionChanges);
+
         return intent;
     }
 
@@ -70,7 +93,7 @@ public class EntryGroupViewModel extends ViewModel {
             int j = 0;
             for (int i = 0; i < initialDefinitions.size(); i++) {
                 if (definitionChanges.hasItemDeleted(initialDefinitions.get(i).getDefinition())
-                        || initialAddedItems.contains(initialDefinitions.get(i).getDefinition())
+                        || initialDataSet.contains(initialDefinitions.get(i).getDefinition())
                         || definitionChanges.hasItemUpdated(initialDefinitions.get(i).getDefinition())) {
                     continue;
                 }
@@ -98,40 +121,6 @@ public class EntryGroupViewModel extends ViewModel {
 
             if (item != null) {
                 item.setOrder(i);
-            }
-        }
-    }
-
-    public List<DefinitionModel> getCurrentData() {
-        return mDefinitions.getValue();
-    }
-
-    public LiveData<String> getType() {
-        return mType;
-    }
-
-    public boolean isEdit() {
-        return isEdit;
-    }
-
-    public void handleIntent(Intent receivedIntent) {
-        if (receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY) != null) {
-            if (receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY) instanceof DefinitionGroupModel) {
-                definitionGroup = receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY);
-                mDefinitions.setValue(definitionGroup.getDefinitionData());
-                initialDefinitions = new ArrayList<>(definitionGroup.getDefinitionData());
-                mType.setValue(definitionGroup.getType());
-            }
-
-            if (!definitionGroup.isEmpty()) {
-                isEdit = true;
-            }
-        }
-
-        if (receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES) != null) {
-            if (receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES) instanceof DefinitionChanges) {
-                definitionChanges = receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES);
-                initialAddedItems = definitionChanges.getAddedKeySet();
             }
         }
     }

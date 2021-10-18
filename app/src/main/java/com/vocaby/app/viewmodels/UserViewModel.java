@@ -1,7 +1,6 @@
 package com.vocaby.app.viewmodels;
 
 import android.app.Application;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,7 +10,8 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.models.ItemPayload;
-import com.vocaby.app.repositories.VocabyRepository;
+import com.vocaby.app.models.ItemStringPayload;
+import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 
@@ -27,8 +27,7 @@ public class UserViewModel extends AndroidViewModel {
     private final MutableLiveData<List<String>> mSavedWords;
     private final MutableLiveData<Integer> mSaveCount;
     private final MutableLiveData<User> mUser;
-    private final SingleLiveEvent<ItemPayload<String>> mItemChange;
-    private final SingleLiveEvent<Integer> mEmptyCardVisibility;
+    private final SingleLiveEvent<ItemStringPayload> mItemChange;
 
     public UserViewModel(@NonNull Application application) {
         super(application);
@@ -39,7 +38,6 @@ public class UserViewModel extends AndroidViewModel {
         mSaveCount = new MutableLiveData<>(0);
         mUser = new MutableLiveData<>();
         mItemChange = new SingleLiveEvent<>();
-        mEmptyCardVisibility = new SingleLiveEvent<>();
     }
 
     public void setupApplication() {
@@ -52,12 +50,6 @@ public class UserViewModel extends AndroidViewModel {
                 }).subscribe(saves -> {
                     mSavedWords.setValue(saves);
                     mSaveCount.setValue(saves.size());
-
-                    if (saves.size() > 0) {
-                        mEmptyCardVisibility.setValue(View.GONE);
-                    } else {
-                        mEmptyCardVisibility.setValue(View.VISIBLE);
-                    }
                 }, e -> {
                     if (e instanceof EmptyResultSetException) {
                         addDefaultUser();
@@ -90,32 +82,29 @@ public class UserViewModel extends AndroidViewModel {
     public LiveData<Integer> getSaveCount() {
         return mSaveCount;
     }
-    public LiveData<ItemPayload<String>> getItemStatePayload() { return mItemChange; }
-    public LiveData<Integer> getEmptyCardVisibility() { return mEmptyCardVisibility; }
+    public LiveData<ItemStringPayload> getItemStatePayload() { return mItemChange; }
 
     public void addSaveItem(String entry) {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
-            ItemPayload<String> itemPayload =
-                    new ItemPayload<>(ItemPayload.ADD, entry);
-            mItemChange.setValue(itemPayload);
+            ItemStringPayload itemStringPayload =
+                    new ItemStringPayload(ItemPayload.ADD, entry);
+            mItemChange.setValue(itemStringPayload);
 
             list.add(0, entry);
             mSaveCount.setValue(list.size());
-            if (list.size() == 1) mEmptyCardVisibility.setValue(View.GONE);
         }
     }
 
     public void removeSaveItem(String entry) {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
-            ItemPayload<String> itemPayload =
-                    new ItemPayload<>(ItemPayload.DELETE, entry);
-            mItemChange.setValue(itemPayload);
+            ItemStringPayload itemStringPayload =
+                    new ItemStringPayload(ItemPayload.DELETE, entry);
+            mItemChange.setValue(itemStringPayload);
 
             list.remove(entry);
             mSaveCount.setValue(list.size());
-            if (list.size() == 0) mEmptyCardVisibility.setValue(View.VISIBLE);
         }
     }
 
