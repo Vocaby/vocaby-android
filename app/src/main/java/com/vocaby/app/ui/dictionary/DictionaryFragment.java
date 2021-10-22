@@ -33,6 +33,18 @@ public class DictionaryFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (getParentFragmentManager().getBackStackEntryCount() > 0) backPressedCallback.setEnabled(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        backPressedCallback.setEnabled(false);
+    }
+
+    @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
