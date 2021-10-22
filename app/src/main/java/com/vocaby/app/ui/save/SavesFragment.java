@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.SavesAdapter;
-import com.vocaby.app.models.ItemPayload;
+import com.vocaby.app.models.ItemState;
 import com.vocaby.app.ui.MainActivity;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.UserViewModel;
@@ -55,9 +55,9 @@ public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouc
 
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
         userViewModel.getItemStatePayload().observe(getViewLifecycleOwner(), payload -> {
-            if (payload.getState() == ItemPayload.ADD) {
+            if (payload.getState() == ItemState.ADD) {
                 savesAdapter.addWordToRV();
-            } else if (payload.getState() == ItemPayload.DELETE) {
+            } else if (payload.getState() == ItemState.DELETE) {
                 savesAdapter.removeWordFromRV(payload.getPayload());
             }
         });

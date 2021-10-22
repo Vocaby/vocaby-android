@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel;
 import com.vocaby.app.models.DefinitionChanges;
 import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.DefinitionModel;
-import com.vocaby.app.models.ItemPayload;
+import com.vocaby.app.models.ItemState;
 import com.vocaby.app.utils.SingleLiveEvent;
 
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ public class EntryGroupViewModel extends ViewModel {
 
     private List<DefinitionModel> initialDefinitions;
     private Set<String> initialDataSet;
+    private int resultState;
 
     public EntryGroupViewModel() {
         definitionChanges = new DefinitionChanges();
@@ -35,6 +36,8 @@ public class EntryGroupViewModel extends ViewModel {
 
         mDefinitions = new SingleLiveEvent<>();
         mType = new SingleLiveEvent<>();
+
+        resultState = ItemState.ADD;
     }
 
     public LiveData<List<DefinitionModel>> getDefinitions() {
@@ -60,6 +63,8 @@ public class EntryGroupViewModel extends ViewModel {
                 initialDataSet = definitionChanges.getAddedKeySet();
             }
         }
+
+        resultState = receivedIntent.getIntExtra(ITEM_PAYLOAD_KEY, ItemState.UNCHANGED);
     }
 
     public void addDefinition(String definition, String example) {
@@ -84,7 +89,7 @@ public class EntryGroupViewModel extends ViewModel {
         checkForUpdatedItems();
         fixItemOrdering();
 
-        intent.putExtra(ITEM_PAYLOAD_KEY, ItemPayload.UPDATE);
+        intent.putExtra(ITEM_PAYLOAD_KEY, resultState);
         intent.putExtra(EntryViewModel.DEFINITION_CHANGES, definitionChanges);
         intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup);
         return intent;

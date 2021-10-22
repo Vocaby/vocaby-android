@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.vocaby.app.models.ItemIntPayload;
 import com.vocaby.app.models.ItemPayload;
+import com.vocaby.app.models.ItemState;
 import com.vocaby.app.models.ItemStringPayload;
 import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.Logger;
@@ -79,9 +80,9 @@ public class MyEntryViewModel extends AndroidViewModel {
         }
 
         if (selectedPosition == -1) {
-            itemStringPayload.setState(ItemPayload.ADD);
+            itemStringPayload.setState(ItemState.ADD);
         } else {
-            itemStringPayload.setState(ItemPayload.UPDATE);
+            itemStringPayload.setState(ItemState.UPDATE);
         }
 
         intent.putExtra(ITEM_PAYLOAD_KEY, itemStringPayload);
@@ -93,9 +94,9 @@ public class MyEntryViewModel extends AndroidViewModel {
             ItemStringPayload receivedPayload =
                     result.getData().getParcelableExtra(ITEM_PAYLOAD_KEY);
 
-            if (receivedPayload.getState() == ItemPayload.ADD) {
+            if (receivedPayload.getState() == ItemState.ADD) {
                 customEntries.add(0, receivedPayload.getPayload());
-            } else if (receivedPayload.getState() == ItemPayload.DELETE){
+            } else if (receivedPayload.getState() == ItemState.DELETE){
                 if (selectedPosition != -1 ) customEntries.remove(selectedPosition);
                 else customEntries.remove(receivedPayload.getPayload());
             }
@@ -110,10 +111,10 @@ public class MyEntryViewModel extends AndroidViewModel {
                 vocabyRepository.deleteUserEntry(entry)
                     .subscribe(() -> {
                         customEntries.remove(position);
-                        mDeleteStatus.setValue(new ItemIntPayload(ItemPayload.DELETE, position));
+                        mDeleteStatus.setValue(new ItemIntPayload(ItemState.DELETE, position));
                         mEntryCount.setValue(customEntries.size());
                     }, error -> {
-                        mDeleteStatus.setValue(new ItemIntPayload(ItemPayload.UNCHANGED, position));
+                        mDeleteStatus.setValue(new ItemIntPayload(ItemState.UNCHANGED, position));
                         Logger.reportError(error);
                     })
         );

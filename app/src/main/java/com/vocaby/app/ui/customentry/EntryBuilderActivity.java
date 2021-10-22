@@ -22,7 +22,7 @@ import com.vocaby.app.adapters.CustomGroupAdapter;
 import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
 import com.vocaby.app.adapters.TypeAdapter;
-import com.vocaby.app.models.ItemPayload;
+import com.vocaby.app.models.ItemState;
 import com.vocaby.app.viewmodels.EntryViewModel;
 
 public class EntryBuilderActivity extends AppCompatActivity
@@ -53,20 +53,20 @@ public class EntryBuilderActivity extends AppCompatActivity
         entryViewModel.parseRetrieved(getIntent());
 
         entryViewModel.getGroupChange().observe(this, groupPayload -> {
-            if (groupPayload.getState() == ItemPayload.ADD) {
+            if (groupPayload.getState() == ItemState.ADD) {
                 groupAlert.setVisibility(View.INVISIBLE);
                 customGroupAdapter.addItem();
-            } else if (groupPayload.getState() == ItemPayload.DELETE) {
+            } else if (groupPayload.getState() == ItemState.DELETE) {
                 customGroupAdapter.removeItem(groupPayload.getPayload());
-            } else if (groupPayload.getState() == ItemPayload.UPDATE) {
+            } else if (groupPayload.getState() == ItemState.UPDATE) {
                 customGroupAdapter.editItem(groupPayload.getPayload());
             }
         });
 
         entryViewModel.getTypeChange().observe(this, typePayload -> {
-            if (typePayload.getState() == ItemPayload.ADD) {
+            if (typePayload.getState() == ItemState.ADD) {
                 typeAdapter.addItem(typePayload.getPayload());
-            } else if (typePayload.getState() == ItemPayload.DELETE) {
+            } else if (typePayload.getState() == ItemState.DELETE) {
                 typeAdapter.removeItem(typePayload.getPayload());
             }
         });
@@ -95,7 +95,7 @@ public class EntryBuilderActivity extends AppCompatActivity
                         if (typeCreatorAlert != null) typeCreatorAlert.setVisibility(View.INVISIBLE);
 
                         Intent groupBuilderActivityData = new Intent(this, EntryGroupBuilderActivity.class);
-                        groupBuilderActivityData = entryViewModel.addGroupDataToIntent(groupBuilderActivityData, type);
+                        groupBuilderActivityData = entryViewModel.addNewGroupDataToIntent(groupBuilderActivityData, type);
                         groupBuilderActivity.launch(groupBuilderActivityData);
                         typeAdapter.resetSelect();
                         groupBuilder.dismiss();
@@ -158,7 +158,7 @@ public class EntryBuilderActivity extends AppCompatActivity
 
     private final ActivityResultLauncher<Intent> groupBuilderActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> entryViewModel.handleResult(result)
+            result -> entryViewModel.handleGroupCreationResult(result)
     );
 
     @Override
@@ -170,15 +170,14 @@ public class EntryBuilderActivity extends AppCompatActivity
     public void onItemClicked(int position) {
         entryViewModel.setSelectedGroup(position);
         Intent groupBuilderActivityData = new Intent(this, EntryGroupBuilderActivity.class);
-        groupBuilderActivityData = entryViewModel.addGroupDataToIntent(groupBuilderActivityData, position);
+        groupBuilderActivityData = entryViewModel.addExistingGroupDataToIntent(groupBuilderActivityData, position);
         groupBuilderActivity.launch(groupBuilderActivityData);
     }
 
     @Override
     public void onItemRemoved(int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
-        entryViewModel.removeGroup(position);
-        customGroupAdapter.notifyItemRemoved(position);
+        entryViewModel.removeGroup(ItemState.UPDATE, position);
 
         // Google's Implementation of ItemTouchHelper assumes that
         // the swiped items are cleaned up. Because the view is recycled

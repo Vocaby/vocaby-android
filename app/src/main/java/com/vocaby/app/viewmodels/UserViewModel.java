@@ -10,6 +10,7 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.models.ItemPayload;
+import com.vocaby.app.models.ItemState;
 import com.vocaby.app.models.ItemStringPayload;
 import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.Logger;
@@ -88,7 +89,7 @@ public class UserViewModel extends AndroidViewModel {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
             ItemStringPayload itemStringPayload =
-                    new ItemStringPayload(ItemPayload.ADD, entry);
+                    new ItemStringPayload(ItemState.ADD, entry);
             mItemChange.setValue(itemStringPayload);
 
             list.add(0, entry);
@@ -100,7 +101,7 @@ public class UserViewModel extends AndroidViewModel {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
             ItemStringPayload itemStringPayload =
-                    new ItemStringPayload(ItemPayload.DELETE, entry);
+                    new ItemStringPayload(ItemState.DELETE, entry);
             mItemChange.setValue(itemStringPayload);
 
             list.remove(entry);
