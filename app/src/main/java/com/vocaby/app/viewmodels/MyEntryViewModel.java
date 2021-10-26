@@ -13,7 +13,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.vocaby.app.models.ItemIntPayload;
-import com.vocaby.app.models.ItemPayload;
 import com.vocaby.app.models.ItemState;
 import com.vocaby.app.models.ItemStringPayload;
 import com.vocaby.app.data.VocabyRepository;

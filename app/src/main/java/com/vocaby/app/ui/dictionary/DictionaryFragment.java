@@ -35,7 +35,7 @@ public class DictionaryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (getParentFragmentManager().getBackStackEntryCount() > 0) backPressedCallback.setEnabled(true);
+        if (getChildFragmentManager().getBackStackEntryCount() > 0) backPressedCallback.setEnabled(true);
     }
 
     @Override
@@ -67,9 +67,12 @@ public class DictionaryFragment extends Fragment {
             @Override
             public void handleOnBackPressed() {
                 if (getChildFragmentManager().getBackStackEntryCount() == 1) slideDownHeader();
-                    if (getChildFragmentManager().getBackStackEntryCount() > 0)
-                        getChildFragmentManager().popBackStack();
-                if (getChildFragmentManager().getBackStackEntryCount() == 0) this.setEnabled(false);
+                if (getChildFragmentManager().getBackStackEntryCount() > 0)
+                    getChildFragmentManager().popBackStack();
+                if (getChildFragmentManager().getBackStackEntryCount() == 0) {
+                    this.setEnabled(false);
+                    requireActivity().onBackPressed();
+                }
             }
         };
 

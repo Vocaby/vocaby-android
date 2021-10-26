@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import com.vocaby.app.Constants;
 import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.api.VocabyApiService;
-import com.vocaby.app.data.DataManager;
-import com.vocaby.app.data.VocabyDatabase;
 import com.vocaby.app.data.dao.VocabyDao;
 import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
