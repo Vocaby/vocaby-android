@@ -2,6 +2,9 @@ package com.vocaby.app.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.vocaby.app.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +92,7 @@ public abstract class ItemsUpdate<T> implements Parcelable {
     }
 
     public void putItemUpdated(String key, T item) {
-        itemsUpdated.put(key, item);
+        if (!itemsAdded.containsKey(key) && !itemsDeleted.containsKey(key)) itemsUpdated.put(key, item);
     }
 
     public void removeItemUpdated(String key) {
@@ -110,6 +113,8 @@ public abstract class ItemsUpdate<T> implements Parcelable {
         } else {
             putItemAdded(key, item);
         }
+
+        itemsUpdated.remove(key);
     }
 
     public void removeItem(String key, T item) {
@@ -118,9 +123,29 @@ public abstract class ItemsUpdate<T> implements Parcelable {
         } else {
             putItemDeleted(key, item);
         }
+
+        itemsUpdated.remove(key);
     }
 
     public boolean hasChanges() {
         return !itemsUpdated.isEmpty() || !itemsAdded.isEmpty() || !itemsDeleted.isEmpty();
+    }
+
+    public boolean hasItem(String key) {
+        return hasItemAdded(key) || hasItemDeleted(key) || hasItemUpdated(key);
+    }
+
+    public void printDebug() {
+        for (String key : itemsAdded.keySet()) {
+            Log.d(Constants.DEBUG_TAG, "Added Item: " + key);
+        }
+
+        for (String key : itemsDeleted.keySet()) {
+            Log.d(Constants.DEBUG_TAG, "Deleted Item: " + key);
+        }
+
+        for (String key : itemsUpdated.keySet()) {
+            Log.d(Constants.DEBUG_TAG, "Updated Item: " + key);
+        }
     }
 }

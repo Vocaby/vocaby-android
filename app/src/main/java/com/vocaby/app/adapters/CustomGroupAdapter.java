@@ -28,7 +28,7 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
     Context ctx;
 
     public interface ItemInteractionListener {
-        void onItemClicked(int position);
+        void onGroupCardClicked(int position);
         void onItemRemoved(int position);
     }
 
@@ -70,7 +70,7 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
         });
 
         holder.container.setOnClickListener(v ->
-                itemInteractionListener.onItemClicked(holder.getAdapterPosition())
+                itemInteractionListener.onGroupCardClicked(holder.getAdapterPosition())
         );
     }
 

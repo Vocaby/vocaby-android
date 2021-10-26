@@ -2,6 +2,9 @@ package com.vocaby.app.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.vocaby.app.Constants;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -51,5 +54,20 @@ public class DefinitionChanges extends ItemsUpdate<DefinitionModel> {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    @Override
+    public void printDebug() {
+        for (DefinitionModel definitionModel : getAddedItems()) {
+            Log.d(Constants.DEBUG_TAG, "Added Item: " + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
+        }
+
+        for (DefinitionModel definitionModel : getDeletedItems()) {
+            Log.d(Constants.DEBUG_TAG, "Deleted Item: " + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
+        }
+
+        for (DefinitionModel definitionModel : getUpdatedItems()) {
+            Log.d(Constants.DEBUG_TAG, "Updated Item: " + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
+        }
     }
 }

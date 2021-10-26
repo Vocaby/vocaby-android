@@ -37,6 +37,8 @@ public class EntryBuilderActivity extends AppCompatActivity
 
     private ProgressBar saveProgressBar;
     private TextView groupAlert;
+    private Button createGroupButton;
+    private TextView typeCreatorAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +86,6 @@ public class EntryBuilderActivity extends AppCompatActivity
         entryViewModel.getTypes().observe(this, types -> typeAdapter.setList(types));
 
         entryViewModel.getSelectedType().observe(this, type -> {
-            Button createGroupButton = groupBuilder.findViewById(R.id.create_group_button);
-            TextView typeCreatorAlert = groupBuilder.findViewById(R.id.type_creator_alert);
-
             if (createGroupButton != null) {
                 createGroupButton.setOnClickListener(v -> {
                     if (type.isEmpty()) {
@@ -97,7 +96,6 @@ public class EntryBuilderActivity extends AppCompatActivity
                         Intent groupBuilderActivityData = new Intent(this, EntryGroupBuilderActivity.class);
                         groupBuilderActivityData = entryViewModel.addNewGroupDataToIntent(groupBuilderActivityData, type);
                         groupBuilderActivity.launch(groupBuilderActivityData);
-                        typeAdapter.resetSelect();
                         groupBuilder.dismiss();
                     }
                 });
@@ -134,6 +132,9 @@ public class EntryBuilderActivity extends AppCompatActivity
         // Add new group button
         Button addGroupButton = findViewById(R.id.add_def_group_button);
         addGroupButton.setOnClickListener(view -> groupBuilder.show());
+
+        createGroupButton = groupBuilder.findViewById(R.id.create_group_button);
+        typeCreatorAlert = groupBuilder.findViewById(R.id.type_creator_alert);
     }
 
     private void setUpGroupBuilder() {
@@ -167,7 +168,7 @@ public class EntryBuilderActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemClicked(int position) {
+    public void onGroupCardClicked(int position) {
         entryViewModel.setSelectedGroup(position);
         Intent groupBuilderActivityData = new Intent(this, EntryGroupBuilderActivity.class);
         groupBuilderActivityData = entryViewModel.addExistingGroupDataToIntent(groupBuilderActivityData, position);

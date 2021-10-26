@@ -120,6 +120,14 @@ public class EntryModel implements Parcelable {
         return definitionGroups.get(index);
     }
 
+    public DefinitionGroupModel getDefinitionGroup(String type) {
+        for (DefinitionGroupModel group : definitionGroups) {
+            if (group.getType().equals(type)) return group;
+        }
+
+        return null;
+    }
+
     public int getId() {
         return id;
     }

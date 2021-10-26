@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGroupModel> {
-    private int groupId;
+    private final int groupId;
     private String type;
     private List<DefinitionModel> definitionData;
     private int order;
@@ -81,10 +81,6 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
 
     public int getGroupId() {
         return groupId;
-    }
-
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
     }
 
     public void setType(String type) {

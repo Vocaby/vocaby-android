@@ -32,6 +32,7 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder
     public void addItem(String type) {
         types.add(0, type);
         notifyItemInserted(0);
+        resetSelect();
     }
 
     public void removeItem(String type) {
@@ -40,9 +41,11 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder
             types.remove(position);
             notifyItemRemoved(position);
         }
+
+        resetSelect();
     }
 
-    public void resetSelect() {
+    private void resetSelect() {
         lastCheckedPosition = -1;
     }
 
@@ -59,6 +62,7 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder
         return new TypeViewHolder(view);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull TypeViewHolder holder, int position) {
         holder.typeHeader.setText(types.get(holder.getAdapterPosition()));

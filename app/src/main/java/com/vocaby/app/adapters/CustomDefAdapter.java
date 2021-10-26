@@ -80,15 +80,15 @@ public class CustomDefAdapter extends RecyclerView.Adapter<CustomDefAdapter.Cust
     public boolean onItemMove(int fromPosition, int toPosition) {
         if (fromPosition < toPosition) {
             for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(definitions, i, i+1);
                 definitions.get(i).setOrder(i+1);
                 definitions.get(i+1).setOrder(i);
+                Collections.swap(definitions, i, i+1);
             }
         } else {
             for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(definitions, i, i-1);
                 definitions.get(i).setOrder(i-1);
                 definitions.get(i-1).setOrder(i);
+                Collections.swap(definitions, i, i-1);
             }
         }
 
