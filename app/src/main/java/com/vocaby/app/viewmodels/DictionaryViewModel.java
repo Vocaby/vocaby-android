@@ -1,7 +1,5 @@
 package com.vocaby.app.viewmodels;
 
-import static com.vocaby.app.utils.StringFormatter.cleanText;
-
 import android.app.Application;
 import android.content.SharedPreferences;
 
@@ -10,9 +8,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
+import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.models.EntryModel;
 import com.vocaby.app.models.SearchSuggestionItem;
-import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 import com.vocaby.app.utils.VocabyAlgo;
@@ -24,6 +22,8 @@ import java.util.List;
 import java.util.Stack;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
+import static com.vocaby.app.utils.StringFormatter.cleanText;
 
 public class DictionaryViewModel extends AndroidViewModel {
     private final MutableLiveData<String> mSearchedEntry;

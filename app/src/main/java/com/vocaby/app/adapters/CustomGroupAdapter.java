@@ -57,8 +57,8 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull CustomGroupViewHolder holder, int position) {
-        holder.groupHeader.setText(groups.get(position).getType());
-        String counter = "" + groups.get(position).getDefinitionData().size();
+        holder.groupHeader.setText(groups.get(holder.getAdapterPosition()).getType());
+        String counter = "" + groups.get(holder.getAdapterPosition()).getDefinitionData().size();
         holder.definitionCounter.setText(counter);
 
         holder.dragHandle.setOnTouchListener((v, motionEvent) -> {

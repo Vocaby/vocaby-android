@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.vocaby.app.ui.dictionary.DictionaryFragment;
 import com.vocaby.app.ui.customentry.MyEntryFragment;
+import com.vocaby.app.ui.dictionary.DictionaryFragment;
 import com.vocaby.app.ui.profile.ProfileFragment;
 import com.vocaby.app.ui.save.SavesFragment;
 

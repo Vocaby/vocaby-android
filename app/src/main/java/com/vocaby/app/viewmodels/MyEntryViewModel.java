@@ -1,7 +1,5 @@
 package com.vocaby.app.viewmodels;
 
-import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
-
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
@@ -12,10 +10,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.models.ItemIntPayload;
 import com.vocaby.app.models.ItemState;
 import com.vocaby.app.models.ItemStringPayload;
-import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 
@@ -23,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
+import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 
 public class MyEntryViewModel extends AndroidViewModel {
     private List<String> customEntries;

@@ -5,10 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class UserModel implements Serializable {
-    private String email;
+    private final String email;
     private String username;
-    private String firstName;
-    private String lastName;
+    private final String firstName;
+    private final String lastName;
     private List<String> savedWords;
 
     public UserModel() {

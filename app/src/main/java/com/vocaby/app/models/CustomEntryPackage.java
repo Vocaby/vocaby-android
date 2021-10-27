@@ -4,8 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class CustomEntryPackage implements Parcelable {
-    private String entry;
-    private boolean isEdit;
+    private final String entry;
+    private final boolean isEdit;
     private boolean isDelete;
 
     public CustomEntryPackage(String entry, boolean isEdit) {

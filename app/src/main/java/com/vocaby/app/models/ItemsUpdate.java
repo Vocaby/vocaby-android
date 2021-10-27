@@ -60,7 +60,7 @@ public abstract class ItemsUpdate<T> implements Parcelable {
 
 
     public void putItemAdded(String key, T item) {
-        if (!itemsAdded.containsKey(key)) itemsAdded.put(key, item);
+        itemsAdded.put(key, item);
     }
 
     public void removeItemAdded(String key) {
@@ -76,7 +76,7 @@ public abstract class ItemsUpdate<T> implements Parcelable {
     }
 
     public void putItemDeleted(String key, T item) {
-        if (!itemsDeleted.containsKey(key)) itemsDeleted.put(key, item);
+        itemsDeleted.put(key, item);
     }
 
     public void removeItemDeleted(String key) {

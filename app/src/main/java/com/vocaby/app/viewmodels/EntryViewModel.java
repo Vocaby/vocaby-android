@@ -1,16 +1,14 @@
 package com.vocaby.app.viewmodels;
 
-import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
-
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.models.DefinitionChanges;
 import com.vocaby.app.models.DefinitionGroupModel;
 import com.vocaby.app.models.EntryModel;
@@ -18,7 +16,6 @@ import com.vocaby.app.models.GroupChanges;
 import com.vocaby.app.models.ItemIntPayload;
 import com.vocaby.app.models.ItemState;
 import com.vocaby.app.models.ItemStringPayload;
-import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 
@@ -29,8 +26,11 @@ import java.util.Map;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
+import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
+
 public class EntryViewModel extends AndroidViewModel {
     public static final String GROUP_KEY = "GROUP_KEY";
+    public static final String INITIAL_DEFINITIONS_KEY = "INITIAL_DEFINITIONS_KEY";
     public static final String DEFINITION_CHANGES = "DEF_CHNGS";
 
     private final VocabyRepository vocabyRepository;
@@ -38,6 +38,11 @@ public class EntryViewModel extends AndroidViewModel {
 
     private EntryModel entryData;
     private List<DefinitionGroupModel> initialGroups;
+    private ItemStringPayload receivedEntryPayload;
+    private final GroupChanges groupChanges;
+    private final Map<String, DefinitionChanges> definitionChangesMap;
+    private final Map<String, DefinitionGroupModel> initialDefinitionsMap;
+    private int selectedGroup = -1;
 
     private final SingleLiveEvent<String> mEntry;
     private final SingleLiveEvent<ItemIntPayload> mGroupChange;
@@ -46,11 +51,6 @@ public class EntryViewModel extends AndroidViewModel {
     private final SingleLiveEvent<Boolean> mSaveResult;
     private final SingleLiveEvent<List<String>> mTypes;
     private final SingleLiveEvent<String> mSelectedType;
-
-    private ItemStringPayload receivedEntryPayload;
-    private final GroupChanges groupChanges;
-    private final Map<String, DefinitionChanges> definitionChangesMap;
-    private int selectedGroup = -1;
 
     public EntryViewModel(Application application) {
         super(application);
@@ -66,6 +66,7 @@ public class EntryViewModel extends AndroidViewModel {
         mTypeChange = new SingleLiveEvent<>();
 
         definitionChangesMap = new HashMap<>();
+        initialDefinitionsMap = new HashMap<>();
         groupChanges = new GroupChanges(-1);
         initialGroups = new ArrayList<>();
 
@@ -125,6 +126,7 @@ public class EntryViewModel extends AndroidViewModel {
                                     List<String> types = mTypes.getValue();
                                     for (DefinitionGroupModel group : initialGroups) {
                                         definitionChangesMap.put(group.getType(), new DefinitionChanges(group.getGroupId()));
+                                        initialDefinitionsMap.put(group.getType(), group);
                                         if (types != null) types.remove(group.getType());
                                     }
 
@@ -135,18 +137,20 @@ public class EntryViewModel extends AndroidViewModel {
     }
 
     public Intent addExistingGroupDataToIntent(Intent intent, int position) {
+        String type  = entryData.getDefinitionGroup(position).getType();
         intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position));
-        intent.putExtra(DEFINITION_CHANGES, definitionChangesMap.get(entryData.getDefinitionGroup(position).getType()));
+        intent.putExtra(DEFINITION_CHANGES, definitionChangesMap.get(type));
+        intent.putExtra(INITIAL_DEFINITIONS_KEY, initialDefinitionsMap.get(type));
         intent.putExtra(ITEM_PAYLOAD_KEY, ItemState.UPDATE);
-
         return intent;
     }
 
     public Intent addNewGroupDataToIntent(Intent intent, String type) {
-        intent.putExtra(GROUP_KEY, new DefinitionGroupModel(type, entryData.getDefinitionGroups().size() - 1));
+        DefinitionGroupModel newGroup = new DefinitionGroupModel(type, entryData.getDefinitionGroups().size() - 1);
+        intent.putExtra(GROUP_KEY, newGroup);
         intent.putExtra(DEFINITION_CHANGES, new DefinitionChanges());
+        intent.putExtra(INITIAL_DEFINITIONS_KEY, newGroup);
         intent.putExtra(ITEM_PAYLOAD_KEY, ItemState.ADD);
-
         return intent;
     }
 

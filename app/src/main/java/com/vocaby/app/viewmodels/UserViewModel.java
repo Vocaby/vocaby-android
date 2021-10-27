@@ -8,11 +8,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.rxjava3.EmptyResultSetException;
 
+import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.data.entity.User;
-import com.vocaby.app.models.ItemPayload;
 import com.vocaby.app.models.ItemState;
 import com.vocaby.app.models.ItemStringPayload;
-import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 

@@ -9,8 +9,8 @@ public class AuthModel {
     private String email;
     private String password;
     private String confirmationPassword;
-    private String firstName;
-    private String lastName;
+    private final String firstName;
+    private final String lastName;
 
     public AuthModel() {
         this.email = "";

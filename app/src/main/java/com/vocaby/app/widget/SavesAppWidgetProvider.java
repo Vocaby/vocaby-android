@@ -16,8 +16,8 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.Constants;
 import com.vocaby.app.R;
-import com.vocaby.app.exceptions.SaveRepetitionException;
 import com.vocaby.app.data.VocabyRepository;
+import com.vocaby.app.exceptions.SaveRepetitionException;
 import com.vocaby.app.ui.MainActivity;
 
 import java.util.concurrent.ThreadLocalRandom;

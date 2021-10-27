@@ -12,10 +12,10 @@ import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
 import com.vocaby.app.data.entity.CustomEntryGroup;
 import com.vocaby.app.data.entity.EntryWithData;
+import com.vocaby.app.data.entity.Type;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
-import com.vocaby.app.data.entity.Type;
 
 import java.util.List;
 

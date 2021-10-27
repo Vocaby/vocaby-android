@@ -59,15 +59,15 @@ public class DefinitionChanges extends ItemsUpdate<DefinitionModel> {
     @Override
     public void printDebug() {
         for (DefinitionModel definitionModel : getAddedItems()) {
-            Log.d(Constants.DEBUG_TAG, "Added Item: " + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
+            Log.d(Constants.DEBUG_TAG, "Added Item " + definitionModel.hashCode() + ": " + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
         }
 
         for (DefinitionModel definitionModel : getDeletedItems()) {
-            Log.d(Constants.DEBUG_TAG, "Deleted Item: " + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
+            Log.d(Constants.DEBUG_TAG, "Deleted Item " + definitionModel.hashCode() + ": " + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
         }
 
         for (DefinitionModel definitionModel : getUpdatedItems()) {
-            Log.d(Constants.DEBUG_TAG, "Updated Item: " + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
+            Log.d(Constants.DEBUG_TAG, "Updated Item "+ definitionModel.hashCode() + ": "  + definitionModel.getDefinition() + " > " + definitionModel.getOrder());
         }
     }
 }
