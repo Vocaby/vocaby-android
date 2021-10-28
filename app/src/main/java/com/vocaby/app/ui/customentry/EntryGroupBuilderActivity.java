@@ -126,7 +126,6 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
 
     private void setupRecyclerView() {
         recyclerView = findViewById(R.id.custom_entry_definition_container);
-        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         customDefAdapter = new CustomDefAdapter(this,this, this);
         recyclerView.setAdapter(customDefAdapter);

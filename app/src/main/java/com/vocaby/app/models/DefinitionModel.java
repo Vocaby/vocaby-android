@@ -12,6 +12,14 @@ public class DefinitionModel implements Parcelable, Comparable<DefinitionModel> 
     private String example;
     private int order;
 
+    public DefinitionModel(DefinitionModel def) {
+        this.id = def.id;
+        this.type = def.type;
+        this.definition = def.definition;
+        this.example = def.example;
+        this.order = def.order;
+    }
+
     public DefinitionModel(int id, String type, String definition, String example, int order) {
         this.id = id;
         this.type = type;

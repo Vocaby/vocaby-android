@@ -11,7 +11,7 @@ import com.vocaby.app.models.DefinitionModel;
 import com.vocaby.app.models.ItemState;
 import com.vocaby.app.utils.SingleLiveEvent;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
@@ -19,7 +19,7 @@ import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 public class EntryGroupViewModel extends ViewModel {
     private DefinitionGroupModel definitionGroup;
     private DefinitionChanges definitionChanges;
-    private List<DefinitionModel> initialDefinitions;
+    private final HashMap<String, DefinitionModel> initialDefinitions;
     private int resultState;
 
     private final SingleLiveEvent<String> mType;
@@ -27,7 +27,7 @@ public class EntryGroupViewModel extends ViewModel {
 
     public EntryGroupViewModel() {
         definitionChanges = new DefinitionChanges();
-        initialDefinitions = new ArrayList<>();
+        initialDefinitions = new HashMap<>();
 
         mDefinitions = new SingleLiveEvent<>();
         mType = new SingleLiveEvent<>();
@@ -52,11 +52,13 @@ public class EntryGroupViewModel extends ViewModel {
         if (receivedIntent.getParcelableExtra(EntryViewModel.INITIAL_DEFINITIONS_KEY) != null) {
             DefinitionGroupModel initGroup =
                     receivedIntent.getParcelableExtra(EntryViewModel.INITIAL_DEFINITIONS_KEY);
-            initialDefinitions = initGroup.getDefinitionData();
+
+            for (DefinitionModel def : initGroup.getDefinitionData()) {
+                initialDefinitions.put(def.getDefinition(), def);
+            }
         }
 
         if (receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES) != null) {
-            // holds a copy, not a reference. So swapping items will not affect the entry here.
             definitionChanges = receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES);
         }
 
@@ -64,14 +66,22 @@ public class EntryGroupViewModel extends ViewModel {
     }
 
     public void addDefinition(String definition, String example) {
-        DefinitionModel definitionAdded = definitionGroup.addDefinition(definition, example);
-        definitionChanges.addItem(definition, definitionAdded);
+        DefinitionModel definitionToAdd = initialDefinitions.get(definition);
+
+        if (definitionToAdd != null) {
+            definitionToAdd = new DefinitionModel(definitionToAdd);
+            definitionToAdd.setExample(example);
+            definitionGroup.addDefinition(definitionToAdd);
+            definitionChanges.addItem(definition, definitionToAdd);
+        } else {
+            DefinitionModel definitionAdded = definitionGroup.addDefinition(definition, example);
+            definitionChanges.addItem(definition, definitionAdded);
+        }
     }
 
     public void removeDefinition(int position) {
         // Remove the definition
         DefinitionModel definitionRemoved = definitionGroup.removeDefinition(position);
-
         // Add the removed definition to the changes model
         definitionChanges.removeItem(definitionRemoved.getDefinition(), definitionRemoved);
     }
@@ -89,20 +99,18 @@ public class EntryGroupViewModel extends ViewModel {
 
     private void checkForUpdatedItems() {
         if (!definitionGroup.getDefinitionData().isEmpty() && !initialDefinitions.isEmpty()) {
-            int j = 0;
             for (int i = 0; i < definitionGroup.getDefinitionData().size(); i++) {
-                DefinitionModel originalDefinition = initialDefinitions.get(j);
                 DefinitionModel currentDefinition = definitionGroup.getDefinitionData().get(i);
+                DefinitionModel originalDefinition = initialDefinitions.get(currentDefinition.getDefinition());
 
-                if (i != j & currentDefinition.getDefinition().equals(originalDefinition.getDefinition())) {
-                    definitionChanges.putItemUpdated(currentDefinition.getDefinition(), currentDefinition);
-                } else if (i == j & !currentDefinition.getDefinition().equals(originalDefinition.getDefinition())) {
-                    definitionChanges.putItemUpdated(currentDefinition.getDefinition(), currentDefinition);
-                } else {
-                    definitionChanges.removeItemUpdated(currentDefinition.getDefinition());
+                if (originalDefinition != null) {
+                    if (originalDefinition.getOrder() == currentDefinition.getOrder()
+                            && originalDefinition.getExample().equals(currentDefinition.getExample())) {
+                        definitionChanges.removeItemUpdated(currentDefinition.getDefinition());
+                    } else {
+                        definitionChanges.putItemUpdated(currentDefinition.getDefinition(), currentDefinition);
+                    }
                 }
-
-                if (j != initialDefinitions.size()-1) j++;
             }
         }
     }

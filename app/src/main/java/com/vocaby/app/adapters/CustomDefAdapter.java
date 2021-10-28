@@ -54,6 +54,7 @@ public class CustomDefAdapter extends RecyclerView.Adapter<CustomDefAdapter.Cust
         if (example.isEmpty()) {
             holder.exampleView.setVisibility(View.GONE);
         } else {
+            holder.exampleView.setVisibility(View.VISIBLE);
             holder.exampleView.setText(example);
         }
 

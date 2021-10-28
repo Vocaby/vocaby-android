@@ -13,6 +13,16 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
     private List<DefinitionModel> definitionData;
     private int order;
 
+    public DefinitionGroupModel(DefinitionGroupModel group) {
+        this.groupId = group.groupId;
+        this.type = group.type;
+        definitionData = new ArrayList<>();
+        for (DefinitionModel def : group.getDefinitionData()) {
+            definitionData.add(new DefinitionModel(def));
+        }
+        this.order = group.order;
+    }
+
     public DefinitionGroupModel(int groupId, String type, int order) {
         this.groupId = groupId;
         this.type = type;
@@ -64,6 +74,10 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
         DefinitionModel definitionToAdd = new DefinitionModel(type, definition, example, definitionData.size());
         definitionData.add(definitionToAdd);
         return definitionToAdd;
+    }
+
+    public void addDefinition(DefinitionModel definitionModel) {
+        definitionData.add(definitionModel);
     }
 
     // TODO: Override list remove

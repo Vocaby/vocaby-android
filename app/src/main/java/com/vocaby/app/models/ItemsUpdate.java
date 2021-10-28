@@ -59,12 +59,12 @@ public abstract class ItemsUpdate<T> implements Parcelable {
     }
 
 
-    public void putItemAdded(String key, T item) {
-        itemsAdded.put(key, item);
+    public T putItemAdded(String key, T item) {
+        return itemsAdded.put(key, item);
     }
 
-    public void removeItemAdded(String key) {
-        itemsAdded.remove(key);
+    public T removeItemAdded(String key) {
+        return itemsAdded.remove(key);
     }
 
     public boolean hasItemAdded(String key) {
@@ -75,12 +75,12 @@ public abstract class ItemsUpdate<T> implements Parcelable {
         return new ArrayList<>(itemsDeleted.values());
     }
 
-    public void putItemDeleted(String key, T item) {
-        itemsDeleted.put(key, item);
+    public T putItemDeleted(String key, T item) {
+        return itemsDeleted.put(key, item);
     }
 
-    public void removeItemDeleted(String key) {
-        itemsDeleted.remove(key);
+    public T removeItemDeleted(String key) {
+        return itemsDeleted.remove(key);
     }
 
     public boolean hasItemDeleted(String key) {
@@ -107,24 +107,22 @@ public abstract class ItemsUpdate<T> implements Parcelable {
         return itemsUpdated.size();
     }
 
-    public void addItem(String key, T item) {
+    public T addItem(String key, T item) {
         if (itemsDeleted.containsKey(key)) {
-            removeItemDeleted(key);
-        } else {
-            putItemAdded(key, item);
+            return removeItemDeleted(key);
         }
 
         itemsUpdated.remove(key);
+        return putItemAdded(key, item);
     }
 
-    public void removeItem(String key, T item) {
+    public T removeItem(String key, T item) {
         if (itemsAdded.containsKey(key)) {
-            removeItemAdded(key);
-        } else {
-            putItemDeleted(key, item);
+            return removeItemAdded(key);
         }
 
         itemsUpdated.remove(key);
+        return putItemDeleted(key, item);
     }
 
     public boolean hasChanges() {
