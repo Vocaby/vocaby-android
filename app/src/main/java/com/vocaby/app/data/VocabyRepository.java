@@ -334,22 +334,21 @@ public class VocabyRepository {
                             .andThen(updateUserEntryGroups(updatedGroups))
                             .andThen(insertUserEntryGroups(addedGroups))
                             .flatMapCompletable(ids -> {
-                                List<DefinitionGroupModel> newGroups = groupChanges.getAddedItems();
-                                for (int i = 0; i < newGroups.size(); i++) {
-                                    DefinitionChanges definitionChanges = definitionChangesMap.get(newGroups.get(i).getType());
-                                    if (definitionChanges != null)
-                                        definitionChanges.setGroupId(ids.get(i).intValue());
-                                }
-
                                 List<CustomDefinition> addedDefinitions = new ArrayList<>();
-                                for (DefinitionChanges definitionChanges : definitionChangesMap.values()) {
-                                    for (DefinitionModel definitionModel : definitionChanges.getAddedItems()) {
-                                        addedDefinitions.add(new CustomDefinition(
-                                                definitionChanges.getGroupId(),
-                                                definitionModel.getDefinition(),
-                                                definitionModel.getExample(),
-                                                definitionModel.getOrder())
-                                        );
+                                for (int i = 0; i < groupChanges.getAddedItems().size(); i++) {
+                                    DefinitionChanges definitionChanges = definitionChangesMap.get(
+                                            groupChanges.getAddedItems().get(i).getType()
+                                    );
+
+                                    if (definitionChanges != null) {
+                                        for (DefinitionModel definitionModel : definitionChanges.getAddedItems()) {
+                                            addedDefinitions.add(new CustomDefinition(
+                                                    ids.get(i).intValue(),
+                                                    definitionModel.getDefinition(),
+                                                    definitionModel.getExample(),
+                                                    definitionModel.getOrder())
+                                            );
+                                        }
                                     }
                                 }
 

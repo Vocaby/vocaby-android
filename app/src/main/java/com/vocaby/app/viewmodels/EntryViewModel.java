@@ -3,7 +3,6 @@ package com.vocaby.app.viewmodels;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.lifecycle.AndroidViewModel;
@@ -208,14 +207,16 @@ public class EntryViewModel extends AndroidViewModel {
         return intent;
     }
 
+    // USER CLICKS SAVE
     public void saveUserEntry() {
         checkForUpdatedItems();
 
         if (entryData.getDefinitionGroups().isEmpty()) {
             if (receivedEntryPayload.getState() == ItemState.ADD) {
+                // NEW ENTRY IS EMPTY SO CANCEL
                 mSaveResult.setValue(false);
             } else {
-                // Delete the existing entry
+                // DELETE THE EXISTING ENTRY BECAUSE THE USER DELETED ALL GROUPS
                 compositeDisposable.add(
                         vocabyRepository.deleteUserEntry(entryData.getId(), entryData.getEntry())
                                 .subscribe(() -> {
@@ -225,9 +226,11 @@ public class EntryViewModel extends AndroidViewModel {
                 );
             }
         } else {
-            if (!groupChanges.hasChanges()) {
+            if (!groupChanges.hasChanges() && definitionChangesMap.isEmpty()) {
+                // NO CHANGES WERE MADE SO CANCEL
                 mSaveResult.setValue(false);
             } else {
+                // SAVE THE CHANGES
                 compositeDisposable.add(
                         vocabyRepository.getCurrentUserId()
                                 .flatMap(userId ->
@@ -248,7 +251,6 @@ public class EntryViewModel extends AndroidViewModel {
 
     private void checkForUpdatedItems() {
         if (!entryData.getDefinitionGroups().isEmpty() && receivedEntryPayload.getState() == ItemState.UPDATE) {
-            // Checking for starting items order changes
             for (int i = 0; i < entryData.getDefinitionGroups().size(); i++) {
                 DefinitionGroupModel currentGroup = entryData.getDefinitionGroups().get(i);
                 DefinitionGroupModel originalGroup = initialGroups.get(currentGroup.getType());
