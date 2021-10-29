@@ -3,7 +3,7 @@ Vocaby provides tools that empower individuals learning the English language.
 
 ## Terms
 **Entry**: A word or a phrase in the dictionary. \
-**Entry Group**: A collection of entries that share the same type/part of speech.
+**Entry Group**: A collection of definitions that share the same type/part of speech for a given entry.
 
 ## Minimum Viable Product (v1.0.0)
 1. Users can look up an entry in the Vocaby dictionary.
