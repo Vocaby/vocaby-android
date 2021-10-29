@@ -95,11 +95,11 @@ public class EntryModel implements Parcelable {
         if(index != -1) {
             DefinitionGroupModel group = definitionGroups.get(index);
             if (group != null) {
-                group.addDefinition(definition, example);
+                group.addNewDefinition(definition, example);
             }
         } else {
             DefinitionGroupModel newGroup = new DefinitionGroupModel(type, definitionGroups.size());
-            newGroup.addDefinition(definition, example);
+            newGroup.addNewDefinition(definition, example);
             definitionGroups.add(newGroup);
         }
     }

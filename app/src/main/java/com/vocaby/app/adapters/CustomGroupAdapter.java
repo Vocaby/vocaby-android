@@ -83,15 +83,15 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
     public boolean onItemMove(int fromPosition, int toPosition) {
         if (fromPosition < toPosition) {
             for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(groups, i, i+1);
                 groups.get(i).setOrder(i+1);
                 groups.get(i+1).setOrder(i);
+                Collections.swap(groups, i, i+1);
             }
         } else {
             for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(groups, i, i-1);
                 groups.get(i).setOrder(i-1);
                 groups.get(i-1).setOrder(i);
+                Collections.swap(groups, i, i-1);
             }
         }
 

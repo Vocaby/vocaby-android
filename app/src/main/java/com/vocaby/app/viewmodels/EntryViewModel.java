@@ -3,6 +3,7 @@ package com.vocaby.app.viewmodels;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.lifecycle.AndroidViewModel;
@@ -19,7 +20,6 @@ import com.vocaby.app.models.ItemStringPayload;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,19 +29,18 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 
 public class EntryViewModel extends AndroidViewModel {
-    public static final String GROUP_KEY = "GROUP_KEY";
-    public static final String INITIAL_DEFINITIONS_KEY = "INITIAL_DEFINITIONS_KEY";
-    public static final String DEFINITION_CHANGES = "DEF_CHNGS";
+    public static final String GROUP_KEY = "GK";
+    public static final String INITIAL_DEFINITIONS_KEY = "IDK";
+    public static final String DEFINITION_CHANGES = "DEFCK";
 
     private final VocabyRepository vocabyRepository;
     private final CompositeDisposable compositeDisposable;
 
     private EntryModel entryData;
-    private List<DefinitionGroupModel> initialGroups;
+    private final HashMap<String, DefinitionGroupModel> initialGroups;
     private ItemStringPayload receivedEntryPayload;
     private final GroupChanges groupChanges;
     private final Map<String, DefinitionChanges> definitionChangesMap;
-    private final Map<String, DefinitionGroupModel> initialDefinitionsMap;
     private int selectedGroup = -1;
 
     private final SingleLiveEvent<String> mEntry;
@@ -66,9 +65,8 @@ public class EntryViewModel extends AndroidViewModel {
         mTypeChange = new SingleLiveEvent<>();
 
         definitionChangesMap = new HashMap<>();
-        initialDefinitionsMap = new HashMap<>();
         groupChanges = new GroupChanges(-1);
-        initialGroups = new ArrayList<>();
+        initialGroups = new HashMap<>();
 
         compositeDisposable.add(
                 vocabyRepository.getAllTypes().subscribe(mTypes::setValue, Logger::reportError)
@@ -116,21 +114,20 @@ public class EntryViewModel extends AndroidViewModel {
                                     this.entryData = entryData;
                                     mEntry.setValue(entryData.getEntry());
                                     groupChanges.setEntryId(entryData.getId());
-                                    initialGroups = new ArrayList<>(entryData.getDefinitionGroups());
                                     mGroups.setValue(entryData.getDefinitionGroups());
 
-                                    // In case user attempts to create a new entry but the entry already exists
-                                    if (!entryData.isEmpty()) receivedEntryPayload.setState(ItemState.UPDATE);
-
-                                    // SETUP TYPES
                                     List<String> types = mTypes.getValue();
-                                    for (DefinitionGroupModel group : initialGroups) {
-                                        definitionChangesMap.put(group.getType(), new DefinitionChanges(group.getGroupId()));
-                                        initialDefinitionsMap.put(group.getType(), group);
-                                        if (types != null) types.remove(group.getType());
+                                    for (DefinitionGroupModel group : entryData.getDefinitionGroups()) {
+                                        DefinitionGroupModel clone = new DefinitionGroupModel(group);
+                                        initialGroups.put(clone.getType(), clone);
+                                        definitionChangesMap.put(clone.getType(), new DefinitionChanges(clone.getGroupId()));
+                                        if (types != null) types.remove(clone.getType());
                                     }
 
                                     mTypes.setValue(types);
+
+                                    // In case user attempts to create a new entry but the entry already exists
+                                    if (!entryData.isEmpty()) receivedEntryPayload.setState(ItemState.UPDATE);
                                 }, Logger::reportError
                         )
         );
@@ -140,7 +137,7 @@ public class EntryViewModel extends AndroidViewModel {
         String type  = entryData.getDefinitionGroup(position).getType();
         intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position));
         intent.putExtra(DEFINITION_CHANGES, definitionChangesMap.get(type));
-        intent.putExtra(INITIAL_DEFINITIONS_KEY, initialDefinitionsMap.get(type));
+        intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups.get(type));
         intent.putExtra(ITEM_PAYLOAD_KEY, ItemState.UPDATE);
         return intent;
     }
@@ -161,18 +158,20 @@ public class EntryViewModel extends AndroidViewModel {
     public void removeGroup(int groupDefinitionState, int position) {
         if (groupDefinitionState == ItemState.UPDATE) {
             DefinitionGroupModel groupRemoved = entryData.removeGroup(position);
+            // clear definition changes as well for the removed group
             definitionChangesMap.remove(groupRemoved.getType());
             groupChanges.removeItem(groupRemoved.getType(), groupRemoved);
-
-            // For order changes
-            for (int i = position + 1; i < entryData.getDefinitionGroups().size(); i++) {
-                DefinitionGroupModel g = entryData.getDefinitionGroups().get(i);
-                groupChanges.putItemUpdated(g.getType(), g);
-            }
 
             mGroupChange.setValue(new ItemIntPayload(ItemState.DELETE, position));
             mTypeChange.setValue(new ItemStringPayload(ItemState.ADD, groupRemoved.getType()));
         }
+    }
+
+    public void addGroup(DefinitionGroupModel newGroup) {
+        entryData.addDefinitionGroup(newGroup);
+        groupChanges.putItemAdded(newGroup.getType(), newGroup);
+        mGroupChange.setValue(new ItemIntPayload(ItemState.ADD, selectedGroup));
+        mTypeChange.setValue(new ItemStringPayload(ItemState.DELETE, newGroup.getType()));
     }
 
     public void handleGroupCreationResult(ActivityResult result) {
@@ -190,21 +189,12 @@ public class EntryViewModel extends AndroidViewModel {
                         groupChanges.putItemUpdated(definitionGroup.getType(), definitionGroup);
                         mGroupChange.setValue(new ItemIntPayload(ItemState.UPDATE, selectedGroup));
                     } else {
-                        if (receivedEntryPayload.getState() == ItemState.UPDATE) {
-                            groupChanges.putItemAdded(definitionGroup.getType(), definitionGroup);
-                        } else {
-                            groupChanges.addItem(definitionGroup.getType(), definitionGroup);
-                        }
-
-                        entryData.addDefinitionGroup(definitionGroup);
-                        mGroupChange.setValue(new ItemIntPayload(ItemState.ADD, selectedGroup));
-                        mTypeChange.setValue(new ItemStringPayload(ItemState.DELETE, type));
+                        addGroup(definitionGroup);
                     }
 
                     // add/overwrite the definition changes
                     DefinitionChanges newChanges = result.getData().getParcelableExtra(DEFINITION_CHANGES);
                     definitionChangesMap.put(type, newChanges);
-                    newChanges.printDebug();
                 }
             }
         }
@@ -220,7 +210,6 @@ public class EntryViewModel extends AndroidViewModel {
 
     public void saveUserEntry() {
         checkForUpdatedItems();
-        fixItemOrdering();
 
         if (entryData.getDefinitionGroups().isEmpty()) {
             if (receivedEntryPayload.getState() == ItemState.ADD) {
@@ -239,7 +228,6 @@ public class EntryViewModel extends AndroidViewModel {
             if (!groupChanges.hasChanges()) {
                 mSaveResult.setValue(false);
             } else {
-                groupChanges.printDebug();
                 compositeDisposable.add(
                         vocabyRepository.getCurrentUserId()
                                 .flatMap(userId ->
@@ -259,43 +247,19 @@ public class EntryViewModel extends AndroidViewModel {
     }
 
     private void checkForUpdatedItems() {
-        if (!entryData.getDefinitionGroups().isEmpty()) {
+        if (!entryData.getDefinitionGroups().isEmpty() && receivedEntryPayload.getState() == ItemState.UPDATE) {
             // Checking for starting items order changes
-            if (receivedEntryPayload.getState() == ItemState.UPDATE) {
-                // Only add to updatedItems if the entry had data initially.
-                int j = 0;
-                for (int i = 0; i < initialGroups.size(); i++) {
-                    if (groupChanges.hasItemDeleted(initialGroups.get(i).getType())
-                            || groupChanges.hasItemAdded(initialGroups.get(i).getType())
-                            || groupChanges.hasItemUpdated(initialGroups.get(i).getType())) {
-                        continue;
-                    }
+            for (int i = 0; i < entryData.getDefinitionGroups().size(); i++) {
+                DefinitionGroupModel currentGroup = entryData.getDefinitionGroups().get(i);
+                DefinitionGroupModel originalGroup = initialGroups.get(currentGroup.getType());
 
-                    if (!entryData.getDefinitionGroups().get(j).getType().equals(initialGroups.get(i).getType())) {
-                        groupChanges.putItemUpdated(initialGroups.get(i).getType(), initialGroups.get(i));
+                if (originalGroup != null) {
+                    if (originalGroup.getOrder() == currentGroup.getOrder()){
+                        groupChanges.removeItemUpdated(currentGroup.getType());
+                    } else {
+                        groupChanges.putItemUpdated(currentGroup.getType(), currentGroup);
                     }
-
-                    j++;
                 }
-            }
-        }
-    }
-
-    private void fixItemOrdering() {
-        // Setting order for added items
-        for (int i = 0; i < entryData.getDefinitionGroups().size(); i++) {
-            String key = entryData.getDefinitionGroups().get(i).getType();
-            DefinitionGroupModel item = null;
-            if (groupChanges.hasItemAdded(key)) {
-                item = groupChanges.getAddedItem(key);
-            }
-
-            if (groupChanges.hasItemUpdated(key)) {
-                item = groupChanges.getUpdatedItem(key);
-            }
-
-            if (item != null) {
-                item.setOrder(i);
             }
         }
     }

@@ -71,12 +71,12 @@ public class EntryGroupViewModel extends ViewModel {
         if (definitionToAdd != null) {
             definitionToAdd = new DefinitionModel(definitionToAdd);
             definitionToAdd.setExample(example);
-            definitionGroup.addDefinition(definitionToAdd);
-            definitionChanges.addItem(definition, definitionToAdd);
+            definitionGroup.addNewDefinition(definitionToAdd);
         } else {
-            DefinitionModel definitionAdded = definitionGroup.addDefinition(definition, example);
-            definitionChanges.addItem(definition, definitionAdded);
+            definitionToAdd = definitionGroup.addNewDefinition(definition, example);
         }
+
+        definitionChanges.addItem(definition, definitionToAdd);
     }
 
     public void removeDefinition(int position) {
