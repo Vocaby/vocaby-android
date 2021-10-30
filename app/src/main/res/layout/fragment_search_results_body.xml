@@ -46,6 +46,9 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:visibility="gone"
+            android:gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:textColor="@color/black" />
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
