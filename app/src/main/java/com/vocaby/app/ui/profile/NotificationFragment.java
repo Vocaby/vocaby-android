@@ -20,7 +20,7 @@ public class NotificationFragment extends PreferenceFragmentCompat {
 
         assert view != null;
         Button backButton = view.findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        backButton.setOnClickListener(v -> requireActivity().onBackPressed());
         return view;
     }
 

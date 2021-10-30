@@ -1,6 +1,7 @@
 package com.vocaby.app.ui.profile;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (getChildFragmentManager().getBackStackEntryCount() > 0) onBackPressedCallback.setEnabled(true);
+        onBackPressedCallback.setEnabled(true);
     }
 
     @Override
