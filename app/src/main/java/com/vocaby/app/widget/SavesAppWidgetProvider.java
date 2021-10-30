@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 public class SavesAppWidgetProvider extends AppWidgetProvider {
     public static final String WIDGET_CLICK = "widgetClick";
-    public static final String WIDGET_PREV_KEY = "WIDGET_PREV_SELECT_";
+    public static final String WIDGET_PREV_KEY = "WIDGET_PREV_SELECT";
     public static Disposable disposable;
     public SavesAppWidgetProvider() {
         super();
@@ -78,10 +78,8 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
                         index = ThreadLocalRandom.current().nextInt(0, saves.size());
                     }
 
-
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
                 }).subscribe(wordData -> {
-                    String pos = wordData.getFirstGroup().getType();
                     String definition = wordData.getFirstGroup().getDefinitionData().get(0).toString();
                     String example = wordData.getFirstGroup().getDefinitionData().get(0).getExample();
 
@@ -94,6 +92,8 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
 
                     if(!example.isEmpty()) {
                         remoteViews.setTextViewText(R.id.widget_sentence, example);
+                    } else {
+                        remoteViews.setTextViewText(R.id.widget_sentence, "");
                     }
 
                     Intent openIntent = new Intent(context, MainActivity.class);

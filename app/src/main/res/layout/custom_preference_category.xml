@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:baselineAligned="false"
+    android:gravity="center_vertical">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/container_side_margin"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@android:id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textAlignment="viewStart"
+            android:fontFamily="@font/sourcesanspro_black"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@android:id/summary"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@android:id/title"
+            android:layout_alignStart="@android:id/title"
+            android:layout_gravity="start"
+            android:textAlignment="viewStart"
+            android:textColor="?android:attr/textColorSecondary"
+            android:maxLines="10"
+            android:textSize="14sp"
+            style="@style/PreferenceSummaryTextStyle"/>
+    </RelativeLayout>
+</LinearLayout>

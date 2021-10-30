@@ -63,9 +63,4 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
 }
