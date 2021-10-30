@@ -1,5 +1,7 @@
 package com.vocaby.app.ui.dictionary;
 
+import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -19,14 +21,12 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.vocaby.app.R;
-import com.vocaby.app.models.EntryModel;
+import com.vocaby.app.models.dictionary.EntryModel;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.SearchResultsViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 import java.util.List;
-
-import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
 
 public class SearchResultsFragment extends Fragment {
     private Context ctx;

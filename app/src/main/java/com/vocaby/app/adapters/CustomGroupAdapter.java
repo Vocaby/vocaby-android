@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.vocaby.app.R;
-import com.vocaby.app.models.DefinitionGroupModel;
+import com.vocaby.app.models.dictionary.DefinitionGroupModel;
 
 import java.util.ArrayList;
 import java.util.Collections;

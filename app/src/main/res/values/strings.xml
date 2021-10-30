@@ -29,7 +29,9 @@
     <string name="nav_custom_entries">My Entries</string>
     <string name="custom_entry_header_hint">Please enter a word or phrase</string>
     <string name="new_dictionary_entry">Custom Dictionary Entry</string>
-    <string name="definition_alert">You must enter a definition</string>
+    <string name="definition_add_alert">You must add a definition</string>
+    <string name="definition_empty_alert">You must enter a definition</string>
+    <string name="definition_exists_alert">The definition already exists</string>
     <string name="definition_header">Definition</string>
     <string name="example_header">Example</string>
     <string name="type_header_alert">Please select a type</string>
@@ -43,7 +45,6 @@
     <string name="create">Create</string>
     <string name="custom_definition_add_button">Add a definition</string>
     <string name="drag_icon">drag icon</string>
-    <string name="definition_add_alert">Please add a definition to save</string>
     <string name="word_phrase_header">Word / Phrase</string>
     <string name="entry_edit_hint">Enter a word or a phrase…</string>
     <string name="group_header_alert">Please add a group</string>
@@ -54,15 +55,15 @@
     <string name="entry">entry</string>
     <string name="empty_saves">empty saves</string>
     <string name="hi_vocabler">Hi Vocabler!</string>
-    <string name="notification_icon_desc">notification icon</string>
-    <string name="notification_type_placeholder">Type</string>
-    <string name="notification_title_placeholder">This is a title</string>
-    <string name="notification_date_placeholder">10.14.2021</string>
     <string name="nav_data_management">Data Management</string>
     <string name="nav_support">Support</string>
     <string name="nav_feedback_button">Feedback</string>
     <string name="nav_danger_zone">Danger Zone</string>
     <string name="empty_custom_entry">Empty Custom Entry</string>
     <string name="add_an_entry">Add An Entry</string>
-    <string name="card_delete_instruction">Swipe card to delete</string>
+    <string name="drag_to_arrange">Drag to arrange</string>
+    <string name="swipe_to_delete">Swipe to delete</string>
+    <string name="pronunciation">Pronunciation</string>
+    <string name="optional">optional</string>
+    <string name="enter_a_pronunciation">Enter a pronunciation</string>
 </resources>

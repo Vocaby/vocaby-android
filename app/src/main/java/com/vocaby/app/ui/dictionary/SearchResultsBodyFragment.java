@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.DefinitionsAdapter;
-import com.vocaby.app.models.EntryModel;
+import com.vocaby.app.models.dictionary.EntryModel;
 
 public class SearchResultsBodyFragment extends Fragment {
     private Context ctx;

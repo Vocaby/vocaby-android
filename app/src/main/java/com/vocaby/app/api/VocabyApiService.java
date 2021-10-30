@@ -1,6 +1,6 @@
 package com.vocaby.app.api;
 
-import com.vocaby.app.models.EntryDataPackage;
+import com.vocaby.app.models.datapackage.EntryDataPackage;
 
 import java.util.List;
 

@@ -6,8 +6,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.vocaby.app.models.EntryDataPackage;
-import com.vocaby.app.models.EntryModel;
+import com.vocaby.app.models.datapackage.EntryDataPackage;
+import com.vocaby.app.models.dictionary.EntryModel;
 
 import java.lang.reflect.Type;
 

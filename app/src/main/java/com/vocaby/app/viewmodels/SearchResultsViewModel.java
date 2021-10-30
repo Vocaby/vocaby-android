@@ -10,9 +10,8 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.R;
 import com.vocaby.app.data.VocabyRepository;
-import com.vocaby.app.data.entity.UserSaves;
-import com.vocaby.app.models.EntryModel;
-import com.vocaby.app.models.SaveStateModel;
+import com.vocaby.app.models.dictionary.EntryModel;
+import com.vocaby.app.models.viewstate.SaveStateModel;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 
@@ -60,45 +59,43 @@ public class SearchResultsViewModel extends AndroidViewModel {
 
     public void retrieveWordDataFromRepo(String searched) {
         compositeDisposable.add(
-                vocabyRepository.getCurrentUserId()
-                .flatMap(vocabyRepository::getUser)
-                .flatMap(user -> vocabyRepository.getWordDataPackageLocally(searched, user.getUserId()))
-                .subscribe(wordPackage -> {
-                    // Setting save state
-                    SaveStateModel saveState = mSaveState.getValue();
-                    if (saveState != null) {
-                        saveState.setSaved(wordPackage.saved());
-                        saveState.setEnabled(true);
-                        mSaveState.setValue(saveState);
-                    }
-
-                    List<EntryModel> entryData = new ArrayList<>();
-                    if (wordPackage.bothDataAvailable()) {
-                        entryData.add(wordPackage.getCustomData());
-                        entryData.add(wordPackage.getOriginalData());
-                    } else if (wordPackage.onlyCustomAvailable()) {
-                        entryData.add(wordPackage.getCustomData());
-                        mDictionaryMissing.setValue(R.id.selection_original);
-                    } else {
-                        entryData.add(wordPackage.getOriginalData());
-                        mDictionaryMissing.setValue(R.id.selection_custom);
-
-                        if (wordPackage.getOriginalData().isEmpty() && saveState != null) {
-                            saveState.setVisibility(View.GONE);
+                vocabyRepository.getWordDataPackageLocally(searched)
+                    .subscribe(wordPackage -> {
+                        // Setting save state
+                        SaveStateModel saveState = mSaveState.getValue();
+                        if (saveState != null) {
+                            saveState.setSaved(wordPackage.saved());
+                            saveState.setEnabled(true);
                             mSaveState.setValue(saveState);
                         }
-                    }
 
-                    mEntryData.setValue(entryData);
-                }, error -> {
-                    if (error instanceof EmptyResultSetException) {
-                        List<EntryModel> empty = new ArrayList<>();
-                        empty.add(new EntryModel(searched));
-                        mEntryData.setValue(empty);
-                    }
+                        List<EntryModel> entryData = new ArrayList<>();
+                        if (wordPackage.bothDataAvailable()) {
+                            entryData.add(wordPackage.getCustomData());
+                            entryData.add(wordPackage.getOriginalData());
+                        } else if (wordPackage.onlyCustomAvailable()) {
+                            entryData.add(wordPackage.getCustomData());
+                            mDictionaryMissing.setValue(R.id.selection_original);
+                        } else {
+                            entryData.add(wordPackage.getOriginalData());
+                            mDictionaryMissing.setValue(R.id.selection_custom);
 
-                    Logger.reportError(error);
-                }
+                            if (wordPackage.getOriginalData().isEmpty() && saveState != null) {
+                                saveState.setVisibility(View.GONE);
+                                mSaveState.setValue(saveState);
+                            }
+                        }
+
+                        mEntryData.setValue(entryData);
+                    }, error -> {
+                        if (error instanceof EmptyResultSetException) {
+                            List<EntryModel> empty = new ArrayList<>();
+                            empty.add(new EntryModel(searched));
+                            mEntryData.setValue(empty);
+                        }
+
+                        Logger.reportError(error);
+                    }
             )
         );
     }
@@ -111,27 +108,22 @@ public class SearchResultsViewModel extends AndroidViewModel {
 
             if (saveState.getSaved()) {
                 compositeDisposable.add(
-                        vocabyRepository.getCurrentUserId()
-                                .flatMap(vocabyRepository::getUser)
-                                .flatMapCompletable(currentUser ->
-                                        vocabyRepository.removeSave(currentUser.getUserId(), entry)
-                                ).subscribe(() -> setUnSaved(saveState),
-                                error -> {
-                                    setSaved(saveState);
-                                    Logger.reportError(error);
-                                }
+                        vocabyRepository.removeSave(entry)
+                            .subscribe(() -> setUnSaved(saveState),
+                            error -> {
+                                setSaved(saveState);
+                                Logger.reportError(error);
+                            }
                         )
                 );
             } else {
                 compositeDisposable.add(
-                        vocabyRepository.getCurrentUserId()
-                                .flatMap(vocabyRepository::getUser)
-                                .flatMapCompletable(currentUser ->
-                                        vocabyRepository.addSave(new UserSaves(currentUser.getUserId(), entry))
-                                ).subscribe(() -> setSaved(saveState), error -> {
-                                    setUnSaved(saveState);
-                                    Logger.reportError(error);
-                                })
+                        vocabyRepository.addSave(entry)
+                            .subscribe(() -> setSaved(saveState),
+                                error -> {
+                                setUnSaved(saveState);
+                                Logger.reportError(error);
+                            })
                 );
             }
         }

@@ -1,10 +1,12 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models.customentry;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 import com.vocaby.app.Constants;
+import com.vocaby.app.models.ItemsUpdate;
+import com.vocaby.app.models.dictionary.DefinitionModel;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

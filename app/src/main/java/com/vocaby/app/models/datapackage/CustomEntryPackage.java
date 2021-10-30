@@ -1,4 +1,4 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models.datapackage;
 
 import android.os.Parcel;
 import android.os.Parcelable;

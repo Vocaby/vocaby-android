@@ -1,7 +1,10 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models.customentry;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.vocaby.app.models.ItemsUpdate;
+import com.vocaby.app.models.dictionary.DefinitionGroupModel;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

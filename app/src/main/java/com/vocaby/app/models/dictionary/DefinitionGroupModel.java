@@ -1,4 +1,4 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models.dictionary;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -78,6 +78,17 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
 
     public void addNewDefinition(DefinitionModel definitionModel) {
         definitionData.add(definitionModel);
+    }
+
+    public boolean hasDefinition(String definition) {
+        definition = definition.trim();
+        for (DefinitionModel def : definitionData) {
+            if (def.getDefinition().equals(definition)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // TODO: Override list remove

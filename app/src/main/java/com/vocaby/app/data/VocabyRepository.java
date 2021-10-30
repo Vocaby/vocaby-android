@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 
 import com.vocaby.app.Constants;
 import com.vocaby.app.api.ApiManager;
-import com.vocaby.app.api.VocabyApiService;
 import com.vocaby.app.data.dao.VocabyDao;
 import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
@@ -17,12 +16,12 @@ import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
-import com.vocaby.app.models.DefinitionChanges;
-import com.vocaby.app.models.DefinitionGroupModel;
-import com.vocaby.app.models.DefinitionModel;
-import com.vocaby.app.models.EntryDataPackage;
-import com.vocaby.app.models.EntryModel;
-import com.vocaby.app.models.GroupChanges;
+import com.vocaby.app.models.customentry.DefinitionChanges;
+import com.vocaby.app.models.customentry.GroupChanges;
+import com.vocaby.app.models.datapackage.EntryDataPackage;
+import com.vocaby.app.models.dictionary.DefinitionGroupModel;
+import com.vocaby.app.models.dictionary.DefinitionModel;
+import com.vocaby.app.models.dictionary.EntryModel;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -41,6 +40,7 @@ public class VocabyRepository {
     private final VocabyDao vocabyDao;
     private final DataManager dataManager;
     private final SharedPreferences userSharedPreference;
+    private final int userId;
 
 
     public VocabyRepository(Application application) {
@@ -49,10 +49,7 @@ public class VocabyRepository {
         apiManager = ApiManager.getInstance();
         dataManager = DataManager.getInstance(application);
         userSharedPreference = application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
-    }
-
-    public Single<Integer> getCurrentUserId() {
-        return Single.just(userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1));
+        userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
     }
 
     public Completable writeUserId(int id) {
@@ -109,7 +106,7 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<EntryModel> getEntryData(int userId, String entry) {
+    public Single<EntryModel> getEntryData(String entry) {
         return vocabyDao.getUserEntryData(userId, entry)
                 .map(this::convertEntryData)
                 .onErrorReturnItem(new EntryModel(entry))
@@ -117,32 +114,17 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<EntryDataPackage> getWordDataPackageLocally(String word, int userId) {
+    public Single<EntryDataPackage> getWordDataPackageLocally(String word) {
         return Single.zip(
                 getWordDataFromDatabase(word),
-                getEntryData(userId, word),
-                hasSave(word, userId),
+                getEntryData(word),
+                hasSave(word),
                 EntryDataPackage::new
         );
     }
 
-    private EntryModel covertToEntryModel(WordDefinitions wordDefinitions) {
-        EntryModel wordData = new EntryModel(wordDefinitions.word.getId(), wordDefinitions.word.getWord());
-        if (wordDefinitions.word.getPronunciation() != null) {
-            wordData.setPronunciation(wordDefinitions.word.getPronunciation());
-        } else {
-            wordData.setPronunciation("");
-        }
-
-        for (Definition data : wordDefinitions.definitions) {
-            wordData.addDefinition(data.getPos(), data.getDefinition(), data.getSentence());
-        }
-
-        return wordData;
-    }
-
-    public Single<Integer> hasSave(String word, int id) {
-        return vocabyDao.hasSave(word, id)
+    public Single<Integer> hasSave(String word) {
+        return vocabyDao.hasSave(word, userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -154,46 +136,22 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Completable addSave(UserSaves userSaves) {
-        return vocabyDao.addSave(userSaves)
+    public Completable addSave(String entry) {
+        return vocabyDao.addSave(new UserSaves(userId, entry))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Completable removeSave(int id, String word) {
-        return vocabyDao.removeSave(id, word)
+    public Completable removeSave(String word) {
+        return vocabyDao.removeSave(userId, word)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<User> getUser(int id) {
-        return vocabyDao.getCurrentUser(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<List<Long>> insertSavedWords(List<UserSaves> userSaves) {
-        return vocabyDao.insertSavedWords(userSaves)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<List<String>> getUserSaves(int id) {
+    public Single<List<String>> getUserSaves() {
         // Main Thread
-        return vocabyDao.getSaves(id)
+        return vocabyDao.getSaves(userId)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Completable addUserSaves(List<UserSaves> saves) {
-        return vocabyDao.addSaves(saves)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Completable removeUserSaves(List<String> saves) {
-        return vocabyDao.removeSaves(saves)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -207,22 +165,6 @@ public class VocabyRepository {
         return vocabyDao.createUser(user)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Completable deleteUser(User user) {
-        return vocabyDao.removeUser(user)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Completable deleteAllUsers(int localId) {
-        return vocabyDao.removeAllUsers(localId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public VocabyApiService getVocabyApiService(int type) {
-        return apiManager.getVocabyApiService(type);
     }
 
     // CUSTOM USER ENTRIES
@@ -260,21 +202,34 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<Integer> insertOrUpdateEntry(int userId, String entry, GroupChanges groupChanges, Map<String, DefinitionChanges> definitionChangesMap) {
-        Single<Long> entryInsert = Single.just((long) groupChanges.getEntryId());
+    public Single<Integer> insertOrUpdateEntry(String entry, String pronunciation, GroupChanges groupChanges, Map<String, DefinitionChanges> definitionChangesMap) {
+        Single<Long> entryInsert;
 
         // New entry
         if (groupChanges.getEntryId() == -1) {
-            entryInsert = vocabyDao.insertCustomEntry(new CustomEntry(userId, entry, OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()))
-                    .flatMap(id ->
-                        vocabyDao.checkEntryExistence(entry)
-                            .flatMap(exists ->
+            entryInsert = vocabyDao.insertCustomEntry(
+                    new CustomEntry(userId,
+                            entry,
+                            pronunciation,
+                            OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+                    )
+            ).flatMap(id ->
+                    vocabyDao.checkEntryExistence(entry)
+                        .flatMap(exists ->
                                 Single.fromCallable(() -> {
                                     if (!exists) dataManager.addEntryToDictionary(entry);
                                     return id;
-                                })
-                            )
-                    );
+                        })
+                    )
+            );
+        } else {
+            entryInsert = vocabyDao.updateCustomEntry(new CustomEntry(
+                    groupChanges.getEntryId(),
+                    userId,
+                    entry,
+                    pronunciation,
+                    OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+            )).andThen(Single.just((long)groupChanges.getEntryId()));
         }
 
         return entryInsert
@@ -359,12 +314,6 @@ public class VocabyRepository {
                 });
     }
 
-    public Single<Long> insertCustomEntry(int userId, String entry, long date) {
-        return vocabyDao.insertCustomEntry(new CustomEntry(userId, entry, date))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
     public Single<List<Long>> insertUserEntryGroups(List<CustomEntryGroup> groups) {
         return vocabyDao.insertCustomEntryGroups(groups)
                 .subscribeOn(Schedulers.io())
@@ -389,16 +338,37 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<List<String>> getUserEntries(int userId) {
+    public Single<List<String>> getUserEntries() {
         return vocabyDao.getUserEntries(userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    private EntryModel covertToEntryModel(WordDefinitions wordDefinitions) {
+        String pronunciation =
+                wordDefinitions.word.getPronunciation() != null ? wordDefinitions.word.getPronunciation() : "";
+
+        EntryModel wordData = new EntryModel(
+                wordDefinitions.word.getId(),
+                wordDefinitions.word.getWord(),
+                pronunciation
+        );
+
+        for (Definition data : wordDefinitions.definitions) {
+            wordData.addDefinition(data.getPos(), data.getDefinition(), data.getSentence());
+        }
+
+        return wordData;
+    }
+
     private EntryModel convertEntryData(EntryWithData data) {
+        String pronunciation =
+                data.customEntry.getPronunciation() != null ? data.customEntry.getPronunciation() : "";
+
         EntryModel entryData = new EntryModel(
                 data.customEntry.getEntryId(),
-                data.customEntry.getEntry()
+                data.customEntry.getEntry(),
+                pronunciation
         );
 
         List<DefinitionGroupModel> groups = new ArrayList<>();

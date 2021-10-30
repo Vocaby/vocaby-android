@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,7 +24,8 @@ import com.vocaby.app.adapters.CustomGroupAdapter;
 import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
 import com.vocaby.app.adapters.TypeAdapter;
-import com.vocaby.app.models.ItemState;
+import com.vocaby.app.models.payload.PayloadState;
+import com.vocaby.app.utils.LiveDataUtil;
 import com.vocaby.app.viewmodels.EntryViewModel;
 
 public class EntryBuilderActivity extends AppCompatActivity
@@ -39,6 +42,7 @@ public class EntryBuilderActivity extends AppCompatActivity
     private TextView groupAlert;
     private Button createGroupButton;
     private TextView typeCreatorAlert;
+    private EditText pronunciationInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,8 @@ public class EntryBuilderActivity extends AppCompatActivity
         setContentView(R.layout.custom_entry_builder);
         groupAlert = findViewById(R.id.group_header_alert);
         TextView entryView = findViewById(R.id.entry_header);
+        LinearLayout instruction = findViewById(R.id.card_instruction);
+        pronunciationInput = findViewById(R.id.pronunciation_input);
 
         setUpGroupBuilder();
         setupRecyclerView();
@@ -54,21 +60,35 @@ public class EntryBuilderActivity extends AppCompatActivity
         entryViewModel = new ViewModelProvider(this).get(EntryViewModel.class);
         entryViewModel.parseRetrieved(getIntent());
 
+        LiveDataUtil.observeOnce(entryViewModel.getGroups(), list -> {
+            if (list.isEmpty()) instruction.setVisibility(View.VISIBLE);
+
+            customGroupAdapter.setList(list);
+        });
+        LiveDataUtil.observeOnce(entryViewModel.getTypes(), types -> typeAdapter.setList(types));
+        LiveDataUtil.observeOnce(entryViewModel.getPronunciation(),
+                pronunciation -> pronunciationInput.setText(pronunciation, TextView.BufferType.EDITABLE));
+
+
         entryViewModel.getGroupChange().observe(this, groupPayload -> {
-            if (groupPayload.getState() == ItemState.ADD) {
+            if (groupPayload.getState() == PayloadState.ADD) {
                 groupAlert.setVisibility(View.INVISIBLE);
                 customGroupAdapter.addItem();
-            } else if (groupPayload.getState() == ItemState.DELETE) {
+            } else if (groupPayload.getState() == PayloadState.DELETE) {
                 customGroupAdapter.removeItem(groupPayload.getPayload());
-            } else if (groupPayload.getState() == ItemState.UPDATE) {
+            } else if (groupPayload.getState() == PayloadState.UPDATE) {
                 customGroupAdapter.editItem(groupPayload.getPayload());
+            }
+
+            if (instruction.getVisibility() == View.VISIBLE) {
+                instruction.setVisibility(View.GONE);
             }
         });
 
         entryViewModel.getTypeChange().observe(this, typePayload -> {
-            if (typePayload.getState() == ItemState.ADD) {
+            if (typePayload.getState() == PayloadState.ADD) {
                 typeAdapter.addItem(typePayload.getPayload());
-            } else if (typePayload.getState() == ItemState.DELETE) {
+            } else if (typePayload.getState() == PayloadState.DELETE) {
                 typeAdapter.removeItem(typePayload.getPayload());
             }
         });
@@ -82,8 +102,6 @@ public class EntryBuilderActivity extends AppCompatActivity
 
             finish();
         });
-
-        entryViewModel.getTypes().observe(this, types -> typeAdapter.setList(types));
 
         entryViewModel.getSelectedType().observe(this, type -> {
             if (createGroupButton != null) {
@@ -103,7 +121,6 @@ public class EntryBuilderActivity extends AppCompatActivity
         });
 
         entryViewModel.getEntry().observe(this, entryView::setText);
-        entryViewModel.getGroups().observe(this, list -> customGroupAdapter.setList(list));
     }
 
     private void setupRecyclerView() {
@@ -126,7 +143,7 @@ public class EntryBuilderActivity extends AppCompatActivity
         saveProgressBar = findViewById(R.id.save_progress_bar);
         saveButton.setOnClickListener(v -> {
             saveProgressBar.setVisibility(View.VISIBLE);
-            entryViewModel.saveUserEntry();
+            entryViewModel.saveUserEntry(pronunciationInput.getText().toString());
         });
 
         // Add new group button
@@ -178,7 +195,7 @@ public class EntryBuilderActivity extends AppCompatActivity
     @Override
     public void onItemRemoved(int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
-        entryViewModel.removeGroup(ItemState.UPDATE, position);
+        entryViewModel.removeGroup(PayloadState.UPDATE, position);
 
         // Google's Implementation of ItemTouchHelper assumes that
         // the swiped items are cleaned up. Because the view is recycled

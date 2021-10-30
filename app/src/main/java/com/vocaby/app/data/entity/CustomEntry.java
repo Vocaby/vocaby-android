@@ -20,27 +20,29 @@ public class CustomEntry {
     private String pronunciation;
 
     @ColumnInfo(name = "last_updated")
-    private long date;
+    private long lastUpdated;
 
     public CustomEntry() {
         entryId = -1;
         userId = -1;
-        date = -1;
+        lastUpdated = -1;
     }
 
     @Ignore
-    public CustomEntry(int userId, String entry, long date) {
+    public CustomEntry(int userId, String entry, String pronunciation, long lastUpdated) {
         this.userId = userId;
         this.entry = entry;
-        this.date = date;
+        this.pronunciation = pronunciation;
+        this.lastUpdated = lastUpdated;
     }
 
     @Ignore
-    public CustomEntry(int entryId, int userId, String entry, long date) {
+    public CustomEntry(int entryId, int userId, String entry, String pronunciation, long lastUpdated) {
         this.entryId = entryId;
         this.userId = userId;
         this.entry = entry;
-        this.date = date;
+        this.pronunciation = pronunciation;
+        this.lastUpdated = lastUpdated;
     }
 
     public int getEntryId() {
@@ -67,12 +69,12 @@ public class CustomEntry {
         this.entry = entry;
     }
 
-    public long getDate() {
-        return date;
+    public long getLastUpdated() {
+        return lastUpdated;
     }
 
-    public void setDate(long date) {
-        this.date = date;
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public String getPronunciation() {

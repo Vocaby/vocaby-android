@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomEntryAdapter;
-import com.vocaby.app.models.ItemState;
+import com.vocaby.app.models.payload.PayloadState;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.MyEntryViewModel;
@@ -72,9 +72,9 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
         entryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
 
         entryViewModel.getEntryResultPayload().observe(getViewLifecycleOwner(), payload -> {
-            if (payload.getState() == ItemState.ADD) {
+            if (payload.getState() == PayloadState.ADD) {
                 customEntryAdapter.addEntry();
-            } else if (payload.getState() == ItemState.DELETE) {
+            } else if (payload.getState() == PayloadState.DELETE) {
                 customEntryAdapter.deleteEntry(payload.getPayload());
             }
         });
@@ -88,7 +88,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
         );
 
         entryViewModel.getDeleteStatus().observe(getViewLifecycleOwner(), deletePayload -> {
-            if (deletePayload.getState() == ItemState.DELETE) {
+            if (deletePayload.getState() == PayloadState.DELETE) {
                 deleteProgress.setVisibility(View.GONE);
                 customEntryAdapter.deleteEntry(deletePayload.getPayload());
                 dictionaryViewModel.resetDictionaryEntries();

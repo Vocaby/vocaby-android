@@ -15,16 +15,4 @@
         <item>1440</item>
     </string-array>
 
-    <string-array name="type">
-        <item>Noun</item>
-        <item>Verb</item>
-        <item>Adjective</item>
-        <item>Adverb</item>
-        <item>Proverb</item>
-        <item>Idiom</item>
-        <item>Phrase</item>
-        <item>Preposition</item>
-        <item>Interjection</item>
-        <item>Conjunction</item>
-    </string-array>
 </resources>

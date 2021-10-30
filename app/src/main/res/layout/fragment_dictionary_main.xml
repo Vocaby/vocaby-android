@@ -27,7 +27,6 @@
             app:cardCornerRadius="@dimen/radius">
 
             <ImageView
-                android:id="@+id/search_background"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/nav_search"
@@ -65,7 +64,6 @@
         app:layout_constraintTop_toBottomOf="@+id/search_container">
 
         <TextView
-            android:id="@+id/randomword_header"
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

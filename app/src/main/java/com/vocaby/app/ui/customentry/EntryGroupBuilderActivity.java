@@ -19,6 +19,7 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomDefAdapter;
 import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
+import com.vocaby.app.utils.LiveDataUtil;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.EntryGroupViewModel;
 
@@ -28,6 +29,7 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
     private ItemTouchHelper itemTouchHelper;
 
     private BottomSheetDialog definitionBuilder;
+    private TextView definitionAlertView;
     private RecyclerView recyclerView;
     private CustomDefAdapter customDefAdapter;
 
@@ -39,25 +41,35 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
         setContentView(R.layout.custom_entry_group_builder_activity);
         saveAlert = findViewById(R.id.definition_add_alert);
 
-        entryGroupViewModel = new ViewModelProvider(this).get(EntryGroupViewModel.class);
-        entryGroupViewModel.handleIntent(getIntent());
-        entryGroupViewModel.getDefinitions().observe(this,
-                list -> customDefAdapter.setList(list)
-        );
-
         setupDefinitionBuilder();
         setupButtons();
         setupRecyclerView();
-        setupType();
-    }
 
-    private void setupType() {
+        entryGroupViewModel = new ViewModelProvider(this).get(EntryGroupViewModel.class);
+        entryGroupViewModel.handleIntent(getIntent());
+
+        LiveDataUtil.observeOnce(entryGroupViewModel.getDefinitions(), list -> customDefAdapter.setList(list));
+
         entryGroupViewModel.getType().observe(this, type -> {
             String header = StringFormatter.firstLetterUpperOnly(type) + " Definitions";
             TextView activityHeader = findViewById(R.id.custom_group_activity_header);
             activityHeader.setText(header);
             TextView typeHeader = findViewById(R.id.type_header);
             typeHeader.setText(type);
+        });
+
+        entryGroupViewModel.getDefinitionAlert().observe(this, alertState -> {
+            if (definitionAlertView != null) {
+                definitionAlertView.setText(getString(alertState.getText()));
+                definitionAlertView.setVisibility(alertState.getVisibility());
+            }
+        });
+
+        entryGroupViewModel.getDefinitionAddStatus().observe(this, added -> {
+            if (added) {
+                customDefAdapter.addItem();
+                definitionBuilder.dismiss();
+            }
         });
     }
 
@@ -67,10 +79,13 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
         EditText definitionView = definitionBuilder.findViewById(R.id.definition_edit);
         EditText exampleView = definitionBuilder.findViewById(R.id.example_edit);
         Button closeButton = definitionBuilder.findViewById(R.id.close_button);
-        TextView alert = definitionBuilder.findViewById(R.id.definition_header_alert);
+        definitionAlertView = definitionBuilder.findViewById(R.id.definition_header_alert);
 
         // Close Definition Builder Button
-        if (closeButton != null) closeButton.setOnClickListener(v -> definitionBuilder.dismiss());
+        if (closeButton != null) closeButton.setOnClickListener(v -> {
+            entryGroupViewModel.removeAlert();
+            definitionBuilder.dismiss();
+        });
 
         definitionBuilder.setOnShowListener(dialogInterface -> {
             if (definitionView != null && exampleView != null) {
@@ -88,16 +103,7 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
                 // null checking
                 String definition = definitionView != null ? definitionView.getText().toString() : "";
                 String example = exampleView != null ? exampleView.getText().toString() : "";
-
-                if(definition.isEmpty()) {
-                    if (alert != null) alert.setVisibility(View.VISIBLE);
-                } else {
-                    if (alert != null) alert.setVisibility(View.INVISIBLE);
-
-                    entryGroupViewModel.addDefinition(definition, example);
-                    customDefAdapter.addItem();
-                    definitionBuilder.dismiss();
-                }
+                entryGroupViewModel.addDefinition(definition, example);
             });
         }
     }

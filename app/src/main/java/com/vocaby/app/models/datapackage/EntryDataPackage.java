@@ -1,4 +1,6 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models.datapackage;
+
+import com.vocaby.app.models.dictionary.EntryModel;
 
 public class EntryDataPackage {
     private final EntryModel originalEntryData;

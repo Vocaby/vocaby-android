@@ -1,9 +1,6 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models.viewstate;
 
-import android.view.View;
-
-public class SaveStateModel {
-    private int visibility;
+public class SaveStateModel extends ViewState {
     private final int disabledIcon;
     private final int unSavedIcon;
     private final int savedIcon;
@@ -27,14 +24,6 @@ public class SaveStateModel {
         this.enabledTextColor = enabledTextColor;
         this.saved = saved;
         this.enabled = enabled;
-    }
-
-    public int getVisibility() {
-        return visibility == View.VISIBLE ? View.VISIBLE : View.GONE;
-    }
-
-    public void setVisibility(int visibility) {
-        this.visibility = visibility;
     }
 
     public int getText() {

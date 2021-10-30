@@ -1,5 +1,7 @@
 package com.vocaby.app.viewmodels;
 
+import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
@@ -11,9 +13,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.vocaby.app.data.VocabyRepository;
-import com.vocaby.app.models.ItemIntPayload;
-import com.vocaby.app.models.ItemState;
-import com.vocaby.app.models.ItemStringPayload;
+import com.vocaby.app.models.payload.ItemIntPayload;
+import com.vocaby.app.models.payload.ItemStringPayload;
+import com.vocaby.app.models.payload.PayloadState;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 
@@ -21,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-
-import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 
 public class MyEntryViewModel extends AndroidViewModel {
     private List<String> customEntries;
@@ -50,13 +50,12 @@ public class MyEntryViewModel extends AndroidViewModel {
         mDeleteStatus = new SingleLiveEvent<>();
 
         compositeDisposable.add(
-                vocabyRepository.getCurrentUserId()
-                .flatMap(vocabyRepository::getUserEntries)
-                .subscribe(list -> {
-                    customEntries = new ArrayList<>(list);
-                    mEntries.setValue(customEntries);
-                    mEntryCount.setValue(customEntries.size());
-                }, Logger::reportError)
+                vocabyRepository.getUserEntries()
+                    .subscribe(list -> {
+                        customEntries = new ArrayList<>(list);
+                        mEntries.setValue(customEntries);
+                        mEntryCount.setValue(customEntries.size());
+                    }, Logger::reportError)
         );
     }
 
@@ -79,9 +78,9 @@ public class MyEntryViewModel extends AndroidViewModel {
         }
 
         if (selectedPosition == -1) {
-            itemStringPayload.setState(ItemState.ADD);
+            itemStringPayload.setState(PayloadState.ADD);
         } else {
-            itemStringPayload.setState(ItemState.UPDATE);
+            itemStringPayload.setState(PayloadState.UPDATE);
         }
 
         intent.putExtra(ITEM_PAYLOAD_KEY, itemStringPayload);
@@ -93,9 +92,9 @@ public class MyEntryViewModel extends AndroidViewModel {
             ItemStringPayload receivedPayload =
                     result.getData().getParcelableExtra(ITEM_PAYLOAD_KEY);
 
-            if (receivedPayload.getState() == ItemState.ADD) {
+            if (receivedPayload.getState() == PayloadState.ADD) {
                 customEntries.add(0, receivedPayload.getPayload());
-            } else if (receivedPayload.getState() == ItemState.DELETE){
+            } else if (receivedPayload.getState() == PayloadState.DELETE){
                 if (selectedPosition != -1 ) customEntries.remove(selectedPosition);
                 else customEntries.remove(receivedPayload.getPayload());
             }
@@ -110,10 +109,10 @@ public class MyEntryViewModel extends AndroidViewModel {
                 vocabyRepository.deleteUserEntry(entry)
                     .subscribe(() -> {
                         customEntries.remove(position);
-                        mDeleteStatus.setValue(new ItemIntPayload(ItemState.DELETE, position));
+                        mDeleteStatus.setValue(new ItemIntPayload(PayloadState.DELETE, position));
                         mEntryCount.setValue(customEntries.size());
                     }, error -> {
-                        mDeleteStatus.setValue(new ItemIntPayload(ItemState.UNCHANGED, position));
+                        mDeleteStatus.setValue(new ItemIntPayload(PayloadState.UNCHANGED, position));
                         Logger.reportError(error);
                     })
         );

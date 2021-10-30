@@ -1,6 +1,6 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models.payload;
 
-public interface ItemState {
+public interface PayloadState {
     int UNCHANGED = -1;
     int ADD = 0;
     int DELETE = 1;

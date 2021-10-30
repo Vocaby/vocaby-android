@@ -2,13 +2,12 @@
 <resources>
     <dimen name="radius">4dp</dimen>
     <dimen name="container_side_margin_offset">22dp</dimen>
+    <dimen name="container_gap_margin">12dp</dimen>
     <dimen name="container_side_margin">24dp</dimen>
     <dimen name="custom_entry_card_height">50dp</dimen>
     <dimen name="header_margin_before_slide">8dp</dimen>
     <dimen name="dictionary_header_margin_before_slide">38dp</dimen>
     <dimen name="search_margin_before_slide">2dp</dimen>
     <dimen name="card_content_margin">12dp</dimen>
-    <dimen name="placeholdercard_margin_after">-50dp</dimen>
     <dimen name="flag_offset">12dp</dimen>
-    <dimen name="box_stroke_width">1dp</dimen>
 </resources>

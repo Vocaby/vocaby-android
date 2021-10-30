@@ -12,7 +12,6 @@ import android.content.SharedPreferences;
 import androidx.core.app.NotificationCompat;
 import androidx.room.rxjava3.EmptyResultSetException;
 
-import com.vocaby.app.Constants;
 import com.vocaby.app.R;
 import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.ui.MainActivity;
@@ -29,11 +28,9 @@ public class NotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         VocabyRepository vocabyRepository = new VocabyRepository((Application) context.getApplicationContext());
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
-        int currentId = sharedPreferences.getInt(Constants.CURRENT_USER_ID_KEY, 1);
         SharedPreferences sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE);
 
-        disposable = vocabyRepository.getUserSaves(currentId)
+        disposable = vocabyRepository.getUserSaves()
                 .flatMap(saves -> {
                     String prev_word = sp.getString("NOTIF_PREV_SELECT", "");
                     if(saves.isEmpty()) {
@@ -53,7 +50,6 @@ public class NotificationReceiver extends BroadcastReceiver {
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
                 }).subscribe(wordData -> {
                     String word = wordData.getEntry();
-                    String pos = wordData.getFirstGroup().getType();
                     String message = wordData.getFirstGroup().getDefinitionData().get(0).toString();
 
                     SharedPreferences.Editor editor = sp.edit();

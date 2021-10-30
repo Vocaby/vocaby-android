@@ -15,7 +15,6 @@
         android:background="@color/white">
 
         <ImageView
-            android:id="@+id/vocaby_header_logo"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="@dimen/container_side_margin"
@@ -25,7 +24,6 @@
             app:srcCompat="@drawable/ic_vocaby_logo" />
 
         <TextView
-            android:id="@+id/header_text"
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

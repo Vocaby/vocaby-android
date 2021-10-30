@@ -1,4 +1,4 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models.dictionary;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,13 +10,12 @@ public class EntryModel implements Parcelable {
     private int id;
     private final String entry;
     private String pronunciation;
-    // TODO: Change List to Hashmap?
     private List<DefinitionGroupModel> definitionGroups;
 
-    public EntryModel(int id, String entry) {
+    public EntryModel(int id, String entry, String pronunciation) {
         this.id = id;
         this.entry = entry;
-        pronunciation = "";
+        this.pronunciation = pronunciation;
         definitionGroups = new ArrayList<>();
     }
 
@@ -52,7 +51,7 @@ public class EntryModel implements Parcelable {
         this.pronunciation = pronunciation;
     }
 
-    public String getPronunciation() { return this.pronunciation; }
+    public String getPronunciation() { return pronunciation; }
 
     public String getEntry() { return entry; }
 

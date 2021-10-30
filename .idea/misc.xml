@@ -19,6 +19,7 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_pink.xml" value="0.35833333333333334" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_save_item.xml" value="0.2550925925925926" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_white.xml" value="0.28072916666666664" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_white_stroked_dash_gray.xml" value="0.29907407407407405" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/box_white_stroked_gray.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/custom_entry_header.xml" value="0.403125" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/drawable/edittext.xml" value="0.28802083333333334" />
@@ -73,6 +74,7 @@
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_entry_group_builder_activity.xml" value="0.25" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_login.xml" value="0.24479166666666666" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/card_instruction.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_definition_row.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_entry_builder.xml" value="0.33" />
         <entry key="..\:/Users/User/StudioProjects/Vocaby-Android/app/src/main/res/layout/custom_entry_definition_builder_dialog.xml" value="0.33" />

@@ -10,8 +10,8 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.data.entity.User;
-import com.vocaby.app.models.ItemState;
-import com.vocaby.app.models.ItemStringPayload;
+import com.vocaby.app.models.payload.ItemStringPayload;
+import com.vocaby.app.models.payload.PayloadState;
 import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.SingleLiveEvent;
 
@@ -42,12 +42,8 @@ public class UserViewModel extends AndroidViewModel {
 
     public void setupApplication() {
         compositeDisposable.add(
-                vocabyRepository.getCurrentUserId()
-                .flatMap(vocabyRepository::getUser)
-                .flatMap(user -> {
-                    mUser.setValue(user);
-                    return vocabyRepository.getUserSaves(user.getUserId());
-                }).subscribe(saves -> {
+            vocabyRepository.getUserSaves()
+                .subscribe(saves -> {
                     mSavedWords.setValue(saves);
                     mSaveCount.setValue(saves.size());
                 }, e -> {
@@ -73,9 +69,6 @@ public class UserViewModel extends AndroidViewModel {
         );
     }
 
-    public LiveData<User> getUser() {
-        return mUser;
-    }
     public LiveData<List<String>> getSavedWords() {
         return mSavedWords;
     }
@@ -88,7 +81,7 @@ public class UserViewModel extends AndroidViewModel {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
             ItemStringPayload itemStringPayload =
-                    new ItemStringPayload(ItemState.ADD, entry);
+                    new ItemStringPayload(PayloadState.ADD, entry);
             mItemChange.setValue(itemStringPayload);
 
             list.add(0, entry);
@@ -100,7 +93,7 @@ public class UserViewModel extends AndroidViewModel {
         if (mSavedWords.getValue() != null) {
             List<String> list = mSavedWords.getValue();
             ItemStringPayload itemStringPayload =
-                    new ItemStringPayload(ItemState.DELETE, entry);
+                    new ItemStringPayload(PayloadState.DELETE, entry);
             mItemChange.setValue(itemStringPayload);
 
             list.remove(entry);
@@ -117,11 +110,8 @@ public class UserViewModel extends AndroidViewModel {
 
     public void removeSaveFromDB(String entry) {
         compositeDisposable.add(
-                vocabyRepository.getCurrentUserId()
-                    .flatMap(vocabyRepository::getUser)
-                    .flatMapCompletable(currentUser ->
-                            vocabyRepository.removeSave(currentUser.getUserId(), entry)
-                    ).subscribe(() -> removeSaveItem(entry), Logger::reportError)
+                vocabyRepository.removeSave(entry)
+                        .subscribe(() -> removeSaveItem(entry), Logger::reportError)
         );
     }
 

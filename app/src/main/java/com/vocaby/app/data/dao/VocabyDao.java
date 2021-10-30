@@ -97,6 +97,9 @@ public abstract class VocabyDao {
     @Insert
     public abstract Single<Long> insertCustomEntry(CustomEntry customEntry);
 
+    @Update
+    public abstract Completable updateCustomEntry(CustomEntry customEntry);
+
     @Insert
     public abstract Single<List<Long>> insertCustomEntryGroups(List<CustomEntryGroup> customEntryGroups);
 
