@@ -85,12 +85,6 @@ public class VocabyRepository {
         return dataManager.getDictionaryEntries();
     }
 
-    public Single<List<String>> getDictionaryEntriesByLetter(String letter) {
-        return vocabyDao.getDictionaryEntriesByLetter(letter)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
     public Single<EntryModel> getWordDataFromDatabase(String word) {
         return vocabyDao.getWordData(word)
                 .map(this::covertToEntryModel)
@@ -152,12 +146,6 @@ public class VocabyRepository {
         // Main Thread
         return vocabyDao.getSaves(userId)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<String> getRandomUserSave(int id) {
-        return vocabyDao.getRandomSave(id)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -289,21 +277,22 @@ public class VocabyRepository {
                             .andThen(updateUserEntryGroups(updatedGroups))
                             .andThen(insertUserEntryGroups(addedGroups))
                             .flatMapCompletable(ids -> {
-                                List<CustomDefinition> addedDefinitions = new ArrayList<>();
-                                for (int i = 0; i < groupChanges.getAddedItems().size(); i++) {
-                                    DefinitionChanges definitionChanges = definitionChangesMap.get(
-                                            groupChanges.getAddedItems().get(i).getType()
-                                    );
+                                List<DefinitionGroupModel> newGroups = groupChanges.getAddedItems();
+                                for (int i = 0; i < newGroups.size(); i++) {
+                                    DefinitionChanges definitionChanges = definitionChangesMap.get(newGroups.get(i).getType());
+                                    if (definitionChanges != null)
+                                        definitionChanges.setGroupId(ids.get(i).intValue());
+                                }
 
-                                    if (definitionChanges != null) {
-                                        for (DefinitionModel definitionModel : definitionChanges.getAddedItems()) {
-                                            addedDefinitions.add(new CustomDefinition(
-                                                    ids.get(i).intValue(),
-                                                    definitionModel.getDefinition(),
-                                                    definitionModel.getExample(),
-                                                    definitionModel.getOrder())
-                                            );
-                                        }
+                                List<CustomDefinition> addedDefinitions = new ArrayList<>();
+                                for (DefinitionChanges definitionChanges : definitionChangesMap.values()) {
+                                    for (DefinitionModel definitionModel : definitionChanges.getAddedItems()) {
+                                        addedDefinitions.add(new CustomDefinition(
+                                                definitionChanges.getGroupId(),
+                                                definitionModel.getDefinition(),
+                                                definitionModel.getExample(),
+                                                definitionModel.getOrder())
+                                        );
                                     }
                                 }
 
