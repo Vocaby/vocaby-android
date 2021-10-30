@@ -33,6 +33,14 @@ public class EntryDataPackage {
         return this.customEntryData;
     }
 
+    public EntryModel getEntryData() {
+        if (customEntryAvailable()) {
+            return this.customEntryData;
+        } else {
+            return this.originalEntryData;
+        }
+    }
+
     public boolean bothDataAvailable() {
         return !this.originalEntryData.isEmpty() && !this.customEntryData.isEmpty();
     }
