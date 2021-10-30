@@ -50,9 +50,10 @@
             android:fontFamily="@font/sourcesanspro_regular"
             android:textColor="@color/black"/>
         <TextView
+            android:id="@+id/group_card_def_counter_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/definitions_header"
+            android:text="@string/definition_header_singular"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="18dp"
             android:layout_gravity="center_vertical"

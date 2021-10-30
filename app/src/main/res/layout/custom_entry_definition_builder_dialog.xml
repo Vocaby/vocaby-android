@@ -68,7 +68,7 @@
                 android:textSize="12sp"
                 android:layout_marginBottom="8dp"
                 android:labelFor="@+id/definition_edit"
-                android:text="@string/definition_header" />
+                android:text="@string/definition_header_singular" />
 
             <TextView
                 android:id="@+id/definition_header_alert"

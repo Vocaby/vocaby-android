@@ -61,6 +61,12 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
         String counter = "" + groups.get(holder.getAdapterPosition()).getDefinitionData().size();
         holder.definitionCounter.setText(counter);
 
+        if (groups.get(holder.getAdapterPosition()).getDefinitionData().size() > 1) {
+            holder.definitionCounterHeader.setText(R.string.definition_header_plural);
+        } else {
+            holder.definitionCounterHeader.setText(R.string.definition_header_singular);
+        }
+
         holder.dragHandle.setOnTouchListener((v, motionEvent) -> {
             if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 dragStartListener.onDragStart(holder);
@@ -120,6 +126,7 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
             implements ItemTouchHelperViewHolder {
         TextView groupHeader;
         TextView definitionCounter;
+        TextView definitionCounterHeader;
         FrameLayout dragHandle;
         View container;
         Context ctx;
@@ -128,6 +135,7 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
             super(itemView);
             groupHeader = itemView.findViewById(R.id.group_card_header);
             definitionCounter = itemView.findViewById(R.id.group_card_def_counter);
+            definitionCounterHeader = itemView.findViewById(R.id.group_card_def_counter_header);
             dragHandle = itemView.findViewById(R.id.drag_handle);
             container = itemView.findViewById(R.id.card_container);
             this.ctx = ctx;

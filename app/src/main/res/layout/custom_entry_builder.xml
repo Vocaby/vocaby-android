@@ -90,7 +90,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/container_gap_margin"
+        android:layout_marginTop="@dimen/container_side_margin"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,7 +102,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/custom_entry_word_header"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimaryAccent"/>
 
         <TextView
             android:id="@+id/entry_header_alert"
@@ -127,13 +128,12 @@
         android:id="@+id/entry_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
-        android:hint="@string/custom_entry_header_hint"
         android:textAllCaps="true"
-        android:textColor="@color/colorPrimaryAccent"
-        android:textSize="22sp"
+        android:textColor="@color/black"
+        android:textSize="28sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
@@ -158,7 +158,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pronunciation"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimaryAccent"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -167,7 +168,7 @@
             android:fontFamily="@font/sourcesanspro_semibold"
             android:text="@string/optional"
             android:textSize="12sp"
-            android:textColor="@color/colorSecondary" />
+            android:textColor="@color/dark_gray" />
 
         <Space
             android:layout_width="0dp"
@@ -211,7 +212,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/custom_definition_group_header"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimaryAccent"/>
 
         <TextView
             android:id="@+id/group_header_alert"
@@ -256,9 +258,11 @@
         android:id="@+id/card_instruction"
         layout="@layout/card_instruction"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="-2dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

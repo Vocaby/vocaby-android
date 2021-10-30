@@ -32,10 +32,10 @@
     <string name="definition_add_alert">You must add a definition</string>
     <string name="definition_empty_alert">You must enter a definition</string>
     <string name="definition_exists_alert">The definition already exists</string>
-    <string name="definition_header">Definition</string>
     <string name="example_header">Example</string>
     <string name="type_header_alert">Please select a type</string>
-    <string name="definitions_header">Definitions</string>
+    <string name="definition_header_singular">Definition</string>
+    <string name="definition_header_plural">Definitions</string>
     <string name="nav_close">Close</string>
     <string name="add_definition_button">Add Definition</string>
     <string name="nav_save">Save</string>
@@ -61,9 +61,10 @@
     <string name="nav_danger_zone">Danger Zone</string>
     <string name="empty_custom_entry">Empty Custom Entry</string>
     <string name="add_an_entry">Add An Entry</string>
-    <string name="drag_to_arrange">Drag to arrange</string>
+    <string name="drag_to_rearrange">Drag to rearrange</string>
     <string name="swipe_to_delete">Swipe to delete</string>
     <string name="pronunciation">Pronunciation</string>
     <string name="optional">optional</string>
     <string name="enter_a_pronunciation">Enter a pronunciation</string>
+    <string name="type">Type</string>
 </resources>
