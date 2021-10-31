@@ -22,7 +22,7 @@ public class User {
     }
 
     @Ignore
-    public User(String email, String firstName, String lastName, String token) {
+    public User(String email, String firstName, String lastName) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;

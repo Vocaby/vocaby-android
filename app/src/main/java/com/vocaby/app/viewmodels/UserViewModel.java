@@ -6,10 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.data.VocabyRepository;
-import com.vocaby.app.data.entity.User;
 import com.vocaby.app.models.payload.ItemStringPayload;
 import com.vocaby.app.models.payload.PayloadState;
 import com.vocaby.app.utils.Logger;
@@ -26,7 +24,6 @@ public class UserViewModel extends AndroidViewModel {
 
     private final MutableLiveData<List<String>> mSavedWords;
     private final MutableLiveData<Integer> mSaveCount;
-    private final MutableLiveData<User> mUser;
     private final SingleLiveEvent<ItemStringPayload> mItemChange;
 
     public UserViewModel(@NonNull Application application) {
@@ -36,36 +33,22 @@ public class UserViewModel extends AndroidViewModel {
 
         mSavedWords = new MutableLiveData<>(new ArrayList<>());
         mSaveCount = new MutableLiveData<>(0);
-        mUser = new MutableLiveData<>();
         mItemChange = new SingleLiveEvent<>();
     }
 
     public void setupApplication() {
         compositeDisposable.add(
-            vocabyRepository.getUserSaves()
-                .subscribe(saves -> {
-                    mSavedWords.setValue(saves);
-                    mSaveCount.setValue(saves.size());
-                }, e -> {
-                    if (e instanceof EmptyResultSetException) {
-                        addDefaultUser();
-                    } else {
-                        Logger.reportError(e);
-                    }
-                })
-        );
-    }
-
-    private void addDefaultUser() {
-        User user = new User();
-        compositeDisposable.add(
-                vocabyRepository.createUser(user)
-                .flatMapCompletable(id -> {
-                    int userId = id.intValue();
-                    user.setUserId(userId);
-                    mUser.setValue(user);
-                    return vocabyRepository.writeUserId(userId);
-                }).subscribe(() -> {}, Logger::reportError)
+                vocabyRepository.checkUser()
+                    .flatMap(result -> {
+                        if (result == 1) {
+                            return vocabyRepository.getUserSaves();
+                        } else {
+                            return vocabyRepository.createUserAndGetSaves();
+                        }
+                    }).subscribe(saves -> {
+                        mSavedWords.setValue(saves);
+                        mSaveCount.setValue(saves.size());
+                }, Logger::reportError)
         );
     }
 

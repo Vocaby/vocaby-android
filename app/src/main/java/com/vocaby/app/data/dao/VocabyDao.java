@@ -40,11 +40,8 @@ public abstract class VocabyDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Single<Long> createUser(User user);
 
-    @Delete
-    public abstract Completable removeUser(User user);
-
-    @Query("DELETE FROM vocaby_user WHERE user_id != :id")
-    public abstract Completable removeAllUsers(int id);
+    @Query("SELECT EXISTS(SELECT * FROM vocaby_user WHERE user_id = :id)")
+    public abstract Single<Integer> checkUser(int id);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Completable addSave(UserSaves userSaves);

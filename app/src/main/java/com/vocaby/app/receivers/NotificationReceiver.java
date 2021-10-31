@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.room.rxjava3.EmptyResultSetException;

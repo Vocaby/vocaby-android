@@ -1,7 +1,5 @@
 package com.vocaby.app.viewmodels;
 
-import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
-
 import android.content.Intent;
 import android.view.View;
 
@@ -18,6 +16,8 @@ import com.vocaby.app.utils.SingleLiveEvent;
 
 import java.util.HashMap;
 import java.util.List;
+
+import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 
 public class EntryGroupViewModel extends ViewModel {
     private DefinitionGroupModel definitionGroup;

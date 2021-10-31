@@ -1,7 +1,5 @@
 package com.vocaby.app.ui.dictionary;
 
-import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -22,11 +20,14 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.vocaby.app.R;
 import com.vocaby.app.models.dictionary.EntryModel;
+import com.vocaby.app.utils.LiveDataUtil;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.SearchResultsViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 import java.util.List;
+
+import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
 
 public class SearchResultsFragment extends Fragment {
     private Context ctx;
@@ -125,7 +126,7 @@ public class SearchResultsFragment extends Fragment {
     }
 
     public void observeWordData() {
-        searchResultsViewModel.getWordData().observe(getViewLifecycleOwner(), entryData -> {
+        LiveDataUtil.observeOnce(searchResultsViewModel.getWordData(), entryData -> {
             setupDictionary(entryData.size());
             viewPager.setAdapter(new FragmentAdapter(this, entryData));
             progressBar.setVisibility(View.GONE);

@@ -54,11 +54,14 @@ public class VocabyRepository {
 
     public Completable writeUserId(int id) {
         return Completable.fromAction(() -> {
-            SharedPreferences.Editor editor = userSharedPreference.edit();
-            editor.putInt("LOCAL_USER_ID", id);
-            editor.putInt(Constants.CURRENT_USER_ID_KEY, id);
-            editor.apply();
+
         });
+    }
+
+    public Single<Integer> checkUser() {
+        return vocabyDao.checkUser(userId)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     // HISTORY
@@ -149,9 +152,17 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<Long> createUser(User user) {
-        return vocabyDao.createUser(user)
-                .subscribeOn(Schedulers.io())
+    public Single<List<String>> createUserAndGetSaves() {
+        return vocabyDao.createUser(new User())
+                .flatMap(id -> {
+                    int resultId = id.intValue();
+                    SharedPreferences.Editor editor = userSharedPreference.edit();
+                    editor.putInt("LOCAL_USER_ID", resultId);
+                    editor.putInt(Constants.CURRENT_USER_ID_KEY, resultId);
+                    editor.apply();
+
+                    return getUserSaves();
+                }).subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
