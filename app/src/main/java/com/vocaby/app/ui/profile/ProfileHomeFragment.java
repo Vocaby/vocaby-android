@@ -48,6 +48,18 @@ public class ProfileHomeFragment extends Fragment {
                 ).add(R.id.profile_fragment_container, new NotificationFragment())
                 .addToBackStack(null)
                 .commit());
+
+        // DATA MANAGEMENT
+        Button dataButton = view.findViewById(R.id.data_management_button);
+        dataButton.setOnClickListener(v ->             fm.beginTransaction()
+                .setCustomAnimations(
+                        R.anim.enter_right_to_left,
+                        R.anim.exit_right_to_left,
+                        R.anim.enter_right_to_left,
+                        R.anim.exit_left_to_right
+                ).add(R.id.profile_fragment_container, new DataManagementFragment())
+                .addToBackStack(null)
+                .commit());
     }
 
     @Override

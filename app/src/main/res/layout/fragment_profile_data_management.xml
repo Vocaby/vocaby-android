@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".ui.profile.DataManagementFragment">
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_marginTop="@dimen/container_gap_margin"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="@dimen/container_gap_margin"
+        android:drawableStart="@drawable/ic_arrow_left_tail"
+        android:drawableTint="@color/dark_gray"
+        android:text="@string/back"
+        android:textColor="@color/dark_gray"
+        android:drawablePadding="12dp"
+        android:fontFamily="@font/sourcesanspro_semibold" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/export_save_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_management_export_save"
+        android:drawableStart="@drawable/ic_boxed_data_management"/>
+
+</LinearLayout>

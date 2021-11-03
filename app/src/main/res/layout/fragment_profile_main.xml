@@ -17,6 +17,7 @@
         android:drawableStart="@drawable/ic_boxed_notification"
         android:drawableEnd="@drawable/ic_chevron_right"/>
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/data_management_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

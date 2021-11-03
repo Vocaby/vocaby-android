@@ -68,4 +68,10 @@
     <string name="enter_a_pronunciation">Enter a pronunciation</string>
     <string name="type">Type</string>
     <string name="back">Back</string>
+    <string name="data_management_export_save">Export my save data</string>
+    <string name="nav_cancel">Cancel</string>
+    <string name="data_transfer_export_complete">Successfully exported your data!</string>
+    <string name="data_transfer_fetching_data">Fetching your data…</string>
+    <string name="data_transfer_exporting_saves">Exporting your save data…</string>
+    <string name="data_transfer_export_empty">You don\'t have any data to export…</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.vocaby.app.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -36,7 +37,18 @@ public class UserViewModel extends AndroidViewModel {
         mItemChange = new SingleLiveEvent<>();
     }
 
+    private void addSaves() {
+        compositeDisposable.add(
+                vocabyRepository.getSortedDictionaryEntriesFromDB()
+                        .flatMapCompletable(vocabyRepository::addSaves)
+                        .subscribe(() -> {}, Throwable::printStackTrace)
+        );
+    }
+
     public void setupApplication() {
+        //test
+        // addSaves();
+
         compositeDisposable.add(
                 vocabyRepository.checkUser()
                     .flatMap(result -> {

@@ -5,7 +5,7 @@ import static com.vocaby.app.Constants.DICTIONARY_ENTRIES_KEY;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
+import android.net.Uri;
 
 import com.vocaby.app.Constants;
 import com.vocaby.app.data.dao.VocabyDao;
@@ -25,6 +25,9 @@ import com.vocaby.app.models.dictionary.DefinitionGroupModel;
 import com.vocaby.app.models.dictionary.DefinitionModel;
 import com.vocaby.app.models.dictionary.EntryModel;
 
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VocabyRepository {
+    private final Application application;
     private final VocabyDao vocabyDao;
     private final DataManager dataManager;
     private final SharedPreferences userSharedPreference;
@@ -47,6 +51,7 @@ public class VocabyRepository {
 
 
     public VocabyRepository(Application application) {
+        this.application = application;
         VocabyDatabase vocabyDatabase = VocabyDatabase.getDatabase(application);
         vocabyDao = vocabyDatabase.vocabyDao();
         dataManager = DataManager.getInstance(application);
@@ -70,6 +75,24 @@ public class VocabyRepository {
         return dataManager.writeHistory(word);
     }
 
+    public Completable writeSavesToExternalStorage(List<String> saves, Uri uri) {
+        return Completable.fromAction(() -> {
+            try (OutputStream outputStream = application.getContentResolver().openOutputStream(uri)) {
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream));
+                for (int i = 0; i < saves.size(); i++) {
+                    bw.write(saves.get(i));
+                    bw.newLine();
+                }
+
+                bw.flush();
+                bw.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).subscribeOn(Schedulers.computation())
+        .observeOn(AndroidSchedulers.mainThread());
+    }
+
     // Gets data from UI Thread
     public Single<List<String>> getSortedDictionaryEntriesFromDB() {
         return vocabyDao.getDictionaryEntries()
@@ -82,7 +105,7 @@ public class VocabyRepository {
             return Completable.complete();
         } else {
             return getSortedDictionaryEntriesFromDB()
-                    .flatMapCompletable(list -> {
+                    .flatMapCompletable(list -> Completable.fromAction(() -> {
                         int i = 0;
                         StringBuilder sb = new StringBuilder();
                         for (; i < list.size()-1; i++) {
@@ -106,9 +129,8 @@ public class VocabyRepository {
                         SharedPreferences.Editor editor = entrySharedPreference.edit();
                         editor.putString(list.get(i).substring(0, 1), sb.toString());
                         editor.apply();
-
-                        return Completable.complete();
-                    });
+                    })).observeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread());
         }
     }
 
@@ -218,6 +240,17 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Completable addSaves(List<String> newSaves) {
+        List<UserSaves> userSaves = new ArrayList<>();
+        for (String entry : newSaves) {
+            userSaves.add(new UserSaves(userId, entry));
+        }
+
+        return vocabyDao.addSaves(userSaves)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Completable removeSave(String word) {
         return vocabyDao.removeSave(userId, word)
                 .subscribeOn(Schedulers.io())
@@ -225,7 +258,6 @@ public class VocabyRepository {
     }
 
     public Single<List<String>> getUserSaves() {
-        // Main Thread
         return vocabyDao.getSaves(userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
