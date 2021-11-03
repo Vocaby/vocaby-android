@@ -91,7 +91,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
             if (deletePayload.getState() == PayloadState.DELETE) {
                 deleteProgress.setVisibility(View.GONE);
                 customEntryAdapter.deleteEntry(deletePayload.getPayload());
-                dictionaryViewModel.resetDictionaryEntries();
+//                dictionaryViewModel.resetDictionaryEntries();
             }
         });
     }
@@ -156,7 +156,7 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     private final ActivityResultLauncher<Intent> entryBuilderActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                dictionaryViewModel.resetDictionaryEntries();
+//                dictionaryViewModel.resetDictionaryEntries();
                 entryViewModel.handleResult(result);
             }
     );

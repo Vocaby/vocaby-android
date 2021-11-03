@@ -1,11 +1,13 @@
 package com.vocaby.app.data;
 
+import static com.vocaby.app.Constants.DICTIONARY_ENTRIES_KEY;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.vocaby.app.Constants;
-import com.vocaby.app.api.ApiManager;
 import com.vocaby.app.data.dao.VocabyDao;
 import com.vocaby.app.data.entity.CustomDefinition;
 import com.vocaby.app.data.entity.CustomEntry;
@@ -26,6 +28,7 @@ import com.vocaby.app.models.dictionary.EntryModel;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,31 +39,25 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VocabyRepository {
-    private final ApiManager apiManager;
     private final VocabyDao vocabyDao;
     private final DataManager dataManager;
     private final SharedPreferences userSharedPreference;
+    private final SharedPreferences entrySharedPreference;
     private final int userId;
 
 
     public VocabyRepository(Application application) {
         VocabyDatabase vocabyDatabase = VocabyDatabase.getDatabase(application);
         vocabyDao = vocabyDatabase.vocabyDao();
-        apiManager = ApiManager.getInstance();
         dataManager = DataManager.getInstance(application);
         userSharedPreference = application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
+        entrySharedPreference = application.getSharedPreferences(DICTIONARY_ENTRIES_KEY, Context.MODE_PRIVATE);
         userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
-    }
-
-    public Completable writeUserId(int id) {
-        return Completable.fromAction(() -> {
-
-        });
     }
 
     public Single<Integer> checkUser() {
         return vocabyDao.checkUser(userId)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -74,18 +71,100 @@ public class VocabyRepository {
     }
 
     // Gets data from UI Thread
-    public Single<List<String>> getDictionaryEntriesFromDB() {
+    public Single<List<String>> getSortedDictionaryEntriesFromDB() {
         return vocabyDao.getDictionaryEntries()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<List<String>> populateDictionaryEntries() {
-        return dataManager.populateDictionaryEntries();
+    public Completable setupDictionaryEntries() {
+        if (entrySharedPreference.contains("z")) {
+            return Completable.complete();
+        } else {
+            return getSortedDictionaryEntriesFromDB()
+                    .flatMapCompletable(list -> {
+                        int i = 0;
+                        StringBuilder sb = new StringBuilder();
+                        for (; i < list.size()-1; i++) {
+                            if (list.get(i).charAt(0) == list.get(i+1).charAt(0)) {
+                                sb.append(list.get(i));
+                                sb.append(";");
+                            } else {
+                                sb.append(list.get(i));
+
+                                SharedPreferences.Editor editor = entrySharedPreference.edit();
+                                editor.putString(list.get(i).substring(0, 1), sb.toString());
+                                editor.apply();
+
+                                sb = new StringBuilder();
+                            }
+                        }
+
+                        // Last element insertion
+                        sb.append(list.get(i));
+
+                        SharedPreferences.Editor editor = entrySharedPreference.edit();
+                        editor.putString(list.get(i).substring(0, 1), sb.toString());
+                        editor.apply();
+
+                        return Completable.complete();
+                    });
+        }
     }
 
-    public List<String> getDictionaryEntries() {
-        return dataManager.getDictionaryEntries();
+    public Single<List<String>> getEntriesByCharacter(String character) {
+        return Single.fromCallable(() -> {
+            String e = entrySharedPreference.getString(character, "");
+            return Arrays.asList(e.split(";"));
+        });
+    }
+
+    public void addEntryToDictionary(String entry) {
+        String character = entry.substring(0, 1);
+        String entries = entrySharedPreference.getString(character, "");
+        StringBuilder sb = new StringBuilder();
+        boolean added = false;
+
+        if (!entries.isEmpty()) {
+            List<String> list = Arrays.asList(entries.split(";"));
+
+            int i = 0;
+            for (; i < list.size(); i++) {
+                if (!added && entry.compareToIgnoreCase(list.get(i)) < 0) {
+                    added = true;
+                    sb.append(entry);
+                    sb.append(";");
+                }
+
+                sb.append(list.get(i));
+                sb.append(";");
+            }
+
+            if (!added) {
+                sb.append(entry);
+            }
+
+            entrySharedPreference.edit().putString(character, sb.toString()).apply();
+        }
+    }
+
+    public void deleteEntryFromDictionary(String entry) {
+        String character = entry.substring(0, 1);
+        String entries = entrySharedPreference.getString(character, "");
+        StringBuilder sb = new StringBuilder();
+
+        if (!entries.isEmpty()) {
+            List<String> list = Arrays.asList(entries.split(";"));
+
+            for (int i = 0; i < list.size(); i++) {
+                if (!list.get(i).equals(entry)) {
+                    sb.append(list.get(i));
+                    sb.append(";");
+                }
+            }
+
+            entrySharedPreference.edit().putString(character, sb.toString()).apply();
+        }
     }
 
     public Single<EntryModel> getWordDataFromDatabase(String word) {
@@ -107,7 +186,7 @@ public class VocabyRepository {
         return vocabyDao.getUserEntryData(userId, entry)
                 .map(this::convertEntryData)
                 .onErrorReturnItem(new EntryModel(entry))
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -148,7 +227,7 @@ public class VocabyRepository {
     public Single<List<String>> getUserSaves() {
         // Main Thread
         return vocabyDao.getSaves(userId)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -162,7 +241,7 @@ public class VocabyRepository {
                     editor.apply();
 
                     return getUserSaves();
-                }).subscribeOn(AndroidSchedulers.mainThread())
+                }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -171,7 +250,7 @@ public class VocabyRepository {
         return vocabyDao.deleteUserEntry(entryId)
                 .andThen(vocabyDao.checkEntryExistence(entry))
                 .flatMapCompletable(exists -> {
-                    if (!exists) return Completable.fromAction(() -> dataManager.deleteEntryFromDictionary(entry));
+                    if (!exists) return Completable.fromAction(() -> deleteEntryFromDictionary(entry));
                     else return Completable.complete();
                 })
                 .subscribeOn(Schedulers.io())
@@ -182,7 +261,7 @@ public class VocabyRepository {
         return vocabyDao.deleteUserEntry(entry)
                 .andThen(vocabyDao.checkEntryExistence(entry))
                 .flatMapCompletable(exists -> {
-                    if (!exists) return Completable.fromAction(() -> dataManager.deleteEntryFromDictionary(entry));
+                    if (!exists) return Completable.fromAction(() -> deleteEntryFromDictionary(entry));
                     else return Completable.complete();
                 })
                 .subscribeOn(Schedulers.io())
@@ -201,9 +280,11 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<Integer> insertOrUpdateEntry(String entry, String pronunciation, GroupChanges groupChanges, Map<String, DefinitionChanges> definitionChangesMap) {
+    public Single<Integer> insertOrUpdateEntry(String entry,
+                                               String pronunciation,
+                                               GroupChanges groupChanges,
+                                               Map<String, DefinitionChanges> definitionChangesMap) {
         Single<Long> entryInsert;
-
         // New entry
         if (groupChanges.getEntryId() == -1) {
             entryInsert = vocabyDao.insertCustomEntry(
@@ -216,7 +297,7 @@ public class VocabyRepository {
                     vocabyDao.checkEntryExistence(entry)
                         .flatMap(exists ->
                                 Single.fromCallable(() -> {
-                                    if (!exists) dataManager.addEntryToDictionary(entry);
+                                    if (!exists) addEntryToDictionary(entry);
                                     return id;
                         })
                     )
@@ -405,7 +486,7 @@ public class VocabyRepository {
 
     public Single<List<String>> getAllTypes() {
         return vocabyDao.getTypes()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }

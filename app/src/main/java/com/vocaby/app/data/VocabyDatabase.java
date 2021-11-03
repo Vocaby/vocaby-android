@@ -27,12 +27,11 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 @Database(entities = {
         Word.class, User.class, Definition.class, UserSaves.class,
         CustomEntry.class, CustomEntryGroup.class, CustomDefinition.class, Type.class},
-        version = 1, exportSchema = false
-)
+        version = 1, exportSchema = false)
 public abstract class VocabyDatabase extends RoomDatabase {
     public abstract VocabyDao vocabyDao();
-
     private static volatile VocabyDatabase INSTANCE;
+
     public static VocabyDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (VocabyDatabase.class) {
@@ -40,16 +39,13 @@ public abstract class VocabyDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             VocabyDatabase.class, "vocaby_database")
                             .createFromAsset("databases/vocabydevdb.db")
-//                             .fallbackToDestructiveMigration()
                             .addCallback(new Callback() {
                                 @Override
                                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     prepopulateData(getDatabase(context).vocabyDao());
                                     super.onCreate(db);
                                 }
-                            })
-                            .allowMainThreadQueries()
-                            .build();
+                            }).build();
                 }
             }
         }

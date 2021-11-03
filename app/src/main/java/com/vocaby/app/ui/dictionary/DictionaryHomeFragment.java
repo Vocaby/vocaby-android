@@ -80,8 +80,9 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
 
         dictionaryViewModel.getSearch().observe(getViewLifecycleOwner(), this::addResultsFragment);
 
-        dictionaryViewModel.getSearchHistory().observe(getViewLifecycleOwner(), searchHistory ->
-                searchHistoryAdapter.updateSearchHistory(searchHistory));
+        dictionaryViewModel.getSearchHistory().observe(getViewLifecycleOwner(),
+                searchHistory -> searchHistoryAdapter.updateSearchHistory(searchHistory)
+        );
 
         dictionaryViewModel.getRandomWord().observe(getViewLifecycleOwner(), wordModel -> {
             definition.setVisibility(View.VISIBLE);
@@ -94,6 +95,15 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
             definition.setText(wordModel.getFirstGroup().getDefinitionData().get(0).toString());
             sentence.setText(wordModel.getFirstGroup().getDefinitionData().get(0).getExample());
             wordBox.setOnClickListener(v -> dictionaryViewModel.setSearch(wordModel.getEntry()));
+        });
+
+        dictionaryViewModel.getSearchSuggestions().observe(getViewLifecycleOwner(),
+                searchSuggestionsItems -> searchView.swapSuggestions(searchSuggestionsItems)
+        );
+
+        dictionaryViewModel.getSuggestionRetrieveStatus().observe(getViewLifecycleOwner(), retrieved -> {
+            if (retrieved) searchView.hideProgress();
+            else searchView.showProgress();
         });
     }
 
@@ -141,14 +151,13 @@ public class DictionaryHomeFragment extends Fragment implements SearchHistoryAda
             };
 
     private final FloatingSearchView.OnQueryChangeListener queryChangeListener =
-            (oldQuery, newQuery) -> searchView.swapSuggestions(
-                    dictionaryViewModel.getSearchSuggestion(newQuery, 4)
-            );
+            (oldQuery, newQuery) -> dictionaryViewModel.getSearchSuggestions(oldQuery, newQuery);
 
     @Override
     public void onResume() {
         super.onResume();
         dictionaryViewModel.updateRandomWord();
+        dictionaryViewModel.resetDictionaryEntries();
     }
 
     @Override

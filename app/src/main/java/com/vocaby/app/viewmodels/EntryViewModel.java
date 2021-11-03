@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 
@@ -239,7 +241,9 @@ public class EntryViewModel extends AndroidViewModel {
                             pronunciation,
                             groupChanges,
                             definitionChangesMap
-                    ).subscribe((id) -> {
+                    ).subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe((id) -> {
                         entryData.setId(id);
                         mSaveResult.setValue(true);
                     }, Throwable::printStackTrace)

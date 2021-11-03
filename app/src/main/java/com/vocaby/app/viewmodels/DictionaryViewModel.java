@@ -2,12 +2,14 @@ package com.vocaby.app.viewmodels;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
+import com.vocaby.app.Constants;
 import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.models.SearchSuggestionItem;
 import com.vocaby.app.models.dictionary.EntryModel;
@@ -21,56 +23,65 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static com.vocaby.app.utils.StringFormatter.cleanText;
 
 public class DictionaryViewModel extends AndroidViewModel {
+    private final int SEARCH_SUGGESTIONS_SIZE = 4;
+
     private final MutableLiveData<String> mSearchedEntry;
-    private final SingleLiveEvent<EntryModel> mWordModel;
     private final MutableLiveData<List<String>> searchHistory;
-    private final MutableLiveData<Integer> mEntryCount;
-    private final MutableLiveData<List<String>> mDictionaryEntries;
+    private final SingleLiveEvent<EntryModel> mWordModel;
+    private final SingleLiveEvent<List<SearchSuggestionItem>> mSearchSuggestions;
+    private final SingleLiveEvent<Boolean> mSuggestionsRetrieveStatus;
 
     private final VocabyRepository vocabyRepository;
     private final CompositeDisposable compositeDisposable;
+
+    private List<String> searchStringEntries;
+    private String searchQuery;
 
     // TODO: Allow multiple SearchResults fragment on top of each other
     private final Stack<String> searchStack;
 
     public DictionaryViewModel(Application application) {
         super(application);
-        mSearchedEntry = new MutableLiveData<>();
-        searchStack = new Stack<>();
-        mWordModel = new SingleLiveEvent<>();
-        compositeDisposable = new CompositeDisposable();
         vocabyRepository = new VocabyRepository(getApplication());
-        mDictionaryEntries = new MutableLiveData<>(new ArrayList<>());
-        mEntryCount = new MutableLiveData<>(0);
+        compositeDisposable = new CompositeDisposable();
+        searchStack = new Stack<>();
+        searchStringEntries = new ArrayList<>();
+        searchQuery = "";
 
+
+        mSearchedEntry = new MutableLiveData<>();
         searchHistory = new MutableLiveData<>();
+        mWordModel = new SingleLiveEvent<>();
+        mSearchSuggestions = new SingleLiveEvent<>();
+        mSuggestionsRetrieveStatus = new SingleLiveEvent<>();
+
         searchHistory.setValue(vocabyRepository.getHistory());
     }
 
+    public LiveData<String> getSearch() {
+        return mSearchedEntry;
+    }
+    public LiveData<EntryModel> getRandomWord() {
+        return mWordModel;
+    }
+    public LiveData<List<String>> getSearchHistory() {
+        return searchHistory;
+    }
+    public LiveData<List<SearchSuggestionItem>> getSearchSuggestions() { return mSearchSuggestions; }
+    public LiveData<Boolean> getSuggestionRetrieveStatus() { return mSuggestionsRetrieveStatus; }
+
     public void setupDictionaryEntries() {
         compositeDisposable.add(
-                vocabyRepository.populateDictionaryEntries()
-                    .subscribe(list -> {
-                        mDictionaryEntries.setValue(list);
-                        mEntryCount.setValue(list.size());
-                    }, Throwable::printStackTrace)
+                vocabyRepository.setupDictionaryEntries()
+                    .subscribe(() -> {}, Throwable::printStackTrace)
         );
-    }
-
-    public void resetDictionaryEntries() {
-        if (mDictionaryEntries.getValue() != null) {
-            mDictionaryEntries.setValue(mDictionaryEntries.getValue());
-            mEntryCount.setValue(mDictionaryEntries.getValue().size());
-        }
-    }
-
-    public LiveData<Integer> getEntryCount() {
-        return mEntryCount;
     }
 
     public void updateRandomWord() {
@@ -101,34 +112,67 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
-    public List<SearchSuggestionItem> getSearchSuggestion(String newQuery, int threshold) {
-        newQuery = cleanText(newQuery);
+    public void getSearchSuggestions(String oldQuery, String newQuery) {
+        if (oldQuery.length() == 1 && newQuery.isEmpty()) {
+            mSearchSuggestions.setValue(new ArrayList<>());
+            searchStringEntries = null;
+            searchQuery = "";
+        } else if (oldQuery.isEmpty() && newQuery.length() == 1) {
+            mSuggestionsRetrieveStatus.setValue(false);
+            String initialCharacter = newQuery.substring(0, 1);
+            compositeDisposable.add(
+                    vocabyRepository.getEntriesByCharacter(initialCharacter)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(entries -> {
+                            mSuggestionsRetrieveStatus.setValue(true);
+                            searchStringEntries = entries;
+                            if (searchQuery.isEmpty()) searchQuery = newQuery;
+                            setSearchSuggestionItems(SEARCH_SUGGESTIONS_SIZE);
+                        }, Throwable::printStackTrace)
+            );
+        } else {
+            searchQuery = newQuery;
+            setSearchSuggestionItems(SEARCH_SUGGESTIONS_SIZE);
+        }
+    }
+
+    public void resetDictionaryEntries() {
+        if (!searchQuery.isEmpty()) {
+            String initialCharacter = searchQuery.substring(0, 1);
+            compositeDisposable.add(
+                    vocabyRepository.getEntriesByCharacter(initialCharacter)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(entries -> {
+                                searchStringEntries = entries;
+                            }, Throwable::printStackTrace)
+            );
+        }
+
+    }
+
+    private void setSearchSuggestionItems(int threshold) {
         List<SearchSuggestionItem> searchSuggestions = new ArrayList<>();
 
-        if (mDictionaryEntries.getValue() != null) {
-            int index = VocabyAlgo.BinarySearchPrefix(mDictionaryEntries.getValue(), newQuery);
-            if (index > -1 && index < mDictionaryEntries.getValue().size()) {
-                Iterator<String> it = mDictionaryEntries.getValue().listIterator(index);
+        if (searchStringEntries != null) {
+            int index = VocabyAlgo.BinarySearchPrefix(searchStringEntries, searchQuery);
+            if (index > -1 && index < searchStringEntries.size()) {
+                Iterator<String> it = searchStringEntries.listIterator(index);
                 int count = 0;
                 while (it.hasNext() && count < threshold) {
                     String entry = it.next();
-                    if (entry.contains(newQuery)) {
+                    if (entry.contains(searchQuery)) {
                         searchSuggestions.add(new SearchSuggestionItem(entry));
                     }
 
                     count++;
                     index++;
                 }
-
-                return searchSuggestions;
             }
         }
 
-        return searchSuggestions;
-    }
-
-    public LiveData<String> getSearch() {
-        return mSearchedEntry;
+        mSearchSuggestions.setValue(searchSuggestions);
     }
 
     public void setSearch(String entry) {
@@ -164,17 +208,9 @@ public class DictionaryViewModel extends AndroidViewModel {
         }
     }
 
-    public LiveData<EntryModel> getRandomWord() {
-        return mWordModel;
-    }
-
     public void writeHistory(String word) {
         List<String> newHistory = vocabyRepository.writeHistory(word);
         searchHistory.setValue(newHistory);
-    }
-
-    public LiveData<List<String>> getSearchHistory() {
-        return searchHistory;
     }
 
     public void getHistoryDefinition(int position) {
