@@ -1,13 +1,9 @@
 package com.vocaby.app.viewmodels;
 
-import static com.vocaby.app.ui.profile.DataManagementFragment.EXPORT_SAVE;
-
-import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -18,6 +14,8 @@ import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.utils.SingleLiveEvent;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
+import static com.vocaby.app.ui.profile.DataManagementFragment.EXPORT_SAVE;
 
 public class DataTransferViewModel extends AndroidViewModel {
     private final VocabyRepository vocabyRepository;

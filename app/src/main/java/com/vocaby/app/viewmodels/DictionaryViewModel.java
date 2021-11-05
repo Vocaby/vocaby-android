@@ -2,14 +2,12 @@ package com.vocaby.app.viewmodels;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
-import com.vocaby.app.Constants;
 import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.models.SearchSuggestionItem;
 import com.vocaby.app.models.dictionary.EntryModel;

@@ -1,20 +1,17 @@
 package com.vocaby.app.ui.profile;
 
-import static com.vocaby.app.ui.profile.DataManagementFragment.EXPORT_SAVE;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.net.Uri;
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.vocaby.app.R;
 import com.vocaby.app.utils.LiveDataUtil;

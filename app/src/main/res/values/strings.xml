@@ -49,7 +49,6 @@
     <string name="entry_edit_hint">Enter a word or a phrase…</string>
     <string name="group_header_alert">Please add a group</string>
     <string name="dictionary_header">Dictionary</string>
-    <string name="entries_header">ENTRIES</string>
     <string name="original">ORIGINAL</string>
     <string name="custom">CUSTOM</string>
     <string name="entry">entry</string>
@@ -69,7 +68,6 @@
     <string name="type">Type</string>
     <string name="back">Back</string>
     <string name="data_management_export_save">Export my save data</string>
-    <string name="nav_cancel">Cancel</string>
     <string name="data_transfer_export_complete">Successfully exported your data!</string>
     <string name="data_transfer_fetching_data">Fetching your data…</string>
     <string name="data_transfer_exporting_saves">Exporting your save data…</string>

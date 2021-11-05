@@ -33,7 +33,6 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/header_dictionary"
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
