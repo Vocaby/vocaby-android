@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 
 import com.vocaby.app.Constants;
 import com.vocaby.app.data.dao.VocabyDao;
@@ -458,6 +459,7 @@ public class VocabyRepository {
     }
 
     private EntryModel covertToEntryModel(WordDefinitions wordDefinitions) {
+        Log.d("vocabydebug", wordDefinitions.definitions.get(0).getDefinition());
         String pronunciation =
                 wordDefinitions.word.getPronunciation() != null ? wordDefinitions.word.getPronunciation() : "";
 

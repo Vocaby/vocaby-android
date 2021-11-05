@@ -1,6 +1,7 @@
 package com.vocaby.app.data;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -18,8 +19,10 @@ import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.Word;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -27,7 +30,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 @Database(entities = {
         Word.class, User.class, Definition.class, UserSaves.class,
         CustomEntry.class, CustomEntryGroup.class, CustomDefinition.class, Type.class},
-        version = 1, exportSchema = true)
+        version = 1, exportSchema = false)
 public abstract class VocabyDatabase extends RoomDatabase {
     public abstract VocabyDao vocabyDao();
     private static volatile VocabyDatabase INSTANCE;
