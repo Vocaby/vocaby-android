@@ -13,6 +13,16 @@ android {
         versionCode 1
         versionName "0.9.10"
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                annotationProcessorOptions {
+                    arguments += [
+                            "room.schemaLocation":"$projectDir/schemas".toString(),
+                            "room.incremental":"true",
+                            "room.expandProjection":"true"]
+                }            }
+        }
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
