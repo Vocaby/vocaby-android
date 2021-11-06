@@ -69,11 +69,17 @@ public class DictionaryViewModel extends AndroidViewModel {
     public LiveData<EntryModel> getRandomWord() {
         return mWordModel;
     }
-    public LiveData<List<String>> getSearchHistory() {
-        return searchHistory;
-    }
+    public LiveData<List<String>> getSearchHistory() { return searchHistory; }
     public LiveData<List<SearchSuggestionItem>> getSearchSuggestions() { return mSearchSuggestions; }
     public LiveData<Boolean> getSuggestionRetrieveStatus() { return mSuggestionsRetrieveStatus; }
+
+    public void clearHistory() {
+        compositeDisposable.add(
+                vocabyRepository.clearHistory()
+                    .subscribe(searchHistory::setValue, Throwable::printStackTrace)
+        );
+        searchHistory.setValue(new ArrayList<>());
+    }
 
     public void setupDictionaryEntries() {
         compositeDisposable.add(

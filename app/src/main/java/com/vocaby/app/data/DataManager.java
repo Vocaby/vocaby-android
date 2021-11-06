@@ -11,6 +11,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 
 public class DataManager {
     private static DataManager dataManager = null;
@@ -76,5 +80,22 @@ public class DataManager {
 
     public List<String> getHistory() {
         return history;
+    }
+
+    public Single<List<String>> clearHistory() {
+        return Single.fromCallable(() -> {
+            history = new LinkedList<>();
+            history.add("HISTORY");
+
+            try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(history);
+                oos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return history;
+        });
     }
 }

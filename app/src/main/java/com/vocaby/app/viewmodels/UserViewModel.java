@@ -102,7 +102,6 @@ public class UserViewModel extends AndroidViewModel {
                         .subscribe(() -> {
                             mSavedWords.setValue(new ArrayList<>());
                             mSaveCount.setValue(0);
-                            Log.d("vocabydebug", "clearSaves: done");
                         }, Logger::reportError)
         );
     }

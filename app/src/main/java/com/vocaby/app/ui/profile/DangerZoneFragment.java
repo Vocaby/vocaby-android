@@ -15,12 +15,13 @@ import android.widget.Button;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.vocaby.app.R;
 import com.vocaby.app.viewmodels.DangerZoneViewModel;
+import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 public class DangerZoneFragment extends Fragment {
     private MaterialAlertDialogBuilder builder;
-    private DangerZoneViewModel dangerZoneViewModel;
     private UserViewModel userViewModel;
+    private DictionaryViewModel dictionaryViewModel;
 
     public DangerZoneFragment() {
         // Required empty public constructor
@@ -36,8 +37,8 @@ public class DangerZoneFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         builder = new MaterialAlertDialogBuilder(requireActivity());
-        dangerZoneViewModel = new ViewModelProvider(this).get(DangerZoneViewModel.class);
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
 
         View view = inflater.inflate(R.layout.fragment_profile_danger_zone, container, false);
 
@@ -48,8 +49,7 @@ public class DangerZoneFragment extends Fragment {
         clearHistoryButton.setOnClickListener(v -> {
             builder.setTitle("Are you sure you wish to clear your search history?")
                     .setMessage("This action is irreversible.")
-                    .setPositiveButton("CLEAR", (dialog, which) ->
-                            Log.d("Vocabydebug", "onCreateView: clear"))
+                    .setPositiveButton("CLEAR", (dialog, which) -> dictionaryViewModel.clearHistory())
                     .setNegativeButton("CANCEL", null);
 
             AlertDialog alert = builder.create();

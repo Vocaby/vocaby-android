@@ -75,6 +75,10 @@ public class VocabyRepository {
         return dataManager.writeHistory(word);
     }
 
+    public Single<List<String>> clearHistory() {
+        return dataManager.clearHistory();
+    }
+
     public Completable writeSavesToExternalStorage(List<String> saves, Uri uri) {
         return Completable.fromAction(() -> {
             try (OutputStream outputStream = application.getContentResolver().openOutputStream(uri)) {
