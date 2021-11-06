@@ -111,7 +111,7 @@ public class DictionaryViewModel extends AndroidViewModel {
     }
 
     public void getSearchSuggestions(String oldQuery, String newQuery) {
-        if (oldQuery.length() == 1 && newQuery.isEmpty()) {
+        if (newQuery.isEmpty()) {
             mSearchSuggestions.setValue(new ArrayList<>());
             searchStringEntries = null;
             searchQuery = "";
@@ -142,9 +142,9 @@ public class DictionaryViewModel extends AndroidViewModel {
                     vocabyRepository.getEntriesByCharacter(initialCharacter)
                             .subscribeOn(Schedulers.computation())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(entries -> {
-                                searchStringEntries = entries;
-                            }, Throwable::printStackTrace)
+                            .subscribe(entries -> searchStringEntries = entries,
+                                    Throwable::printStackTrace
+                            )
             );
         }
 
