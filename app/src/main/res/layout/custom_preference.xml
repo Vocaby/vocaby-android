@@ -27,7 +27,8 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceListItem"
-            android:fontFamily="@font/sourcesanspro_regular"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:textSize="14dp"
             android:textColor="@color/colorPrimaryAccent"
             android:ellipsize="marquee"/>
 
