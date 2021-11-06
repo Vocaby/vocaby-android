@@ -59,13 +59,14 @@ public class EntryBuilderActivity extends AppCompatActivity
 
         entryViewModel = new ViewModelProvider(this).get(EntryViewModel.class);
         entryViewModel.parseRetrieved(getIntent());
+        entryViewModel.getTypes().observe(this, typeAdapter::setList);
 
         LiveDataUtil.observeOnce(entryViewModel.getGroups(), list -> {
             if (list.isEmpty()) instruction.setVisibility(View.VISIBLE);
 
             customGroupAdapter.setList(list);
         });
-        LiveDataUtil.observeOnce(entryViewModel.getTypes(), types -> typeAdapter.setList(types));
+
         LiveDataUtil.observeOnce(entryViewModel.getPronunciation(),
                 pronunciation -> pronunciationInput.setText(pronunciation, TextView.BufferType.EDITABLE));
 

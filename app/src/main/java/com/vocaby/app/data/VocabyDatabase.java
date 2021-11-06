@@ -39,6 +39,7 @@ public abstract class VocabyDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             VocabyDatabase.class, "database")
                             .createFromAsset("databases/database.db")
+                            .allowMainThreadQueries()
                             .setJournalMode(JournalMode.TRUNCATE)
                             .addCallback(new Callback() {
                                 @Override
