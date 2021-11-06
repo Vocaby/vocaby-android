@@ -72,4 +72,11 @@
     <string name="data_transfer_fetching_data">Fetching your data…</string>
     <string name="data_transfer_exporting_saves">Exporting your save data…</string>
     <string name="data_transfer_export_empty">You don\'t have any data to export…</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="danger_clear_search_history">Clear Search History</string>
+    <string name="danger_clear_saves">Clear Saves</string>
+    <string name="danger_clear_custom_entries">Clear Custom Entries</string>
+    <string name="danger_erase_all_data">Erase All Data</string>
+    <string name="danger_zone">Danger Zone</string>
 </resources>

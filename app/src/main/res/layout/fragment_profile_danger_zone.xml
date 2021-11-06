@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context=".ui.profile.DangerZoneFragment">
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_marginTop="@dimen/container_gap_margin"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="@dimen/container_gap_margin"
+        android:drawableStart="@drawable/ic_arrow_left_tail"
+        android:drawableTint="@color/dark_gray"
+        android:text="@string/back"
+        android:textColor="@color/dark_gray"
+        android:drawablePadding="12dp"
+        android:fontFamily="@font/sourcesanspro_semibold" />
+
+    <TextView
+        style="@style/Theme.VocabyAndroid.TextHeadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:paddingBottom="8dp"
+        android:text="@string/danger_zone" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/clear_history_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/danger_clear_search_history"
+        android:textColor="@color/colorHeadline"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/clear_saves_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/danger_clear_saves"
+        android:textColor="@color/colorHeadline"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/clear_custom_entries_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/danger_clear_custom_entries"
+        android:textColor="@color/colorHeadline"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/erase_data_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/danger_erase_all_data"
+        android:textColor="@color/colorHeadline"/>
+</LinearLayout>

@@ -43,6 +43,7 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/danger_zone_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

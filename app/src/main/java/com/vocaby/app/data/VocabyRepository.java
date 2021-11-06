@@ -93,7 +93,6 @@ public class VocabyRepository {
         .observeOn(AndroidSchedulers.mainThread());
     }
 
-    // Gets data from UI Thread
     public Single<List<String>> getSortedDictionaryEntriesFromDB() {
         return vocabyDao.getDictionaryEntries()
                 .subscribeOn(Schedulers.io())
@@ -247,6 +246,12 @@ public class VocabyRepository {
         }
 
         return vocabyDao.addSaves(userSaves)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable clearSaves() {
+        return vocabyDao.removeAllSaves(userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
