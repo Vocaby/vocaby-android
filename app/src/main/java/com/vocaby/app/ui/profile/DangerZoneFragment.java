@@ -1,27 +1,26 @@
 package com.vocaby.app.ui.profile;
 
 import android.os.Bundle;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.vocaby.app.R;
-import com.vocaby.app.viewmodels.DangerZoneViewModel;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
+import com.vocaby.app.viewmodels.MyEntryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
 
 public class DangerZoneFragment extends Fragment {
     private MaterialAlertDialogBuilder builder;
     private UserViewModel userViewModel;
     private DictionaryViewModel dictionaryViewModel;
+    private MyEntryViewModel myEntryViewModel;
 
     public DangerZoneFragment() {
         // Required empty public constructor
@@ -39,6 +38,7 @@ public class DangerZoneFragment extends Fragment {
         builder = new MaterialAlertDialogBuilder(requireActivity());
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
+        myEntryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
 
         View view = inflater.inflate(R.layout.fragment_profile_danger_zone, container, false);
 
@@ -71,8 +71,7 @@ public class DangerZoneFragment extends Fragment {
         clearEntriesButton.setOnClickListener(v -> {
             builder.setTitle("Are you sure you wish to clear your entries?")
                     .setMessage("This action is irreversible.")
-                    .setPositiveButton("CLEAR", (dialog, which) ->
-                            Log.d("Vocabydebug", "onCreateView: clear"))
+                    .setPositiveButton("CLEAR", (dialog, which) -> myEntryViewModel.clearEntries())
                     .setNegativeButton("CANCEL", null);
 
             AlertDialog alert = builder.create();
@@ -83,9 +82,11 @@ public class DangerZoneFragment extends Fragment {
         eraseDataButton.setOnClickListener(v -> {
             builder.setTitle("Are you sure you wish to erase your data?")
                     .setMessage("All of your data will be deleted. This action is irreversible.")
-                    .setPositiveButton("ERASE", (dialog, which) ->
-                            Log.d("Vocabydebug", "onCreateView: clear"))
-                    .setNegativeButton("CANCEL", null);
+                    .setPositiveButton("ERASE", (dialog, which) -> {
+                        dictionaryViewModel.clearHistory();
+                        userViewModel.clearSaves();
+                        myEntryViewModel.clearEntries();
+                    }).setNegativeButton("CANCEL", null);
 
             AlertDialog alert = builder.create();
             alert.show();

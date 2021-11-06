@@ -94,7 +94,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                             mEntryData.setValue(empty);
                         }
 
-                        Logger.reportError(error);
+                        Logger.reportErrorToBugsnag(error);
                     }
             )
         );
@@ -112,7 +112,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                             .subscribe(() -> setUnSaved(saveState),
                             error -> {
                                 setSaved(saveState);
-                                Logger.reportError(error);
+                                Logger.reportErrorToBugsnag(error);
                             }
                         )
                 );
@@ -122,7 +122,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                             .subscribe(() -> setSaved(saveState),
                                 error -> {
                                 setUnSaved(saveState);
-                                Logger.reportError(error);
+                                Logger.reportErrorToBugsnag(error);
                             })
                 );
             }

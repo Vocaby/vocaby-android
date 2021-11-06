@@ -1,5 +1,7 @@
 package com.vocaby.app.data;
 
+import static com.vocaby.app.Constants.DICTIONARY_ENTRIES_KEY;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -38,8 +40,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-
-import static com.vocaby.app.Constants.DICTIONARY_ENTRIES_KEY;
 
 public class VocabyRepository {
     private final Application application;
@@ -287,6 +287,12 @@ public class VocabyRepository {
     }
 
     // CUSTOM USER ENTRIES
+    public Completable clearUserEntries() {
+        return vocabyDao.clearUserEntries(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Completable deleteUserEntry(int entryId, String entry) {
         return vocabyDao.deleteUserEntry(entryId)
                 .andThen(vocabyDao.checkEntryExistence(entry))

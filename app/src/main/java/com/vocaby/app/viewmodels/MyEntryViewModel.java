@@ -1,5 +1,7 @@
 package com.vocaby.app.viewmodels;
 
+import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
@@ -21,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-
-import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 
 public class MyEntryViewModel extends AndroidViewModel {
     private List<String> customEntries;
@@ -55,7 +55,7 @@ public class MyEntryViewModel extends AndroidViewModel {
                         customEntries = new ArrayList<>(list);
                         mEntries.setValue(customEntries);
                         mEntryCount.setValue(customEntries.size());
-                    }, Logger::reportError)
+                    }, Logger::reportErrorToBugsnag)
         );
     }
 
@@ -67,6 +67,17 @@ public class MyEntryViewModel extends AndroidViewModel {
         return mEntryCount;
     }
     public LiveData<ItemIntPayload> getDeleteStatus() { return mDeleteStatus; }
+
+    public void clearEntries() {
+        compositeDisposable.add(
+                vocabyRepository.clearUserEntries()
+                    .subscribe(() -> {
+                        customEntries = new ArrayList<>();
+                        mEntries.setValue(customEntries);
+                        mEntryCount.setValue(0);
+                    }, Logger::reportErrorToBugsnag)
+        );
+    }
 
     public Intent addEntryDataToIntent(Intent intent, String entry, int position) {
         int selectedPosition;
@@ -113,7 +124,7 @@ public class MyEntryViewModel extends AndroidViewModel {
                         mEntryCount.setValue(customEntries.size());
                     }, error -> {
                         mDeleteStatus.setValue(new ItemIntPayload(PayloadState.UNCHANGED, position));
-                        Logger.reportError(error);
+                        Logger.reportErrorToBugsnag(error);
                     })
         );
     }

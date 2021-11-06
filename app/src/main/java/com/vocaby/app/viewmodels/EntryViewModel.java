@@ -1,5 +1,7 @@
 package com.vocaby.app.viewmodels;
 
+import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
@@ -26,8 +28,6 @@ import java.util.Map;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-
-import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 
 public class EntryViewModel extends AndroidViewModel {
     public static final String GROUP_KEY = "GK";
@@ -72,7 +72,7 @@ public class EntryViewModel extends AndroidViewModel {
         initialGroups = new HashMap<>();
 
         compositeDisposable.add(
-                vocabyRepository.getAllTypes().subscribe(mTypes::setValue, Logger::reportError)
+                vocabyRepository.getAllTypes().subscribe(mTypes::setValue, Logger::reportErrorToBugsnag)
         );
 
         mSelectedType.setValue("");
@@ -135,7 +135,7 @@ public class EntryViewModel extends AndroidViewModel {
 
                                 // In case user attempts to create a new entry but the entry already exists
                                 if (!entryData.isEmpty()) receivedEntryPayload.setState(PayloadState.UPDATE);
-                            }, Logger::reportError
+                            }, Logger::reportErrorToBugsnag
                     )
         );
     }
@@ -231,7 +231,7 @@ public class EntryViewModel extends AndroidViewModel {
                                 .subscribe(() -> {
                                     receivedEntryPayload.setState(PayloadState.DELETE);
                                     mSaveResult.setValue(true);
-                                }, Logger::reportError)
+                                }, Logger::reportErrorToBugsnag)
                 );
             }
         } else {

@@ -29,11 +29,6 @@ public abstract class VocabyDao {
             "ORDER BY word COLLATE NOCASE ASC")
     public abstract Single<List<String>> getDictionaryEntries();
 
-    @Query("SELECT word FROM dictionary_word UNION " +
-            "SELECT entry FROM custom_user_entry WHERE entry LIKE :letter || '%' " +
-            "ORDER BY word ASC")
-    public abstract Single<List<String>> getDictionaryEntriesByLetter(String letter);
-
     @Query("SELECT EXISTS(SELECT 1 FROM dictionary_word WHERE word = :entry)")
     public abstract Single<Boolean> checkEntryExistence(String entry);
 
@@ -58,21 +53,8 @@ public abstract class VocabyDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Completable addSaves(List<UserSaves> userSaves);
 
-    @Query("DELETE FROM saves WHERE word IN (:wordList)")
-    public abstract Completable removeSaves(List<String> wordList);
-
-    @Insert
-    public abstract Single<List<Long>> insertSavedWords(List<UserSaves> userSaves);
-
     @Query("SELECT word FROM saves WHERE user_id = :id ORDER BY id DESC")
     public abstract Single<List<String>> getSaves(int id);
-
-    @Query("SELECT word FROM saves where user_id = :id ORDER BY RANDOM() LIMIT 1")
-    public abstract Single<String> getRandomSave(int id);
-
-    @Transaction
-    @Query("SELECT * FROM vocaby_user WHERE user_id = :id")
-    public abstract Single<User> getCurrentUser(int id);
 
     @Transaction
     @Query("SELECT * FROM dictionary_word WHERE word = :word")
@@ -124,6 +106,9 @@ public abstract class VocabyDao {
 
     @Query("SELECT entry FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
     public abstract Single<List<String>> getUserEntries(int id);
+
+    @Query("DELETE FROM custom_user_entry WHERE user_id = :id")
+    public abstract Completable clearUserEntries(int id);
 
     @Insert
     public abstract Completable insertTypes(List<Type> types);

@@ -1,7 +1,6 @@
 package com.vocaby.app.viewmodels;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -60,7 +59,7 @@ public class UserViewModel extends AndroidViewModel {
                     }).subscribe(saves -> {
                         mSavedWords.setValue(saves);
                         mSaveCount.setValue(saves.size());
-                }, Logger::reportError)
+                }, Logger::reportErrorToBugsnag)
         );
     }
 
@@ -102,7 +101,7 @@ public class UserViewModel extends AndroidViewModel {
                         .subscribe(() -> {
                             mSavedWords.setValue(new ArrayList<>());
                             mSaveCount.setValue(0);
-                        }, Logger::reportError)
+                        }, Logger::reportErrorToBugsnag)
         );
     }
 
@@ -116,7 +115,7 @@ public class UserViewModel extends AndroidViewModel {
     public void removeSaveFromDB(String entry) {
         compositeDisposable.add(
                 vocabyRepository.removeSave(entry)
-                        .subscribe(() -> removeSaveItem(entry), Logger::reportError)
+                        .subscribe(() -> removeSaveItem(entry), Logger::reportErrorToBugsnag)
         );
     }
 
