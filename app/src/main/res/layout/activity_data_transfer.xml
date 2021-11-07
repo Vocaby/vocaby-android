@@ -35,7 +35,7 @@
         android:layout_marginTop="100dp"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:indeterminate="false"
+        android:indeterminate="true"
         android:layout_gravity="center" />
 
     <LinearLayout
@@ -44,15 +44,6 @@
         android:layout_gravity="center">
         <TextView
             android:id="@+id/progress_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-        <TextView
-            android:id="@+id/progress_counter_max"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />

@@ -57,7 +57,6 @@
         android:layout_marginTop="@dimen/container_side_margin"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
-        android:paddingBottom="8dp"
         android:text="@string/data_import" />
     <TextView
         android:layout_width="match_parent"

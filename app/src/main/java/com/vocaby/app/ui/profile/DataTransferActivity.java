@@ -14,10 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.vocaby.app.R;
-import com.vocaby.app.utils.LiveDataUtil;
 import com.vocaby.app.viewmodels.DataTransferViewModel;
-
-import java.util.Locale;
 
 public class DataTransferActivity extends AppCompatActivity {
     private DataTransferViewModel dataTransferViewModel;
@@ -28,29 +25,22 @@ public class DataTransferActivity extends AppCompatActivity {
         setContentView(R.layout.activity_data_transfer);
 
         Button cancelButton = findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(v -> finish());
-
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
-        TextView progressMaxText = findViewById(R.id.progress_counter_max);
-        TextView progressText = findViewById(R.id.progress_text);
-
-        Intent directoryPickerIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        directoryPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        directoryPickerIntent.setType("text/plain");
-        directoryPickerIntent.putExtra(Intent.EXTRA_TITLE, "vocaby_saves.txt");
-        directorySelector.launch(directoryPickerIntent);
-
-        dataTransferViewModel = new ViewModelProvider(this).get(DataTransferViewModel.class);
-        dataTransferViewModel.setActionType(getIntent().getIntExtra("TYPE", -1));
-
-
-        LiveDataUtil.observeOnce(dataTransferViewModel.getProgressMax(), max -> {
-            progressBar.setMax(2);
-            progressMaxText.setText(String.format(Locale.US, "%d", max));
+        cancelButton.setOnClickListener(v -> {
+            setResult(RESULT_OK, dataTransferViewModel.addResult());
+            finish();
         });
 
+        ProgressBar progressBar = findViewById(R.id.progress_bar);
+        TextView progressText = findViewById(R.id.progress_text);
+
+        dataTransferViewModel = new ViewModelProvider(this).get(DataTransferViewModel.class);
+        Intent directoryPickerIntent = dataTransferViewModel.handleReceived(getIntent());
+        directorySelector.launch(directoryPickerIntent);
+
         dataTransferViewModel.getProgressText().observe(this, progressText::setText);
-        dataTransferViewModel.getProgressIncrement().observe(this, (successful) -> {
+        dataTransferViewModel.getTransferStatus().observe(this, (successful) -> {
+            progressBar.setIndeterminate(false);
+            progressBar.setMax(1);
             progressBar.incrementProgressBy(1);
             if (!successful) progressBar.setProgressTintList(ColorStateList.valueOf(getColor(R.color.colorHeadline)));
         });

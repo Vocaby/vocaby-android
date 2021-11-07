@@ -45,9 +45,6 @@ public class UserViewModel extends AndroidViewModel {
     }
 
     public void setupApplication() {
-        //test
-        // addSaves();
-
         compositeDisposable.add(
                 vocabyRepository.checkUser()
                     .flatMap(result -> {
@@ -102,6 +99,16 @@ public class UserViewModel extends AndroidViewModel {
                             mSavedWords.setValue(new ArrayList<>());
                             mSaveCount.setValue(0);
                         }, Logger::reportErrorToBugsnag)
+        );
+    }
+
+    public void resetSaves() {
+        compositeDisposable.add(
+                vocabyRepository.getUserSaves()
+                    .subscribe(saves -> {
+                        mSavedWords.setValue(saves);
+                        mSaveCount.setValue(saves.size());
+                    }, Logger::reportErrorToBugsnag)
         );
     }
 

@@ -5,7 +5,7 @@ import java.util.Locale;
 
 public class StringFormatter {
     public static String cleanText(String text) {
-        return text.trim().replaceAll("[^\\p{L}0-9'-._ ]", "").toLowerCase();
+        return text.trim().replaceAll("[^\\p{L}0-9!?'.,_ -]", "").toLowerCase();
     }
 
     public static String firstLetterUpperOnly(String text) {

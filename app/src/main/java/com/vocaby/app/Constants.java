@@ -8,4 +8,6 @@ public class Constants {
     public static final String ITEM_PAYLOAD_KEY = "CUSTOM_ENTRY";
 
     public static final String DICTIONARY_ENTRIES_KEY = "DICT_ENTS";
+
+    public static final String EXPORT_FILE_TYPE_FIELD = "vocabyExportType";
 }

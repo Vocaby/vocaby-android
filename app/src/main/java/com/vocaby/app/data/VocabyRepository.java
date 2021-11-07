@@ -1,12 +1,17 @@
 package com.vocaby.app.data;
 
 import static com.vocaby.app.Constants.DICTIONARY_ENTRIES_KEY;
+import static com.vocaby.app.Constants.EXPORT_FILE_TYPE_FIELD;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.vocaby.app.Constants;
 import com.vocaby.app.data.dao.VocabyDao;
 import com.vocaby.app.data.entity.CustomDefinition;
@@ -18,14 +23,20 @@ import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.User;
 import com.vocaby.app.data.entity.UserSaves;
 import com.vocaby.app.data.entity.WordDefinitions;
+import com.vocaby.app.models.BasicExportModel;
 import com.vocaby.app.models.customentry.DefinitionChanges;
 import com.vocaby.app.models.customentry.GroupChanges;
 import com.vocaby.app.models.datapackage.EntryDataPackage;
 import com.vocaby.app.models.dictionary.DefinitionGroupModel;
 import com.vocaby.app.models.dictionary.DefinitionModel;
 import com.vocaby.app.models.dictionary.EntryModel;
+import com.vocaby.app.utils.StringFormatter;
+import com.vocaby.app.utils.exception.IllegalFileException;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
@@ -79,6 +90,57 @@ public class VocabyRepository {
         return dataManager.clearHistory();
     }
 
+    public Completable importSavesFromExternalStorage(Uri uri) {
+        Single<List<UserSaves>> parseJson = Single.fromCallable(() -> {
+            InputStream inputStream = application.getContentResolver().openInputStream(uri);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            try {
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
+                List<UserSaves> saves = new ArrayList<>();
+
+                if (jsonObject.has(EXPORT_FILE_TYPE_FIELD)) {
+                    if (jsonObject.getAsJsonPrimitive(EXPORT_FILE_TYPE_FIELD).getAsString().equals("saves")) {
+                        for (JsonElement item : jsonObject.getAsJsonArray("data")) {
+                            saves.add(new UserSaves(userId, StringFormatter.cleanText(item.getAsString())));
+                        }
+                    } else {
+                        throw new IllegalFileException(IllegalFileException.INVALID_FILE);
+                    }
+                } else {
+                    throw new IllegalFileException(IllegalFileException.INVALID_FORMAT);
+                }
+
+                return saves;
+            } catch (JsonSyntaxException error) {
+                throw new IllegalFileException(IllegalFileException.INVALID_FORMAT);
+            } finally {
+                inputStream.close();
+                reader.close();
+            }
+        });
+
+        return parseJson
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMapCompletable(saves -> clearSaves().andThen(addUserSaves(saves)));
+
+    }
+
+    public Completable writeSavesJsonToExternalStorage(List<String> saves, Uri uri) {
+        return Completable.fromAction(() -> {
+            try (OutputStream outputStream = application.getContentResolver().openOutputStream(uri)) {
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream));
+                Gson gson = new Gson();
+                gson.toJson(new BasicExportModel<>("saves", saves), bw);
+
+                bw.flush();
+                bw.close();
+            }
+        }).subscribeOn(Schedulers.computation())
+        .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Completable writeSavesToExternalStorage(List<String> saves, Uri uri) {
         return Completable.fromAction(() -> {
             try (OutputStream outputStream = application.getContentResolver().openOutputStream(uri)) {
@@ -90,8 +152,6 @@ public class VocabyRepository {
 
                 bw.flush();
                 bw.close();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }).subscribeOn(Schedulers.computation())
         .observeOn(AndroidSchedulers.mainThread());
@@ -250,6 +310,12 @@ public class VocabyRepository {
         }
 
         return vocabyDao.addSaves(userSaves)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Completable addUserSaves(List<UserSaves> newSaves) {
+        return vocabyDao.addSaves(newSaves)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

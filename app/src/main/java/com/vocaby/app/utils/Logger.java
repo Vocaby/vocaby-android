@@ -11,4 +11,7 @@ public class Logger {
     public static void reportErrorToDebug(Throwable error) {
         Log.d(Constants.DEBUG_TAG, error.getMessage());
     }
+    public static void reportToDebug(String message) {
+        Log.d(Constants.DEBUG_TAG, message);
+    }
 }
