@@ -29,15 +29,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/nav_support"
-        android:drawableStart="@drawable/ic_boxed_support"
-        android:drawableEnd="@drawable/ic_chevron_right"/>
+        android:drawableStart="@drawable/ic_boxed_support" />
     <androidx.appcompat.widget.AppCompatButton
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/nav_feedback_button"
-        android:drawableStart="@drawable/ic_boxed_feedback"
-        android:drawableEnd="@drawable/ic_chevron_right"/>
+        android:drawableStart="@drawable/ic_boxed_feedback" />
     <Space
         android:layout_width="wrap_content"
         android:layout_height="0dp"

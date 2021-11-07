@@ -67,16 +67,21 @@
     <string name="enter_a_pronunciation">Enter a pronunciation</string>
     <string name="type">Type</string>
     <string name="back">Back</string>
-    <string name="data_management_export_save">Export my save data</string>
+    <string name="data_management_export_save_txt">Export my save data as txt</string>
+    <string name="data_management_export_save_backup">Export my save data for backup</string>
+    <string name="data_management_export_entry">Export my entry data for backup</string>
+    <string name="data_management_import_save">Import save data from a backup file</string>
+    <string name="data_management_import_entry">Import entry data from a backup file</string>
     <string name="data_transfer_export_complete">Successfully exported your data!</string>
     <string name="data_transfer_fetching_data">Fetching your data…</string>
     <string name="data_transfer_exporting_saves">Exporting your save data…</string>
     <string name="data_transfer_export_empty">You don\'t have any data to export…</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="danger_clear_search_history">Clear Search History</string>
     <string name="danger_clear_saves">Clear Saves</string>
     <string name="danger_clear_custom_entries">Clear Custom Entries</string>
     <string name="danger_erase_all_data">Erase All Data</string>
     <string name="danger_zone">Danger Zone</string>
+    <string name="data_export">Export Data</string>
+    <string name="data_import">Import Data</string>
+    <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries that do not exist in the back up file will be deleted.</string>
 </resources>

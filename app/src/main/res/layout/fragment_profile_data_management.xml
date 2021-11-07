@@ -21,17 +21,64 @@
         android:textColor="@color/dark_gray"
         android:drawablePadding="12dp"
         android:fontFamily="@font/sourcesanspro_semibold" />
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+    <TextView
+        style="@style/Theme.VocabyAndroid.TextHeadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:paddingBottom="8dp"
+        android:text="@string/data_export" />
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/export_save_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/data_management_export_save"
-        android:drawableStart="@drawable/ic_boxed_data_management"/>
-
+        android:text="@string/data_management_export_save_txt"
+        android:drawableStart="@drawable/ic_boxed_export"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/export_save_backup_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_management_export_save_backup"
+        android:drawableStart="@drawable/ic_boxed_export"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/export_entries_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_management_export_entry"
+        android:drawableStart="@drawable/ic_boxed_export"/>
+    <TextView
+        style="@style/Theme.VocabyAndroid.TextHeadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/container_side_margin"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:paddingBottom="8dp"
+        android:text="@string/data_import" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:text="@string/data_management_import_warning" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/import_saves_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_management_import_save"
+        android:drawableStart="@drawable/ic_boxed_import"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/import_entries_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_management_import_entry"
+        android:drawableStart="@drawable/ic_boxed_import"/>
 </LinearLayout>
