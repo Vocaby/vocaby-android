@@ -17,6 +17,7 @@ import androidx.room.rxjava3.EmptyResultSetException;
 import com.vocaby.app.R;
 import com.vocaby.app.data.VocabyRepository;
 import com.vocaby.app.exceptions.SaveRepetitionException;
+import com.vocaby.app.models.dictionary.DefinitionGroupModel;
 import com.vocaby.app.ui.MainActivity;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -80,21 +81,23 @@ public class SavesAppWidgetProvider extends AppWidgetProvider {
 
                     return vocabyRepository.getWordDataFromDatabase(saves.get(index));
                 }).subscribe(wordData -> {
-                    String definition = wordData.getFirstGroup().getDefinitionData().get(0).toString();
-                    String example = wordData.getFirstGroup().getDefinitionData().get(0).getExample();
-
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString(WIDGET_PREV_KEY+id, wordData.getEntry());
                     editor.apply();
 
+                    DefinitionGroupModel group = wordData.getFirstGroup();
+
+                    String definition = "No definition found";
+                    String example = "";
+
+                    if (group != null) {
+                        definition = group.getDefinitionData().get(0).toString();
+                        example = group.getDefinitionData().get(0).getExample();
+                    }
+
                     remoteViews.setTextViewText(R.id.widget_word, wordData.getEntry());
                     remoteViews.setTextViewText(R.id.widget_definition, definition);
-
-                    if(!example.isEmpty()) {
-                        remoteViews.setTextViewText(R.id.widget_sentence, example);
-                    } else {
-                        remoteViews.setTextViewText(R.id.widget_sentence, "");
-                    }
+                    remoteViews.setTextViewText(R.id.widget_sentence, example);
 
                     Intent openIntent = new Intent(context, MainActivity.class);
                     openIntent.setAction(WIDGET_CLICK);

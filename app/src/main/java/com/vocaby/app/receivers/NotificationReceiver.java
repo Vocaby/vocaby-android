@@ -14,6 +14,7 @@ import androidx.room.rxjava3.EmptyResultSetException;
 
 import com.vocaby.app.R;
 import com.vocaby.app.data.VocabyRepository;
+import com.vocaby.app.models.dictionary.DefinitionGroupModel;
 import com.vocaby.app.models.dictionary.EntryModel;
 import com.vocaby.app.ui.MainActivity;
 
@@ -52,7 +53,11 @@ public class NotificationReceiver extends BroadcastReceiver {
                 }).subscribe(wordPackage -> {
                     EntryModel wordData = wordPackage.getEntryData();
                     String word = wordData.getEntry();
-                    String message = wordData.getFirstGroup().getDefinitionData().get(0).toString();
+
+                    DefinitionGroupModel group = wordData.getFirstGroup();
+                    // Non-existent custom entry saved
+                    String message = group == null ? "No definition found"
+                            : group.getDefinitionData().get(0).toString();
 
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("NOTIF_PREV_SELECT", word);
