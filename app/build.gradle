@@ -34,6 +34,7 @@ android {
 }
 
 apply plugin: "com.bugsnag.android.gradle"
+apply plugin: "kotlin-kapt"
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -79,6 +80,7 @@ dependencies {
     // ROOM
     def room_version = "2.4.0-beta01"
     implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava3:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 }

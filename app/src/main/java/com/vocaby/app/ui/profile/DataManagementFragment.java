@@ -1,10 +1,5 @@
 package com.vocaby.app.ui.profile;
 
-import static com.vocaby.app.viewmodels.DataTransferViewModel.EXPORT_SAVE;
-import static com.vocaby.app.viewmodels.DataTransferViewModel.EXPORT_SAVE_BACKUP;
-import static com.vocaby.app.viewmodels.DataTransferViewModel.IMPORT_ENTRY;
-import static com.vocaby.app.viewmodels.DataTransferViewModel.IMPORT_SAVE;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,9 +15,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.vocaby.app.R;
 import com.vocaby.app.utils.Logger;
-import com.vocaby.app.viewmodels.DictionaryViewModel;
-import com.vocaby.app.viewmodels.MyEntryViewModel;
 import com.vocaby.app.viewmodels.UserViewModel;
+
+import static com.vocaby.app.viewmodels.DataTransferViewModel.EXPORT_SAVE;
+import static com.vocaby.app.viewmodels.DataTransferViewModel.EXPORT_SAVE_BACKUP;
+import static com.vocaby.app.viewmodels.DataTransferViewModel.IMPORT_ENTRY;
+import static com.vocaby.app.viewmodels.DataTransferViewModel.IMPORT_SAVE;
 
 public class DataManagementFragment extends Fragment {
     private UserViewModel userViewModel;

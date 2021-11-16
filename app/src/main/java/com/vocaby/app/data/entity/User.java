@@ -16,8 +16,8 @@ public class User {
     private String lastName;
 
     public User() {
-        this.email = "Guest";
-        this.firstName = "";
+        this.email = "";
+        this.firstName = "Guest";
         this.lastName = "";
     }
 

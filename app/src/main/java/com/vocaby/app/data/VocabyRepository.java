@@ -1,8 +1,5 @@
 package com.vocaby.app.data;
 
-import static com.vocaby.app.Constants.DICTIONARY_ENTRIES_KEY;
-import static com.vocaby.app.Constants.EXPORT_FILE_TYPE_FIELD;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -52,13 +49,16 @@ import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+import static com.vocaby.app.Constants.DICTIONARY_ENTRIES_KEY;
+import static com.vocaby.app.Constants.EXPORT_FILE_TYPE_FIELD;
+
 public class VocabyRepository {
     private final Application application;
     private final VocabyDao vocabyDao;
     private final DataManager dataManager;
     private final SharedPreferences userSharedPreference;
     private final SharedPreferences entrySharedPreference;
-    private final int userId;
+    private int userId;
 
 
     public VocabyRepository(Application application) {
@@ -68,12 +68,18 @@ public class VocabyRepository {
         dataManager = DataManager.getInstance(application);
         userSharedPreference = application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
         entrySharedPreference = application.getSharedPreferences(DICTIONARY_ENTRIES_KEY, Context.MODE_PRIVATE);
-        userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1);
     }
 
-    public Single<Integer> checkUser() {
+    public Completable setupUser() {
         return vocabyDao.checkUser(userId)
-                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(result -> {
+                    if (result == 0) {
+                        return createUser();
+                    } else {
+                        return Completable.fromAction(() ->
+                                userId = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1));
+                    }
+                }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -338,17 +344,15 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<List<String>> createUserAndGetSaves() {
+    public Completable createUser() {
         return vocabyDao.createUser(new User())
-                .flatMap(id -> {
+                .flatMapCompletable(id -> Completable.fromAction(() -> {
                     int resultId = id.intValue();
                     SharedPreferences.Editor editor = userSharedPreference.edit();
                     editor.putInt("LOCAL_USER_ID", resultId);
                     editor.putInt(Constants.CURRENT_USER_ID_KEY, resultId);
                     editor.apply();
-
-                    return getUserSaves();
-                }).subscribeOn(Schedulers.io())
+                })).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

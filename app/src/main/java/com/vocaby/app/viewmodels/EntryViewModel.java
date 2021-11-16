@@ -1,7 +1,5 @@
 package com.vocaby.app.viewmodels;
 
-import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
-
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
@@ -28,6 +26,8 @@ import java.util.Map;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+
+import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
 
 public class EntryViewModel extends AndroidViewModel {
     public static final String GROUP_KEY = "GK";

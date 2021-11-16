@@ -46,17 +46,8 @@ public class UserViewModel extends AndroidViewModel {
 
     public void setupApplication() {
         compositeDisposable.add(
-                vocabyRepository.checkUser()
-                    .flatMap(result -> {
-                        if (result == 1) {
-                            return vocabyRepository.getUserSaves();
-                        } else {
-                            return vocabyRepository.createUserAndGetSaves();
-                        }
-                    }).subscribe(saves -> {
-                        mSavedWords.setValue(saves);
-                        mSaveCount.setValue(saves.size());
-                }, Logger::reportErrorToBugsnag)
+                vocabyRepository.setupUser()
+                   .subscribe(() -> {}, Logger::reportErrorToBugsnag)
         );
     }
 

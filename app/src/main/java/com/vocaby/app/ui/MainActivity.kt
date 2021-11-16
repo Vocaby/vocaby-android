@@ -1,25 +1,27 @@
 package com.vocaby.app.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import androidx.viewpager2.widget.ViewPager2
 import android.content.SharedPreferences
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.vocaby.app.viewmodels.DictionaryViewModel
-import android.os.Bundle
-import com.vocaby.app.R
-import com.bugsnag.android.Bugsnag
-import com.vocaby.app.viewmodels.UserViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.app.NotificationManager
+import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.bugsnag.android.Bugsnag
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.vocaby.app.R
+import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.FragmentAdapter
 import com.vocaby.app.receivers.NotificationReceiver
+import com.vocaby.app.viewmodels.DictionaryViewModel
+import com.vocaby.app.viewmodels.UserViewModelFactory
+import com.vocaby.app.viewmodels.UserViewModelKt
 
 open class MainActivity : AppCompatActivity() {
     private lateinit var alarmManager: AlarmManager
@@ -28,7 +30,7 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var navigationView: BottomNavigationView
-    private lateinit var dictionaryViewModel: DictionaryViewModel
+    private val dictionaryViewModel: DictionaryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +39,11 @@ open class MainActivity : AppCompatActivity() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
-        userViewModel.setupApplication()
-        dictionaryViewModel = ViewModelProvider(this)[DictionaryViewModel::class.java]
+        val userViewModel: UserViewModelKt by viewModels {
+            UserViewModelFactory((application as VocabyApplication).repository)
+        }
+        userViewModel.setupUser()
+
         dictionaryViewModel.setupDictionaryEntries()
 
         setupNotification()

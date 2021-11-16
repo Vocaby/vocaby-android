@@ -1,10 +1,10 @@
 package com.vocaby.app.models;
 
-import static com.vocaby.app.Constants.EXPORT_FILE_TYPE_FIELD;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+
+import static com.vocaby.app.Constants.EXPORT_FILE_TYPE_FIELD;
 
 public class BasicExportModel<T> {
 

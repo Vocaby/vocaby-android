@@ -1,7 +1,5 @@
 package com.vocaby.app.viewmodels;
 
-import static com.vocaby.app.utils.StringFormatter.cleanText;
-
 import android.app.Application;
 import android.content.SharedPreferences;
 
@@ -26,6 +24,8 @@ import java.util.Stack;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+
+import static com.vocaby.app.utils.StringFormatter.cleanText;
 
 public class DictionaryViewModel extends AndroidViewModel {
     private final int SEARCH_SUGGESTIONS_SIZE = 4;
