@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.vocaby.app.R;
 import com.vocaby.app.utils.Logger;
-import com.vocaby.app.viewmodels.UserViewModel;
+import com.vocaby.app.viewmodels.UserViewModelKt;
 
 import static com.vocaby.app.viewmodels.DataTransferViewModel.EXPORT_SAVE;
 import static com.vocaby.app.viewmodels.DataTransferViewModel.EXPORT_SAVE_BACKUP;
@@ -23,7 +23,7 @@ import static com.vocaby.app.viewmodels.DataTransferViewModel.IMPORT_ENTRY;
 import static com.vocaby.app.viewmodels.DataTransferViewModel.IMPORT_SAVE;
 
 public class DataManagementFragment extends Fragment {
-    private UserViewModel userViewModel;
+    private UserViewModelKt userViewModel;
 
     public DataManagementFragment() {
         // Required empty public constructor
@@ -39,7 +39,7 @@ public class DataManagementFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_data_management, container, false);
 
-        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModelKt.class);
         Intent startDataTransferActivity = new Intent(requireActivity(), DataTransferActivity.class);
 
         Button backButton = view.findViewById(R.id.back_button);
@@ -71,7 +71,6 @@ public class DataManagementFragment extends Fragment {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     switch (result.getData().getIntExtra("TYPE", -1)) {
                         case IMPORT_SAVE:
-                            userViewModel.resetSaves();
                             break;
                         case IMPORT_ENTRY:
                             break;

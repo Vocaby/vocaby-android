@@ -3,7 +3,6 @@ package com.vocaby.app.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +54,6 @@ public class SavesAdapter extends RecyclerView.Adapter<SavesAdapter.SavesViewHol
 
     @Override
     public void onBindViewHolder(@NonNull SavesAdapter.SavesViewHolder holder, int position) {
-        holder.cardView.setBackgroundTintList(ColorStateList.valueOf(ctx.getColor(R.color.very_light_gray)));
         String entry = saves.get(holder.getAdapterPosition());
         holder.savedWord.setText(entry);
 

@@ -25,7 +25,6 @@ import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
 import com.vocaby.app.adapters.TypeAdapter;
 import com.vocaby.app.models.payload.PayloadState;
-import com.vocaby.app.utils.LiveDataUtil;
 import com.vocaby.app.viewmodels.EntryViewModel;
 
 public class EntryBuilderActivity extends AppCompatActivity
@@ -61,14 +60,14 @@ public class EntryBuilderActivity extends AppCompatActivity
         entryViewModel.parseRetrieved(getIntent());
         entryViewModel.getTypes().observe(this, typeAdapter::setList);
 
-        LiveDataUtil.observeOnce(entryViewModel.getGroups(), list -> {
-            if (list.isEmpty()) instruction.setVisibility(View.VISIBLE);
-
-            customGroupAdapter.setList(list);
-        });
-
-        LiveDataUtil.observeOnce(entryViewModel.getPronunciation(),
-                pronunciation -> pronunciationInput.setText(pronunciation, TextView.BufferType.EDITABLE));
+//        LiveDataUtil.observeOnce(entryViewModel.getGroups(), list -> {
+//            if (list.isEmpty()) instruction.setVisibility(View.VISIBLE);
+//
+//            customGroupAdapter.setList(list);
+//        });
+//
+//        LiveDataUtil.observeOnce(entryViewModel.getPronunciation(),
+//                pronunciation -> pronunciationInput.setText(pronunciation, TextView.BufferType.EDITABLE));
 
 
         entryViewModel.getGroupChange().observe(this, groupPayload -> {

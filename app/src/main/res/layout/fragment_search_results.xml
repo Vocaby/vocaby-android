@@ -114,7 +114,7 @@
                 android:minHeight="0dp"
                 android:padding="4dp"
                 android:text="@string/save_button_unsaved"
-                android:textColor="@color/colorPrimaryAccent"
+                android:textColor="@color/nav_colors"
                 android:textSize="12sp"
                 tools:ignore="SmallSp" />
         </LinearLayout>

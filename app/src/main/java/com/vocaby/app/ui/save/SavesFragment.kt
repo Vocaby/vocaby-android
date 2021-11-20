@@ -1,91 +1,66 @@
-package com.vocaby.app.ui.save;
+package com.vocaby.app.ui.save
 
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.vocaby.app.R
+import com.vocaby.app.adapters.SaveListAdapter
+import com.vocaby.app.ui.MainActivity
+import com.vocaby.app.viewmodels.UserViewModelKt
+import kotlinx.android.synthetic.main.fragment_saves.*
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+class SavesFragment : Fragment(), SaveListAdapter.Interaction {
+    private lateinit var ctx: Context
+    private lateinit var savesAdapter: SaveListAdapter
+    private val userViewModel: UserViewModelKt by activityViewModels()
 
-import com.vocaby.app.R;
-import com.vocaby.app.adapters.SavesAdapter;
-import com.vocaby.app.models.payload.PayloadState;
-import com.vocaby.app.ui.MainActivity;
-import com.vocaby.app.utils.StringFormatter;
-import com.vocaby.app.viewmodels.UserViewModel;
-
-
-public class SavesFragment extends Fragment implements SavesAdapter.SaveItemTouchListener {
-    private Context ctx;
-    private TextView savesCount;
-    private SavesAdapter savesAdapter;
-
-    private UserViewModel userViewModel;
-
-    public SavesFragment() {
-        // Required empty public constructor
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ctx = requireActivity().applicationContext
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ctx = requireActivity().getApplicationContext();
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_saves, container, false)
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_saves, container, false);
-        savesCount = view.findViewById(R.id.saves_count);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView(view)
 
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setupRecyclerView(view);
-
-        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-        userViewModel.getItemStatePayload().observe(getViewLifecycleOwner(), payload -> {
-            if (payload.getState() == PayloadState.ADD) {
-                savesAdapter.addWordToRV();
-            } else if (payload.getState() == PayloadState.DELETE) {
-                savesAdapter.removeWordFromRV(payload.getPayload());
+        userViewModel.savedWords.observe(viewLifecycleOwner, { saves ->
+            saves?.let {
+                savesAdapter.submitList(saves)
             }
-        });
+        })
 
-        userViewModel.getSavedWords().observe(getViewLifecycleOwner(),
-                savedWords -> savesAdapter.setSavedWords(savedWords)
-        );
-
-        userViewModel.getSaveCount().observe(getViewLifecycleOwner(),
-                count -> savesCount.setText(StringFormatter.cleanNumber(count))
-        );
+        userViewModel.savesCount.observe(viewLifecycleOwner, { count ->
+            count?.let {
+                saves_count.text = count.toString()
+            }
+        })
     }
 
-    private void setupRecyclerView(View view) {
-        RecyclerView recyclerView = view.findViewById(R.id.saves_container);
-        savesAdapter = new SavesAdapter(ctx, this, getActivity());
-        recyclerView.setAdapter(savesAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+    private fun setupRecyclerView(view: View) {
+        val recyclerView: RecyclerView = view.findViewById(R.id.saves_container)
+        savesAdapter = SaveListAdapter(requireActivity(), this)
+        recyclerView.adapter = savesAdapter
+        recyclerView.layoutManager = LinearLayoutManager(ctx)
     }
 
-    @Override
-    public void onItemDelete(String entry) {
-        userViewModel.removeSaveFromDB(entry);
-        userViewModel.setSavesCount();
+    override fun onItemDelete(entry: String) {
+        userViewModel.removeSaveItem(entry)
     }
 
-    @Override
-    public void getDefinition(String entry) {
-        ((MainActivity) requireActivity()).showDefinition(entry);
+    override fun onItemTouch(entry: String) {
+        (requireActivity() as MainActivity).showDefinition(entry)
     }
 }

@@ -19,7 +19,6 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomDefAdapter;
 import com.vocaby.app.adapters.DragStartListener;
 import com.vocaby.app.adapters.ItemTouchCallback;
-import com.vocaby.app.utils.LiveDataUtil;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.viewmodels.EntryGroupViewModel;
 
@@ -48,7 +47,7 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
         entryGroupViewModel = new ViewModelProvider(this).get(EntryGroupViewModel.class);
         entryGroupViewModel.handleIntent(getIntent());
 
-        LiveDataUtil.observeOnce(entryGroupViewModel.getDefinitions(), list -> customDefAdapter.setList(list));
+        // LiveDataUtil.observeOnce(entryGroupViewModel.getDefinitions(), list -> customDefAdapter.setList(list));
 
         entryGroupViewModel.getType().observe(this, type -> {
             String header = StringFormatter.firstLetterUpperOnly(type) + " Definitions";

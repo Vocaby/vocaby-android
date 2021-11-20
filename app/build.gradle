@@ -35,6 +35,7 @@ android {
 
 apply plugin: "com.bugsnag.android.gradle"
 apply plugin: "kotlin-kapt"
+apply plugin: 'kotlin-android-extensions'
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.7.0'

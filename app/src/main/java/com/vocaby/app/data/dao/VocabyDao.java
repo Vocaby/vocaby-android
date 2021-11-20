@@ -14,7 +14,7 @@ import com.vocaby.app.data.entity.CustomEntryGroup;
 import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.Type;
 import com.vocaby.app.data.entity.User;
-import com.vocaby.app.data.entity.UserSaves;
+import com.vocaby.app.data.entity.UserSave;
 import com.vocaby.app.data.entity.WordDefinitions;
 
 import java.util.List;
@@ -39,21 +39,21 @@ public abstract class VocabyDao {
     public abstract Single<Integer> checkUser(int id);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public abstract Completable addSave(UserSaves userSaves);
+    public abstract Completable addSave(UserSave userSave);
 
-    @Query("DELETE FROM saves WHERE user_id = :id AND word = :word")
+    @Query("DELETE FROM saves WHERE user_id = :id AND entry = :word")
     public abstract Completable removeSave(int id, String word);
 
-    @Query("SELECT EXISTS(SELECT 1 FROM saves WHERE word = :word AND user_id = :id)")
+    @Query("SELECT EXISTS(SELECT 1 FROM saves WHERE entry = :word AND user_id = :id)")
     public abstract Single<Integer> hasSave(String word, int id);
 
     @Query("DELETE FROM saves WHERE user_id = :id")
     public abstract Completable removeAllSaves(int id);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public abstract Completable addSaves(List<UserSaves> userSaves);
+    public abstract Completable addSaves(List<UserSave> userSaves);
 
-    @Query("SELECT word FROM saves WHERE user_id = :id ORDER BY id DESC")
+    @Query("SELECT entry FROM saves WHERE user_id = :id ORDER BY id DESC")
     public abstract Single<List<String>> getSaves(int id);
 
     @Transaction

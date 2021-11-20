@@ -18,7 +18,7 @@ import com.vocaby.app.data.entity.Definition;
 import com.vocaby.app.data.entity.EntryGroupWithDefinitions;
 import com.vocaby.app.data.entity.EntryWithData;
 import com.vocaby.app.data.entity.User;
-import com.vocaby.app.data.entity.UserSaves;
+import com.vocaby.app.data.entity.UserSave;
 import com.vocaby.app.data.entity.WordDefinitions;
 import com.vocaby.app.models.BasicExportModel;
 import com.vocaby.app.models.customentry.DefinitionChanges;
@@ -27,6 +27,7 @@ import com.vocaby.app.models.datapackage.EntryDataPackage;
 import com.vocaby.app.models.dictionary.DefinitionGroupModel;
 import com.vocaby.app.models.dictionary.DefinitionModel;
 import com.vocaby.app.models.dictionary.EntryModel;
+import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.utils.exception.IllegalFileException;
 
@@ -58,7 +59,7 @@ public class VocabyRepository {
     private final DataManager dataManager;
     private final SharedPreferences userSharedPreference;
     private final SharedPreferences entrySharedPreference;
-    private int userId;
+    private int userId = 1;
 
 
     public VocabyRepository(Application application) {
@@ -97,18 +98,18 @@ public class VocabyRepository {
     }
 
     public Completable importSavesFromExternalStorage(Uri uri) {
-        Single<List<UserSaves>> parseJson = Single.fromCallable(() -> {
+        Single<List<UserSave>> parseJson = Single.fromCallable(() -> {
             InputStream inputStream = application.getContentResolver().openInputStream(uri);
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             try {
                 Gson gson = new Gson();
                 JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-                List<UserSaves> saves = new ArrayList<>();
+                List<UserSave> saves = new ArrayList<>();
 
                 if (jsonObject.has(EXPORT_FILE_TYPE_FIELD)) {
                     if (jsonObject.getAsJsonPrimitive(EXPORT_FILE_TYPE_FIELD).getAsString().equals("saves")) {
                         for (JsonElement item : jsonObject.getAsJsonArray("data")) {
-                            saves.add(new UserSaves(userId, StringFormatter.cleanText(item.getAsString())));
+                            saves.add(new UserSave(userId, StringFormatter.cleanText(item.getAsString())));
                         }
                     } else {
                         throw new IllegalFileException(IllegalFileException.INVALID_FILE);
@@ -285,7 +286,6 @@ public class VocabyRepository {
         return Single.zip(
                 getWordDataFromDatabase(word),
                 getEntryData(word),
-                hasSave(word),
                 EntryDataPackage::new
         );
     }
@@ -304,15 +304,15 @@ public class VocabyRepository {
     }
 
     public Completable addSave(String entry) {
-        return vocabyDao.addSave(new UserSaves(userId, entry))
+        return vocabyDao.addSave(new UserSave(userId, entry))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Completable addSaves(List<String> newSaves) {
-        List<UserSaves> userSaves = new ArrayList<>();
+        List<UserSave> userSaves = new ArrayList<>();
         for (String entry : newSaves) {
-            userSaves.add(new UserSaves(userId, entry));
+            userSaves.add(new UserSave(userId, entry));
         }
 
         return vocabyDao.addSaves(userSaves)
@@ -320,7 +320,7 @@ public class VocabyRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Completable addUserSaves(List<UserSaves> newSaves) {
+    public Completable addUserSaves(List<UserSave> newSaves) {
         return vocabyDao.addSaves(newSaves)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -404,6 +404,7 @@ public class VocabyRepository {
         Single<Long> entryInsert;
         // New entry
         if (groupChanges.getEntryId() == -1) {
+            Logger.reportToDebug("New Entry: " + userId);
             entryInsert = vocabyDao.insertCustomEntry(
                     new CustomEntry(userId,
                             entry,

@@ -1,16 +1,16 @@
-package com.vocaby.app.utils;
+package com.vocaby.app.utils
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 
-public class LiveDataUtil {
-    public static <T> void observeOnce(final LiveData<T> liveData, final Observer<T> observer) {
-        liveData.observeForever(new Observer<T>() {
-            @Override
-            public void onChanged(T t) {
-                liveData.removeObserver(this);
-                observer.onChanged(t);
+object LiveDataUtil {
+    fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
+        observe(lifecycleOwner, object : Observer<T> {
+            override fun onChanged(t: T?) {
+                observer.onChanged(t)
+                removeObserver(this)
             }
-        });
+        })
     }
 }

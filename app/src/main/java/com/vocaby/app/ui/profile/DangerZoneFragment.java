@@ -14,11 +14,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.vocaby.app.R;
 import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.MyEntryViewModel;
-import com.vocaby.app.viewmodels.UserViewModel;
+import com.vocaby.app.viewmodels.UserViewModelKt;
 
 public class DangerZoneFragment extends Fragment {
     private MaterialAlertDialogBuilder builder;
-    private UserViewModel userViewModel;
+    private UserViewModelKt userViewModel;
     private DictionaryViewModel dictionaryViewModel;
     private MyEntryViewModel myEntryViewModel;
 
@@ -36,7 +36,7 @@ public class DangerZoneFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         builder = new MaterialAlertDialogBuilder(requireActivity());
-        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModelKt.class);
         dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         myEntryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
 

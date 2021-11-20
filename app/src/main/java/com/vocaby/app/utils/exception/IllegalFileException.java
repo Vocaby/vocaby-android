@@ -3,7 +3,7 @@ package com.vocaby.app.utils.exception;
 public class IllegalFileException extends Exception {
     public static final int INVALID_FORMAT = 0;
     public static final int INVALID_FILE = 1;
-    private int code;
+    private final int code;
 
     public IllegalFileException(int code) {
         super();

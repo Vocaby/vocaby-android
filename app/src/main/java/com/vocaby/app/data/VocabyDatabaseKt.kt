@@ -6,13 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.vocaby.app.data.dao.VocabyDaoKt
-import com.vocaby.app.data.entity.Type
-import com.vocaby.app.data.entity.User
-import com.vocaby.app.data.entity.UserSaves
+import com.vocaby.app.data.entity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities = [User::class, UserSaves::class, Type::class], version = 1, exportSchema = false)
+@Database(entities = [User::class, UserSave::class,
+    Type::class, Word::class, Definition::class, CustomEntry::class, CustomDefinition::class,
+    CustomEntryGroup::class], version = 1, exportSchema = false)
 abstract class VocabyDatabaseKt : RoomDatabase() {
     abstract fun vocabyDao() : VocabyDaoKt
 
