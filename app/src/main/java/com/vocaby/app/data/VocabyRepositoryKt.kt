@@ -3,6 +3,7 @@ package com.vocaby.app.data
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import com.vocaby.app.Constants
 import com.vocaby.app.data.dao.VocabyDaoKt
 import com.vocaby.app.data.entity.EntryWithData
@@ -14,6 +15,7 @@ import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.utils.Logger
+import io.reactivex.rxjava3.functions.Consumer
 import java.util.*
 
 class VocabyRepositoryKt(val dao: VocabyDaoKt, val application: Application) {
@@ -21,6 +23,7 @@ class VocabyRepositoryKt(val dao: VocabyDaoKt, val application: Application) {
     private val userSharedPreference: SharedPreferences =
         application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE)
     private var userId: Int = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1)
+    private val dataManager: DataManager = DataManager.getInstance(application)
 
     /** USER **/
     suspend fun setupUser() {
@@ -99,10 +102,44 @@ class VocabyRepositoryKt(val dao: VocabyDaoKt, val application: Application) {
         return null
     }
 
+    fun writeToHistory(entry: String): List<String> {
+        return dataManager.writeHistory(entry)
+    }
+
+    fun getHistory(): List<String> {
+        return dataManager.history
+    }
+
     suspend fun getEntryPackage(entry: String): EntryDataPackage {
         val entryData = convertToEntryModel(vocabyDao.getEntryData(entry))
         val customEntryData = convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
         return EntryDataPackage(entryData, customEntryData)
+    }
+
+    suspend fun getRandomEntry(): EntryModel? {
+        val randomWordPicker = PreferenceManager.getDefaultSharedPreferences(application)
+        val editor = randomWordPicker.edit()
+        val lastTimeStarted = randomWordPicker.getInt("appStarted", -1)
+        val calendar = Calendar.getInstance()
+        val today = calendar[Calendar.DAY_OF_YEAR]
+        val randomEntry: EntryModel?
+
+        if (today != lastTimeStarted) {
+            val data: WordDefinitions = vocabyDao.getRandomWord()
+            randomEntry = convertToEntryModel(data)
+
+            randomEntry?.let {
+                editor.putInt("randomWordId", randomEntry.id)
+                editor.putInt("appStarted", today)
+                editor.apply()
+            }
+        } else {
+            val id = randomWordPicker.getInt("randomWordId", 100000)
+            val data: WordDefinitions? = vocabyDao.getEntryDataWithId(id)
+           randomEntry = convertToEntryModel(data)
+        }
+
+        return randomEntry
     }
 
     /** SAVES **/

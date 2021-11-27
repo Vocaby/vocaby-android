@@ -3,9 +3,12 @@ package com.vocaby.app.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.vocaby.app.data.VocabyRepositoryKt
 import com.vocaby.app.models.SearchSuggestionItem
 import com.vocaby.app.models.dictionary.EntryModel
+import com.vocaby.app.utils.StringFormatter.cleanText
+import kotlinx.coroutines.launch
 
 class DictionaryViewModelKt(private val repository: VocabyRepositoryKt) : ViewModel() {
     private val _searchedEntry: MutableLiveData<String> = MutableLiveData()
@@ -19,24 +22,66 @@ class DictionaryViewModelKt(private val repository: VocabyRepositoryKt) : ViewMo
     val randomEntry: MutableLiveData<EntryModel> get() = _randomEntry
     val searchSuggestions: MutableLiveData<List<SearchSuggestionItem>> get() = _searchSuggestions
 
+    init {
+        val historyList = repository.getHistory()
+        _searchHistory.postValue(historyList)
+    }
+
     // create shared prefs based on first character
     fun setupDictionaryEntries() {}
 
     // notify observer of new search
-    fun search(entry: String) {}
+    fun search(entry: String) {
+        val searchedEntry = cleanText(entry)
+        if (searchedEntry.isNotEmpty()) {
+            if (searchStack.isNotEmpty()) {
+                if (!searchStack.contains(searchedEntry)) {
+                    searchStack.removeLast()
+                    searchStack.addLast(searchedEntry)
+                    writeToHistory(searchedEntry)
+                    _searchedEntry.postValue(searchedEntry)
+                }
+            } else {
+                searchStack.addLast(searchedEntry)
+                writeToHistory(searchedEntry)
+                _searchedEntry.postValue(searchedEntry)
+            }
+        }
+    }
 
     // notify observer of history selection
-    fun getHistoryDefinition(position: Int) {}
+    fun getHistoryDefinition(position: Int) {
+        _searchHistory.value?.let { list ->
+            search(list[position])
+        }
+    }
 
     fun getSearchSuggestions(oldQuery: String, newQuery:String) {}
     private fun setSearchSuggestionItems(threshold: Int) {}
 
     // return to observer of random word
-    fun updateRandomWord() {}
+    fun updateRandomWord() {
+        viewModelScope.launch {
+            val data: EntryModel? = repository.getRandomEntry()
+            data?.let {
+                _randomEntry.postValue(data)
+            }
+        }
+    }
+
+    private fun writeToHistory(entry: String) {
+        val historyList = repository.writeToHistory(entry)
+        _searchHistory.postValue(historyList)
+    }
 
     //
-    fun resetDictionaryEntries() {}
+    fun resetDictionaryEntries() {
 
+    }
+
+    fun popSearchStack() {
+        if (searchStack.isNotEmpty()) searchStack.removeLast()
+    }
 }
 
 class DictionaryViewModelFactory(

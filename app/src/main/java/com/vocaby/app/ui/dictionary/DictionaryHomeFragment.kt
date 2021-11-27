@@ -79,18 +79,20 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
             )
         }
 
-//        dictionaryViewModel!!.randomWord.observe(viewLifecycleOwner, { wordModel: EntryModel ->
-//            definition!!.visibility = View.VISIBLE
-//            sentence!!.visibility = View.VISIBLE
-//            posView!!.visibility = View.VISIBLE
-//            progressBar!!.visibility = View.GONE
-//            val pos = wordModel.firstGroup.type
-//            wordView!!.text = wordModel.entry
-//            posView!!.text = pos
-//            definition!!.text = wordModel.firstGroup.definitionData[0].toString()
-//            sentence!!.text = wordModel.firstGroup.definitionData[0].example
-//            wordBox!!.setOnClickListener { v: View? -> dictionaryViewModel!!.setSearch(wordModel.entry) }
-//        })
+        dictionaryViewModel.randomEntry.observe(viewLifecycleOwner, { randomEntryModel ->
+            wordView.text = randomEntryModel.entry
+            posView.text =  randomEntryModel.firstGroup.type
+            definition.text = randomEntryModel.firstGroup.definitionData[0].toString()
+            sentence.text = randomEntryModel.firstGroup.definitionData[0].example
+
+            definition.visibility = View.VISIBLE
+            sentence.visibility = View.VISIBLE
+            posView.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
+
+            wordBox.setOnClickListener { dictionaryViewModel.search(randomEntryModel.entry) }
+        })
+
 //        dictionaryViewModel!!.searchSuggestions.observe(
 //            viewLifecycleOwner,
 //            { searchSuggestionsItems: List<SearchSuggestionItem?>? ->
@@ -143,10 +145,10 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         }
     }
     private val queryChangeListener =
-        OnQueryChangeListener { oldQuery: String?, newQuery: String? ->
+        OnQueryChangeListener { oldQuery: String, newQuery: String ->
             dictionaryViewModel.getSearchSuggestions(
-                oldQuery!!,
-                newQuery!!
+                oldQuery,
+                newQuery
             )
         }
 

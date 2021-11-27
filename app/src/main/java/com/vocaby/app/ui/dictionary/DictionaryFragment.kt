@@ -14,6 +14,10 @@ import com.vocaby.app.viewmodels.DictionaryViewModelKt
 
 class DictionaryFragment : Fragment() {
     private lateinit var backPressedCallback: OnBackPressedCallback
+    val dictionaryViewModel: DictionaryViewModelKt by activityViewModels{
+        DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
+    }
+
     override fun onResume() {
         super.onResume()
         if (childFragmentManager.backStackEntryCount > 0) backPressedCallback.isEnabled = true
@@ -37,7 +41,10 @@ class DictionaryFragment : Fragment() {
 
         backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (childFragmentManager.backStackEntryCount > 0) childFragmentManager.popBackStack()
+                if (childFragmentManager.backStackEntryCount > 0) {
+                    childFragmentManager.popBackStack()
+                    dictionaryViewModel.popSearchStack()
+                }
                 if (childFragmentManager.backStackEntryCount == 0) {
                     this.isEnabled = false
                     requireActivity().onBackPressed()
@@ -53,10 +60,6 @@ class DictionaryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val dictionaryViewModel: DictionaryViewModelKt by activityViewModels{
-            DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
-        }
-
         dictionaryViewModel.searchedEntry.observe(viewLifecycleOwner, {
             if (parentFragmentManager.backStackEntryCount == 0) {
                 backPressedCallback.isEnabled = true

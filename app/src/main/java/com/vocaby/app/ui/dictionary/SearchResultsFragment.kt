@@ -21,15 +21,12 @@ import com.vocaby.app.VocabyApplication
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.viewstate.SaveStateModel
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
-import com.vocaby.app.viewmodels.SearchResultsViewModel
-import com.vocaby.app.viewmodels.SearchResultsViewModelFactory
-import com.vocaby.app.viewmodels.UserViewModelKt
+import com.vocaby.app.viewmodels.*
 import kotlinx.android.synthetic.main.fragment_search_results.*
 
 class SearchResultsFragment : Fragment() {
     private lateinit var ctx: Context
     private lateinit var searchedWord: String
-    // private var dictionaryViewModel: DictionaryViewModel? = null
     private val userViewModel: UserViewModelKt by activityViewModels()
     private val searchResultsViewModel: SearchResultsViewModel by viewModels{
         SearchResultsViewModelFactory(
@@ -105,7 +102,6 @@ class SearchResultsFragment : Fragment() {
                 }
             }
         })
-
     }
 
     private fun setupDictionary(size: Int) {

@@ -10,7 +10,7 @@ class CustomEntry constructor (
     @ColumnInfo(name = "user_id")
     var userId: Int,
     var entry: String,
-    var pronunciation: String,
+    var pronunciation: String?,
     @ColumnInfo(name = "last_updated")
     var lastUpdated: Long
 ) {
