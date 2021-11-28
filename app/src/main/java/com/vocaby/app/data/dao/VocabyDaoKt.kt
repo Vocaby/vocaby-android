@@ -15,6 +15,13 @@ interface VocabyDaoKt {
     suspend fun createUser(user: User): Long
 
     /** --------------------- ENTRY -------------------- **/
+    @Query(
+        "SELECT word FROM dictionary_word UNION " +
+                "SELECT entry FROM custom_user_entry " +
+                "ORDER BY word COLLATE NOCASE ASC"
+    )
+    suspend fun getDictionaryEntries(): List<String>
+
     @Transaction
     @Query("SELECT * FROM dictionary_word WHERE word = :entry")
     suspend fun getEntryData(entry: String): WordDefinitions?

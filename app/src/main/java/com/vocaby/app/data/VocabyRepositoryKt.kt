@@ -15,13 +15,21 @@ import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.utils.Logger
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.CompletableSource
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.functions.Function
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.lang.StringBuilder
 import java.util.*
 
-class VocabyRepositoryKt(val dao: VocabyDaoKt, val application: Application) {
-    private val vocabyDao: VocabyDaoKt = dao
+class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Application) {
     private val userSharedPreference: SharedPreferences =
         application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE)
+    private val entrySharedPreference: SharedPreferences =
+        application.getSharedPreferences(Constants.DICTIONARY_ENTRIES_KEY, Context.MODE_PRIVATE)
     private var userId: Int = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1)
     private val dataManager: DataManager = DataManager.getInstance(application)
 
@@ -110,6 +118,11 @@ class VocabyRepositoryKt(val dao: VocabyDaoKt, val application: Application) {
         return dataManager.history
     }
 
+    fun getEntriesByCharacter(character: String): List<String> {
+        val e: String? = entrySharedPreference.getString(character, "")
+        return listOf(*e!!.split(";".toRegex()).toTypedArray())
+    }
+
     suspend fun getEntryPackage(entry: String): EntryDataPackage {
         val entryData = convertToEntryModel(vocabyDao.getEntryData(entry))
         val customEntryData = convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
@@ -153,5 +166,33 @@ class VocabyRepositoryKt(val dao: VocabyDaoKt, val application: Application) {
     private suspend fun createUser() {
         val longId = vocabyDao.createUser(User())
         userSharedPreference.edit().putInt(Constants.CURRENT_USER_ID_KEY, longId.toInt()).apply()
+    }
+
+    suspend fun setupDictionaryEntries() {
+        if (!entrySharedPreference.contains("z")) {
+            val list = vocabyDao.getDictionaryEntries()
+            var i = 0
+            var sb = StringBuilder()
+            while (i < list.size - 1) {
+                if (list[i][0] == list[i + 1][0]) {
+                    sb.append(list[i])
+                    sb.append(";")
+                } else {
+                    sb.append(list[i])
+                    val editor = entrySharedPreference.edit()
+                    editor.putString(list[i].substring(0, 1), sb.toString())
+                    editor.apply()
+                    sb = StringBuilder()
+                }
+
+                i++
+            }
+
+            // Last element insertion
+            sb.append(list[i])
+            val editor = entrySharedPreference.edit()
+            editor.putString(list[i].substring(0, 1), sb.toString())
+            editor.apply()
+        }
     }
 }

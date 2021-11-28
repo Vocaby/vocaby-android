@@ -19,9 +19,7 @@ import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.FragmentAdapter
 import com.vocaby.app.receivers.NotificationReceiver
-import com.vocaby.app.viewmodels.DictionaryViewModel
-import com.vocaby.app.viewmodels.UserViewModelFactory
-import com.vocaby.app.viewmodels.UserViewModelKt
+import com.vocaby.app.viewmodels.*
 
 open class MainActivity : AppCompatActivity() {
     private lateinit var alarmManager: AlarmManager
@@ -30,7 +28,9 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var navigationView: BottomNavigationView
-    private val dictionaryViewModel: DictionaryViewModel by viewModels()
+    private val dictionaryViewModel: DictionaryViewModelKt by viewModels{
+        DictionaryViewModelFactory((application as VocabyApplication).repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,8 +128,8 @@ open class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showDefinition(entry: String?) {
+    fun showDefinition(entry: String) {
         viewPager.currentItem = 0
-        dictionaryViewModel.setSearch(entry)
+        dictionaryViewModel.search(entry)
     }
 }

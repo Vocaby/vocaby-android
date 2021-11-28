@@ -19,6 +19,7 @@ import com.arlib.floatingsearchview.FloatingSearchView.OnSearchListener
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.arlib.floatingsearchview.FloatingSearchView.OnQueryChangeListener
 import com.vocaby.app.VocabyApplication
+import com.vocaby.app.states.GenericState
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
 import com.vocaby.app.viewmodels.DictionaryViewModelKt
 
@@ -55,12 +56,16 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         sentence = view.findViewById(R.id.card_sentence)
         wordBox = view.findViewById(R.id.word_box)
         progressBar = view.findViewById(R.id.randomword_progress)
-        searchView = view.findViewById(R.id.vocaby_search_bar)
-        searchView.setOnSearchListener(searchListener)
-        searchView.setOnQueryChangeListener(queryChangeListener)
+
         definition.visibility = View.GONE
         sentence.visibility = View.GONE
         posView.visibility = View.GONE
+
+        searchView = view.findViewById(R.id.vocaby_search_bar)
+        searchView.setOnSearchListener(searchListener)
+        searchView.setOnQueryChangeListener(queryChangeListener)
+        searchView.setOnFocusChangeListener(searchFocusListener)
+
 
         setUpHistoryRecyclerView(view)
         return view
@@ -93,17 +98,21 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
             wordBox.setOnClickListener { dictionaryViewModel.search(randomEntryModel.entry) }
         })
 
-//        dictionaryViewModel!!.searchSuggestions.observe(
-//            viewLifecycleOwner,
-//            { searchSuggestionsItems: List<SearchSuggestionItem?>? ->
-//                searchView!!.swapSuggestions(
-//                    searchSuggestionsItems
-//                )
-//            }
-//        )
-//        dictionaryViewModel!!.suggestionRetrieveStatus.observe(
-//            viewLifecycleOwner,
-//            { retrieved: Boolean -> if (retrieved) searchView!!.hideProgress() else searchView!!.showProgress() })
+        dictionaryViewModel.searchSuggestions.observe(viewLifecycleOwner,
+            { result ->
+                when(result) {
+                    is GenericState.InProgress -> searchView.showProgress()
+                    is GenericState.Success -> {
+                        searchView.hideProgress()
+                        searchView.swapSuggestions(result.data)
+                    }
+                    is GenericState.Error -> {
+                        searchView.clearSuggestions()
+                        searchView.hideProgress()
+                    }
+                }
+            }
+        )
     }
 
     private fun addResultsFragment(search: String) {
@@ -135,7 +144,9 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
 
     private val searchListener: OnSearchListener = object : OnSearchListener {
         override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
+            searchView.setOnQueryChangeListener(null)
             searchView.setSearchText(searchSuggestion.body)
+            searchView.setOnQueryChangeListener(queryChangeListener)
             searchView.clearSearchFocus()
             search(searchSuggestion.body)
         }
@@ -144,6 +155,18 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
             search(currentQuery)
         }
     }
+
+    private val searchFocusListener: FloatingSearchView.OnFocusChangeListener =
+        object: FloatingSearchView.OnFocusChangeListener {
+            override fun onFocus() {
+                dictionaryViewModel.getSearchSuggestions("", searchView.query)
+            }
+
+            override fun onFocusCleared() {
+                searchView.clearSuggestions()
+            }
+        }
+
     private val queryChangeListener =
         OnQueryChangeListener { oldQuery: String, newQuery: String ->
             dictionaryViewModel.getSearchSuggestions(
@@ -155,7 +178,6 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     override fun onResume() {
         super.onResume()
         dictionaryViewModel.updateRandomWord()
-        dictionaryViewModel.resetDictionaryEntries()
     }
 
     override fun onItemTouch(position: Int) {

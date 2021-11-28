@@ -7,20 +7,28 @@ import androidx.lifecycle.viewModelScope
 import com.vocaby.app.data.VocabyRepositoryKt
 import com.vocaby.app.models.SearchSuggestionItem
 import com.vocaby.app.models.dictionary.EntryModel
+import com.vocaby.app.states.GenericState
+import com.vocaby.app.utils.SingleLiveEvent
 import com.vocaby.app.utils.StringFormatter.cleanText
+import com.vocaby.app.utils.VocabyAlgo
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class DictionaryViewModelKt(private val repository: VocabyRepositoryKt) : ViewModel() {
+    var searchSuggestionThreshold: Int = 4
+
     private val _searchedEntry: MutableLiveData<String> = MutableLiveData()
     private val _searchHistory: MutableLiveData<List<String>> = MutableLiveData()
     private val _randomEntry: MutableLiveData<EntryModel> = MutableLiveData()
-    private val _searchSuggestions: MutableLiveData<List<SearchSuggestionItem>> = MutableLiveData()
+    private val _searchSuggestions: SingleLiveEvent<GenericState<List<SearchSuggestionItem>>> = SingleLiveEvent()
     private val searchStack: ArrayDeque<String> = ArrayDeque()
+    private var entriesByCharacter: List<String>? = null
+    private var searchSuggestionQuery: String = ""
 
     val searchedEntry: MutableLiveData<String> get() = _searchedEntry
     val searchHistory: MutableLiveData<List<String>> get() = _searchHistory
     val randomEntry: MutableLiveData<EntryModel> get() = _randomEntry
-    val searchSuggestions: MutableLiveData<List<SearchSuggestionItem>> get() = _searchSuggestions
+    val searchSuggestions: MutableLiveData<GenericState<List<SearchSuggestionItem>>> get() = _searchSuggestions
 
     init {
         val historyList = repository.getHistory()
@@ -28,7 +36,11 @@ class DictionaryViewModelKt(private val repository: VocabyRepositoryKt) : ViewMo
     }
 
     // create shared prefs based on first character
-    fun setupDictionaryEntries() {}
+    fun setupDictionaryEntries() {
+        viewModelScope.launch(Dispatchers.Default) {
+            repository.setupDictionaryEntries()
+        }
+    }
 
     // notify observer of new search
     fun search(entry: String) {
@@ -56,8 +68,44 @@ class DictionaryViewModelKt(private val repository: VocabyRepositoryKt) : ViewMo
         }
     }
 
-    fun getSearchSuggestions(oldQuery: String, newQuery:String) {}
-    private fun setSearchSuggestionItems(threshold: Int) {}
+    fun getSearchSuggestions(oldQuery: String, newQuery:String) {
+        if (newQuery.isEmpty()) {
+            _searchSuggestions.postValue(GenericState.Success(ArrayList()))
+            entriesByCharacter = null
+            searchSuggestionQuery = ""
+        } else if (oldQuery.isEmpty() && newQuery.length == 1) {
+            _searchSuggestions.postValue(GenericState.InProgress)
+            val initialCharacter = newQuery.substring(0, 1)
+            viewModelScope.launch(Dispatchers.Default) {
+                entriesByCharacter = repository.getEntriesByCharacter(initialCharacter)
+                setSearchSuggestionItems(newQuery)
+            }
+        } else {
+            _searchSuggestions.postValue(GenericState.InProgress)
+            setSearchSuggestionItems(newQuery)
+        }
+    }
+    private fun setSearchSuggestionItems(searchQuery: String) {
+        val searchSuggestionItems = ArrayList<SearchSuggestionItem>()
+        entriesByCharacter?.let { list ->
+            var index = VocabyAlgo.BinarySearchPrefix(list, searchQuery)
+            if (index > -1 && index < list.size) {
+                val it: Iterator<String> = list.listIterator(index)
+                var count = 0
+                while (it.hasNext() && count < searchSuggestionThreshold) {
+                    val entry = it.next()
+                    if (entry.contains(searchQuery)) {
+                        searchSuggestionItems.add(SearchSuggestionItem(entry))
+                    }
+
+                    count++
+                    index++
+                }
+            }
+
+            _searchSuggestions.postValue(GenericState.Success(searchSuggestionItems))
+        }
+    }
 
     // return to observer of random word
     fun updateRandomWord() {
@@ -72,11 +120,6 @@ class DictionaryViewModelKt(private val repository: VocabyRepositoryKt) : ViewMo
     private fun writeToHistory(entry: String) {
         val historyList = repository.writeToHistory(entry)
         _searchHistory.postValue(historyList)
-    }
-
-    //
-    fun resetDictionaryEntries() {
-
     }
 
     fun popSearchStack() {
