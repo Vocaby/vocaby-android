@@ -26,15 +26,7 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
     private val dataManager: DataManager = DataManager.getInstance(application)
 
     /** USER **/
-    suspend fun setupUser() {
-        val result = vocabyDao.checkUser(userId)
-        if (result == 0) {
-            createUser()
-            Logger.reportToDebug("Created User using Kotlin")
-        } else {
-            Logger.reportToDebug("Retrieved User using Kotlin")
-        }
-    }
+    suspend fun setupUser() = vocabyDao.checkUser(userId)
 
     /** ENTRY SEARCH **/
     private fun convertToEntryModel(wordDefinitions: WordDefinitions?): EntryModel? {
@@ -102,17 +94,9 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
         return null
     }
 
-    fun writeToHistory(entry: String): List<String>? {
-        return dataManager.writeHistory(entry)
-    }
-
-    fun getHistory(): LinkedList<String>? {
-        return dataManager.history
-    }
-
-    fun clearHistory(): List<String>? {
-        return dataManager.clearHistory()
-    }
+    fun writeToHistory(entry: String): List<String>? = dataManager.writeHistory(entry)
+    fun getHistory(): LinkedList<String>? = dataManager.history
+    fun clearHistory(): List<String>? = dataManager.clearHistory()
 
     fun getEntriesByCharacter(character: String): List<String> {
         val e: String? = entrySharedPreference.getString(character, "")
@@ -151,13 +135,36 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
         return randomEntry
     }
 
+    fun deleteEntryFromDictionary(entry: String) {
+        val character = entry.substring(0, 1)
+        val entries = entrySharedPreference.getString(character, "")
+        val sb = java.lang.StringBuilder()
+        if (entries!!.isNotEmpty()) {
+            val list = Arrays.asList(*entries.split(";").toTypedArray())
+            for (i in list.indices) {
+                if (list[i] != entry) {
+                    sb.append(list[i])
+                    sb.append(";")
+                }
+            }
+
+            entrySharedPreference.edit().putString(character, sb.toString()).apply()
+        }
+    }
+
+    suspend fun getUserEntries() = vocabyDao.getUserEntries(userId);
+    suspend fun removeCustomEntry(entry: String) {
+        vocabyDao.deleteUserEntry(entry)
+        deleteEntryFromDictionary(entry)
+    }
+    suspend fun clearUserEntries() = vocabyDao.clearUserEntries(userId)
+
     /** SAVES **/
     fun getSavedWords() = vocabyDao.getSaves(userId)
     fun hasSaved(entry: String) = vocabyDao.hasSave(userId, entry)
     suspend fun addSaveItem(entry: String) = vocabyDao.addSave(UserSave(userId, entry))
     suspend fun removeSaveItem(entry: String) = vocabyDao.removeSave(userId, entry)
     suspend fun clearSaves() = vocabyDao.clearSaves(userId)
-
 
     private suspend fun createUser() {
         val longId = vocabyDao.createUser(User())

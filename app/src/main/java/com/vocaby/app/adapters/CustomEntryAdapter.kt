@@ -1,5 +1,6 @@
 package com.vocaby.app.adapters
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
@@ -9,26 +10,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.app.R
-import kotlinx.android.synthetic.main.save_item.view.*
+import kotlinx.android.synthetic.main.custom_entry_item.view.*
 
-class SaveListAdapter(private val activity: Activity, private val interaction: Interaction) :
+class CustomEntryAdapter(private val activity: Activity, private val interaction: Interaction) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val diffCallback = object : DiffUtil.ItemCallback<String>() {
-        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
-            return oldItem == newItem
-        }
-
-        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-    private val differ = AsyncListDiffer(this, diffCallback)
+    private var customEntries: List<String> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return SavesAdapterViewHolder(
+        return CustomEntryViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.save_item,
+                R.layout.custom_entry_item,
                 parent,
                 false
             ),
@@ -39,46 +30,54 @@ class SaveListAdapter(private val activity: Activity, private val interaction: I
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is SavesAdapterViewHolder -> {
-                holder.bind(differ.currentList[position])
-            }
+            is CustomEntryViewHolder -> holder.bind(customEntries.get(position))
         }
     }
 
-    override fun getItemCount(): Int {
-        return differ.currentList.size
-    }
-
+    @SuppressLint("NotifyDataSetChanged")
     fun submitList(list: List<String>) {
-        differ.submitList(list)
+        customEntries = list
+        notifyDataSetChanged()
     }
 
-    class SavesAdapterViewHolder
+    fun addEntry() {
+        notifyItemInserted(0)
+    }
+
+    fun deleteEntry(position: Int) {
+        notifyItemRemoved(position)
+    }
+
+    override fun getItemCount(): Int {
+        return customEntries.size
+    }
+
+    class CustomEntryViewHolder
     constructor(
         itemView: View,
         private val interaction: Interaction,
         private val alertDialogBuilder: MaterialAlertDialogBuilder
-    ) : RecyclerView.ViewHolder(itemView) {
-        fun bind(entry: String) {
-            itemView.save_item.text = entry
+    ): RecyclerView.ViewHolder(itemView) {
+        fun bind(customEntry: String) {
+            itemView.custom_entry_item_header.text = customEntry
 
             itemView.setOnClickListener {
-                interaction.onItemTouch(entry)
+                interaction.onItemTouch(customEntry, adapterPosition)
             }
 
-            itemView.unsave_button.setOnClickListener {
+            itemView.delete_button.setOnClickListener {
                 alertDialogBuilder
                     .setTitle("Are you sure you want to delete?")
-                    .setMessage(entry)
+                    .setMessage(customEntry)
                     .setPositiveButton("DELETE") { _, _ ->
-                        interaction.onItemDelete(entry)
+                        interaction.onItemDelete(customEntry, adapterPosition)
                     }.setNegativeButton("CANCEL", null).create().show()
             }
         }
     }
 
     interface Interaction {
-        fun onItemTouch(entry: String)
-        fun onItemDelete(entry: String)
+        fun onItemTouch(entry: String, position: Int)
+        fun onItemDelete(entry: String, position: Int)
     }
 }

@@ -2,6 +2,8 @@ package com.vocaby.app.data.dao
 
 import androidx.room.*
 import com.vocaby.app.data.entity.*
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -40,6 +42,15 @@ interface VocabyDaoKt {
                 "(SELECT id FROM dictionary_word ORDER BY RANDOM() LIMIT 1)"
     )
     suspend fun getRandomWord(): WordDefinitions
+
+    @Query("DELETE FROM custom_user_entry WHERE entry = :entry")
+    suspend fun deleteUserEntry(entry: String)
+
+    @Query("SELECT entry FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
+    suspend fun getUserEntries(id: Int): List<String>
+
+    @Query("DELETE FROM custom_user_entry WHERE user_id = :id")
+    suspend fun clearUserEntries(id: Int)
 
     /** --------------------- SAVES -------------------- **/
     @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY id DESC")

@@ -1,174 +1,147 @@
-package com.vocaby.app.ui.customentry;
+package com.vocaby.app.ui.customentry
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.content.Context
+import android.widget.TextView
+import android.widget.ProgressBar
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.vocaby.app.viewmodels.MyEntryViewModel
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import com.vocaby.app.R
+import com.vocaby.app.utils.StringFormatter
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.EditText
+import android.content.Intent
+import android.view.View
+import android.widget.Button
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.vocaby.app.VocabyApplication
+import com.vocaby.app.adapters.CustomEntryAdapter
+import com.vocaby.app.models.payload.ItemPayload
+import com.vocaby.app.viewmodels.DictionaryViewModel
+import com.vocaby.app.viewmodels.DictionaryViewModelFactory
+import com.vocaby.app.viewmodels.MyEntryViewModelFactory
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
+    private lateinit var ctx: Context
+    private lateinit var entryCountView: TextView
+    private lateinit var deleteProgress: ProgressBar
+    private lateinit var entryEditDialog: BottomSheetDialog
+    private lateinit var customEntryAdapter: CustomEntryAdapter
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.vocaby.app.R;
-import com.vocaby.app.adapters.CustomEntryAdapter;
-import com.vocaby.app.models.payload.PayloadState;
-import com.vocaby.app.utils.StringFormatter;
-import com.vocaby.app.viewmodels.MyEntryViewModel;
-
-public class MyEntryFragment extends Fragment implements CustomEntryAdapter.ItemTouchListener {
-    private Context ctx;
-
-    private TextView entryCountView;
-    private ProgressBar deleteProgress;
-
-    private BottomSheetDialog entryEditDialog;
-    private CustomEntryAdapter customEntryAdapter;
-
-    private MyEntryViewModel entryViewModel;
-
-    public MyEntryFragment() {
-        // Required empty public constructor
+    private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
+        DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
+    }
+    private val entryViewModel: MyEntryViewModel by activityViewModels{
+        MyEntryViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
 
-    @Override
-    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ctx = requireActivity().getApplicationContext();
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ctx = requireActivity().applicationContext
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_entry, container, false);
-        entryCountView = view.findViewById(R.id.entry_count);
-        deleteProgress = view.findViewById(R.id.progress_bar);
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_my_entry, container, false)
+        entryCountView = view.findViewById(R.id.entry_count)
+        deleteProgress = view.findViewById(R.id.progress_bar)
 
-        setupButtons(view);
-        setupEntryBuilder();
-
-        return view;
+        setupButtons(view)
+        setupEntryBuilderDialog()
+        return view
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setupRecyclerView(view);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView(view)
 
-        entryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
+        entryViewModel.entries.observe(viewLifecycleOwner, {
+                customEntries -> customEntryAdapter.submitList(customEntries)
+        })
 
-        entryViewModel.getEntryResultPayload().observe(getViewLifecycleOwner(), payload -> {
-            if (payload.getState() == PayloadState.ADD) {
-                customEntryAdapter.addEntry();
-            } else if (payload.getState() == PayloadState.DELETE) {
-                customEntryAdapter.deleteEntry(payload.getPayload());
+        entryViewModel.customEntryCount.observe(viewLifecycleOwner, { count ->
+                entryCountView.text = StringFormatter.cleanNumber(count)
+        })
+
+        entryViewModel.entryState.observe(viewLifecycleOwner) { entryStatePayload ->
+            when (entryStatePayload.state) {
+                ItemPayload.DELETE -> customEntryAdapter.deleteEntry(entryStatePayload.payload)
+                ItemPayload.ADD -> customEntryAdapter.addEntry()
             }
-        });
 
-        entryViewModel.getEntries().observe(getViewLifecycleOwner(),
-                customEntries -> customEntryAdapter.setList(customEntries)
-        );
-
-        entryViewModel.getCustomEntryCount().observe(getViewLifecycleOwner(),
-                count -> entryCountView.setText(StringFormatter.cleanNumber(count))
-        );
-
-        entryViewModel.getDeleteStatus().observe(getViewLifecycleOwner(), deletePayload -> {
-            if (deletePayload.getState() == PayloadState.DELETE) {
-                deleteProgress.setVisibility(View.GONE);
-                customEntryAdapter.deleteEntry(deletePayload.getPayload());
-//                dictionaryViewModel.resetDictionaryEntries();
-            }
-        });
-    }
-
-    private void setupRecyclerView(View view) {
-        RecyclerView recyclerView = view.findViewById(R.id.custom_entry_container);
-        customEntryAdapter = new CustomEntryAdapter(getActivity(), this);
-        recyclerView.setAdapter(customEntryAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-    }
-
-    private void setupButtons(View view) {
-        Button addButton = view.findViewById(R.id.add_entry_button);
-        addButton.setOnClickListener(v -> entryEditDialog.show());
-    }
-
-    private void setupEntryBuilder() {
-        entryEditDialog =
-                new BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog);
-        entryEditDialog.setContentView(R.layout.custom_entry_header_dialog);
-
-        EditText entryEdit = entryEditDialog.findViewById(R.id.entry_edit);
-        TextView entryAlert = entryEditDialog.findViewById(R.id.entry_header_alert);
-
-        Button button = entryEditDialog.findViewById(R.id.close_button);
-        if (button != null) {
-            button.setOnClickListener(v -> entryEditDialog.dismiss());
+            dictionaryViewModel.resetSearchSuggestion()
         }
+    }
 
-        Button saveButton = entryEditDialog.findViewById(R.id.dialog_save_button);
-        if (saveButton != null) {
-            saveButton.setText(R.string.create);
-            saveButton.setOnClickListener(v -> {
-                if (entryEdit != null && entryAlert != null) {
-                    String entry = StringFormatter.cleanText(entryEdit.getText().toString());
-                    if (entry.isEmpty()) {
-                        entryAlert.setVisibility(View.VISIBLE);
-                    } else {
-                        entryEdit.getText().clear();
-                        entryAlert.setVisibility(View.INVISIBLE);
-                        entryEditDialog.dismiss();
+    private fun setupRecyclerView(view: View) {
+        val recyclerView: RecyclerView = view.findViewById(R.id.custom_entry_container)
+        customEntryAdapter = CustomEntryAdapter(requireActivity(), this)
+        recyclerView.adapter = customEntryAdapter
+        recyclerView.layoutManager = LinearLayoutManager(ctx)
+    }
 
-                        Intent startEntryBuilderIntent =
-                                new Intent(requireActivity(), EntryBuilderActivity.class);
-                        startEntryBuilderIntent =
-                                entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, -1);
-                        entryBuilderActivity.launch(startEntryBuilderIntent);
-                    }
-                }
-            });
+    private fun setupButtons(view: View) {
+        val addButton = view.findViewById<Button>(R.id.add_entry_button)
+        addButton.setOnClickListener { entryEditDialog.show() }
+    }
+
+    private fun setupEntryBuilderDialog() {
+        entryEditDialog =
+            BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        entryEditDialog.setContentView(R.layout.custom_entry_header_dialog)
+        val entryEdit = entryEditDialog.findViewById<EditText>(R.id.entry_edit)
+        val entryAlert = entryEditDialog.findViewById<TextView>(R.id.entry_header_alert)
+        val button = entryEditDialog.findViewById<Button>(R.id.close_button)
+        button?.setOnClickListener { entryEditDialog.dismiss() }
+
+        val saveButton = entryEditDialog.findViewById<Button>(R.id.dialog_save_button)
+
+        saveButton?.setText(R.string.create)
+        saveButton?.setOnClickListener {
+            val entry = StringFormatter.cleanText(entryEdit!!.text.toString())
+            if (entry.isEmpty()) {
+                entryAlert?.visibility = View.VISIBLE
+            } else {
+                entryEdit.text.clear()
+                entryAlert?.visibility = View.INVISIBLE
+                entryEditDialog.dismiss()
+                var startEntryBuilderIntent =
+                    Intent(requireActivity(), EntryBuilderActivity::class.java)
+                startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(
+                    startEntryBuilderIntent, entry, -1
+                )
+                entryBuilderActivity.launch(startEntryBuilderIntent)
+            }
         }
 
         // Clear content on show
-        entryEditDialog.setOnShowListener(dialogInterface -> {
-            if (entryEdit != null && entryAlert != null) {
-                entryEdit.getText().clear();
-                entryAlert.setVisibility(View.INVISIBLE);
-            }
-        });
+        entryEditDialog.setOnShowListener {
+            entryEdit?.text?.clear()
+            entryAlert?.visibility = View.INVISIBLE
+        }
     }
 
-    private final ActivityResultLauncher<Intent> entryBuilderActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-//                dictionaryViewModel.resetDictionaryEntries();
-                entryViewModel.handleResult(result);
-            }
-    );
-
-    @Override
-    public void onItemDelete(String entry, int position) {
-        deleteProgress.setVisibility(View.VISIBLE);
-        entryViewModel.removeCustomEntry(entry, position);
+    private val entryBuilderActivity = registerForActivityResult(StartActivityForResult()) {
+            result: ActivityResult? ->
+        entryViewModel.handleResult(result!!)
     }
 
-    @Override
-    public void onItemTouch(String entry, int position) {
-        entryViewModel.setSelectedPosition(position);
-        Intent startEntryBuilderIntent = new Intent(requireActivity(), EntryBuilderActivity.class);
-        startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, position);
-        entryBuilderActivity.launch(startEntryBuilderIntent);
+    override fun onItemDelete(entry: String, position: Int) {
+        entryViewModel.removeCustomEntry(entry, position)
+    }
+
+    override fun onItemTouch(entry: String, position: Int) {
+        var startEntryBuilderIntent = Intent(requireActivity(), EntryBuilderActivity::class.java)
+        startEntryBuilderIntent =
+            entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, position)
+        entryBuilderActivity.launch(startEntryBuilderIntent)
     }
 }

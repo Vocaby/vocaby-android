@@ -23,7 +23,6 @@ class DictionaryViewModel(private val repository: VocabyRepositoryKt) : ViewMode
     private val _searchSuggestions: SingleLiveEvent<GenericState<List<SearchSuggestionItem>>> = SingleLiveEvent()
     private val searchStack: ArrayDeque<String> = ArrayDeque()
     private var entriesByCharacter: List<String>? = null
-    private var searchSuggestionQuery: String = ""
 
     val searchedEntry: MutableLiveData<String> get() = _searchedEntry
     val searchHistory: MutableLiveData<List<String>> get() = _searchHistory
@@ -72,7 +71,6 @@ class DictionaryViewModel(private val repository: VocabyRepositoryKt) : ViewMode
         if (newQuery.isEmpty()) {
             _searchSuggestions.postValue(GenericState.Success(ArrayList()))
             entriesByCharacter = null
-            searchSuggestionQuery = ""
         } else if (oldQuery.isEmpty() && newQuery.length == 1) {
             _searchSuggestions.postValue(GenericState.InProgress)
             val initialCharacter = newQuery.substring(0, 1)
@@ -87,10 +85,16 @@ class DictionaryViewModel(private val repository: VocabyRepositoryKt) : ViewMode
     }
     private fun setSearchSuggestionItems(searchQuery: String) {
         val searchSuggestionItems = ArrayList<SearchSuggestionItem>()
-        entriesByCharacter?.let { list ->
-            var index = VocabyAlgo.BinarySearchPrefix(list, searchQuery)
-            if (index > -1 && index < list.size) {
-                val it: Iterator<String> = list.listIterator(index)
+        if (entriesByCharacter.isNullOrEmpty()) {
+            viewModelScope.launch(Dispatchers.Default) {
+                val initialCharacter = searchQuery.substring(0, 1)
+                entriesByCharacter = repository.getEntriesByCharacter(initialCharacter)
+                setSearchSuggestionItems(searchQuery)
+            }
+        } else {
+            var index = VocabyAlgo.BinarySearchPrefix(entriesByCharacter, searchQuery)
+            if (index > -1 && index < entriesByCharacter!!.size) {
+                val it: Iterator<String> = entriesByCharacter!!.listIterator(index)
                 var count = 0
                 while (it.hasNext() && count < searchSuggestionThreshold) {
                     val entry = it.next()
@@ -105,6 +109,10 @@ class DictionaryViewModel(private val repository: VocabyRepositoryKt) : ViewMode
 
             _searchSuggestions.postValue(GenericState.Success(searchSuggestionItems))
         }
+    }
+
+    fun resetSearchSuggestion() {
+        entriesByCharacter = null
     }
 
     // return to observer of random word

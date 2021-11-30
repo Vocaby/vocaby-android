@@ -1,141 +1,106 @@
-package com.vocaby.app.viewmodels;
+package com.vocaby.app.viewmodels
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.Intent;
+import com.vocaby.app.utils.SingleLiveEvent
+import com.vocaby.app.models.payload.ItemIntPayload
+import android.content.Intent
+import com.vocaby.app.models.payload.ItemStringPayload
+import com.vocaby.app.models.payload.PayloadState
+import android.app.Activity
+import androidx.activity.result.ActivityResult
+import androidx.lifecycle.*
+import com.vocaby.app.Constants
+import com.vocaby.app.data.VocabyRepositoryKt
+import kotlinx.coroutines.launch
+import java.util.ArrayList
 
-import androidx.activity.result.ActivityResult;
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+class MyEntryViewModel(private val repository: VocabyRepositoryKt): ViewModel() {
+    private val _entryCount: MutableLiveData<Int> = MutableLiveData(0)
+    private val _entries: SingleLiveEvent<List<String>> = SingleLiveEvent()
+    private val _entryState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
 
-import com.vocaby.app.data.VocabyRepository;
-import com.vocaby.app.models.payload.ItemIntPayload;
-import com.vocaby.app.models.payload.ItemStringPayload;
-import com.vocaby.app.models.payload.PayloadState;
-import com.vocaby.app.utils.Logger;
-import com.vocaby.app.utils.SingleLiveEvent;
+    var selectedPosition: Int = -1
+    private var customEntries: MutableList<String> = ArrayList()
 
-import java.util.ArrayList;
-import java.util.List;
+    val entries: LiveData<List<String>>
+        get() = _entries
+    val customEntryCount: LiveData<Int>
+        get() = _entryCount
+    val entryState: LiveData<ItemIntPayload>
+        get() = _entryState
 
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-
-import static com.vocaby.app.Constants.ITEM_PAYLOAD_KEY;
-
-public class MyEntryViewModel extends AndroidViewModel {
-    private List<String> customEntries;
-
-    private  final VocabyRepository vocabyRepository;
-    private final CompositeDisposable compositeDisposable;
-
-    private int selectedPosition;
-
-    private final MutableLiveData<Integer> mEntryCount;
-    private final SingleLiveEvent<ItemIntPayload> mEntryBuilderResultPayload;
-    private final SingleLiveEvent<List<String>> mEntries;
-    private final SingleLiveEvent<ItemIntPayload> mDeleteStatus;
-
-    public MyEntryViewModel(@NonNull Application application) {
-        super(application);
-        vocabyRepository = new VocabyRepository(application);
-        compositeDisposable = new CompositeDisposable();
-
-        selectedPosition = -1;
-
-        mEntryCount = new MutableLiveData<>(0);
-        mEntryBuilderResultPayload = new SingleLiveEvent<>();
-        mEntries = new SingleLiveEvent<>();
-        mDeleteStatus = new SingleLiveEvent<>();
-
-        compositeDisposable.add(
-                vocabyRepository.getUserEntries()
-                    .subscribe(list -> {
-                        customEntries = new ArrayList<>(list);
-                        mEntries.setValue(customEntries);
-                        mEntryCount.setValue(customEntries.size());
-                    }, Logger::reportErrorToBugsnag)
-        );
+    init {
+        // populate user entries
+        viewModelScope.launch {
+            customEntries = repository.getUserEntries() as MutableList<String>
+            _entries.postValue(customEntries)
+            _entryCount.postValue(customEntries.size)
+        }
     }
 
-    public LiveData<List<String>> getEntries() {
-        return mEntries;
-    }
-    public LiveData<ItemIntPayload> getEntryResultPayload() { return mEntryBuilderResultPayload; }
-    public LiveData<Integer> getCustomEntryCount() {
-        return mEntryCount;
-    }
-    public LiveData<ItemIntPayload> getDeleteStatus() { return mDeleteStatus; }
-
-    public void clearEntries() {
-        compositeDisposable.add(
-                vocabyRepository.clearUserEntries()
-                    .subscribe(() -> {
-                        customEntries = new ArrayList<>();
-                        mEntries.setValue(customEntries);
-                        mEntryCount.setValue(0);
-                    }, Logger::reportErrorToBugsnag)
-        );
+    fun clearEntries() {
+        viewModelScope.launch {
+            repository.clearUserEntries()
+            customEntries = ArrayList()
+            _entries.value = customEntries
+            _entryCount.value = 0
+        }
     }
 
-    public Intent addEntryDataToIntent(Intent intent, String entry, int position) {
-        int selectedPosition;
-        ItemStringPayload itemStringPayload = new ItemStringPayload(entry);
-        if (position == -1) {
-            selectedPosition = customEntries.indexOf(entry);
+    fun addEntryDataToIntent(intent: Intent, entry: String, position: Int): Intent {
+        val itemStringPayload = ItemStringPayload(entry)
+        selectedPosition = if (position == -1) {
+            customEntries.indexOf(entry)
         } else {
-            selectedPosition = position;
+            position
         }
 
         if (selectedPosition == -1) {
-            itemStringPayload.setState(PayloadState.ADD);
+            itemStringPayload.state = PayloadState.ADD
         } else {
-            itemStringPayload.setState(PayloadState.UPDATE);
+            itemStringPayload.state = PayloadState.UPDATE
         }
 
-        intent.putExtra(ITEM_PAYLOAD_KEY, itemStringPayload);
-        return intent;
+        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, itemStringPayload)
+        return intent
     }
 
-    public void handleResult(ActivityResult result) {
-        if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-            ItemStringPayload receivedPayload =
-                    result.getData().getParcelableExtra(ITEM_PAYLOAD_KEY);
+    fun handleResult(result: ActivityResult) {
+        if (result.data != null && result.resultCode == Activity.RESULT_OK) {
+            val receivedPayload: ItemStringPayload? =
+                result.data!!.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
 
-            if (receivedPayload.getState() == PayloadState.ADD) {
-                customEntries.add(0, receivedPayload.getPayload());
-            } else if (receivedPayload.getState() == PayloadState.DELETE){
-                if (selectedPosition != -1 ) customEntries.remove(selectedPosition);
-                else customEntries.remove(receivedPayload.getPayload());
+            receivedPayload?.let {
+                if (receivedPayload.state == PayloadState.ADD) {
+                    customEntries.add(0, receivedPayload.payload)
+                    _entryState.value = ItemIntPayload(ItemIntPayload.ADD, 0)
+                } else if (receivedPayload.state == PayloadState.DELETE && selectedPosition != -1) {
+                    customEntries.removeAt(selectedPosition)
+                    _entryState.value = ItemIntPayload(ItemIntPayload.DELETE, selectedPosition)
+                }
+
+                _entryCount.value = customEntries.size
             }
-
-            mEntryBuilderResultPayload.setValue(new ItemIntPayload(receivedPayload.getState(), selectedPosition));
-            mEntryCount.setValue(customEntries.size());
         }
     }
 
-    public void removeCustomEntry(String entry, int position) {
-        compositeDisposable.add(
-                vocabyRepository.deleteUserEntry(entry)
-                    .subscribe(() -> {
-                        customEntries.remove(position);
-                        mDeleteStatus.setValue(new ItemIntPayload(PayloadState.DELETE, position));
-                        mEntryCount.setValue(customEntries.size());
-                    }, error -> {
-                        mDeleteStatus.setValue(new ItemIntPayload(PayloadState.UNCHANGED, position));
-                        Logger.reportErrorToBugsnag(error);
-                    })
-        );
+    fun removeCustomEntry(entry: String, position: Int) {
+        viewModelScope.launch {
+            repository.removeCustomEntry(entry)
+            customEntries.removeAt(position)
+            _entryCount.postValue(customEntries.size)
+            _entryState.value = ItemIntPayload(ItemIntPayload.DELETE, position)
+        }
     }
+}
 
-    public void setSelectedPosition(int selected) {
-        selectedPosition = selected;
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        compositeDisposable.clear();
+class MyEntryViewModelFactory(
+    private val repository: VocabyRepositoryKt
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MyEntryViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MyEntryViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

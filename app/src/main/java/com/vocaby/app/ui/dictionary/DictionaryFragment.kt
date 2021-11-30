@@ -14,7 +14,7 @@ import com.vocaby.app.viewmodels.DictionaryViewModelFactory
 
 class DictionaryFragment : Fragment() {
     private lateinit var backPressedCallback: OnBackPressedCallback
-    val dictionaryViewModel: DictionaryViewModel by activityViewModels{
+    private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
 

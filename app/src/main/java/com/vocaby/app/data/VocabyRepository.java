@@ -404,7 +404,6 @@ public class VocabyRepository {
         Single<Long> entryInsert;
         // New entry
         if (groupChanges.getEntryId() == -1) {
-            Logger.reportToDebug("New Entry: " + userId);
             entryInsert = vocabyDao.insertCustomEntry(
                     new CustomEntry(userId,
                             entry,
