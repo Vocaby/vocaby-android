@@ -30,7 +30,6 @@ import com.vocaby.app.viewmodels.MyEntryViewModelFactory
 class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var ctx: Context
     private lateinit var entryCountView: TextView
-    private lateinit var deleteProgress: ProgressBar
     private lateinit var entryEditDialog: BottomSheetDialog
     private lateinit var customEntryAdapter: CustomEntryAdapter
 
@@ -52,7 +51,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_entry, container, false)
         entryCountView = view.findViewById(R.id.entry_count)
-        deleteProgress = view.findViewById(R.id.progress_bar)
 
         setupButtons(view)
         setupEntryBuilderDialog()
