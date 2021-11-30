@@ -1,17 +1,17 @@
 package com.vocaby.app.viewmodels
 
-import com.vocaby.app.utils.SingleLiveEvent
-import com.vocaby.app.models.payload.ItemIntPayload
-import android.content.Intent
-import com.vocaby.app.models.payload.ItemStringPayload
-import com.vocaby.app.models.payload.PayloadState
 import android.app.Activity
+import android.content.Intent
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.*
 import com.vocaby.app.Constants
 import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.models.payload.ItemIntPayload
+import com.vocaby.app.models.payload.ItemStringPayload
+import com.vocaby.app.models.payload.PayloadState
+import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
-import java.util.ArrayList
+import java.util.*
 
 class MyEntryViewModel(private val repository: VocabyRepositoryKt): ViewModel() {
     private val _entryCount: MutableLiveData<Int> = MutableLiveData(0)

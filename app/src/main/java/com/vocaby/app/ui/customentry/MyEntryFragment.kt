@@ -1,30 +1,30 @@
 package com.vocaby.app.ui.customentry
 
 import android.content.Context
-import android.widget.TextView
-import android.widget.ProgressBar
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.vocaby.app.viewmodels.MyEntryViewModel
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.ViewGroup
-import com.vocaby.app.R
-import com.vocaby.app.utils.StringFormatter
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.LinearLayoutManager
-import android.widget.EditText
-import android.content.Intent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.CustomEntryAdapter
 import com.vocaby.app.models.payload.ItemPayload
+import com.vocaby.app.utils.LiveDataUtil.observeOnce
+import com.vocaby.app.utils.StringFormatter
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
+import com.vocaby.app.viewmodels.MyEntryViewModel
 import com.vocaby.app.viewmodels.MyEntryViewModelFactory
 
 class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
@@ -61,7 +61,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(view)
 
-        entryViewModel.entries.observe(viewLifecycleOwner, {
+        entryViewModel.entries.observeOnce(viewLifecycleOwner, {
                 customEntries -> customEntryAdapter.submitList(customEntries)
         })
 

@@ -27,7 +27,6 @@ import com.vocaby.app.models.datapackage.EntryDataPackage;
 import com.vocaby.app.models.dictionary.DefinitionGroupModel;
 import com.vocaby.app.models.dictionary.DefinitionModel;
 import com.vocaby.app.models.dictionary.EntryModel;
-import com.vocaby.app.utils.Logger;
 import com.vocaby.app.utils.StringFormatter;
 import com.vocaby.app.utils.exception.IllegalFileException;
 

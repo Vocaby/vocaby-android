@@ -47,7 +47,7 @@ public class EntryGroupBuilderActivity extends AppCompatActivity
         entryGroupViewModel = new ViewModelProvider(this).get(EntryGroupViewModel.class);
         entryGroupViewModel.handleIntent(getIntent());
 
-        // LiveDataUtil.observeOnce(entryGroupViewModel.getDefinitions(), list -> customDefAdapter.setList(list));
+        entryGroupViewModel.getDefinitions().observe(this, list -> customDefAdapter.setList(list));
 
         entryGroupViewModel.getType().observe(this, type -> {
             String header = StringFormatter.firstLetterUpperOnly(type) + " Definitions";
