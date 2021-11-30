@@ -1,99 +1,98 @@
-package com.vocaby.app.data;
+package com.vocaby.app.data
 
-import android.content.Context;
-import android.util.Log;
+import android.content.Context
+import android.util.Log
+import java.io.File
+import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import java.util.*
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.LinkedList;
-import java.util.List;
+class DataManager private constructor(context: Context) {
+    private val historyDataFileName = "hVocaby"
+    private val ctx: Context = context.applicationContext
+    var history: LinkedList<String>? = null
+    var numHistoryItems = 6
 
-import io.reactivex.rxjava3.core.Single;
+    companion object {
+        private var instance: DataManager? = null
 
-public class DataManager {
-    private static DataManager dataManager = null;
-    private static Context ctx;
-    private static final String HISTORY_DATA_FILE_NAME = "hVocaby";
-    private static List<String> history;
+        fun getInstance(context: Context): DataManager =
+            instance ?: synchronized(this) {
+                instance ?: DataManager(context.applicationContext).also { instance = it }
+            }
+    }
 
-
-    private DataManager(Context context) {
-        ctx = context.getApplicationContext();
-
-        File historyFile = new File(ctx.getFilesDir(), HISTORY_DATA_FILE_NAME);
-        if(historyFile.exists()) {
-            try(FileInputStream fis = ctx.openFileInput(HISTORY_DATA_FILE_NAME)) {
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                //noinspection unchecked
-                history = (List<String>) ois.readObject();
-                ois.close();
-            } catch (IOException | ClassNotFoundException e) {
-                Log.d("DataManager", "Something went wrong in getInstance");
+    init {
+        val historyFile = File(ctx.filesDir, historyDataFileName)
+        if (historyFile.exists()) {
+            try {
+                ctx.openFileInput(historyDataFileName).use { fis ->
+                    val ois = ObjectInputStream(fis)
+                    history = ois.readObject() as LinkedList<String>
+                    ois.close()
+                }
+            } catch (e: IOException) {
+                Log.d("DataManager", "Something went wrong in getInstance")
+            } catch (e: ClassNotFoundException) {
+                Log.d("DataManager", "Something went wrong in getInstance")
             }
         } else {
-            history = new LinkedList<>();
-            history.add("HISTORY");
-            try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(history);
-                oos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            history = LinkedList()
+            history?.let { newList ->
+                newList.add("HISTORY")
+                try {
+                    ctx.openFileOutput(historyDataFileName, Context.MODE_PRIVATE).use { fos ->
+                        val oos = ObjectOutputStream(fos)
+                        oos.writeObject(newList)
+                        oos.close()
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
             }
+
         }
     }
 
+    fun writeHistory(word: String): List<String>? {
+        history?.let { list ->
+            list.add(1, word)
 
-    public static DataManager getInstance(Context context) {
-        if(dataManager == null) {
-            dataManager = new DataManager(context);
-        }
-
-        return dataManager;
-    }
-
-    public List<String> writeHistory(String word) {
-        history.add(1, word);
-
-        if(history.size() > 11) {
-            history.remove(11);
-        }
-
-        new Thread(() -> {
-            try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(history);
-                oos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-        return history;
-    }
-
-    public List<String> getHistory() {
-        return history;
-    }
-
-    public Single<List<String>> clearHistory() {
-        return Single.fromCallable(() -> {
-            history = new LinkedList<>();
-            history.add("HISTORY");
-
-            try (FileOutputStream fos = ctx.openFileOutput(HISTORY_DATA_FILE_NAME, Context.MODE_PRIVATE)) {
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(history);
-                oos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (list.size > numHistoryItems) {
+                list.removeAt(numHistoryItems)
             }
 
-            return history;
-        });
+            try {
+                ctx.openFileOutput(historyDataFileName, Context.MODE_PRIVATE).use { fos ->
+                    val oos = ObjectOutputStream(fos)
+                    oos.writeObject(list)
+                    oos.close()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        return history
+    }
+
+    fun clearHistory(): List<String>? {
+        history = LinkedList()
+        history?.let { newList ->
+            newList.add("HISTORY")
+
+            try {
+                ctx.openFileOutput(historyDataFileName, Context.MODE_PRIVATE).use { fos ->
+                    val oos = ObjectOutputStream(fos)
+                    oos.writeObject(newList)
+                    oos.close()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        return history
     }
 }

@@ -1,27 +1,27 @@
 package com.vocaby.app.ui.dictionary
 
 import android.content.Context
-import com.vocaby.app.ui.dictionary.SearchResultsFragment.Companion.newInstance
-import com.vocaby.app.adapters.SearchHistoryAdapter
-import com.arlib.floatingsearchview.FloatingSearchView
-import android.widget.TextView
-import android.widget.ProgressBar
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.vocaby.app.R
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.arlib.floatingsearchview.FloatingSearchView
+import com.arlib.floatingsearchview.FloatingSearchView.OnQueryChangeListener
 import com.arlib.floatingsearchview.FloatingSearchView.OnSearchListener
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
-import com.arlib.floatingsearchview.FloatingSearchView.OnQueryChangeListener
+import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
+import com.vocaby.app.adapters.SearchHistoryAdapter
 import com.vocaby.app.states.GenericState
+import com.vocaby.app.ui.dictionary.SearchResultsFragment.Companion.newInstance
+import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
-import com.vocaby.app.viewmodels.DictionaryViewModelKt
 
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener {
     private lateinit var ctx: Context
@@ -34,7 +34,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     private lateinit var progressBar: ProgressBar
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
 
-    private val dictionaryViewModel: DictionaryViewModelKt by activityViewModels {
+    private val dictionaryViewModel: DictionaryViewModel by activityViewModels {
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
 

@@ -2,7 +2,6 @@ package com.vocaby.app.data.dao
 
 import androidx.room.*
 import com.vocaby.app.data.entity.*
-import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.flow.Flow
 
 @Dao

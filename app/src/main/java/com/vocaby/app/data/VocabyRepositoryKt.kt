@@ -15,14 +15,6 @@ import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.utils.Logger
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableSource
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.functions.Consumer
-import io.reactivex.rxjava3.functions.Function
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.lang.StringBuilder
 import java.util.*
 
 class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Application) {
@@ -110,12 +102,16 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
         return null
     }
 
-    fun writeToHistory(entry: String): List<String> {
+    fun writeToHistory(entry: String): List<String>? {
         return dataManager.writeHistory(entry)
     }
 
-    fun getHistory(): List<String> {
+    fun getHistory(): LinkedList<String>? {
         return dataManager.history
+    }
+
+    fun clearHistory(): List<String>? {
+        return dataManager.clearHistory()
     }
 
     fun getEntriesByCharacter(character: String): List<String> {

@@ -14,7 +14,7 @@ import com.vocaby.app.utils.VocabyAlgo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DictionaryViewModelKt(private val repository: VocabyRepositoryKt) : ViewModel() {
+class DictionaryViewModel(private val repository: VocabyRepositoryKt) : ViewModel() {
     var searchSuggestionThreshold: Int = 4
 
     private val _searchedEntry: MutableLiveData<String> = MutableLiveData()
@@ -117,6 +117,10 @@ class DictionaryViewModelKt(private val repository: VocabyRepositoryKt) : ViewMo
         }
     }
 
+    fun clearHistory() {
+        _searchHistory.value = repository.clearHistory()
+    }
+
     private fun writeToHistory(entry: String) {
         val historyList = repository.writeToHistory(entry)
         _searchHistory.postValue(historyList)
@@ -131,9 +135,9 @@ class DictionaryViewModelFactory(
     private val repository: VocabyRepositoryKt
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(DictionaryViewModelKt::class.java)) {
+        if (modelClass.isAssignableFrom(DictionaryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return DictionaryViewModelKt(repository) as T
+            return DictionaryViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

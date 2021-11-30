@@ -21,7 +21,9 @@ import com.vocaby.app.VocabyApplication
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.viewstate.SaveStateModel
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
-import com.vocaby.app.viewmodels.*
+import com.vocaby.app.viewmodels.SearchResultsViewModel
+import com.vocaby.app.viewmodels.SearchResultsViewModelFactory
+import com.vocaby.app.viewmodels.UserViewModelKt
 import kotlinx.android.synthetic.main.fragment_search_results.*
 
 class SearchResultsFragment : Fragment() {

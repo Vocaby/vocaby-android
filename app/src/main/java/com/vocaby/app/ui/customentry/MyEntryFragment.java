@@ -25,7 +25,6 @@ import com.vocaby.app.R;
 import com.vocaby.app.adapters.CustomEntryAdapter;
 import com.vocaby.app.models.payload.PayloadState;
 import com.vocaby.app.utils.StringFormatter;
-import com.vocaby.app.viewmodels.DictionaryViewModel;
 import com.vocaby.app.viewmodels.MyEntryViewModel;
 
 public class MyEntryFragment extends Fragment implements CustomEntryAdapter.ItemTouchListener {
@@ -38,7 +37,6 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
     private CustomEntryAdapter customEntryAdapter;
 
     private MyEntryViewModel entryViewModel;
-    private DictionaryViewModel dictionaryViewModel;
 
     public MyEntryFragment() {
         // Required empty public constructor
@@ -68,7 +66,6 @@ public class MyEntryFragment extends Fragment implements CustomEntryAdapter.Item
         super.onViewCreated(view, savedInstanceState);
         setupRecyclerView(view);
 
-        dictionaryViewModel = new ViewModelProvider(requireActivity()).get(DictionaryViewModel.class);
         entryViewModel = new ViewModelProvider(requireActivity()).get(MyEntryViewModel.class);
 
         entryViewModel.getEntryResultPayload().observe(getViewLifecycleOwner(), payload -> {

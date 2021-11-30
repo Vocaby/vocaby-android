@@ -19,7 +19,10 @@ import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.FragmentAdapter
 import com.vocaby.app.receivers.NotificationReceiver
-import com.vocaby.app.viewmodels.*
+import com.vocaby.app.viewmodels.DictionaryViewModel
+import com.vocaby.app.viewmodels.DictionaryViewModelFactory
+import com.vocaby.app.viewmodels.UserViewModelFactory
+import com.vocaby.app.viewmodels.UserViewModelKt
 
 open class MainActivity : AppCompatActivity() {
     private lateinit var alarmManager: AlarmManager
@@ -28,7 +31,7 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var navigationView: BottomNavigationView
-    private val dictionaryViewModel: DictionaryViewModelKt by viewModels{
+    private val dictionaryViewModel: DictionaryViewModel by viewModels{
         DictionaryViewModelFactory((application as VocabyApplication).repository)
     }
 

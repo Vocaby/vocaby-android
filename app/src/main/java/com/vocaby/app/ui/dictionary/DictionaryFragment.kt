@@ -1,20 +1,20 @@
 package com.vocaby.app.ui.dictionary
 
-import androidx.activity.OnBackPressedCallback
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
+import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
-import com.vocaby.app.viewmodels.DictionaryViewModelKt
 
 class DictionaryFragment : Fragment() {
     private lateinit var backPressedCallback: OnBackPressedCallback
-    val dictionaryViewModel: DictionaryViewModelKt by activityViewModels{
+    val dictionaryViewModel: DictionaryViewModel by activityViewModels{
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
 

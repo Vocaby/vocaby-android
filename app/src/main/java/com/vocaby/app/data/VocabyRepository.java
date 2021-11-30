@@ -66,7 +66,7 @@ public class VocabyRepository {
         this.application = application;
         VocabyDatabase vocabyDatabase = VocabyDatabase.getDatabase(application);
         vocabyDao = vocabyDatabase.vocabyDao();
-        dataManager = DataManager.getInstance(application);
+        dataManager = DataManager.Companion.getInstance(application);
         userSharedPreference = application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE);
         entrySharedPreference = application.getSharedPreferences(DICTIONARY_ENTRIES_KEY, Context.MODE_PRIVATE);
     }
@@ -94,7 +94,7 @@ public class VocabyRepository {
     }
 
     public Single<List<String>> clearHistory() {
-        return dataManager.clearHistory();
+        return null;
     }
 
     public Completable importSavesFromExternalStorage(Uri uri) {
