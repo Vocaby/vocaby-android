@@ -1,105 +1,114 @@
-package com.vocaby.app.receivers;
+package com.vocaby.app.receivers
 
-import android.app.Application;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.BroadcastReceiver
+import android.content.Intent
+import android.app.NotificationManager
+import android.app.Application
+import androidx.room.rxjava3.EmptyResultSetException
+import com.vocaby.app.ui.MainActivity
+import android.app.PendingIntent
+import com.vocaby.app.R
+import android.app.NotificationChannel
+import android.content.Context
+import androidx.core.app.NotificationCompat
+import com.vocaby.app.data.VocabyDatabaseKt
+import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.utils.Logger
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.concurrent.ThreadLocalRandom
 
-import androidx.core.app.NotificationCompat;
-import androidx.room.rxjava3.EmptyResultSetException;
+class NotificationReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val vocabyDao =
+            VocabyDatabaseKt.getDatabase(context.applicationContext, CoroutineScope(Dispatchers.Main.immediate))
+                .vocabyDao()
+        val vocabyRepository = VocabyRepositoryKt(vocabyDao, context.applicationContext as Application)
+        val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
+        CoroutineScope(Dispatchers.Main.immediate).launch(CoroutineExceptionHandler { _, throwable ->
+            when (throwable) {
+                is EmptyResultSetException -> {
+                    val title = "No Saved Words"
+                    val message = "Save words in the app to display in the notification"
+                    createNotification(context, notificationManager, title, message)
+                }
 
-import com.vocaby.app.R;
-import com.vocaby.app.data.VocabyRepository;
-import com.vocaby.app.models.dictionary.DefinitionGroupModel;
-import com.vocaby.app.models.dictionary.EntryModel;
-import com.vocaby.app.ui.MainActivity;
+                else -> Logger.reportErrorToBugsnag(throwable)
+            }
+        }) {
+            val saves = vocabyRepository.getSavedWords()
+            val prev_word = sp.getString("NOTIF_PREV_SELECT", "")
+            
+            if (saves.isEmpty()) {
+                val editor = sp.edit()
+                editor.putString("NOTIF_PREV_SELECT", "")
+                editor.apply()
+                throw EmptyResultSetException("User has no saves!")
+            }
 
-import java.util.concurrent.ThreadLocalRandom;
+            var index = ThreadLocalRandom.current().nextInt(0, saves.size)
+            if (saves.size > 1) {
+                while (saves[index] == prev_word) {
+                    index = ThreadLocalRandom.current().nextInt(0, saves.size)
+                }
+            }
 
-import io.reactivex.rxjava3.disposables.Disposable;
+            val entry = saves[index]
+            val entryModel = vocabyRepository.getAllEntryData(entry)
+            var message = "No definition found"
 
-public class NotificationReceiver extends BroadcastReceiver {
-    private static final String CHANNEL_ID = "VOCABY_CHANNEL";
-    private Disposable disposable;
+            entryModel?.let { model ->
+                val group = model.firstGroup
+                message = group?.definitionData?.get(0).toString()
+            }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        VocabyRepository vocabyRepository = new VocabyRepository((Application) context.getApplicationContext());
-        SharedPreferences sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE);
-
-        disposable = vocabyRepository.getUserSaves()
-                .flatMap(saves -> {
-                    String prev_word = sp.getString("NOTIF_PREV_SELECT", "");
-                    if(saves.isEmpty()) {
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putString("NOTIF_PREV_SELECT", "");
-                        editor.apply();
-                        throw new EmptyResultSetException("User has no saves!");
-                    }
-
-                    int index = ThreadLocalRandom.current().nextInt(0, saves.size());
-                    if(saves.size() > 1) {
-                        while(saves.get(index).equals(prev_word)) {
-                            index = ThreadLocalRandom.current().nextInt(0, saves.size());
-                        }
-                    }
-
-                    return vocabyRepository.getWordDataPackageLocally(saves.get(index));
-                }).subscribe(wordPackage -> {
-                    EntryModel wordData = wordPackage.getEntryData();
-                    String word = wordData.getEntry();
-
-                    DefinitionGroupModel group = wordData.getFirstGroup();
-                    // Non-existent custom entry saved
-                    String message = group == null ? "No definition found"
-                            : group.getDefinitionData().get(0).toString();
-
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("NOTIF_PREV_SELECT", word);
-                    editor.apply();
-
-                    createNotification(context, notificationManager, word, message);
-                }, error -> {
-                    if(error instanceof EmptyResultSetException) {
-                        String title = "No Saved Words";
-                        String message = "Save words in the app to display in the notification";
-                        createNotification(context, notificationManager, title, message);
-                    } else {
-                        error.printStackTrace();
-                    }
-                });
+            val editor = sp.edit()
+            editor.putString("NOTIF_PREV_SELECT", entry)
+            editor.apply()
+            createNotification(context, notificationManager, entry, message)
+        }
     }
 
-    private void createNotification(Context context, NotificationManager notificationManager, String title, String message) {
-        disposable.dispose();
-        createNotificationChannel(notificationManager);
-        Intent resultIntent = new Intent(context, MainActivity.class);
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0,
-                resultIntent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification_white)
-                .setColor(context.getColor(R.color.colorPrimaryAccent))
-                .setContentTitle(title.toUpperCase())
-                .setContentIntent(resultPendingIntent)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(message))
-                .setContentText(message);
-        notificationManager.notify(313, builder.build());
+    private fun createNotification(
+        context: Context,
+        notificationManager: NotificationManager,
+        title: String,
+        message: String
+    ) {
+        createNotificationChannel(notificationManager)
+        val resultIntent = Intent(context, MainActivity::class.java)
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        val resultPendingIntent = PendingIntent.getActivity(
+            context, 0,
+            resultIntent, PendingIntent.FLAG_IMMUTABLE
+        )
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification_white)
+            .setColor(context.getColor(R.color.colorPrimaryAccent))
+            .setContentTitle(title.uppercase())
+            .setContentIntent(resultPendingIntent)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(message)
+            )
+            .setContentText(message)
+        notificationManager.notify(313, builder.build())
     }
 
-    private void createNotificationChannel(NotificationManager notificationManager) {
-        CharSequence name = "Vocaby Notification";
-        String description = "Vocaby Notification";
-        int importance = NotificationManager.IMPORTANCE_LOW;
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-        channel.setDescription(description);
-        notificationManager.createNotificationChannel(channel);
+    private fun createNotificationChannel(notificationManager: NotificationManager) {
+        val name: CharSequence = "Vocaby Notification"
+        val description = "Vocaby Notification"
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val channel = NotificationChannel(CHANNEL_ID, name, importance)
+        channel.description = description
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    companion object {
+        private const val CHANNEL_ID = "VOCABY_CHANNEL"
     }
 }

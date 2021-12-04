@@ -13,15 +13,15 @@ class NotificationFragment : PreferenceFragmentCompat() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val view = super.onCreateView(inflater, container, savedInstanceState)!!
-        val backButton = view.findViewById<Button>(R.id.back_button)
-        backButton.setOnClickListener { requireActivity().onBackPressed() }
+    ): View? {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        val backButton = view?.findViewById<Button>(R.id.back_button)
+        backButton?.setOnClickListener { requireActivity().onBackPressed() }
 
         return view
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.notification_preferences, rootKey)
     }
 }
