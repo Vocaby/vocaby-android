@@ -1,10 +1,8 @@
-package com.vocaby.app.exceptions;
+package com.vocaby.app.exceptions
 
-public class SaveRepetitionException extends Exception {
-    public SaveRepetitionException() {
-        super();
-    }
-    public SaveRepetitionException(String errorMessage) {
-        super(errorMessage);
-    }
+import java.lang.Exception
+
+class SaveRepetitionException : Exception {
+    constructor() : super()
+    constructor(errorMessage: String?) : super(errorMessage)
 }

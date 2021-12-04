@@ -1,13 +1,10 @@
-package com.vocaby.app;
+package com.vocaby.app
 
-public class Constants {
-    public static final String DEBUG_TAG = "VOCABYDEBUG";
-    public static final String VOCABY_API_SERVER = "https://api.vocaby.app/";
-    public static final String USER_ID_KEY = "USER_ID";
-    public static final String CURRENT_USER_ID_KEY = "CURRENT_USER_ID";
-    public static final String ITEM_PAYLOAD_KEY = "CUSTOM_ENTRY";
-
-    public static final String DICTIONARY_ENTRIES_KEY = "DICT_ENTS";
-
-    public static final String EXPORT_FILE_TYPE_FIELD = "vocabyExportType";
+object Constants {
+    const val DEBUG_TAG = "VOCABYDEBUG"
+    const val USER_ID_KEY = "USER_ID"
+    const val CURRENT_USER_ID_KEY = "CURRENT_USER_ID"
+    const val ITEM_PAYLOAD_KEY = "CUSTOM_ENTRY"
+    const val DICTIONARY_ENTRIES_KEY = "DICT_ENTS"
+    const val EXPORT_FILE_TYPE_FIELD = "vocabyExportType"
 }

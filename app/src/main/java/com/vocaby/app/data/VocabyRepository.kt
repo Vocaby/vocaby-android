@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.vocaby.app.Constants
-import com.vocaby.app.data.dao.VocabyDaoKt
+import com.vocaby.app.data.dao.VocabyDao
 import com.vocaby.app.data.entity.*
 import com.vocaby.app.models.BasicExportModel
 import com.vocaby.app.models.customentry.DefinitionChanges
@@ -31,7 +31,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
 
-class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Application) {
+class VocabyRepository(private val vocabyDao: VocabyDao, val application: Application) {
     private val userSharedPreference: SharedPreferences =
         application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE)
     private val entrySharedPreference: SharedPreferences =

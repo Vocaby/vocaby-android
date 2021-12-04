@@ -5,7 +5,7 @@ import com.vocaby.app.data.entity.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface VocabyDaoKt {
+interface VocabyDao {
     /** -------------------- USER -------------------- **/
     @Query("SELECT EXISTS(SELECT * FROM vocaby_user WHERE user_id = :id)")
     suspend fun checkUser(id: Int): Boolean

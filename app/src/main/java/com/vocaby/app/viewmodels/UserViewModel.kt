@@ -1,12 +1,12 @@
 package com.vocaby.app.viewmodels
 
 import androidx.lifecycle.*
-import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.utils.Logger
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class UserViewModel(private val repository: VocabyRepositoryKt) : ViewModel() {
+class UserViewModel(private val repository: VocabyRepository) : ViewModel() {
     private val _savedWords: MutableLiveData<List<String>> = MutableLiveData(ArrayList())
     private val _savesCount: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -36,7 +36,7 @@ class UserViewModel(private val repository: VocabyRepositoryKt) : ViewModel() {
     }
 }
 
-class UserViewModelFactory(private val repository: VocabyRepositoryKt) : ViewModelProvider.Factory {
+class UserViewModelFactory(private val repository: VocabyRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

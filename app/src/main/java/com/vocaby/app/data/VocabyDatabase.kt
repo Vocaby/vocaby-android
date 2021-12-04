@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.vocaby.app.data.dao.VocabyDaoKt
+import com.vocaby.app.data.dao.VocabyDao
 import com.vocaby.app.data.entity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -13,20 +13,20 @@ import kotlinx.coroutines.launch
 @Database(entities = [User::class, UserSave::class,
     Type::class, Word::class, Definition::class, CustomEntry::class, CustomDefinition::class,
     CustomEntryGroup::class], version = 1, exportSchema = false)
-abstract class VocabyDatabaseKt : RoomDatabase() {
-    abstract fun vocabyDao() : VocabyDaoKt
+abstract class VocabyDatabase : RoomDatabase() {
+    abstract fun vocabyDao() : VocabyDao
 
     companion object {
         @Volatile
-        private var INSTANCE: VocabyDatabaseKt? = null
+        private var INSTANCE: VocabyDatabase? = null
 
-        fun getDatabase(context: Context, scope: CoroutineScope): VocabyDatabaseKt {
+        fun getDatabase(context: Context, scope: CoroutineScope): VocabyDatabase {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    VocabyDatabaseKt::class.java,
+                    VocabyDatabase::class.java,
                     "database"
                 ).createFromAsset("databases/database.db").addCallback(Callback(scope)).build()
 
@@ -48,7 +48,7 @@ abstract class VocabyDatabaseKt : RoomDatabase() {
             }
         }
 
-        fun populateDatabase(dao: VocabyDaoKt) {
+        fun populateDatabase(dao: VocabyDao) {
             val types = listOf(
                 Type("noun"),
                 Type("verb"),

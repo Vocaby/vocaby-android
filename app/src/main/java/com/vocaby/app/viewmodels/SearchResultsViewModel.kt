@@ -3,7 +3,7 @@ package com.vocaby.app.viewmodels
 import android.view.View.GONE
 import androidx.lifecycle.*
 import com.vocaby.app.R
-import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.viewstate.SaveStateModel
 import com.vocaby.app.utils.SingleLiveEvent
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class SearchResultsViewModel(
     private val entry: String,
-    private val repository: VocabyRepositoryKt,
+    private val repository: VocabyRepository,
     private val saveModel: SaveStateModel,
 ): ViewModel() {
     private var _entryData: MutableLiveData<ArrayList<EntryModel?>> = MutableLiveData()
@@ -68,7 +68,7 @@ class SearchResultsViewModel(
 
 class SearchResultsViewModelFactory(
     private val entry: String,
-    private val repository: VocabyRepositoryKt,
+    private val repository: VocabyRepository,
     private val saveModel: SaveStateModel
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -11,8 +11,8 @@ import com.vocaby.app.R
 import android.app.NotificationChannel
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import com.vocaby.app.data.VocabyDatabaseKt
-import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.data.VocabyDatabase
+import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.utils.Logger
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -25,9 +25,9 @@ class NotificationReceiver : BroadcastReceiver() {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val vocabyDao =
-            VocabyDatabaseKt.getDatabase(context.applicationContext, CoroutineScope(Dispatchers.Main.immediate))
+            VocabyDatabase.getDatabase(context.applicationContext, CoroutineScope(Dispatchers.Main.immediate))
                 .vocabyDao()
-        val vocabyRepository = VocabyRepositoryKt(vocabyDao, context.applicationContext as Application)
+        val vocabyRepository = VocabyRepository(vocabyDao, context.applicationContext as Application)
         val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
         CoroutineScope(Dispatchers.Main.immediate).launch(CoroutineExceptionHandler { _, throwable ->
             when (throwable) {
@@ -42,7 +42,7 @@ class NotificationReceiver : BroadcastReceiver() {
         }) {
             val saves = vocabyRepository.getSavedWords()
             val prev_word = sp.getString("NOTIF_PREV_SELECT", "")
-            
+
             if (saves.isEmpty()) {
                 val editor = sp.edit()
                 editor.putString("NOTIF_PREV_SELECT", "")

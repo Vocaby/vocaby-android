@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.*
 import com.vocaby.app.Constants
-import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.payload.ItemIntPayload
 import com.vocaby.app.models.payload.ItemStringPayload
 import com.vocaby.app.models.payload.PayloadState
@@ -13,7 +13,7 @@ import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
 import java.util.*
 
-class MyEntryViewModel(private val repository: VocabyRepositoryKt): ViewModel() {
+class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private val _entryCount: MutableLiveData<Int> = MutableLiveData(0)
     private val _entries: SingleLiveEvent<List<String>> = SingleLiveEvent()
     private val _entryState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
@@ -94,7 +94,7 @@ class MyEntryViewModel(private val repository: VocabyRepositoryKt): ViewModel() 
 }
 
 class MyEntryViewModelFactory(
-    private val repository: VocabyRepositoryKt
+    private val repository: VocabyRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MyEntryViewModel::class.java)) {

@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.vocaby.app.Constants
-import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class EntryViewModel(
-    private val repository: VocabyRepositoryKt,
+    private val repository: VocabyRepository,
     private val payload: ItemStringPayload?
 ) : ViewModel() {
     companion object {
@@ -225,7 +225,7 @@ class EntryViewModel(
 }
 
 class EntryViewModelFactory(
-    private val repository: VocabyRepositoryKt,
+    private val repository: VocabyRepository,
     private val payload: ItemStringPayload?
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

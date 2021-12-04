@@ -1,7 +1,7 @@
 package com.vocaby.app.viewmodels
 
 import androidx.lifecycle.*
-import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.SearchSuggestionItem
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.GenericState
@@ -11,7 +11,7 @@ import com.vocaby.app.utils.VocabyAlgo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DictionaryViewModel(private val repository: VocabyRepositoryKt) : ViewModel() {
+class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel() {
     var searchSuggestionThreshold: Int = 4
 
     private val _searchedEntry: MutableLiveData<String> = MutableLiveData()
@@ -137,7 +137,7 @@ class DictionaryViewModel(private val repository: VocabyRepositoryKt) : ViewMode
 }
 
 class DictionaryViewModelFactory(
-    private val repository: VocabyRepositoryKt
+    private val repository: VocabyRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DictionaryViewModel::class.java)) {

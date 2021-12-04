@@ -7,12 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.vocaby.app.R
-import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
 
-class DataTransferViewModel(val repository: VocabyRepositoryKt) : ViewModel() {
+class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     companion object {
         const val EXPORT_SAVE = 0
         const val EXPORT_SAVE_BACKUP = 1
@@ -130,7 +130,7 @@ class DataTransferViewModel(val repository: VocabyRepositoryKt) : ViewModel() {
     }
 }
 class DataTransferViewModelFactory(
-    private val repository: VocabyRepositoryKt
+    private val repository: VocabyRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DataTransferViewModel::class.java)) {

@@ -11,8 +11,8 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.room.rxjava3.EmptyResultSetException
 import com.vocaby.app.R
-import com.vocaby.app.data.VocabyDatabaseKt
-import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.data.VocabyDatabase
+import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.exceptions.SaveRepetitionException
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.ui.MainActivity
@@ -50,9 +50,9 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
     private fun updateWidgetTexts(context: Context, id: Int, remoteViews: RemoteViews?) {
         val appWidgetManager = AppWidgetManager.getInstance(context)
         val vocabyDao =
-            VocabyDatabaseKt.getDatabase(context.applicationContext, CoroutineScope(Dispatchers.Main.immediate))
+            VocabyDatabase.getDatabase(context.applicationContext, CoroutineScope(Dispatchers.Main.immediate))
                 .vocabyDao()
-        val vocabyRepository = VocabyRepositoryKt(vocabyDao, context.applicationContext as Application)
+        val vocabyRepository = VocabyRepository(vocabyDao, context.applicationContext as Application)
         val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
 
         remoteViews?.let { view ->
