@@ -3,16 +3,30 @@ package com.vocaby.app.data
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.preference.PreferenceManager
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.JsonSyntaxException
 import com.vocaby.app.Constants
 import com.vocaby.app.data.dao.VocabyDaoKt
 import com.vocaby.app.data.entity.*
+import com.vocaby.app.models.BasicExportModel
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.datapackage.EntryDataPackage
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
+import com.vocaby.app.utils.Logger
+import com.vocaby.app.utils.StringFormatter
+import com.vocaby.app.utils.exception.IllegalFileException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -26,7 +40,13 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
     private val dataManager: DataManager = DataManager.getInstance(application)
 
     /** --------------------- USER -------------------- **/
-    suspend fun setupUser() = vocabyDao.checkUser(userId)
+    suspend fun setupUser() {
+        val exists = vocabyDao.checkUser(userId)
+        if (!exists) {
+            val id = vocabyDao.createUser(User())
+            userSharedPreference.edit().putInt(Constants.CURRENT_USER_ID_KEY, id.toInt()).apply()
+        }
+    }
 
     /** --------------------- ENTRY -------------------- **/
     suspend fun setupDictionaryEntries() {
@@ -60,11 +80,11 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
     private fun convertToEntryModel(wordDefinitions: WordDefinitions?): EntryModel? {
         wordDefinitions?.let {
             val pronunciation =
-                wordDefinitions.word.pronunciation?.let { wordDefinitions.word.pronunciation } ?: ""
+                wordDefinitions.wordData.pronunciation?.let { wordDefinitions.wordData.pronunciation } ?: ""
 
             val wordData = EntryModel(
-                wordDefinitions.word.id,
-                wordDefinitions.word.word,
+                wordDefinitions.wordData.id,
+                wordDefinitions.wordData.word,
                 pronunciation
             )
 
@@ -116,9 +136,13 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
     }
 
     /** --------------------- SAVES -------------------- **/
-    fun getSavedWords() = vocabyDao.getSaves(userId)
+    fun getSavedWordsFlow() = vocabyDao.getSavesFlow(userId)
     fun hasSaved(entry: String) = vocabyDao.hasSave(userId, entry)
-    suspend fun addSaveItem(entry: String) = vocabyDao.addSave(UserSave(userId, entry))
+    suspend fun getSavedWords() = vocabyDao.getSaves(userId)
+    suspend fun addSaveItem(entry: String) {
+        Logger.reportToDebug("$userId")
+        vocabyDao.addSave(UserSave(userId, entry))
+    }
     suspend fun removeSaveItem(entry: String) = vocabyDao.removeSave(userId, entry)
     suspend fun clearSaves() = vocabyDao.clearSaves(userId)
 
@@ -258,7 +282,7 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
 
         val deletedGroups: MutableList<CustomEntryGroup> = ArrayList()
         for (group in groupChanges.deletedItems) {
-            deletedGroups.add(CustomEntryGroup(group.groupId))
+            deletedGroups.add(CustomEntryGroup(group.groupId, group.type))
         }
 
         val updatedGroups: MutableList<CustomEntryGroup> =
@@ -320,15 +344,16 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
 
         vocabyDao.deleteCustomEntryGroups(deletedGroups)
         vocabyDao.updateCustomEntryGroups(updatedGroups)
+
         val ids = vocabyDao.insertCustomEntryGroups(addedGroups)
-        val newGroups =
-            groupChanges.addedItems
+        val newGroups = groupChanges.addedItems
         for (i in newGroups.indices) {
             val definitionChanges =
                 definitionChangesMap[newGroups[i].type]
             if (definitionChanges != null) definitionChanges.groupId =
                 ids[i].toInt()
         }
+
         val addedDefinitions: MutableList<CustomDefinition> =
             ArrayList()
         for (definitionChanges in definitionChangesMap.values) {
@@ -349,6 +374,69 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
         vocabyDao.deleteCustomDefinitions(deletedDefinitions)
 
         return entryId
+    }
+
+    /** --------------------- IMPORT / EXPORT -------------------- **/
+    suspend fun importSavesFromExternalStorage(uri: Uri) = withContext(Dispatchers.IO) {
+        val inputStream = application.contentResolver.openInputStream(uri)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+
+        try {
+            val gson = Gson()
+            val jsonObject = gson.fromJson(reader, JsonObject::class.java)
+            val saves: MutableList<UserSave> = ArrayList()
+            if (jsonObject.has(Constants.EXPORT_FILE_TYPE_FIELD)) {
+                if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_FILE_TYPE_FIELD)
+                        .asString == "saves"
+                ) {
+                    for (item in jsonObject.getAsJsonArray("data")) {
+                        saves.add(
+                            UserSave(
+                                userId,
+                                StringFormatter.cleanText(item.asString)
+                            )
+                        )
+                    }
+
+                    vocabyDao.addSaves(saves)
+                } else {
+                    throw IllegalFileException(IllegalFileException.INVALID_FILE)
+                }
+            } else {
+                throw IllegalFileException(IllegalFileException.INVALID_FORMAT)
+            }
+        } catch (error: JsonSyntaxException) {
+            throw IllegalFileException(IllegalFileException.INVALID_FORMAT)
+        } finally {
+            inputStream?.close()
+            reader.close()
+        }
+    }
+
+    suspend fun writeSavesJsonToExternalStorage(saves: List<String>, uri: Uri)
+    = withContext(Dispatchers.IO) {
+        application.contentResolver.openOutputStream(uri).use { outputStream ->
+            val bw = BufferedWriter(OutputStreamWriter(outputStream))
+            val gson = Gson()
+            gson.toJson(BasicExportModel("saves", saves), bw)
+            bw.flush()
+            bw.close()
+        }
+    }
+
+    suspend fun writeSavesToExternalStorage(saves: List<String>, uri: Uri)
+    = withContext(Dispatchers.IO) {
+        application.contentResolver.openOutputStream(uri).use { outputStream ->
+            val bw = BufferedWriter(OutputStreamWriter(outputStream))
+
+            for (i in saves.indices) {
+                bw.write(saves[i])
+                bw.newLine()
+            }
+
+            bw.flush()
+            bw.close()
+        }
     }
 
     /** --------------------- HISTORY -------------------- **/

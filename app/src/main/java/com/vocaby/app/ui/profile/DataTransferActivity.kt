@@ -1,55 +1,59 @@
-package com.vocaby.app.ui.profile;
+package com.vocaby.app.ui.profile
 
-import android.app.Activity;
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity
+import com.vocaby.app.viewmodels.DataTransferViewModel
+import android.os.Bundle
+import com.vocaby.app.R
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
+import android.content.res.ColorStateList
+import android.widget.Button
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.viewModels
+import com.vocaby.app.VocabyApplication
+import com.vocaby.app.utils.LiveDataUtil.observeOnce
+import com.vocaby.app.viewmodels.DataTransferViewModelFactory
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-
-import com.vocaby.app.R;
-import com.vocaby.app.viewmodels.DataTransferViewModel;
-
-public class DataTransferActivity extends AppCompatActivity {
-    private DataTransferViewModel dataTransferViewModel;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_data_transfer);
-
-        Button cancelButton = findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(v -> {
-            setResult(RESULT_OK, dataTransferViewModel.addResult());
-            finish();
-        });
-
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
-        TextView progressText = findViewById(R.id.progress_text);
-
-        dataTransferViewModel = new ViewModelProvider(this).get(DataTransferViewModel.class);
-        Intent directoryPickerIntent = dataTransferViewModel.handleReceived(getIntent());
-        directorySelector.launch(directoryPickerIntent);
-
-        dataTransferViewModel.getProgressText().observe(this, progressText::setText);
-        dataTransferViewModel.getTransferStatus().observe(this, (successful) -> {
-            progressBar.setIndeterminate(false);
-            progressBar.setMax(1);
-            progressBar.incrementProgressBy(1);
-            if (!successful) progressBar.setProgressTintList(ColorStateList.valueOf(getColor(R.color.colorHeadline)));
-        });
+class DataTransferActivity : AppCompatActivity() {
+    private val dataTransferViewModel: DataTransferViewModel by viewModels {
+        DataTransferViewModelFactory((application as VocabyApplication).repository)
     }
 
-    private final ActivityResultLauncher<Intent> directorySelector = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) dataTransferViewModel.handleResult(result.getData());
-                else finish();
-            }
-    );
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_data_transfer)
+
+        val cancelButton = findViewById<Button>(R.id.cancel_button)
+        cancelButton.setOnClickListener {
+            setResult(RESULT_OK, dataTransferViewModel.addResult())
+            finish()
+        }
+
+        val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+        val progressText = findViewById<TextView>(R.id.progress_text)
+
+        val directoryPickerIntent = dataTransferViewModel.handleReceived(intent)
+        directorySelector.launch(directoryPickerIntent)
+        dataTransferViewModel.progressText.observeOnce(this) { text ->
+            progressText.setText(text)
+        }
+
+        dataTransferViewModel.transferStatus.observe(this) { successful: Boolean? ->
+            progressBar.isIndeterminate = false
+            progressBar.max = 1
+            progressBar.incrementProgressBy(1)
+            if (!successful!!) progressBar.progressTintList =
+                ColorStateList.valueOf(getColor(R.color.colorHeadline))
+        }
+    }
+
+    private val directorySelector = registerForActivityResult(
+        StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) dataTransferViewModel.handleResult(
+            result.data
+        ) else finish()
+    }
 }

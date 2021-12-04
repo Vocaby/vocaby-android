@@ -1,65 +1,52 @@
-package com.vocaby.app.ui.profile;
+package com.vocaby.app.ui.profile
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import androidx.activity.OnBackPressedCallback
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.vocaby.app.R
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+class ProfileFragment : Fragment() {
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
-import com.vocaby.app.R;
-
-
-public class ProfileFragment extends Fragment {
-    private OnBackPressedCallback onBackPressedCallback;
-
-    public ProfileFragment() {
-        // Required empty public constructor
+    override fun onResume() {
+        super.onResume()
+        onBackPressedCallback.isEnabled = true
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        onBackPressedCallback.setEnabled(true);
+    override fun onPause() {
+        super.onPause()
+        onBackPressedCallback.isEnabled = false
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        onBackPressedCallback.setEnabled(false);
-    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-
-        if(savedInstanceState == null) {
-            getChildFragmentManager().beginTransaction().replace(R.id.profile_fragment_container,
-                    new ProfileHomeFragment()).commit();
+        if (savedInstanceState == null) {
+            childFragmentManager.beginTransaction().replace(
+                R.id.profile_fragment_container,
+                ProfileHomeFragment()
+            ).commit()
         }
 
-        onBackPressedCallback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (getChildFragmentManager().getBackStackEntryCount() > 0) getChildFragmentManager().popBackStack();
-                if (getChildFragmentManager().getBackStackEntryCount() == 0) {
-                    this.setEnabled(false);
-                    requireActivity().onBackPressed();
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (childFragmentManager.backStackEntryCount > 0) childFragmentManager.popBackStack()
+                if (childFragmentManager.backStackEntryCount == 0) {
+                    this.isEnabled = false
+                    requireActivity().onBackPressed()
                 }
             }
-        };
+        }
 
-        requireActivity().getOnBackPressedDispatcher()
-                .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+        requireActivity().onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, onBackPressedCallback)
 
-        return view;
+        return view
     }
 }

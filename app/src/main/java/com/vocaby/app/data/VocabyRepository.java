@@ -433,7 +433,7 @@ public class VocabyRepository {
                     int entryId = id.intValue();
                     List<CustomEntryGroup> deletedGroups = new ArrayList<>();
                     for (DefinitionGroupModel group : groupChanges.getDeletedItems()) {
-                        deletedGroups.add(new CustomEntryGroup(group.getGroupId()));
+                        deletedGroups.add(new CustomEntryGroup(group.getGroupId(), group.getType()));
                     }
 
                     List<CustomEntryGroup> updatedGroups = new ArrayList<>();
@@ -543,15 +543,15 @@ public class VocabyRepository {
 
     private EntryModel covertToEntryModel(WordDefinitions wordDefinitions) {
         String pronunciation =
-                wordDefinitions.word.getPronunciation() != null ? wordDefinitions.word.getPronunciation() : "";
+                wordDefinitions.getWordData().getPronunciation() != null ? wordDefinitions.getWordData().getPronunciation() : "";
 
         EntryModel wordData = new EntryModel(
-                wordDefinitions.word.getId(),
-                wordDefinitions.word.getWord(),
+                wordDefinitions.getWordData().getId(),
+                wordDefinitions.getWordData().getWord(),
                 pronunciation
         );
 
-        for (Definition data : wordDefinitions.definitions) {
+        for (Definition data : wordDefinitions.getDefinitions()) {
             wordData.addDefinition(data.getPos(), data.getDefinition(), data.getSentence());
         }
 
@@ -560,27 +560,27 @@ public class VocabyRepository {
 
     private EntryModel convertEntryData(EntryWithData data) {
         String pronunciation =
-                data.customEntry.getPronunciation() != null ? data.customEntry.getPronunciation() : "";
+                data.getCustomEntry().getPronunciation() != null ? data.getCustomEntry().getPronunciation() : "";
 
         EntryModel entryData = new EntryModel(
-                data.customEntry.getEntryId(),
-                data.customEntry.getEntry(),
+                data.getCustomEntry().getEntryId(),
+                data.getCustomEntry().getEntry(),
                 pronunciation
         );
 
         List<DefinitionGroupModel> groups = new ArrayList<>();
-        for (EntryGroupWithDefinitions group : data.groups) {
+        for (EntryGroupWithDefinitions group : data.getGroups()) {
             DefinitionGroupModel groupModel = new DefinitionGroupModel(
-                    group.entryGroup.getGroupId(),
-                    group.entryGroup.getType(),
-                    group.entryGroup.getOrder()
+                    group.getEntryGroup().getGroupId(),
+                    group.getEntryGroup().getType(),
+                    group.getEntryGroup().getOrder()
             );
 
             List<DefinitionModel> definitions = new ArrayList<>();
-            for (CustomDefinition definitionData : group.definitions) {
+            for (CustomDefinition definitionData : group.getDefinitions()) {
                 DefinitionModel definitionModel = new DefinitionModel(
                         definitionData.getDefinitionId(),
-                        group.entryGroup.getType(),
+                        group.getEntryGroup().getType(),
                         definitionData.getDefinition(),
                         definitionData.getExample(),
                         definitionData.getOrder()

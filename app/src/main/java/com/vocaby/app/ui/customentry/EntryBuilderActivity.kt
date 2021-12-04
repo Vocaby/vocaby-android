@@ -28,14 +28,6 @@ import com.vocaby.app.viewmodels.EntryViewModelFactory
 
 class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     CustomGroupAdapter.ItemInteractionListener, TypeAdapter.ItemInteractionListener {
-
-    private val entryViewModel: EntryViewModel by viewModels {
-        EntryViewModelFactory(
-            (application as VocabyApplication).repository,
-            intent.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
-        )
-    }
-
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var recyclerView: RecyclerView
     private lateinit var customGroupAdapter: CustomGroupAdapter
@@ -44,8 +36,15 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     private lateinit var groupAlert: TextView
     private lateinit var pronunciationInput: EditText
     private lateinit var groupBuilder: BottomSheetDialog
-    private var createGroupButton: Button? = null
-    private var typeCreatorAlert: TextView? = null
+    private lateinit var createGroupButton: Button
+    private lateinit var typeCreatorAlert: TextView
+
+    private val entryViewModel: EntryViewModel by viewModels {
+        EntryViewModelFactory(
+            (application as VocabyApplication).repository,
+            intent.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,11 +116,12 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         }
 
         entryViewModel.selectedType.observe(this) { type ->
-            createGroupButton?.setOnClickListener {
+            createGroupButton.setOnClickListener {
                 if (type.isEmpty()) {
-                    typeCreatorAlert?.visibility = View.VISIBLE
+                    typeCreatorAlert.visibility = View.VISIBLE
                 } else {
-                    typeCreatorAlert?.visibility = View.INVISIBLE
+                    typeCreatorAlert.visibility = View.INVISIBLE
+
                     var groupBuilderActivityData =
                         Intent(this, EntryGroupBuilderActivity::class.java)
                     groupBuilderActivityData =
@@ -162,8 +162,8 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         // Add new group button
         val addGroupButton = findViewById<Button>(R.id.add_def_group_button)
         addGroupButton.setOnClickListener { groupBuilder.show() }
-        createGroupButton = groupBuilder.findViewById(R.id.create_group_button)
-        typeCreatorAlert = groupBuilder.findViewById(R.id.type_creator_alert)
+        createGroupButton = groupBuilder.findViewById(R.id.create_group_button)!!
+        typeCreatorAlert = groupBuilder.findViewById(R.id.type_creator_alert)!!
     }
 
     private fun setUpGroupBuilder() {
@@ -171,17 +171,15 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         groupBuilder.setContentView(R.layout.custom_entry_group_builder_dialog)
         groupBuilder.setOnShowListener { groupAlert.visibility = View.INVISIBLE }
 
-        val builderRecyclerView = groupBuilder.findViewById<RecyclerView>(R.id.type_container)
-        if (builderRecyclerView != null) {
-            builderRecyclerView.setHasFixedSize(true)
-            builderRecyclerView.layoutManager =
-                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-            typeAdapter = TypeAdapter(this)
-            builderRecyclerView.adapter = typeAdapter
-        }
+        val builderRecyclerView = groupBuilder.findViewById<RecyclerView>(R.id.type_container)!!
+        builderRecyclerView.setHasFixedSize(true)
+        builderRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        typeAdapter = TypeAdapter(this)
+        builderRecyclerView.adapter = typeAdapter
 
-        val button = groupBuilder.findViewById<Button>(R.id.close_button)
-        button?.setOnClickListener { groupBuilder.dismiss() }
+        val button = groupBuilder.findViewById<Button>(R.id.close_button)!!
+        button.setOnClickListener { groupBuilder.dismiss() }
     }
 
     private val groupBuilderActivity = registerForActivityResult(StartActivityForResult()) {

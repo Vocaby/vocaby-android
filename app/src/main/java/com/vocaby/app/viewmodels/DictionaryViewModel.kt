@@ -1,9 +1,6 @@
 package com.vocaby.app.viewmodels
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.vocaby.app.data.VocabyRepositoryKt
 import com.vocaby.app.models.SearchSuggestionItem
 import com.vocaby.app.models.dictionary.EntryModel
@@ -24,10 +21,10 @@ class DictionaryViewModel(private val repository: VocabyRepositoryKt) : ViewMode
     private val searchStack: ArrayDeque<String> = ArrayDeque()
     private var entriesByCharacter: List<String>? = null
 
-    val searchedEntry: MutableLiveData<String> get() = _searchedEntry
-    val searchHistory: MutableLiveData<List<String>> get() = _searchHistory
-    val randomEntry: MutableLiveData<EntryModel> get() = _randomEntry
-    val searchSuggestions: MutableLiveData<GenericState<List<SearchSuggestionItem>>> get() = _searchSuggestions
+    val searchedEntry: LiveData<String> get() = _searchedEntry
+    val searchHistory: LiveData<List<String>> get() = _searchHistory
+    val randomEntry: LiveData<EntryModel> get() = _randomEntry
+    val searchSuggestions: LiveData<GenericState<List<SearchSuggestionItem>>> get() = _searchSuggestions
 
     init {
         val historyList = repository.getHistory()

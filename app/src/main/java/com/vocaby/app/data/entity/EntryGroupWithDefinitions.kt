@@ -1,23 +1,14 @@
-package com.vocaby.app.data.entity;
+package com.vocaby.app.data.entity
+import androidx.room.Embedded
+import androidx.room.Relation
 
-import androidx.room.Embedded;
-import androidx.room.Relation;
-
-import java.util.List;
-
-public class EntryGroupWithDefinitions implements Comparable<EntryGroupWithDefinitions> {
+data class EntryGroupWithDefinitions(
     @Embedded
-    public CustomEntryGroup entryGroup;
-
+    val entryGroup: CustomEntryGroup,
     @Relation(
-            parentColumn = "custom_entry_group_id",
-            entityColumn = "custom_entry_group_id",
-            entity = CustomDefinition.class
+        parentColumn = "custom_entry_group_id",
+        entityColumn = "custom_entry_group_id",
+        entity = CustomDefinition::class
     )
-    public List<CustomDefinition> definitions;
-
-    @Override
-    public int compareTo(EntryGroupWithDefinitions e) {
-        return Integer.compare(entryGroup.getOrder(), e.entryGroup.getOrder());
-    }
-}
+    val definitions: List<CustomDefinition>
+)

@@ -1,81 +1,64 @@
-package com.vocaby.app.ui.profile;
+package com.vocaby.app.ui.profile
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.fragment.app.Fragment
+import com.vocaby.app.R
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
-import com.vocaby.app.R;
-
-public class ProfileHomeFragment extends Fragment {
-    private FragmentManager fm;
-
-    public ProfileHomeFragment() {
-        // Required empty public constructor
+class ProfileHomeFragment : Fragment() {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_profile_main, container, false)
+        setupButtons(view)
+        return view
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_main, container, false);
-        fm = getParentFragmentManager();
-
-        setupButtons(view);
-        return view;
-    }
-
-    private void setupButtons(View view) {
+    private fun setupButtons(view: View) {
         // NOTIFICATION
-        Button notificationButton = view.findViewById(R.id.notification_button);
-        notificationButton.setOnClickListener(v ->
-            fm.beginTransaction()
+        val notificationButton = view.findViewById<Button>(R.id.notification_button)
+        notificationButton.setOnClickListener {
+            parentFragmentManager.beginTransaction()
                 .setCustomAnimations(
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_right_to_left,
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_left_to_right
-                ).add(R.id.profile_fragment_container, new NotificationFragment())
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_right_to_left,
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_left_to_right
+                ).add(R.id.profile_fragment_container, NotificationFragment())
                 .addToBackStack(null)
-                .commit());
+                .commit()
+        }
 
         // DATA MANAGEMENT
-        Button dataButton = view.findViewById(R.id.data_management_button);
-        dataButton.setOnClickListener(v ->             fm.beginTransaction()
+        val dataButton = view.findViewById<Button>(R.id.data_management_button)
+        dataButton.setOnClickListener {
+            parentFragmentManager.beginTransaction()
                 .setCustomAnimations(
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_right_to_left,
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_left_to_right
-                ).add(R.id.profile_fragment_container, new DataManagementFragment())
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_right_to_left,
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_left_to_right
+                ).add(R.id.profile_fragment_container, DataManagementFragment())
                 .addToBackStack(null)
-                .commit());
+                .commit()
+        }
 
         // DANGER ZONE
-        Button dangerButton = view.findViewById(R.id.danger_zone_button);
-        dangerButton.setOnClickListener(v ->             fm.beginTransaction()
+        val dangerButton = view.findViewById<Button>(R.id.danger_zone_button)
+        dangerButton.setOnClickListener {
+            parentFragmentManager.beginTransaction()
                 .setCustomAnimations(
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_right_to_left,
-                        R.anim.enter_right_to_left,
-                        R.anim.exit_left_to_right
-                ).add(R.id.profile_fragment_container, new DangerZoneFragment())
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_right_to_left,
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_left_to_right
+                ).add(R.id.profile_fragment_container, DangerZoneFragment())
                 .addToBackStack(null)
-                .commit());
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+                .commit()
+        }
     }
 }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface VocabyDaoKt {
     /** -------------------- USER -------------------- **/
     @Query("SELECT EXISTS(SELECT * FROM vocaby_user WHERE user_id = :id)")
-    suspend fun checkUser(id: Int): Int
+    suspend fun checkUser(id: Int): Boolean
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun createUser(user: User): Long
@@ -81,10 +81,16 @@ interface VocabyDaoKt {
 
     /** --------------------- SAVES -------------------- **/
     @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY id DESC")
-    fun getSaves(userId: Int): Flow<MutableList<String>>
+    fun getSavesFlow(userId: Int): Flow<MutableList<String>>
+
+    @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY id DESC")
+    suspend fun getSaves(userId: Int): List<String>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSave(userSave: UserSave)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addSaves(userSaves: List<UserSave>)
 
     @Query("DELETE FROM saves WHERE user_id = :userId AND entry = :entry")
     suspend fun removeSave(userId: Int, entry: String)

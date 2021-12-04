@@ -10,15 +10,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.app.R
+import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.SaveListAdapter
 import com.vocaby.app.ui.MainActivity
-import com.vocaby.app.viewmodels.UserViewModelKt
+import com.vocaby.app.viewmodels.UserViewModel
+import com.vocaby.app.viewmodels.UserViewModelFactory
 import kotlinx.android.synthetic.main.fragment_saves.*
 
 class SavesFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var ctx: Context
     private lateinit var savesAdapter: SaveListAdapter
-    private val userViewModel: UserViewModelKt by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels {
+        UserViewModelFactory((requireActivity().application as VocabyApplication).repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,17 +40,17 @@ class SavesFragment : Fragment(), SaveListAdapter.Interaction {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(view)
 
-        userViewModel.savedWords.observe(viewLifecycleOwner, { saves ->
+        userViewModel.savedWords.observe(viewLifecycleOwner) { saves ->
             saves?.let {
                 savesAdapter.submitList(saves)
             }
-        })
+        }
 
-        userViewModel.savesCount.observe(viewLifecycleOwner, { count ->
+        userViewModel.savesCount.observe(viewLifecycleOwner) { count ->
             count?.let {
                 saves_count.text = count.toString()
             }
-        })
+        }
     }
 
     private fun setupRecyclerView(view: View) {

@@ -1,18 +1,15 @@
-package com.vocaby.app.data.entity;
+package com.vocaby.app.data.entity
 
-import androidx.room.Embedded;
-import androidx.room.Relation;
+import androidx.room.Embedded
+import androidx.room.Relation
 
-import java.util.List;
-
-public class EntryWithData {
+data class EntryWithData(
     @Embedded
-    public CustomEntry customEntry;
-
+    val customEntry: CustomEntry,
     @Relation(
-            parentColumn = "custom_entry_id",
-            entityColumn = "custom_entry_id",
-            entity = CustomEntryGroup.class
+        parentColumn = "custom_entry_id",
+        entityColumn = "custom_entry_id",
+        entity = CustomEntryGroup::class
     )
-    public List<EntryGroupWithDefinitions> groups;
-}
+    val groups: List<EntryGroupWithDefinitions>
+)

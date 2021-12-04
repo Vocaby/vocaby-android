@@ -1,14 +1,12 @@
 package com.vocaby.app.viewmodels
 
 import android.view.View.GONE
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepositoryKt
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.viewstate.SaveStateModel
+import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -19,12 +17,12 @@ class SearchResultsViewModel(
     private val saveModel: SaveStateModel,
 ): ViewModel() {
     private var _entryData: MutableLiveData<ArrayList<EntryModel?>> = MutableLiveData()
-    private var _saveState: MutableLiveData<SaveStateModel> = MutableLiveData()
+    private var _saveState: SingleLiveEvent<SaveStateModel> = SingleLiveEvent()
     private var _missingDictionary: MutableLiveData<Int> = MutableLiveData()
 
-    val entryData: MutableLiveData<ArrayList<EntryModel?>> get() = _entryData
-    val saveState: MutableLiveData<SaveStateModel> get() = _saveState
-    val missingDictionary: MutableLiveData<Int> get() = _missingDictionary
+    val entryData: LiveData<ArrayList<EntryModel?>> get() = _entryData
+    val saveState: LiveData<SaveStateModel> get() = _saveState
+    val missingDictionary: LiveData<Int> get() = _missingDictionary
 
     init {
         saveModel.enabled = false
@@ -58,10 +56,11 @@ class SearchResultsViewModel(
                 // NO DEFINITION FOUND
                 if (wordPackage.originalData == null) {
                     saveModel.visibility = GONE
-                    _saveState.postValue(saveModel)
                 }
             }
 
+            saveModel.enabled = true
+            _saveState.postValue(saveModel)
             _entryData.postValue(data)
         }
     }

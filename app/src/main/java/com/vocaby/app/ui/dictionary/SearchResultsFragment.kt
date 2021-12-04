@@ -23,13 +23,13 @@ import com.vocaby.app.models.viewstate.SaveStateModel
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.viewmodels.SearchResultsViewModel
 import com.vocaby.app.viewmodels.SearchResultsViewModelFactory
-import com.vocaby.app.viewmodels.UserViewModelKt
+import com.vocaby.app.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_search_results.*
 
 class SearchResultsFragment : Fragment() {
     private lateinit var ctx: Context
     private lateinit var searchedWord: String
-    private val userViewModel: UserViewModelKt by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
     private val searchResultsViewModel: SearchResultsViewModel by viewModels{
         SearchResultsViewModelFactory(
             searchedWord,
@@ -40,11 +40,7 @@ class SearchResultsFragment : Fragment() {
                 R.drawable.ic_bookmark_unsaved,
                 R.drawable.ic_bookmark_saved,
                 R.string.save_button_unsaved,
-                R.string.save_button_saved,
-                R.color.gray,
-                R.color.colorPrimary,
-                false,
-                false
+                R.string.save_button_saved
             )
         )
     }
@@ -64,8 +60,10 @@ class SearchResultsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_search_results, container, false)
         val backButton = view.findViewById<Button>(R.id.back_button)
         backButton.setOnClickListener(backListener)
+
         val saveProgress = view.findViewById<ProgressBar>(R.id.save_progress)
         saveProgress.visibility = GONE
+
         return view
     }
 
@@ -73,29 +71,29 @@ class SearchResultsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         search_results_body_pager.setPageTransformer(MarginPageTransformer(40))
 
-        searchResultsViewModel.entryData.observeOnce(viewLifecycleOwner, { entryList ->
+        searchResultsViewModel.entryData.observeOnce(viewLifecycleOwner) { entryList ->
             entryList?.let {
                 setupDictionary(entryList.size)
                 search_results_body_pager.adapter = FragmentAdapter(this, entryList)
                 search_progress.visibility = GONE
             }
-        })
+        }
 
-        searchResultsViewModel.missingDictionary.observeOnce(viewLifecycleOwner, { id ->
+        searchResultsViewModel.missingDictionary.observeOnce(viewLifecycleOwner) { id ->
             val button = dictionary_selector.findViewById<RadioButton>(id)
             dictionary_selector.removeView(button)
             dictionary_selector.check(dictionary_selector.getChildAt(0).id)
-        })
+        }
 
         // Observe changes to entry save state
-        searchResultsViewModel.saveState.observe(viewLifecycleOwner, { saveState: SaveStateModel ->
+        searchResultsViewModel.saveState.observe(viewLifecycleOwner) { saveState ->
+            val icon = AppCompatResources.getDrawable(ctx, saveState.icon)
+
             save_button.visibility = saveState.visibility
             save_button.text = getString(saveState.text)
-            save_button.setTextColor(ctx.getColor(saveState.color))
             save_button.isEnabled = saveState.enabled
-            val icon = AppCompatResources.getDrawable(ctx, saveState.icon)
-            save_button.setTextColor(ctx.getColor(R.color.colorPrimaryAccent))
             save_button.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+
             save_button.setOnClickListener {
                 if (saveState.saved) {
                     userViewModel.removeSaveItem(searchedWord)
@@ -103,7 +101,7 @@ class SearchResultsFragment : Fragment() {
                     userViewModel.addSaveItem(searchedWord)
                 }
             }
-        })
+        }
     }
 
     private fun setupDictionary(size: Int) {

@@ -1,86 +1,47 @@
-package com.vocaby.app.data.entity;
+package com.vocaby.app.data.entity
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Ignore;
-import androidx.room.Index;
-import androidx.room.PrimaryKey;
+import androidx.room.*
+import com.vocaby.app.data.entity.CustomEntry
 
-@Entity(tableName = "custom_entry_group", foreignKeys = {
-        @ForeignKey(onDelete = ForeignKey.CASCADE,
-                entity = CustomEntry.class,
-                parentColumns = "custom_entry_id",
-                childColumns = "custom_entry_id")},
-        indices = {@Index("custom_entry_id")})
-public class CustomEntryGroup {
+@Entity(
+    tableName = "custom_entry_group",
+    foreignKeys = [ForeignKey(
+        onDelete = ForeignKey.CASCADE,
+        entity = CustomEntry::class,
+        parentColumns = ["custom_entry_id"],
+        childColumns = ["custom_entry_id"]
+    )],
+    indices = [Index("custom_entry_id")]
+)
+class CustomEntryGroup {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "custom_entry_group_id")
-    private int groupId;
+    var groupId = 0
 
     @ColumnInfo(name = "custom_entry_id")
-    private int entryId;
+    var entryId = 0
 
     @ColumnInfo(name = "type")
-    private String type;
+    var type: String
+    var order = 0
 
-    private int order;
-
-    public CustomEntryGroup() {
-
+    constructor(groupId: Int, type: String) {
+        this.groupId = groupId
+        this.type = type
     }
 
     @Ignore
-    public CustomEntryGroup(int groupId) {
-        this.groupId = groupId;
+    constructor(groupId: Int, entryId: Int, type: String, order: Int) {
+        this.groupId = groupId
+        this.entryId = entryId
+        this.type = type
+        this.order = order
     }
 
     @Ignore
-    public CustomEntryGroup(int groupId, int entryId, String type, int order) {
-        this.groupId = groupId;
-        this.entryId = entryId;
-        this.type = type;
-        this.order = order;
-    }
-
-    @Ignore
-    public CustomEntryGroup(int entryId, String type, int order) {
-        this.entryId = entryId;
-        this.type = type;
-        this.order = order;
-    }
-
-    public int getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
-    }
-
-    public int getEntryId() {
-        return entryId;
-    }
-
-    public void setEntryId(int entryId) {
-        this.entryId = entryId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public int getOrder() {
-        return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
+    constructor(entryId: Int, type: String, order: Int) {
+        this.entryId = entryId
+        this.type = type
+        this.order = order
     }
 }
-
-

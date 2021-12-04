@@ -1,19 +1,14 @@
-package com.vocaby.app.data.entity;
+package com.vocaby.app.data.entity
 
-import androidx.room.Embedded;
-import androidx.room.Relation;
+import androidx.room.Embedded
+import androidx.room.Relation
 
-import java.util.List;
-
-public class WordDefinitions {
-    @Embedded
-    public Word word;
-
+data class WordDefinitions(
+    @Embedded val wordData: Word,
     @Relation(
-            parentColumn = "id",
-            entityColumn = "word_id",
-            entity = Definition.class
+        parentColumn = "id",
+        entityColumn = "word_id",
     )
+    val definitions: List<Definition>
+)
 
-    public List<Definition> definitions;
-}
