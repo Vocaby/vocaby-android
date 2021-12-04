@@ -1,160 +1,163 @@
-package com.vocaby.app.widget;
+package com.vocaby.app.widget
 
-import android.app.Application;
-import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.Log;
-import android.view.View;
-import android.widget.RemoteViews;
+import android.app.Application
+import android.app.PendingIntent
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.view.View
+import android.widget.RemoteViews
+import androidx.room.rxjava3.EmptyResultSetException
+import com.vocaby.app.R
+import com.vocaby.app.data.VocabyDatabaseKt
+import com.vocaby.app.data.VocabyRepositoryKt
+import com.vocaby.app.exceptions.SaveRepetitionException
+import com.vocaby.app.models.dictionary.DefinitionGroupModel
+import com.vocaby.app.ui.MainActivity
+import com.vocaby.app.utils.Logger
+import kotlinx.coroutines.*
+import java.util.concurrent.ThreadLocalRandom
 
-import androidx.room.rxjava3.EmptyResultSetException;
-
-import com.vocaby.app.R;
-import com.vocaby.app.data.VocabyRepository;
-import com.vocaby.app.exceptions.SaveRepetitionException;
-import com.vocaby.app.models.dictionary.DefinitionGroupModel;
-import com.vocaby.app.ui.MainActivity;
-
-import java.util.concurrent.ThreadLocalRandom;
-
-import io.reactivex.rxjava3.disposables.Disposable;
-
-public class SavesAppWidgetProvider extends AppWidgetProvider {
-    public static final String WIDGET_CLICK = "widgetClick";
-    public static final String WIDGET_PREV_KEY = "WIDGET_PREV_SELECT";
-    public static Disposable disposable;
-    public SavesAppWidgetProvider() {
-        super();
+class SavesAppWidgetProvider : AppWidgetProvider() {
+    companion object {
+        const val WIDGET_CLICK = "widgetClick"
+        const val WIDGET_PREV_KEY = "WIDGET_PREV_SELECT"
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
-
-        String action = intent.getAction();
-        if(action.equals(WIDGET_CLICK)) {
-            if(disposable != null && !disposable.isDisposed()) {
-                disposable.dispose();
-            }
-            updateWidgetTexts(context, intent.getIntExtra("WIDGET_ID", -1), intent.getParcelableExtra("REMOTE_VIEW"));
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        val action = intent.action
+        if (action == WIDGET_CLICK) {
+            updateWidgetTexts(
+                context,
+                intent.getIntExtra("WIDGET_ID", -1),
+                intent.getParcelableExtra("REMOTE_VIEW")
+            )
         }
     }
 
-    @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds);
-        updateWidget(context);
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+        updateWidget(context)
     }
 
-    private void updateWidgetTexts(Context context, int id, RemoteViews remoteViews) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        VocabyRepository vocabyRepository = new VocabyRepository((Application) context.getApplicationContext());
-        SharedPreferences sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE);
+    private fun updateWidgetTexts(context: Context, id: Int, remoteViews: RemoteViews?) {
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val vocabyDao =
+            VocabyDatabaseKt.getDatabase(context.applicationContext, CoroutineScope(Dispatchers.Main.immediate))
+                .vocabyDao()
+        val vocabyRepository = VocabyRepositoryKt(vocabyDao, context.applicationContext as Application)
+        val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
 
-        remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE);
-        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", false);
+        remoteViews?.let { view ->
+            view.setViewVisibility(R.id.refresh_progress, View.VISIBLE)
+            view.setBoolean(R.id.widget_refresh_button, "setEnabled", false)
 
-        disposable = vocabyRepository.getUserSaves()
-                .flatMap(saves -> {
-                    String prev_word = sp.getString(WIDGET_PREV_KEY+id, "");
-                    if(saves.isEmpty()) {
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putString(WIDGET_PREV_KEY+id, "");
-                        editor.apply();
-                        throw new EmptyResultSetException("User has no saves!");
-                    } else if(saves.size() == 1) {
-                        if(prev_word.equals(saves.get(0))) {
-                            throw new SaveRepetitionException();
-                        }
+            CoroutineScope(Dispatchers.Main.immediate).launch(CoroutineExceptionHandler { _, throwable ->
+                when (throwable) {
+                    is EmptyResultSetException -> {
+                        remoteViews.setTextViewText(R.id.widget_word, "NO SAVED WORDS")
+                        remoteViews.setTextViewText(
+                            R.id.widget_definition,
+                            "Save words in the app to review them here."
+                        )
+                        remoteViews.setTextViewText(R.id.widget_sentence, "")
+                        remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE)
+                        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true)
+                        appWidgetManager.updateAppWidget(id, remoteViews)
                     }
 
-                    int index = ThreadLocalRandom.current().nextInt(0, saves.size());
-
-                    while(saves.get(index).equals(prev_word)) {
-                        index = ThreadLocalRandom.current().nextInt(0, saves.size());
+                    is SaveRepetitionException -> {
+                        /* DO NOTHING */
                     }
 
-                    return vocabyRepository.getWordDataFromDatabase(saves.get(index));
-                }).subscribe(wordData -> {
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString(WIDGET_PREV_KEY+id, wordData.getEntry());
-                    editor.apply();
+                    else -> Logger.reportErrorToBugsnag(throwable)
+                }
+            }) {
+                val saves = vocabyRepository.getSavedWords()
+                val prevWord = sp.getString(WIDGET_PREV_KEY + id, "")
+                if (saves.isEmpty()) {
+                    val editor = sp.edit()
+                    editor.putString(WIDGET_PREV_KEY + id, "")
+                    editor.apply()
+                    throw EmptyResultSetException("User has no saves!")
+                } else if (saves.size == 1) {
+                    if (prevWord == saves[0]) {
+                        throw SaveRepetitionException()
+                    }
+                }
 
-                    DefinitionGroupModel group = wordData.getFirstGroup();
+                var index = ThreadLocalRandom.current().nextInt(0, saves.size)
+                while (saves[index] == prevWord) {
+                    index = ThreadLocalRandom.current().nextInt(0, saves.size)
+                }
 
-                    String definition = "No definition found";
-                    String example = "";
+                val entryModel = vocabyRepository.getAllEntryData(saves[index])
+                var definition = "No definition found"
+                var example = ""
 
+                entryModel?.let { wordData ->
+                    val editor = sp.edit()
+                    editor.putString(WIDGET_PREV_KEY + id, wordData.entry)
+                    editor.apply()
+
+                    val group: DefinitionGroupModel? = wordData.firstGroup
                     if (group != null) {
-                        definition = group.getDefinitionData().get(0).toString();
-                        example = group.getDefinitionData().get(0).getExample();
+                        definition = group.definitionData[0].toString()
+                        example = group.definitionData[0].example
                     }
+                }
 
-                    remoteViews.setTextViewText(R.id.widget_word, wordData.getEntry());
-                    remoteViews.setTextViewText(R.id.widget_definition, definition);
-                    remoteViews.setTextViewText(R.id.widget_sentence, example);
+                remoteViews.setTextViewText(R.id.widget_word, saves[index])
+                remoteViews.setTextViewText(R.id.widget_definition, definition)
+                remoteViews.setTextViewText(R.id.widget_sentence, example)
 
-                    Intent openIntent = new Intent(context, MainActivity.class);
-                    openIntent.setAction(WIDGET_CLICK);
-                    openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    PendingIntent openPendingIntent = PendingIntent
-                            .getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE);
-                    remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent);
+                val openIntent = Intent(context, MainActivity::class.java)
+                openIntent.action = WIDGET_CLICK
+                openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                val openPendingIntent = PendingIntent
+                    .getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE)
 
-                    remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
-                    remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true);
-                    appWidgetManager.updateAppWidget(id, remoteViews);
-                }, error -> {
-                    if(error instanceof EmptyResultSetException) {
-                        remoteViews.setTextViewText(R.id.widget_word, "NO SAVED WORDS");
-                        remoteViews.setTextViewText(R.id.widget_definition, "Save words in the app to review them here.");
-                        remoteViews.setTextViewText(R.id.widget_sentence, "");
-
-                        remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
-                        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true);
-                        appWidgetManager.updateAppWidget(id, remoteViews);
-                        Log.d("updateWidgetTexts: ", error.getMessage());
-                    } else if(error instanceof SaveRepetitionException) {
-                        Log.d("updateWidgetTexts: ", "do nothing");
-                    } else {
-                        error.printStackTrace();
-                    }
-                });
-    }
-
-    private void updateWidget(Context context) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        ComponentName widgetComponent = new ComponentName(context, SavesAppWidgetProvider.class);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetComponent);
-
-        for(int id : appWidgetIds) {
-            Intent refreshIntent = new Intent(context, SavesAppWidgetProvider.class);
-            refreshIntent.setAction(WIDGET_CLICK);
-            refreshIntent.putExtra("WIDGET_ID", id);
-            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.saves_widget);
-            refreshIntent.putExtra("REMOTE_VIEW", remoteViews);
-            PendingIntent refreshPendingIntent = PendingIntent.getBroadcast(context, id, refreshIntent,
-                    PendingIntent.FLAG_IMMUTABLE);
-            remoteViews.setOnClickPendingIntent(R.id.widget_refresh_button, refreshPendingIntent);
-
-            updateWidgetTexts(context, id, remoteViews);
+                remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent)
+                remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE)
+                remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true)
+                appWidgetManager.updateAppWidget(id, remoteViews)
+            }
         }
     }
 
-    @Override
-    public void onDeleted(Context context, int[] appWidgetIds) {
-        super.onDeleted(context, appWidgetIds);
-        SharedPreferences sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
+    private fun updateWidget(context: Context) {
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val widgetComponent = ComponentName(context, SavesAppWidgetProvider::class.java)
+        val appWidgetIds = appWidgetManager.getAppWidgetIds(widgetComponent)
+        for (id in appWidgetIds) {
+            val refreshIntent = Intent(context, SavesAppWidgetProvider::class.java)
+            refreshIntent.action = WIDGET_CLICK
+            refreshIntent.putExtra("WIDGET_ID", id)
+            val remoteViews = RemoteViews(context.packageName, R.layout.saves_widget)
+            refreshIntent.putExtra("REMOTE_VIEW", remoteViews)
+            val refreshPendingIntent = PendingIntent.getBroadcast(
+                context, id, refreshIntent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+            remoteViews.setOnClickPendingIntent(R.id.widget_refresh_button, refreshPendingIntent)
+            updateWidgetTexts(context, id, remoteViews)
+        }
+    }
 
-        for(int id : appWidgetIds) {
-            editor.remove(WIDGET_PREV_KEY+id);
-            editor.apply();
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        super.onDeleted(context, appWidgetIds)
+        val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
+        val editor = sp.edit()
+        for (id in appWidgetIds) {
+            editor.remove(WIDGET_PREV_KEY + id)
+            editor.apply()
         }
     }
 }

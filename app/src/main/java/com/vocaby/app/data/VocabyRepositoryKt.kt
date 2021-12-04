@@ -109,6 +109,8 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
         return EntryDataPackage(entryData, customEntryData)
     }
 
+    suspend fun getEntryData(entry: String): EntryModel? = convertToEntryModel(vocabyDao.getEntryData(entry))
+
     suspend fun getRandomEntry(): EntryModel? {
         val randomWordPicker = PreferenceManager.getDefaultSharedPreferences(application)
         val editor = randomWordPicker.edit()
@@ -135,16 +137,14 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
         return randomEntry
     }
 
-    /** --------------------- SAVES -------------------- **/
-    fun getSavedWordsFlow() = vocabyDao.getSavesFlow(userId)
-    fun hasSaved(entry: String) = vocabyDao.hasSave(userId, entry)
-    suspend fun getSavedWords() = vocabyDao.getSaves(userId)
-    suspend fun addSaveItem(entry: String) {
-        Logger.reportToDebug("$userId")
-        vocabyDao.addSave(UserSave(userId, entry))
+    suspend fun getAllEntryData(entry: String): EntryModel? {
+        val customEntry = getUserEntryData(entry)
+        customEntry?.let {
+            return customEntry
+        } ?: run {
+            return getEntryData(entry)
+        }
     }
-    suspend fun removeSaveItem(entry: String) = vocabyDao.removeSave(userId, entry)
-    suspend fun clearSaves() = vocabyDao.clearSaves(userId)
 
     /** --------------------- CUSTOM ENTRY -------------------- **/
     private fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? {
@@ -375,6 +375,17 @@ class VocabyRepositoryKt(private val vocabyDao: VocabyDaoKt, val application: Ap
 
         return entryId
     }
+
+    /** --------------------- SAVES -------------------- **/
+    fun getSavedWordsFlow() = vocabyDao.getSavesFlow(userId)
+    fun hasSaved(entry: String) = vocabyDao.hasSave(userId, entry)
+    suspend fun getSavedWords() = vocabyDao.getSaves(userId)
+    suspend fun addSaveItem(entry: String) {
+        Logger.reportToDebug("$userId")
+        vocabyDao.addSave(UserSave(userId, entry))
+    }
+    suspend fun removeSaveItem(entry: String) = vocabyDao.removeSave(userId, entry)
+    suspend fun clearSaves() = vocabyDao.clearSaves(userId)
 
     /** --------------------- IMPORT / EXPORT -------------------- **/
     suspend fun importSavesFromExternalStorage(uri: Uri) = withContext(Dispatchers.IO) {
