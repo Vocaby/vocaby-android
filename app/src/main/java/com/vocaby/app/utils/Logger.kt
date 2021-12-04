@@ -1,17 +1,21 @@
-package com.vocaby.app.utils;
-import android.util.Log;
+package com.vocaby.app.utils
 
-import com.bugsnag.android.Bugsnag;
-import com.vocaby.app.Constants;
+import android.util.Log
+import com.bugsnag.android.Bugsnag
+import com.vocaby.app.Constants
 
-public class Logger {
-    public static void reportErrorToBugsnag(Throwable error) {
-        Bugsnag.notify(error);
+object Logger {
+    fun reportErrorToBugsnag(error: Throwable) {
+        Bugsnag.notify(error)
     }
-    public static void reportErrorToDebug(Throwable error) {
-        Log.d(Constants.DEBUG_TAG, error.getMessage());
+
+    fun reportErrorToDebug(error: Throwable) {
+        error.message?.let { message ->
+            Log.d(Constants.DEBUG_TAG, message)
+        } ?: Log.d(Constants.DEBUG_TAG, "There was an error...")
     }
-    public static void reportToDebug(String message) {
-        Log.d(Constants.DEBUG_TAG, message);
+
+    fun reportToDebug(message: String) {
+        Log.d(Constants.DEBUG_TAG, message)
     }
 }

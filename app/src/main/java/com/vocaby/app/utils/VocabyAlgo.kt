@@ -1,40 +1,39 @@
-package com.vocaby.app.utils;
+package com.vocaby.app.utils
 
-import java.util.List;
-
-public class VocabyAlgo {
-    public static int BinarySearchPrefix(List<String> list, String search) {
-        return BinarySearchPrefix(0, list.size()-1, search, list);
+object VocabyAlgo {
+    fun binarySearchPrefix(list: List<String>, search: String): Int {
+        return binarySearchPrefix(0, list.size - 1, search, list)
     }
 
-    private static int BinarySearchPrefix(int start, int end, String search, List<String> list) {
-        if(start <= end) {
-            int mid = (start + end) / 2;
-            String midEntry = list.get(mid);
-            int compResult = search.compareTo(midEntry);
-            if(compResult == 0) {
-                return mid;
+    private fun binarySearchPrefix(start: Int, end: Int, search: String, list: List<String>): Int {
+        if (start <= end) {
+            val mid = (start + end) / 2
+            val midEntry = list[mid]
+            val compResult = search.compareTo(midEntry)
+
+            if (compResult == 0) {
+                return mid
             }
 
-            if(midEntry.startsWith(search)) {
-                if(mid-1 == -1) {
-                    return 0;
-                } else if (mid-1 > -1) {
-                    if(list.get(mid-1).startsWith(search)) {
-                        return BinarySearchPrefix(start, mid-1, search, list);
+            if (midEntry.startsWith(search)) {
+                if (mid - 1 == -1) {
+                    return 0
+                } else if (mid - 1 > -1) {
+                    return if (list[mid - 1].startsWith(search)) {
+                        binarySearchPrefix(start, mid - 1, search, list)
                     } else {
-                        return mid;
+                        mid
                     }
                 }
             }
 
-            if(compResult < 0) {
-                return BinarySearchPrefix(start, mid-1, search, list);
+            return if (compResult < 0) {
+                binarySearchPrefix(start, mid - 1, search, list)
             } else {
-                return BinarySearchPrefix(mid+1, end, search, list);
+                binarySearchPrefix(mid + 1, end, search, list)
             }
         }
 
-        return -1;
+        return -1
     }
 }

@@ -20,7 +20,7 @@ import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.StringFormatter
-import com.vocaby.app.utils.exception.IllegalFileException
+import com.vocaby.app.exceptions.IllegalFileException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
@@ -411,13 +411,19 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
                     vocabyDao.addSaves(saves)
                 } else {
-                    throw IllegalFileException(IllegalFileException.INVALID_FILE)
+                    throw IllegalFileException(
+                        IllegalFileException.INVALID_FILE
+                    )
                 }
             } else {
-                throw IllegalFileException(IllegalFileException.INVALID_FORMAT)
+                throw IllegalFileException(
+                    IllegalFileException.INVALID_FORMAT
+                )
             }
         } catch (error: JsonSyntaxException) {
-            throw IllegalFileException(IllegalFileException.INVALID_FORMAT)
+            throw IllegalFileException(
+                IllegalFileException.INVALID_FORMAT
+            )
         } finally {
             inputStream?.close()
             reader.close()

@@ -89,7 +89,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
                 setSearchSuggestionItems(searchQuery)
             }
         } else {
-            var index = VocabyAlgo.BinarySearchPrefix(entriesByCharacter, searchQuery)
+            var index = VocabyAlgo.binarySearchPrefix(entriesByCharacter!!, searchQuery)
             if (index > -1 && index < entriesByCharacter!!.size) {
                 val it: Iterator<String> = entriesByCharacter!!.listIterator(index)
                 var count = 0
