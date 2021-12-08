@@ -59,7 +59,6 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         setupButtons()
 
         entryViewModel.types.observe(this) { newList ->
-            Logger.reportToDebug("Here")
             typeAdapter.setList(newList)
         }
 

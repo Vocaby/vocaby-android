@@ -382,7 +382,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     fun hasSaved(entry: String) = vocabyDao.hasSave(userId, entry)
     suspend fun getSavedWords() = vocabyDao.getSaves(userId)
     suspend fun addSaveItem(entry: String) {
-        Logger.reportToDebug("$userId")
         vocabyDao.addSave(UserSave(userId, entry))
     }
     suspend fun removeSaveItem(entry: String) = vocabyDao.removeSave(userId, entry)
@@ -390,7 +389,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     /** --------------------- IMPORT / EXPORT -------------------- **/
     suspend fun importSavesFromExternalStorage(uri: Uri) {
-        throw IllegalFileException(IllegalFileException.INVALID_FILE)
         val inputStream = application.contentResolver.openInputStream(uri)
         val reader = BufferedReader(InputStreamReader(inputStream))
 

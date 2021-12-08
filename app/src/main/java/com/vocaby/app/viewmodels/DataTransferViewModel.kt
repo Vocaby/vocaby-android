@@ -93,7 +93,6 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
                 }
                 else -> {
                     _progressText.postValue(R.string.data_transfer_import_error_generic)
-                    Logger.reportToDebug(throwable.message)
                     Logger.reportErrorToBugsnag(throwable)
                 }
             }

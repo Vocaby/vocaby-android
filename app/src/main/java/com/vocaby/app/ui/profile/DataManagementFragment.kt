@@ -53,7 +53,6 @@ class DataManagementFragment : Fragment() {
                 DataTransferViewModel.IMPORT_ENTRY -> {}
             }
         } else {
-            Logger.reportToDebug("CANCELED")
         }
     }
 }
