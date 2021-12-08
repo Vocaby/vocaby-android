@@ -467,7 +467,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
             }
         } catch (error: JsonSyntaxException) {
             throw IllegalFileException(
-                IllegalFileException.INVALID_FORMAT
+                IllegalFileException.INVALID_FILE
             )
         } finally {
             inputStream?.close()

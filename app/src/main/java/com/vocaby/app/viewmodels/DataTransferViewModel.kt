@@ -31,6 +31,33 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     val progressText: LiveData<Int>
         get() = _progressText
 
+    private val importExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        _transferSuccessful.postValue(false)
+        when (throwable) {
+            is IllegalFileException -> {
+                when (throwable.code) {
+                    IllegalFileException.INVALID_FORMAT -> {
+                        _progressText.postValue(R.string.data_transfer_import_error_invalid_format)
+                    }
+                    IllegalFileException.INVALID_FILE -> {
+                        _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
+                    }
+                    else -> {
+                        _progressText.postValue(R.string.data_transfer_import_error_generic)
+                    }
+                }
+            }
+            else -> {
+                _progressText.postValue(R.string.data_transfer_import_error_generic)
+                Logger.reportErrorToBugsnag(throwable)
+            }
+        }
+    }
+
+    private val exportExceptionHandler = CoroutineExceptionHandler { _, _ ->
+        _transferSuccessful.postValue(false)
+        _progressText.postValue(R.string.data_transfer_export_empty)
+    }
 
     fun handleReceived(received: Intent): Intent {
         actionType = received.getIntExtra("TYPE", -1)
@@ -88,7 +115,6 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
                     EXPORT_ENTRY_BACKUP -> writeEntriesForBackup(uri)
                     IMPORT_SAVE -> importSaves(uri)
                     IMPORT_ENTRY -> importEntries(uri)
-                    else -> Logger.reportErrorToDebug(Throwable("How did I get here"))
                 }
             }
         }
@@ -99,22 +125,7 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     }
 
     private fun importSaves(uri: Uri) {
-        transferScope.launch(CoroutineExceptionHandler { _, throwable ->
-            _transferSuccessful.postValue(false)
-            when (throwable) {
-                is IllegalFileException -> {
-                    if (throwable.code == IllegalFileException.INVALID_FILE) {
-                        _progressText.postValue(R.string.data_transfer_import_error_invalid_format)
-                    } else if (throwable.code == IllegalFileException.INVALID_FILE) {
-                        _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
-                    }
-                }
-                else -> {
-                    _progressText.postValue(R.string.data_transfer_import_error_generic)
-                    Logger.reportErrorToBugsnag(throwable)
-                }
-            }
-        }) {
+        transferScope.launch(importExceptionHandler) {
             _progressText.postValue(R.string.data_transfer_reading_import)
             val saves = repository.importSavesFromExternalStorage(uri)
             _progressText.postValue(R.string.data_transfer_importing)
@@ -125,22 +136,7 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     }
 
     private fun importEntries(uri: Uri) {
-        transferScope.launch(CoroutineExceptionHandler { _, throwable ->
-            _transferSuccessful.postValue(false)
-            when (throwable) {
-                is IllegalFileException -> {
-                    if (throwable.code == IllegalFileException.INVALID_FILE) {
-                        _progressText.postValue(R.string.data_transfer_import_error_invalid_format)
-                    } else if (throwable.code == IllegalFileException.INVALID_FILE) {
-                        _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
-                    }
-                }
-                else -> {
-                    _progressText.postValue(R.string.data_transfer_import_error_generic)
-                    Logger.reportErrorToBugsnag(throwable)
-                }
-            }
-        }) {
+        transferScope.launch(importExceptionHandler) {
             _progressText.postValue(R.string.data_transfer_reading_import)
             val entryImportData = repository.importEntriesFromExternalStorage(uri)
             _progressText.postValue(R.string.data_transfer_import_setup)
@@ -153,10 +149,7 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     }
 
     private fun writeEntriesForBackup(uri: Uri) {
-        transferScope.launch(CoroutineExceptionHandler { _, _ ->
-            _transferSuccessful.postValue(false)
-            _progressText.postValue(R.string.data_transfer_export_empty)
-        }) {
+        transferScope.launch(exportExceptionHandler) {
             _progressText.postValue(R.string.data_transfer_fetching_entries)
             val entries = repository.getAllUserEntries()
             _progressText.postValue(R.string.data_transfer_exporting_backup)
@@ -167,10 +160,7 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     }
 
     private fun writeSavesForBackup(uri: Uri) {
-        transferScope.launch(CoroutineExceptionHandler { _, _ ->
-            _transferSuccessful.postValue(false)
-            _progressText.postValue(R.string.data_transfer_export_empty)
-        }) {
+        transferScope.launch(exportExceptionHandler) {
             val saves = repository.getSavedWords()
             _progressText.postValue(R.string.data_transfer_exporting_backup)
             repository.writeSavesJsonToExternalStorage(saves, uri)
@@ -182,10 +172,7 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
 
     private fun writeSaves(uri: Uri) {
         _progressText.value = R.string.data_transfer_fetching_data
-        transferScope.launch(CoroutineExceptionHandler { _, _ ->
-            _transferSuccessful.postValue(false)
-            _progressText.postValue(R.string.data_transfer_export_empty)
-        }) {
+        transferScope.launch(exportExceptionHandler) {
             val saves = repository.getSavedWords()
             repository.writeSavesToExternalStorage(saves, uri)
             _progressText.postValue(R.string.data_transfer_exporting_saves)
