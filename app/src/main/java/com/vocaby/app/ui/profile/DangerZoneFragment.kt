@@ -49,7 +49,7 @@ class DangerZoneFragment : Fragment() {
         clearSavesButton.setOnClickListener {
             builder.setTitle("Are you sure you wish to clear your saves?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("CLEAR") { _, _ -> userViewModel.clearSaves() }
+                .setPositiveButton("CLEAR") { _, _ -> userViewModel.clearSaves()}
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
@@ -66,8 +66,8 @@ class DangerZoneFragment : Fragment() {
             builder.setTitle("Are you sure you wish to erase your data?")
                 .setMessage("All of your data will be deleted. This action is irreversible.")
                 .setPositiveButton("ERASE") { _, _ ->
-                    dictionaryViewModel.clearHistory()
                     userViewModel.clearSaves()
+                    dictionaryViewModel.clearHistory()
                     myEntryViewModel.clearEntries()
                 }.setNegativeButton("CANCEL", null).create().show()
         }

@@ -6,7 +6,6 @@ import android.os.Bundle
 import com.vocaby.app.R
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
 import android.content.res.ColorStateList
 import android.widget.Button
 import androidx.activity.result.ActivityResult
@@ -50,11 +49,8 @@ class DataTransferActivity : AppCompatActivity() {
         }
     }
 
-    private val directorySelector = registerForActivityResult(
-        StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode == RESULT_OK) dataTransferViewModel.handleResult(
-            result.data
-        ) else finish()
+    private val directorySelector = registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) dataTransferViewModel.handleResult(result.data)
+        else finish()
     }
 }

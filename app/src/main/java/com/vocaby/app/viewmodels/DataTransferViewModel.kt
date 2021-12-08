@@ -16,8 +16,9 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     companion object {
         const val EXPORT_SAVE = 0
         const val EXPORT_SAVE_BACKUP = 1
-        const val IMPORT_SAVE = 2
-        const val IMPORT_ENTRY = 3
+        const val EXPORT_ENTRY_BACKUP = 2
+        const val IMPORT_SAVE = 3
+        const val IMPORT_ENTRY = 4
     }
 
     private val transferScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -50,7 +51,20 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
             }
 
+            EXPORT_ENTRY_BACKUP -> {
+                intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                intent.type = "application/json"
+                intent.putExtra(Intent.EXTRA_TITLE, "vocaby_entries_backup.json")
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+            }
+
             IMPORT_SAVE -> {
+                intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "application/json"
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+            }
+
+            IMPORT_ENTRY -> {
                 intent = Intent(Intent.ACTION_GET_CONTENT)
                 intent.type = "application/json"
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -65,13 +79,17 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     }
 
     fun handleResult(result: Intent?) {
-        if (result != null && actionType != -1) {
-            val uri = result.data!!
-            when (actionType) {
-                EXPORT_SAVE -> writeSaves(uri)
-                EXPORT_SAVE_BACKUP -> writeSavesForBackup(uri)
-                IMPORT_SAVE -> importSaves(uri)
-                else -> Logger.reportErrorToDebug(Throwable("How did I get here"))
+        result?.let {
+            if (actionType != -1) {
+                val uri = result.data!!
+                when (actionType) {
+                    EXPORT_SAVE -> writeSaves(uri)
+                    EXPORT_SAVE_BACKUP -> writeSavesForBackup(uri)
+                    EXPORT_ENTRY_BACKUP -> writeEntriesForBackup(uri)
+                    IMPORT_SAVE -> importSaves(uri)
+                    IMPORT_ENTRY -> importEntries(uri)
+                    else -> Logger.reportErrorToDebug(Throwable("How did I get here"))
+                }
             }
         }
     }
@@ -97,9 +115,54 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
                 }
             }
         }) {
-            repository.importSavesFromExternalStorage(uri)
+            _progressText.postValue(R.string.data_transfer_reading_import)
+            val saves = repository.importSavesFromExternalStorage(uri)
+            _progressText.postValue(R.string.data_transfer_importing)
+            repository.addSaveItems(saves)
             _transferSuccessful.postValue(true)
             _progressText.postValue(R.string.data_transfer_import_complete)
+        }
+    }
+
+    private fun importEntries(uri: Uri) {
+        transferScope.launch(CoroutineExceptionHandler { _, throwable ->
+            _transferSuccessful.postValue(false)
+            when (throwable) {
+                is IllegalFileException -> {
+                    if (throwable.code == IllegalFileException.INVALID_FILE) {
+                        _progressText.postValue(R.string.data_transfer_import_error_invalid_format)
+                    } else if (throwable.code == IllegalFileException.INVALID_FILE) {
+                        _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
+                    }
+                }
+                else -> {
+                    _progressText.postValue(R.string.data_transfer_import_error_generic)
+                    Logger.reportErrorToBugsnag(throwable)
+                }
+            }
+        }) {
+            _progressText.postValue(R.string.data_transfer_reading_import)
+            val entryImportData = repository.importEntriesFromExternalStorage(uri)
+            _progressText.postValue(R.string.data_transfer_import_setup)
+            repository.clearUserEntries()
+            _progressText.postValue(R.string.data_transfer_importing)
+             repository.insertNewEntries(entryImportData)
+            _transferSuccessful.postValue(true)
+            _progressText.postValue(R.string.data_transfer_import_complete)
+        }
+    }
+
+    private fun writeEntriesForBackup(uri: Uri) {
+        transferScope.launch(CoroutineExceptionHandler { _, _ ->
+            _transferSuccessful.postValue(false)
+            _progressText.postValue(R.string.data_transfer_export_empty)
+        }) {
+            _progressText.postValue(R.string.data_transfer_fetching_entries)
+            val entries = repository.getAllUserEntries()
+            _progressText.postValue(R.string.data_transfer_exporting_backup)
+            repository.writeEntriesToExternalStorage(entries, uri)
+            _transferSuccessful.postValue(true)
+            _progressText.postValue(R.string.data_transfer_export_complete)
         }
     }
 

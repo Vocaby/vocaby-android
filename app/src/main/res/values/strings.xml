@@ -72,11 +72,15 @@
     <string name="data_management_export_entry">Export my entry data as json</string>
     <string name="data_management_import_save">Import save data from json</string>
     <string name="data_management_import_entry">Import entry data from json</string>
+    <string name="data_transfer_importing">Importing your backup data…</string>
     <string name="data_transfer_export_complete">Successfully exported your data!</string>
     <string name="data_transfer_import_complete">Successfully imported your data!</string>
     <string name="data_transfer_fetching_data">Fetching your data…</string>
     <string name="data_transfer_exporting_saves">Exporting your save data…</string>
     <string name="data_transfer_exporting_backup">Exporting your backup data…</string>
+    <string name="data_transfer_fetching_entries">Fetching your entry data…</string>
+    <string name="data_transfer_reading_import">Reading your backup data…</string>
+    <string name="data_transfer_import_setup">Setting up import…</string>
     <string name="data_transfer_export_empty">You don\'t have any data to export…</string>
     <string name="data_transfer_import_error_generic">Failed to import…</string>
     <string name="data_transfer_import_error_invalid_format">Failed to import: file is corrupted…</string>

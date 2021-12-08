@@ -37,6 +37,13 @@ public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGr
         this.order = order;
     }
 
+    public DefinitionGroupModel(String type) {
+        this.groupId = -1;
+        this.type = type;
+        this.definitionData = new ArrayList<>();
+        this.order = 0;
+    }
+
     protected DefinitionGroupModel(Parcel in) {
         definitionData = new ArrayList<>();
 

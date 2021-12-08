@@ -38,6 +38,10 @@ interface VocabyDao {
     suspend fun getUserEntryData(userId: Int, entry: String?): EntryWithData?
 
     @Transaction
+    @Query("SELECT * FROM custom_user_entry WHERE user_id = :userId")
+    suspend fun getAllUserEntryData(userId: Int): List<EntryWithData>
+
+    @Transaction
     @Query(
         "SELECT * FROM dictionary_word WHERE id = " +
                 "(SELECT id FROM dictionary_word ORDER BY RANDOM() LIMIT 1)"
@@ -58,6 +62,9 @@ interface VocabyDao {
 
     @Insert
     suspend fun insertCustomEntry(customEntry: CustomEntry): Long
+
+    @Insert
+    suspend fun insertCustomEntries(customEntries: List<CustomEntry>): List<Long>
 
     @Update
     suspend fun updateCustomEntry(customEntry: CustomEntry)

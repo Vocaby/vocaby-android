@@ -10,9 +10,12 @@ import android.widget.Button
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.vocaby.app.R
-import com.vocaby.app.utils.Logger
+import com.vocaby.app.VocabyApplication
 import com.vocaby.app.viewmodels.DataTransferViewModel
+import com.vocaby.app.viewmodels.MyEntryViewModel
+import com.vocaby.app.viewmodels.MyEntryViewModelFactory
 
 class DataManagementFragment : Fragment() {
     override fun onCreateView(
@@ -37,9 +40,21 @@ class DataManagementFragment : Fragment() {
             dataTransferActivity.launch(startDataTransferActivity)
         }
 
+        val exportEntriesForBackup = view.findViewById<Button>(R.id.export_entries_button)
+        exportEntriesForBackup.setOnClickListener {
+            startDataTransferActivity.putExtra("TYPE", DataTransferViewModel.EXPORT_ENTRY_BACKUP)
+            dataTransferActivity.launch(startDataTransferActivity)
+        }
+
         val importSave = view.findViewById<Button>(R.id.import_saves_button)
         importSave.setOnClickListener {
             startDataTransferActivity.putExtra("TYPE", DataTransferViewModel.IMPORT_SAVE)
+            dataTransferActivity.launch(startDataTransferActivity)
+        }
+
+        val importEntries = view.findViewById<Button>(R.id.import_entries_button)
+        importEntries.setOnClickListener {
+            startDataTransferActivity.putExtra("TYPE", DataTransferViewModel.IMPORT_ENTRY)
             dataTransferActivity.launch(startDataTransferActivity)
         }
 
@@ -49,10 +64,14 @@ class DataManagementFragment : Fragment() {
     private val dataTransferActivity  = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             when (result.data!!.getIntExtra("TYPE", -1)) {
-                DataTransferViewModel.IMPORT_SAVE -> {}
-                DataTransferViewModel.IMPORT_ENTRY -> {}
+                DataTransferViewModel.IMPORT_ENTRY -> {
+                    val entryViewModel: MyEntryViewModel by activityViewModels {
+                        MyEntryViewModelFactory((requireActivity().application as VocabyApplication).repository)
+                    }
+
+                    entryViewModel.initializeEntries()
+                }
             }
-        } else {
         }
     }
 }

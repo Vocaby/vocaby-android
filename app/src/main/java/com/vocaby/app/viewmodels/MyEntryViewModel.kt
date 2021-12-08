@@ -18,7 +18,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private val _entries: SingleLiveEvent<List<String>> = SingleLiveEvent()
     private val _entryState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
 
-    var selectedPosition: Int = -1
+    private var selectedPosition: Int = -1
     private var customEntries: MutableList<String> = ArrayList()
 
     val entries: LiveData<List<String>>
@@ -30,11 +30,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
 
     init {
         // populate user entries
-        viewModelScope.launch {
-            customEntries = repository.getUserEntries() as MutableList<String>
-            _entries.postValue(customEntries)
-            _entryCount.postValue(customEntries.size)
-        }
+        initializeEntries()
     }
 
     fun clearEntries() {
@@ -89,6 +85,14 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
             customEntries.removeAt(position)
             _entryCount.postValue(customEntries.size)
             _entryState.value = ItemIntPayload(ItemIntPayload.DELETE, position)
+        }
+    }
+
+    fun initializeEntries() {
+        viewModelScope.launch {
+            customEntries = repository.getUserEntries() as MutableList<String>
+            _entries.postValue(customEntries)
+            _entryCount.postValue(customEntries.size)
         }
     }
 }

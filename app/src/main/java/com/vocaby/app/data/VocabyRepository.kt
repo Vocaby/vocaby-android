@@ -11,23 +11,20 @@ import com.google.gson.JsonSyntaxException
 import com.vocaby.app.Constants
 import com.vocaby.app.data.dao.VocabyDao
 import com.vocaby.app.data.entity.*
+import com.vocaby.app.exceptions.IllegalFileException
 import com.vocaby.app.models.BasicExportModel
+import com.vocaby.app.models.EntryImportData
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.datapackage.EntryDataPackage
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.StringFormatter
-import com.vocaby.app.exceptions.IllegalFileException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.lang.IllegalArgumentException
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -148,6 +145,192 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     }
 
     /** --------------------- CUSTOM ENTRY -------------------- **/
+
+    suspend fun getUserEntries() = vocabyDao.getUserEntries(userId)
+    suspend fun getUserEntryData(entry: String) = convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
+    suspend fun removeCustomEntry(entryId: Int, entry: String) {
+        vocabyDao.deleteUserEntry(entryId)
+        val exists = vocabyDao.checkEntryExistence(entry)
+        if (!exists) deleteCustomEntryFromDictionary(entry)
+    }
+    suspend fun removeCustomEntry(entry: String) {
+        vocabyDao.deleteUserEntry(entry)
+        deleteCustomEntryFromDictionary(entry)
+    }
+    suspend fun clearUserEntries() = vocabyDao.clearUserEntries(userId)
+    suspend fun getAllUserEntries(): List<EntryModel> {
+        val entries = vocabyDao.getAllUserEntryData(userId)
+        val entryModels = mutableListOf<EntryModel>()
+        entries.forEach { entryWithData ->
+            val model = convertCustomToEntryModel(entryWithData)
+            model?.let {
+                entryModels.add(model)
+            }
+        }
+
+        return entryModels
+    }
+    suspend fun insertOrUpdateEntry(
+        entry: String,
+        pronunciation: String,
+        groupChanges: GroupChanges,
+        definitionChangesMap: MutableMap<String, DefinitionChanges>
+    ): Int {
+        val entryId: Int = if (groupChanges.entryId == -1) {
+            val exists = vocabyDao.checkEntryExistence(entry)
+            if (!exists) addEntryToDictionary(entry)
+
+            vocabyDao.insertCustomEntry(
+                CustomEntry(
+                    userId,
+                    entry,
+                    pronunciation,
+                    OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+                )
+            ).toInt()
+        } else {
+            vocabyDao.updateCustomEntry(
+                CustomEntry(
+                    groupChanges.entryId,
+                    userId,
+                    entry,
+                    pronunciation,
+                    OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+                )
+            )
+
+            groupChanges.entryId
+        }
+
+        val deletedGroups = mutableListOf<CustomEntryGroup>()
+        for (group in groupChanges.deletedItems) {
+            deletedGroups.add(CustomEntryGroup(group.groupId, group.type))
+        }
+
+        val updatedGroups = mutableListOf<CustomEntryGroup>()
+        for (group in groupChanges.updatedItems) {
+            updatedGroups.add(
+                CustomEntryGroup(
+                    group.groupId,
+                    entryId,
+                    group.type,
+                    group.order
+                )
+            )
+        }
+
+        val addedGroups = mutableListOf<CustomEntryGroup>()
+        for (group in groupChanges.addedItems) {
+            addedGroups.add(
+                CustomEntryGroup(
+                    entryId,
+                    group.type,
+                    group.order
+                )
+            )
+        }
+
+        val deletedDefinitions = mutableListOf<CustomDefinition>()
+        for (definitionChanges in definitionChangesMap.values) {
+            for (definitionModel in definitionChanges.deletedItems) {
+                deletedDefinitions.add(
+                    CustomDefinition(
+                        definitionModel.id,
+                        definitionChanges.groupId,
+                        definitionModel.definition,
+                        definitionModel.example,
+                        definitionModel.order
+                    )
+                )
+            }
+        }
+
+        val updatedDefinitions = mutableListOf<CustomDefinition>()
+        for (definitionChanges in definitionChangesMap.values) {
+            for (definitionModel in definitionChanges.updatedItems) {
+                updatedDefinitions.add(
+                    CustomDefinition(
+                        definitionModel.id,
+                        definitionChanges.groupId,
+                        definitionModel.definition,
+                        definitionModel.example,
+                        definitionModel.order
+                    )
+                )
+            }
+        }
+
+        vocabyDao.deleteCustomEntryGroups(deletedGroups)
+        vocabyDao.updateCustomEntryGroups(updatedGroups)
+
+        val ids = vocabyDao.insertCustomEntryGroups(addedGroups)
+        val newGroups = groupChanges.addedItems
+        for (i in newGroups.indices) {
+            val definitionChanges =
+                definitionChangesMap[newGroups[i].type]
+            if (definitionChanges != null) definitionChanges.groupId =
+                ids[i].toInt()
+        }
+
+        val addedDefinitions = mutableListOf<CustomDefinition>()
+        for (definitionChanges in definitionChangesMap.values) {
+            for (definitionModel in definitionChanges.addedItems) {
+                addedDefinitions.add(
+                    CustomDefinition(
+                        definitionChanges.groupId,
+                        definitionModel.definition,
+                        definitionModel.example,
+                        definitionModel.order
+                    )
+                )
+            }
+        }
+
+        vocabyDao.insertCustomDefinitions(addedDefinitions)
+        vocabyDao.updateCustomDefinitions(updatedDefinitions)
+        vocabyDao.deleteCustomDefinitions(deletedDefinitions)
+
+        return entryId
+    }
+    suspend fun insertNewEntries(data: EntryImportData) {
+        // TODO: Fix bug where custom entries in the search suggestion gets duplicated
+        for (entryData in data.entries) {
+            val exists = vocabyDao.checkEntryExistence(entryData.entry)
+            if (!exists) addEntryToDictionary(entryData.entry)
+        }
+
+        val entryIds = vocabyDao.insertCustomEntries(data.entries)
+        for (i in entryIds.indices) {
+            val addedGroups = mutableListOf<CustomEntryGroup>()
+            for (group in data.entryModels[i].definitionGroups)
+            addedGroups.add(
+                CustomEntryGroup(
+                    entryIds[i].toInt(),
+                    group.type,
+                    group.order
+                )
+            )
+
+            val groupIds = vocabyDao.insertCustomEntryGroups(addedGroups)
+            for (j in groupIds.indices) {
+                val addedDefinitions = mutableListOf<CustomDefinition>()
+                val definitionModels = data.entryModels[i].definitionGroups[j].definitionData
+                for (definitionModel in definitionModels) {
+                    addedDefinitions.add(
+                        CustomDefinition(
+                            groupIds[j].toInt(),
+                            definitionModel.definition,
+                            definitionModel.example,
+                            definitionModel.order
+                        )
+                    )
+                }
+
+                vocabyDao.insertCustomDefinitions(addedDefinitions)
+            }
+        }
+    }
+
     private fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? {
         data?.let {
             val pronunciation =
@@ -236,147 +419,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         }
     }
 
-    suspend fun getUserEntries() = vocabyDao.getUserEntries(userId)
-    suspend fun getUserEntryData(entry: String) = convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
-    suspend fun removeCustomEntry(entryId: Int, entry: String) {
-        vocabyDao.deleteUserEntry(entryId)
-        val exists = vocabyDao.checkEntryExistence(entry)
-        if (!exists) deleteCustomEntryFromDictionary(entry)
-    }
-    suspend fun removeCustomEntry(entry: String) {
-        vocabyDao.deleteUserEntry(entry)
-        deleteCustomEntryFromDictionary(entry)
-    }
-    suspend fun clearUserEntries() = vocabyDao.clearUserEntries(userId)
-
-    suspend fun insertOrUpdateEntry(
-        entry: String,
-        pronunciation: String,
-        groupChanges: GroupChanges,
-        definitionChangesMap: MutableMap<String, DefinitionChanges>
-    ): Int {
-        val entryId: Int = if (groupChanges.entryId == -1) {
-            val exists = vocabyDao.checkEntryExistence(entry)
-            if (!exists) addEntryToDictionary(entry)
-
-            vocabyDao.insertCustomEntry(
-                CustomEntry(
-                    userId,
-                    entry,
-                    pronunciation,
-                    OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
-                )
-            ).toInt()
-        } else {
-            vocabyDao.updateCustomEntry(
-                CustomEntry(
-                    groupChanges.entryId,
-                    userId,
-                    entry,
-                    pronunciation,
-                    OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
-                )
-            )
-
-            groupChanges.entryId
-        }
-
-        val deletedGroups: MutableList<CustomEntryGroup> = ArrayList()
-        for (group in groupChanges.deletedItems) {
-            deletedGroups.add(CustomEntryGroup(group.groupId, group.type))
-        }
-
-        val updatedGroups: MutableList<CustomEntryGroup> =
-            ArrayList()
-        for (group in groupChanges.updatedItems) {
-            updatedGroups.add(
-                CustomEntryGroup(
-                    group.groupId,
-                    entryId,
-                    group.type,
-                    group.order
-                )
-            )
-        }
-
-        val addedGroups: MutableList<CustomEntryGroup> =
-            ArrayList()
-        for (group in groupChanges.addedItems) {
-            addedGroups.add(
-                CustomEntryGroup(
-                    entryId,
-                    group.type,
-                    group.order
-                )
-            )
-        }
-
-        val deletedDefinitions: MutableList<CustomDefinition> =
-            ArrayList()
-        for (definitionChanges in definitionChangesMap.values) {
-            for (definitionModel in definitionChanges.deletedItems) {
-                deletedDefinitions.add(
-                    CustomDefinition(
-                        definitionModel.id,
-                        definitionChanges.groupId,
-                        definitionModel.definition,
-                        definitionModel.example,
-                        definitionModel.order
-                    )
-                )
-            }
-        }
-
-        val updatedDefinitions: MutableList<CustomDefinition> =
-            ArrayList()
-        for (definitionChanges in definitionChangesMap.values) {
-            for (definitionModel in definitionChanges.updatedItems) {
-                updatedDefinitions.add(
-                    CustomDefinition(
-                        definitionModel.id,
-                        definitionChanges.groupId,
-                        definitionModel.definition,
-                        definitionModel.example,
-                        definitionModel.order
-                    )
-                )
-            }
-        }
-
-        vocabyDao.deleteCustomEntryGroups(deletedGroups)
-        vocabyDao.updateCustomEntryGroups(updatedGroups)
-
-        val ids = vocabyDao.insertCustomEntryGroups(addedGroups)
-        val newGroups = groupChanges.addedItems
-        for (i in newGroups.indices) {
-            val definitionChanges =
-                definitionChangesMap[newGroups[i].type]
-            if (definitionChanges != null) definitionChanges.groupId =
-                ids[i].toInt()
-        }
-
-        val addedDefinitions: MutableList<CustomDefinition> =
-            ArrayList()
-        for (definitionChanges in definitionChangesMap.values) {
-            for (definitionModel in definitionChanges.addedItems) {
-                addedDefinitions.add(
-                    CustomDefinition(
-                        definitionChanges.groupId,
-                        definitionModel.definition,
-                        definitionModel.example,
-                        definitionModel.order
-                    )
-                )
-            }
-        }
-
-        vocabyDao.insertCustomDefinitions(addedDefinitions)
-        vocabyDao.updateCustomDefinitions(updatedDefinitions)
-        vocabyDao.deleteCustomDefinitions(deletedDefinitions)
-
-        return entryId
-    }
-
     /** --------------------- SAVES -------------------- **/
     fun getSavedWordsFlow() = vocabyDao.getSavesFlow(userId)
     fun hasSaved(entry: String) = vocabyDao.hasSave(userId, entry)
@@ -384,11 +426,14 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     suspend fun addSaveItem(entry: String) {
         vocabyDao.addSave(UserSave(userId, entry))
     }
+    suspend fun addSaveItems(saves: List<UserSave>) {
+        vocabyDao.addSaves(saves)
+    }
     suspend fun removeSaveItem(entry: String) = vocabyDao.removeSave(userId, entry)
     suspend fun clearSaves() = vocabyDao.clearSaves(userId)
 
     /** --------------------- IMPORT / EXPORT -------------------- **/
-    suspend fun importSavesFromExternalStorage(uri: Uri) {
+     fun importSavesFromExternalStorage(uri: Uri): List<UserSave> {
         val inputStream = application.contentResolver.openInputStream(uri)
         val reader = BufferedReader(InputStreamReader(inputStream))
 
@@ -409,7 +454,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                         )
                     }
 
-                    vocabyDao.addSaves(saves)
+                    return saves
                 } else {
                     throw IllegalFileException(
                         IllegalFileException.INVALID_FILE
@@ -427,6 +472,81 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         } finally {
             inputStream?.close()
             reader.close()
+        }
+    }
+
+    fun importEntriesFromExternalStorage(uri: Uri): EntryImportData {
+        val inputStream = application.contentResolver.openInputStream(uri)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+
+        try {
+            val gson = Gson()
+            val jsonObject = gson.fromJson(reader, JsonObject::class.java)
+            val entries: MutableList<CustomEntry> = ArrayList()
+            val entryModels: MutableList<EntryModel> = ArrayList()
+            if (jsonObject.has(Constants.EXPORT_FILE_TYPE_FIELD)) {
+                if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_FILE_TYPE_FIELD)
+                        .asString == "entries"
+                ) {
+                    for (i in jsonObject.getAsJsonArray("data")) {
+                        val item = i.asJsonObject
+                        val entryModel = EntryModel(item.getAsJsonPrimitive("entry").asString)
+                        entryModel.pronunciation = item.getAsJsonPrimitive("pronunciation").asString
+                        entries.add(CustomEntry(
+                            userId,
+                            entryModel.entry,
+                            entryModel.pronunciation,
+                            OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+                        ))
+
+                        for (g in item.getAsJsonArray("definitionGroups")) {
+                            val group = g.asJsonObject
+                            val type = group.getAsJsonPrimitive("type").asString
+                            val order = group.getAsJsonPrimitive("order").asInt
+                            val groupModel = DefinitionGroupModel(type, order)
+
+                            for (d in group.getAsJsonArray("definitionData")) {
+                                val definitionData = d.asJsonObject
+                                val definition = definitionData.getAsJsonPrimitive("definition").asString
+                                val example = definitionData.getAsJsonPrimitive("example").asString
+                                val definitionOrder = definitionData.getAsJsonPrimitive("order").asInt
+                                groupModel.addNewDefinition(DefinitionModel(type, definition, example, definitionOrder))
+                            }
+
+                            entryModel.addDefinitionGroup(groupModel)
+                        }
+
+                        entryModels.add(entryModel)
+                    }
+
+                    return EntryImportData(entries, entryModels)
+                } else {
+                    throw IllegalFileException(
+                        IllegalFileException.INVALID_FILE
+                    )
+                }
+            } else {
+                throw IllegalFileException(
+                    IllegalFileException.INVALID_FORMAT
+                )
+            }
+        } catch (error: JsonSyntaxException) {
+            throw IllegalFileException(
+                IllegalFileException.INVALID_FORMAT
+            )
+        } finally {
+            inputStream?.close()
+            reader.close()
+        }
+    }
+
+    fun writeEntriesToExternalStorage(entries: List<EntryModel>, uri: Uri) {
+        application.contentResolver.openOutputStream(uri).use { outputStream ->
+            val bw = BufferedWriter(OutputStreamWriter(outputStream))
+            val gson = Gson()
+            gson.toJson(BasicExportModel("entries", entries), bw)
+            bw.flush()
+            bw.close()
         }
     }
 

@@ -98,7 +98,7 @@ class EntryViewModel(
     }
 
     fun addNewGroupDataToIntent(intent: Intent, type: String): Intent {
-        val newGroup = DefinitionGroupModel(type, entryData.definitionGroups.size - 1)
+        val newGroup = DefinitionGroupModel(type)
         initialGroups[type] = newGroup
         intent.putExtra(GROUP_KEY, newGroup)
         intent.putExtra(DEFINITION_CHANGES, DefinitionChanges())
