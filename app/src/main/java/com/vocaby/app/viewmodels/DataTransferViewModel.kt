@@ -5,12 +5,12 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepository
+import com.vocaby.app.exceptions.IllegalFileException
 import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     companion object {
@@ -20,14 +20,15 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
         const val IMPORT_ENTRY = 3
     }
 
-    private val mTransferSuccessful: SingleLiveEvent<Boolean> = SingleLiveEvent()
-    private val mProgressText: SingleLiveEvent<Int> = SingleLiveEvent()
+    private val transferScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var actionType: Int = -1
+    private val _transferSuccessful: SingleLiveEvent<Boolean> = SingleLiveEvent()
+    private val _progressText: SingleLiveEvent<Int> = SingleLiveEvent()
 
     val transferStatus: LiveData<Boolean>
-        get() = mTransferSuccessful
+        get() = _transferSuccessful
     val progressText: LiveData<Int>
-        get() = mProgressText
+        get() = _progressText
 
 
     fun handleReceived(received: Intent): Intent {
@@ -80,52 +81,67 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     }
 
     private fun importSaves(uri: Uri) {
-        viewModelScope.launch {
+        transferScope.launch(CoroutineExceptionHandler { _, throwable ->
+            _transferSuccessful.postValue(false)
+            when (throwable) {
+                is IllegalFileException -> {
+                    if (throwable.code == IllegalFileException.INVALID_FILE) {
+                        _progressText.postValue(R.string.data_transfer_import_error_invalid_format)
+                    } else if (throwable.code == IllegalFileException.INVALID_FILE) {
+                        _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
+                    }
+                }
+                else -> {
+                    _progressText.postValue(R.string.data_transfer_import_error_generic)
+                    Logger.reportToDebug(throwable.message)
+                    Logger.reportErrorToBugsnag(throwable)
+                }
+            }
+        }) {
             repository.importSavesFromExternalStorage(uri)
-            mTransferSuccessful.value = true
-            mProgressText.setValue(R.string.data_transfer_import_complete)
-
-//            mTransferSuccessful.value = false
-//            if (error is IllegalFileException) {
-//                val resultCode = error.code
-//                if (resultCode == IllegalFileException.INVALID_FORMAT) {
-//                    mProgressText.setValue(R.string.data_transfer_import_error_invalid_format)
-//                } else if (resultCode == IllegalFileException.INVALID_FILE) {
-//                    mProgressText.value = R.string.data_transfer_import_error_invalid_file
-//                }
-//            } else {
-//                mProgressText.value = R.string.data_transfer_import_error_generic
-//                Logger.reportToDebug(error.message)
-//                Logger.reportToDebug(error.javaClass.toString())
-//            }
+            _transferSuccessful.postValue(true)
+            _progressText.postValue(R.string.data_transfer_import_complete)
         }
     }
 
     private fun writeSavesForBackup(uri: Uri) {
-        viewModelScope.launch {
+        transferScope.launch(CoroutineExceptionHandler { _, _ ->
+            _transferSuccessful.postValue(false)
+            _progressText.postValue(R.string.data_transfer_export_empty)
+        }) {
             val saves = repository.getSavedWords()
-            mProgressText.value = R.string.data_transfer_exporting_backup
+            _progressText.postValue(R.string.data_transfer_exporting_backup)
             repository.writeSavesJsonToExternalStorage(saves, uri)
 
-            mTransferSuccessful.value = true
-            mProgressText.setValue(R.string.data_transfer_export_complete)
-
-//            mTransferSuccessful.value = false
-//            mProgressText.value = R.string.data_transfer_export_empty
+            _transferSuccessful.postValue(true)
+            _progressText.postValue(R.string.data_transfer_export_complete)
         }
     }
 
     private fun writeSaves(uri: Uri) {
-        mProgressText.value = R.string.data_transfer_fetching_data
-        viewModelScope.launch {
+        _progressText.value = R.string.data_transfer_fetching_data
+        transferScope.launch(CoroutineExceptionHandler { _, _ ->
+            _transferSuccessful.postValue(false)
+            _progressText.postValue(R.string.data_transfer_export_empty)
+        }) {
             val saves = repository.getSavedWords()
-            mProgressText.value = R.string.data_transfer_exporting_saves
+            _progressText.postValue(R.string.data_transfer_exporting_saves)
             repository.writeSavesToExternalStorage(saves, uri)
-            mTransferSuccessful.value = true
-            mProgressText.setValue(R.string.data_transfer_export_complete)
+            _transferSuccessful.postValue(true)
+            _progressText.postValue(R.string.data_transfer_export_complete)
+        }
+    }
 
-//            mTransferSuccessful.value = false
-//            mProgressText.value = R.string.data_transfer_export_empty
+    fun cancelJob() {
+        if (transferScope.isActive) {
+            transferScope.cancel("User cancelled the job")
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if (transferScope.isActive) {
+            transferScope.cancel("Activity cleared")
         }
     }
 }

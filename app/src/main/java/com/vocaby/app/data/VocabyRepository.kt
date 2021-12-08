@@ -27,6 +27,7 @@ import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import java.lang.IllegalArgumentException
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -388,7 +389,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     suspend fun clearSaves() = vocabyDao.clearSaves(userId)
 
     /** --------------------- IMPORT / EXPORT -------------------- **/
-    suspend fun importSavesFromExternalStorage(uri: Uri) = withContext(Dispatchers.IO) {
+    suspend fun importSavesFromExternalStorage(uri: Uri) {
+        throw IllegalFileException(IllegalFileException.INVALID_FILE)
         val inputStream = application.contentResolver.openInputStream(uri)
         val reader = BufferedReader(InputStreamReader(inputStream))
 
@@ -430,8 +432,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         }
     }
 
-    suspend fun writeSavesJsonToExternalStorage(saves: List<String>, uri: Uri)
-    = withContext(Dispatchers.IO) {
+    fun writeSavesJsonToExternalStorage(saves: List<String>, uri: Uri) {
         application.contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
             val gson = Gson()
@@ -441,8 +442,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         }
     }
 
-    suspend fun writeSavesToExternalStorage(saves: List<String>, uri: Uri)
-    = withContext(Dispatchers.IO) {
+    fun writeSavesToExternalStorage(saves: List<String>, uri: Uri) {
         application.contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
 

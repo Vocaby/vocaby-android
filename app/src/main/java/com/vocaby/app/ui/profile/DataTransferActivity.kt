@@ -27,6 +27,7 @@ class DataTransferActivity : AppCompatActivity() {
 
         val cancelButton = findViewById<Button>(R.id.cancel_button)
         cancelButton.setOnClickListener {
+            dataTransferViewModel.cancelJob()
             setResult(RESULT_OK, dataTransferViewModel.addResult())
             finish()
         }

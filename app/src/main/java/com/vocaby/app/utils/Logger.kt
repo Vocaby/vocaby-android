@@ -15,7 +15,9 @@ object Logger {
         } ?: Log.d(Constants.DEBUG_TAG, "There was an error...")
     }
 
-    fun reportToDebug(message: String) {
-        Log.d(Constants.DEBUG_TAG, message)
+    fun reportToDebug(message: String?) {
+        message?.let {
+            Log.d(Constants.DEBUG_TAG, message)
+        }
     }
 }
