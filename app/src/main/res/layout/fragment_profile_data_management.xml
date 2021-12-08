@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
+    android:clickable="true"
     tools:context=".ui.profile.DataManagementFragment">
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/back_button"

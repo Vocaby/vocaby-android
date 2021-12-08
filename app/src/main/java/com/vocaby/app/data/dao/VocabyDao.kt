@@ -83,7 +83,7 @@ interface VocabyDao {
     @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY id DESC")
     fun getSavesFlow(userId: Int): Flow<MutableList<String>>
 
-    @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY id DESC")
+    @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY id ASC")
     suspend fun getSaves(userId: Int): List<String>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

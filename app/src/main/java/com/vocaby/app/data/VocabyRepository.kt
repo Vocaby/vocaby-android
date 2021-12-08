@@ -444,8 +444,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         application.contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
 
-            for (i in saves.indices) {
-                bw.write(saves[i])
+            for (entry in saves) {
+                bw.write(entry)
                 bw.newLine()
             }
 

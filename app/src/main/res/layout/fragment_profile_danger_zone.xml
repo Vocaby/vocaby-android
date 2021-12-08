@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
+    android:clickable="true"
     tools:context=".ui.profile.DangerZoneFragment">
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/back_button"

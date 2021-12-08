@@ -124,8 +124,8 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
             _progressText.postValue(R.string.data_transfer_export_empty)
         }) {
             val saves = repository.getSavedWords()
-            _progressText.postValue(R.string.data_transfer_exporting_saves)
             repository.writeSavesToExternalStorage(saves, uri)
+            _progressText.postValue(R.string.data_transfer_exporting_saves)
             _transferSuccessful.postValue(true)
             _progressText.postValue(R.string.data_transfer_export_complete)
         }
