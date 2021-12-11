@@ -92,6 +92,7 @@
     <string name="danger_zone">Danger Zone</string>
     <string name="data_export">Export Data</string>
     <string name="data_import">Import Data</string>
+    <string name="application_not_found">Unable to open…</string>
     <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be deleted.</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

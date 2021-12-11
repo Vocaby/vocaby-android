@@ -1,12 +1,15 @@
 package com.vocaby.app.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import com.vocaby.app.Constants.VOCABY_BASE_URL
 import com.vocaby.app.R
+import com.vocaby.app.ui.WebActivity
 
 class ProfileHomeFragment : Fragment() {
     override fun onCreateView(
@@ -45,6 +48,20 @@ class ProfileHomeFragment : Fragment() {
                 ).add(R.id.profile_fragment_container, DataManagementFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        val supportButton = view.findViewById<Button>(R.id.support_button)
+        supportButton.setOnClickListener {
+            val intent = Intent(requireActivity().applicationContext, WebActivity::class.java)
+            intent.putExtra("URL", VOCABY_BASE_URL + "support")
+            startActivity(intent)
+        }
+
+        val feedbackButton = view.findViewById<Button>(R.id.feedback_button)
+        feedbackButton.setOnClickListener {
+            val intent = Intent(requireActivity().applicationContext, WebActivity::class.java)
+            intent.putExtra("URL", VOCABY_BASE_URL + "feedback")
+            startActivity(intent)
         }
 
         // DANGER ZONE
