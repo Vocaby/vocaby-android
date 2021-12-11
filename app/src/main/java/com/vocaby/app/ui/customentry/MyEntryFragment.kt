@@ -19,7 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.CustomEntryAdapter
-import com.vocaby.app.models.payload.ItemPayload
+import com.vocaby.app.models.payload.PayloadState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.utils.StringFormatter
 import com.vocaby.app.viewmodels.DictionaryViewModel
@@ -71,8 +71,8 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
         entryViewModel.entryState.observe(viewLifecycleOwner) { entryStatePayload ->
             when (entryStatePayload.state) {
-                ItemPayload.DELETE -> customEntryAdapter.deleteEntry(entryStatePayload.payload)
-                ItemPayload.ADD -> customEntryAdapter.addEntry()
+                PayloadState.DELETE -> customEntryAdapter.deleteEntry(entryStatePayload.payload)
+                PayloadState.ADD -> customEntryAdapter.addEntry()
             }
 
             dictionaryViewModel.resetSearchSuggestion()

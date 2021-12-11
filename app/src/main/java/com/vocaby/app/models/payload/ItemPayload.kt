@@ -1,7 +1,6 @@
-package com.vocaby.app.models.payload;
+package com.vocaby.app.models.payload
 
-public interface ItemPayload<T> extends PayloadState {
-    int getState();
-    void setState(int itemState);
-    T getPayload();
+interface ItemPayload<T> : PayloadState {
+    var state: Int
+    val payload: T
 }

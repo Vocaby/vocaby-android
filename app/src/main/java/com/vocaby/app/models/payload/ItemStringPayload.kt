@@ -1,62 +1,43 @@
-package com.vocaby.app.models.payload;
+package com.vocaby.app.models.payload
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Parcelable
+import android.os.Parcel
+import android.os.Parcelable.Creator
 
-public class ItemStringPayload implements Parcelable, ItemPayload<String> {
-    private int state;
-    private final String payload;
+class ItemStringPayload : Parcelable, ItemPayload<String> {
+    override var state: Int = PayloadState.UNCHANGED
+    override val payload: String
 
-    public ItemStringPayload(String payload) {
-        this.state = UNCHANGED;
-        this.payload = payload;
+    constructor(payload: String) {
+        this.payload = payload
     }
 
-    public ItemStringPayload(int state, String payload) {
-        this.state = state;
-        this.payload = payload;
+    constructor(state: Int, payload: String) {
+        this.state = state
+        this.payload = payload
     }
 
-    protected ItemStringPayload(Parcel in) {
-        state = in.readInt();
-        payload = in.readString();
+    private constructor(`in`: Parcel) {
+        state = `in`.readInt()
+        payload = `in`.readString().toString()
     }
 
-    public static final Creator<ItemStringPayload> CREATOR = new Creator<ItemStringPayload>() {
-        @Override
-        public ItemStringPayload createFromParcel(Parcel in) {
-            return new ItemStringPayload(in);
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(parcel: Parcel, i: Int) {
+        parcel.writeInt(state)
+        parcel.writeString(payload)
+    }
+
+    companion object CREATOR : Creator<ItemStringPayload> {
+        override fun createFromParcel(parcel: Parcel): ItemStringPayload {
+            return ItemStringPayload(parcel)
         }
 
-        @Override
-        public ItemStringPayload[] newArray(int size) {
-            return new ItemStringPayload[size];
+        override fun newArray(size: Int): Array<ItemStringPayload?> {
+            return arrayOfNulls(size)
         }
-    };
-
-    @Override
-    public int getState() {
-        return state;
-    }
-
-    @Override
-    public void setState(int itemState) {
-        state = itemState;
-    }
-
-    @Override
-    public String getPayload() {
-        return payload;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(state);
-        parcel.writeString(payload);
     }
 }

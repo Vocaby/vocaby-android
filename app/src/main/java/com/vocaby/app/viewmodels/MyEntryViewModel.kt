@@ -68,10 +68,10 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
             receivedPayload?.let {
                 if (receivedPayload.state == PayloadState.ADD) {
                     customEntries.add(0, receivedPayload.payload)
-                    _entryState.value = ItemIntPayload(ItemIntPayload.ADD, 0)
+                    _entryState.value = ItemIntPayload(PayloadState.ADD, 0)
                 } else if (receivedPayload.state == PayloadState.DELETE && selectedPosition != -1) {
                     customEntries.removeAt(selectedPosition)
-                    _entryState.value = ItemIntPayload(ItemIntPayload.DELETE, selectedPosition)
+                    _entryState.value = ItemIntPayload(PayloadState.DELETE, selectedPosition)
                 }
 
                 _entryCount.value = customEntries.size
@@ -84,7 +84,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
             repository.removeCustomEntry(entry)
             customEntries.removeAt(position)
             _entryCount.postValue(customEntries.size)
-            _entryState.value = ItemIntPayload(ItemIntPayload.DELETE, position)
+            _entryState.value = ItemIntPayload(PayloadState.DELETE, position)
         }
     }
 

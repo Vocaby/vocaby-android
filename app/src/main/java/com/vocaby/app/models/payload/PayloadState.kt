@@ -1,8 +1,10 @@
-package com.vocaby.app.models.payload;
+package com.vocaby.app.models.payload
 
-public interface PayloadState {
-    int UNCHANGED = -1;
-    int ADD = 0;
-    int DELETE = 1;
-    int UPDATE = 2;
+interface PayloadState {
+    companion object {
+        const val UNCHANGED = -1
+        const val ADD = 0
+        const val DELETE = 1
+        const val UPDATE = 2
+    }
 }
