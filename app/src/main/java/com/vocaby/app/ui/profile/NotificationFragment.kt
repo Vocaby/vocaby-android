@@ -1,11 +1,11 @@
 package com.vocaby.app.ui.profile
 
-import androidx.preference.PreferenceFragmentCompat
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import androidx.preference.PreferenceFragmentCompat
 import com.vocaby.app.R
 
 class NotificationFragment : PreferenceFragmentCompat() {

@@ -21,8 +21,8 @@ import com.vocaby.app.adapters.FragmentAdapter
 import com.vocaby.app.receivers.NotificationReceiver
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
-import com.vocaby.app.viewmodels.UserViewModelFactory
 import com.vocaby.app.viewmodels.UserViewModel
+import com.vocaby.app.viewmodels.UserViewModelFactory
 
 open class MainActivity : AppCompatActivity() {
     private lateinit var alarmManager: AlarmManager

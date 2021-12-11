@@ -5,10 +5,11 @@ import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.app.R
-import kotlinx.android.synthetic.main.custom_entry_item.view.*
 
 class CustomEntryAdapter(private val activity: Activity, private val interaction: Interaction) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -28,7 +29,7 @@ class CustomEntryAdapter(private val activity: Activity, private val interaction
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is CustomEntryViewHolder -> holder.bind(customEntries.get(position))
+            is CustomEntryViewHolder -> holder.bind(customEntries[position])
         }
     }
 
@@ -56,14 +57,17 @@ class CustomEntryAdapter(private val activity: Activity, private val interaction
         private val interaction: Interaction,
         private val alertDialogBuilder: MaterialAlertDialogBuilder
     ): RecyclerView.ViewHolder(itemView) {
+        private val customEntryHeader: TextView = itemView.findViewById(R.id.custom_entry_item_header)
+        private val deleteButton: AppCompatImageButton = itemView.findViewById(R.id.delete_button)
+
         fun bind(customEntry: String) {
-            itemView.custom_entry_item_header.text = customEntry
+            customEntryHeader.text = customEntry
 
             itemView.setOnClickListener {
                 interaction.onItemTouch(customEntry, adapterPosition)
             }
 
-            itemView.delete_button.setOnClickListener {
+            deleteButton.setOnClickListener {
                 alertDialogBuilder
                     .setTitle("Are you sure you want to delete?")
                     .setMessage(customEntry)

@@ -1,9 +1,9 @@
 package com.vocaby.app.data.entity
 
-import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
+import androidx.room.PrimaryKey
 
 @Entity(tableName = "vocaby_user")
 class User {

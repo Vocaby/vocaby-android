@@ -1,18 +1,18 @@
 package com.vocaby.app.ui.profile
 
-import androidx.appcompat.app.AppCompatActivity
-import com.vocaby.app.viewmodels.DataTransferViewModel
+import android.content.res.ColorStateList
 import android.os.Bundle
-import com.vocaby.app.R
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.content.res.ColorStateList
-import android.widget.Button
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
+import com.vocaby.app.viewmodels.DataTransferViewModel
 import com.vocaby.app.viewmodels.DataTransferViewModelFactory
 
 class DataTransferActivity : AppCompatActivity() {

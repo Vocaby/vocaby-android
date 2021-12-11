@@ -22,7 +22,6 @@ import com.vocaby.app.adapters.TypeAdapter
 import com.vocaby.app.models.payload.ItemIntPayload
 import com.vocaby.app.models.payload.PayloadState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.viewmodels.EntryViewModel
 import com.vocaby.app.viewmodels.EntryViewModelFactory
 

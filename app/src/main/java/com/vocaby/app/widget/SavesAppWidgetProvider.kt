@@ -17,7 +17,10 @@ import com.vocaby.app.exceptions.SaveRepetitionException
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.ui.MainActivity
 import com.vocaby.app.utils.Logger
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.ThreadLocalRandom
 
 class SavesAppWidgetProvider : AppWidgetProvider() {

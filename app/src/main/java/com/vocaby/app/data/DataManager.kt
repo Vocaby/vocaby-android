@@ -1,5 +1,6 @@
 package com.vocaby.app.data
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import java.io.File
@@ -15,6 +16,7 @@ class DataManager private constructor(context: Context) {
     var numHistoryItems = 6
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         private var instance: DataManager? = null
 
         fun getInstance(context: Context): DataManager =

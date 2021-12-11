@@ -1,24 +1,24 @@
 package com.vocaby.app.ui.customentry
 
-import androidx.appcompat.app.AppCompatActivity
-import com.vocaby.app.adapters.DragStartListener
-import com.vocaby.app.adapters.CustomDefAdapter
-import com.vocaby.app.viewmodels.EntryGroupViewModel
-import androidx.recyclerview.widget.ItemTouchHelper
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-import android.os.Bundle
-import com.vocaby.app.R
-import com.vocaby.app.utils.StringFormatter
-import android.widget.EditText
 import android.content.Intent
+import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.vocaby.app.R
+import com.vocaby.app.adapters.CustomDefAdapter
+import com.vocaby.app.adapters.DragStartListener
 import com.vocaby.app.adapters.ItemTouchCallback
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
+import com.vocaby.app.utils.StringFormatter
+import com.vocaby.app.viewmodels.EntryGroupViewModel
 
 class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
     CustomDefAdapter.ItemInteractionListener {

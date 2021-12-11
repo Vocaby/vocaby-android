@@ -1,7 +1,5 @@
 package com.vocaby.app.exceptions
 
-import java.lang.Exception
-
 class IllegalFileException : Exception {
     val code: Int
 

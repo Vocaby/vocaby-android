@@ -1,14 +1,14 @@
 package com.vocaby.app.ui.profile
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.ViewGroup
-import com.vocaby.app.R
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.viewmodels.*
 

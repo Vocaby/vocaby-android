@@ -1,18 +1,18 @@
 package com.vocaby.app.viewmodels
 
-import androidx.lifecycle.ViewModel
-import com.vocaby.app.models.dictionary.DefinitionGroupModel
-import com.vocaby.app.models.customentry.DefinitionChanges
-import com.vocaby.app.models.dictionary.DefinitionModel
-import com.vocaby.app.utils.SingleLiveEvent
-import com.vocaby.app.models.viewstate.TextViewStateModel
-import androidx.lifecycle.LiveData
 import android.content.Intent
 import android.view.View
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import com.vocaby.app.Constants
-import com.vocaby.app.models.payload.PayloadState
 import com.vocaby.app.R
-import java.util.HashMap
+import com.vocaby.app.models.customentry.DefinitionChanges
+import com.vocaby.app.models.dictionary.DefinitionGroupModel
+import com.vocaby.app.models.dictionary.DefinitionModel
+import com.vocaby.app.models.payload.PayloadState
+import com.vocaby.app.models.viewstate.TextViewStateModel
+import com.vocaby.app.utils.SingleLiveEvent
+import java.util.*
 
 class EntryGroupViewModel : ViewModel() {
     private lateinit var definitionGroup: DefinitionGroupModel

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,11 +16,11 @@ import com.vocaby.app.adapters.SaveListAdapter
 import com.vocaby.app.ui.MainActivity
 import com.vocaby.app.viewmodels.UserViewModel
 import com.vocaby.app.viewmodels.UserViewModelFactory
-import kotlinx.android.synthetic.main.fragment_saves.*
 
 class SavesFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var ctx: Context
     private lateinit var savesAdapter: SaveListAdapter
+    private lateinit var savesCount: TextView
     private val userViewModel: UserViewModel by activityViewModels {
         UserViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
@@ -33,7 +34,9 @@ class SavesFragment : Fragment(), SaveListAdapter.Interaction {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_saves, container, false)
+        val view = inflater.inflate(R.layout.fragment_saves, container, false)
+        savesCount = view.findViewById(R.id.saves_count)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,7 +51,7 @@ class SavesFragment : Fragment(), SaveListAdapter.Interaction {
 
         userViewModel.savesCount.observe(viewLifecycleOwner) { count ->
             count?.let {
-                saves_count.text = count.toString()
+                savesCount.text = count.toString()
             }
         }
     }

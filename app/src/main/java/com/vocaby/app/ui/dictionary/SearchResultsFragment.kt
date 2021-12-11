@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.MarginPageTransformer
+import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.vocaby.app.R
@@ -24,11 +26,14 @@ import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.viewmodels.SearchResultsViewModel
 import com.vocaby.app.viewmodels.SearchResultsViewModelFactory
 import com.vocaby.app.viewmodels.UserViewModel
-import kotlinx.android.synthetic.main.fragment_search_results.*
 
 class SearchResultsFragment : Fragment() {
     private lateinit var ctx: Context
     private lateinit var searchedWord: String
+    private lateinit var viewPager: ViewPager2
+    private lateinit var dictionarySelector: RadioGroup
+    private lateinit var saveButton: Button
+    private lateinit var searchProgress: ProgressBar
     private val userViewModel: UserViewModel by activityViewModels()
     private val searchResultsViewModel: SearchResultsViewModel by viewModels{
         SearchResultsViewModelFactory(
@@ -64,37 +69,42 @@ class SearchResultsFragment : Fragment() {
         val saveProgress = view.findViewById<ProgressBar>(R.id.save_progress)
         saveProgress.visibility = GONE
 
+        viewPager = view.findViewById(R.id.search_results_body_pager)
+        dictionarySelector = view.findViewById(R.id.dictionary_selector)
+        saveButton = view.findViewById(R.id.save_button)
+        searchProgress = view.findViewById(R.id.search_progress)
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        search_results_body_pager.setPageTransformer(MarginPageTransformer(40))
+        viewPager.setPageTransformer(MarginPageTransformer(40))
 
         searchResultsViewModel.entryData.observeOnce(viewLifecycleOwner) { entryList ->
             entryList?.let {
                 setupDictionary(entryList.size)
-                search_results_body_pager.adapter = FragmentAdapter(this, entryList)
-                search_progress.visibility = GONE
+                viewPager.adapter = FragmentAdapter(this, entryList)
+                searchProgress.visibility = GONE
             }
         }
 
         searchResultsViewModel.missingDictionary.observeOnce(viewLifecycleOwner) { id ->
-            val button = dictionary_selector.findViewById<RadioButton>(id)
-            dictionary_selector.removeView(button)
-            dictionary_selector.check(dictionary_selector.getChildAt(0).id)
+            val button = dictionarySelector.findViewById<RadioButton>(id)
+            dictionarySelector.removeView(button)
+            dictionarySelector.check(dictionarySelector.getChildAt(0).id)
         }
 
         // Observe changes to entry save state
         searchResultsViewModel.saveState.observe(viewLifecycleOwner) { saveState ->
             val icon = AppCompatResources.getDrawable(ctx, saveState.icon)
 
-            save_button.visibility = saveState.visibility
-            save_button.text = getString(saveState.text)
-            save_button.isEnabled = saveState.enabled
-            save_button.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+            saveButton.visibility = saveState.visibility
+            saveButton.text = getString(saveState.text)
+            saveButton.isEnabled = saveState.enabled
+            saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
 
-            save_button.setOnClickListener {
+            saveButton.setOnClickListener {
                 if (saveState.saved) {
                     userViewModel.removeSaveItem(searchedWord)
                 } else {
@@ -106,22 +116,22 @@ class SearchResultsFragment : Fragment() {
 
     private fun setupDictionary(size: Int) {
         if (size > 1) {
-            search_results_body_pager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     if (position == 0) {
-                        dictionary_selector.check(R.id.selection_custom)
+                        dictionarySelector.check(R.id.selection_custom)
                     } else {
-                        dictionary_selector.check(R.id.selection_original)
+                        dictionarySelector.check(R.id.selection_original)
                     }
                 }
             })
 
-            dictionary_selector.setOnCheckedChangeListener { _, id: Int ->
+            dictionarySelector.setOnCheckedChangeListener { _, id: Int ->
                 if (id == R.id.selection_original) {
-                    search_results_body_pager.currentItem = 1
+                    viewPager.currentItem = 1
                 } else {
-                    search_results_body_pager.currentItem = 0
+                    viewPager.currentItem = 0
                 }
             }
         }

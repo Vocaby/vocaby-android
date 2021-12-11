@@ -4,12 +4,13 @@ import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.app.R
-import kotlinx.android.synthetic.main.save_item.view.*
 
 class SaveListAdapter(private val activity: Activity, private val interaction: Interaction) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -59,14 +60,16 @@ class SaveListAdapter(private val activity: Activity, private val interaction: I
         private val interaction: Interaction,
         private val alertDialogBuilder: MaterialAlertDialogBuilder
     ) : RecyclerView.ViewHolder(itemView) {
+        private val saveItem: TextView = itemView.findViewById(R.id.save_item)
+        private val unsaveButton: AppCompatImageButton = itemView.findViewById(R.id.unsave_button)
         fun bind(entry: String) {
-            itemView.save_item.text = entry
+            saveItem.text = entry
 
             itemView.setOnClickListener {
                 interaction.onItemTouch(entry)
             }
 
-            itemView.unsave_button.setOnClickListener {
+            unsaveButton.setOnClickListener {
                 alertDialogBuilder
                     .setTitle("Are you sure you want to delete?")
                     .setMessage(entry)
