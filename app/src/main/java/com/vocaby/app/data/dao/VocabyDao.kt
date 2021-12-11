@@ -10,7 +10,7 @@ interface VocabyDao {
     @Query("SELECT EXISTS(SELECT * FROM vocaby_user WHERE user_id = :id)")
     suspend fun checkUser(id: Int): Boolean
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createUser(user: User): Long
 
     /** --------------------- ENTRY -------------------- **/
@@ -18,11 +18,11 @@ interface VocabyDao {
     suspend fun checkEntryExistence(entry: String): Boolean
 
     @Query(
-        "SELECT word FROM dictionary_word UNION " +
-                "SELECT entry FROM custom_user_entry " +
-                "ORDER BY word COLLATE NOCASE ASC"
+        "SELECT word FROM dictionary_word WHERE word LIKE :firstLetter||'%' UNION " +
+                "SELECT entry FROM custom_user_entry WHERE entry LIKE :firstLetter||'%' " +
+                "ORDER BY word ASC"
     )
-    suspend fun getDictionaryEntries(): List<String>
+    suspend fun getDictionaryEntriesByCharacter(firstLetter: String): List<String>
 
     @Transaction
     @Query("SELECT * FROM dictionary_word WHERE word = :entry")
@@ -93,10 +93,10 @@ interface VocabyDao {
     @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY id ASC")
     suspend fun getSaves(userId: Int): List<String>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addSave(userSave: UserSave)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addSaves(userSaves: List<UserSave>)
 
     @Query("DELETE FROM saves WHERE user_id = :userId AND entry = :entry")

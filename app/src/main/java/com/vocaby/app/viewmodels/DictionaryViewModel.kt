@@ -31,13 +31,6 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
         _searchHistory.postValue(historyList)
     }
 
-    // create shared prefs based on first character
-    fun setupDictionaryEntries() {
-        viewModelScope.launch(Dispatchers.Default) {
-            repository.setupDictionaryEntries()
-        }
-    }
-
     // notify observer of new search
     fun search(entry: String) {
         val searchedEntry = cleanText(entry)
@@ -72,7 +65,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
             _searchSuggestions.postValue(GenericState.InProgress)
             val initialCharacter = newQuery.substring(0, 1)
             viewModelScope.launch(Dispatchers.Default) {
-                entriesByCharacter = repository.getEntriesByCharacter(initialCharacter)
+                entriesByCharacter = repository.getEntriesByCharacterFromDB(initialCharacter)
                 setSearchSuggestionItems(newQuery)
             }
         } else {
@@ -85,7 +78,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
         if (entriesByCharacter.isNullOrEmpty()) {
             viewModelScope.launch(Dispatchers.Default) {
                 val initialCharacter = searchQuery.substring(0, 1)
-                entriesByCharacter = repository.getEntriesByCharacter(initialCharacter)
+                entriesByCharacter = repository.getEntriesByCharacterFromDB(initialCharacter)
                 setSearchSuggestionItems(searchQuery)
             }
         } else {

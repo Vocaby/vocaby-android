@@ -183,7 +183,7 @@ class EntryViewModel(
             } else {
                 // DELETE THE EXISTING ENTRY BECAUSE THE USER DELETED ALL GROUPS
                 viewModelScope.launch {
-                    repository.removeCustomEntry(entryData.id, entryData.entry)
+                    repository.removeCustomEntry(entryData.id)
                     payload?.state = PayloadState.DELETE
                     _saveResult.postValue(true)
                 }

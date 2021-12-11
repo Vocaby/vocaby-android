@@ -48,8 +48,6 @@ open class MainActivity : AppCompatActivity() {
         }
         userViewModel.setupUser()
 
-        dictionaryViewModel.setupDictionaryEntries()
-
         setupNotification()
         setupNavigation()
     }

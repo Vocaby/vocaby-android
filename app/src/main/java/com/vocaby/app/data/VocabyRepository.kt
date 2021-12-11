@@ -32,8 +32,6 @@ import java.util.*
 class VocabyRepository(private val vocabyDao: VocabyDao, val application: Application) {
     private val userSharedPreference: SharedPreferences =
         application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE)
-    private val entrySharedPreference: SharedPreferences =
-        application.getSharedPreferences(Constants.DICTIONARY_ENTRIES_KEY, Context.MODE_PRIVATE)
     private var userId: Int = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1)
     private val dataManager: DataManager = DataManager.getInstance(application)
 
@@ -47,34 +45,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     }
 
     /** --------------------- ENTRY -------------------- **/
-    suspend fun setupDictionaryEntries() {
-        if (!entrySharedPreference.contains("z")) {
-            val list = vocabyDao.getDictionaryEntries()
-            var i = 0
-            var sb = StringBuilder()
-            while (i < list.size - 1) {
-                if (list[i][0] == list[i + 1][0]) {
-                    sb.append(list[i])
-                    sb.append(";")
-                } else {
-                    sb.append(list[i])
-                    val editor = entrySharedPreference.edit()
-                    editor.putString(list[i].substring(0, 1), sb.toString())
-                    editor.apply()
-                    sb = StringBuilder()
-                }
-
-                i++
-            }
-
-            // Last element insertion
-            sb.append(list[i])
-            val editor = entrySharedPreference.edit()
-            editor.putString(list[i].substring(0, 1), sb.toString())
-            editor.apply()
-        }
-    }
-
     private fun convertToEntryModel(wordDefinitions: WordDefinitions?): EntryModel? {
         wordDefinitions?.let {
             val pronunciation =
@@ -96,10 +66,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         return null
     }
 
-    fun getEntriesByCharacter(character: String): List<String> {
-        val e: String? = entrySharedPreference.getString(character, "")
-        return listOf(*e!!.split(";".toRegex()).toTypedArray())
-    }
+    suspend fun getEntriesByCharacterFromDB(character: String): List<String>
+        = vocabyDao.getDictionaryEntriesByCharacter(character)
 
     suspend fun getEntryPackage(entry: String): EntryDataPackage {
         val entryData = convertToEntryModel(vocabyDao.getEntryData(entry))
@@ -148,15 +116,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     suspend fun getUserEntries() = vocabyDao.getUserEntries(userId)
     suspend fun getUserEntryData(entry: String) = convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
-    suspend fun removeCustomEntry(entryId: Int, entry: String) {
-        vocabyDao.deleteUserEntry(entryId)
-        val exists = vocabyDao.checkEntryExistence(entry)
-        if (!exists) deleteCustomEntryFromDictionary(entry)
-    }
-    suspend fun removeCustomEntry(entry: String) {
-        vocabyDao.deleteUserEntry(entry)
-        deleteCustomEntryFromDictionary(entry)
-    }
+    suspend fun removeCustomEntry(entryId: Int) = vocabyDao.deleteUserEntry(entryId)
+    suspend fun removeCustomEntry(entry: String) = vocabyDao.deleteUserEntry(entry)
     suspend fun clearUserEntries() = vocabyDao.clearUserEntries(userId)
     suspend fun getAllUserEntries(): List<EntryModel> {
         val entries = vocabyDao.getAllUserEntryData(userId)
@@ -177,9 +138,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         definitionChangesMap: MutableMap<String, DefinitionChanges>
     ): Int {
         val entryId: Int = if (groupChanges.entryId == -1) {
-            val exists = vocabyDao.checkEntryExistence(entry)
-            if (!exists) addEntryToDictionary(entry)
-
             vocabyDao.insertCustomEntry(
                 CustomEntry(
                     userId,
@@ -293,12 +251,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         return entryId
     }
     suspend fun insertNewEntries(data: EntryImportData) {
-        // TODO: Fix bug where custom entries in the search suggestion gets duplicated
-        for (entryData in data.entries) {
-            val exists = vocabyDao.checkEntryExistence(entryData.entry)
-            if (!exists) addEntryToDictionary(entryData.entry)
-        }
-
         val entryIds = vocabyDao.insertCustomEntries(data.entries)
         for (i in entryIds.indices) {
             val addedGroups = mutableListOf<CustomEntryGroup>()
@@ -373,50 +325,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         }
 
         return null
-    }
-
-    private fun deleteCustomEntryFromDictionary(entry: String) {
-        val character = entry.substring(0, 1)
-        val entries = entrySharedPreference.getString(character, "")
-        val sb = java.lang.StringBuilder()
-        if (entries!!.isNotEmpty()) {
-            val list = listOf(*entries.split(";").toTypedArray())
-            for (i in list.indices) {
-                if (list[i] != entry) {
-                    sb.append(list[i])
-                    sb.append(";")
-                }
-            }
-
-            entrySharedPreference.edit().putString(character, sb.toString()).apply()
-        }
-    }
-
-    private fun addEntryToDictionary(entry: String) {
-        val character = entry.substring(0, 1)
-        val entries = entrySharedPreference.getString(character, "")
-        val sb = java.lang.StringBuilder()
-        var added = false
-        if (entries!!.isNotEmpty()) {
-            val list = listOf(*entries.split(";").toTypedArray())
-            var i = 0
-            while (i < list.size) {
-                if (!added && entry.compareTo(list[i], ignoreCase = true) < 0) {
-                    added = true
-                    sb.append(entry)
-                    sb.append(";")
-                }
-                sb.append(list[i])
-                sb.append(";")
-                i++
-            }
-
-            if (!added) {
-                sb.append(entry)
-            }
-
-            entrySharedPreference.edit().putString(character, sb.toString()).apply()
-        }
     }
 
     /** --------------------- SAVES -------------------- **/

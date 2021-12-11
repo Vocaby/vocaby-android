@@ -194,6 +194,7 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
         }
     }
 }
+
 class DataTransferViewModelFactory(
     private val repository: VocabyRepository
 ) : ViewModelProvider.Factory {
