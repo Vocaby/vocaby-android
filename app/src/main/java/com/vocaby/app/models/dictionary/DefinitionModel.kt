@@ -1,123 +1,75 @@
-package com.vocaby.app.models.dictionary;
+package com.vocaby.app.models.dictionary
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Parcelable
+import android.os.Parcel
+import android.os.Parcelable.Creator
 
-import androidx.annotation.NonNull;
+class DefinitionModel : Parcelable, Comparable<DefinitionModel> {
+    var id: Int
+    var type: String
+    var definition: String
+    var example: String?
+    var order: Int
 
-public class DefinitionModel implements Parcelable, Comparable<DefinitionModel> {
-    private int id;
-    private String type;
-    private String definition;
-    private String example;
-    private int order;
-
-    public DefinitionModel(DefinitionModel def) {
-        this.id = def.id;
-        this.type = def.type;
-        this.definition = def.definition;
-        this.example = def.example;
-        this.order = def.order;
+    constructor(def: DefinitionModel) {
+        id = def.id
+        type = def.type
+        definition = def.definition
+        example = def.example
+        order = def.order
     }
 
-    public DefinitionModel(int id, String type, String definition, String example, int order) {
-        this.id = id;
-        this.type = type;
-        this.definition = definition;
-        this.example = example;
-        this.order = order;
+    constructor(id: Int, type: String, definition: String, example: String?, order: Int) {
+        this.id = id
+        this.type = type
+        this.definition = definition
+        this.example = example
+        this.order = order
     }
 
-    public DefinitionModel(String type, String definition, String example, int order) {
-        this.id = -1;
-        this.type = type;
-        this.definition = definition;
-        this.example = example;
-        this.order = order;
+    constructor(type: String, definition: String, example: String?, order: Int) {
+        id = -1
+        this.type = type
+        this.definition = definition
+        this.example = example
+        this.order = order
     }
 
-    protected DefinitionModel(Parcel in) {
-        id = in.readInt();
-        type = in.readString();
-        definition = in.readString();
-        example = in.readString();
-        order = in.readInt();
+    private constructor(`in`: Parcel) {
+        id = `in`.readInt()
+        type = `in`.readString().toString()
+        definition = `in`.readString().toString()
+        example = `in`.readString()
+        order = `in`.readInt()
     }
 
-    public static final Creator<DefinitionModel> CREATOR = new Creator<DefinitionModel>() {
-        @Override
-        public DefinitionModel createFromParcel(Parcel in) {
-            return new DefinitionModel(in);
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(parcel: Parcel, i: Int) {
+        parcel.writeInt(id)
+        parcel.writeString(type)
+        parcel.writeString(definition)
+        parcel.writeString(example)
+        parcel.writeInt(order)
+    }
+
+    override fun toString(): String {
+        return definition
+    }
+
+    override fun compareTo(other: DefinitionModel): Int {
+        return order.compareTo(other.order)
+    }
+
+    companion object CREATOR : Creator<DefinitionModel> {
+        override fun createFromParcel(parcel: Parcel): DefinitionModel {
+            return DefinitionModel(parcel)
         }
 
-        @Override
-        public DefinitionModel[] newArray(int size) {
-            return new DefinitionModel[size];
+        override fun newArray(size: Int): Array<DefinitionModel?> {
+            return arrayOfNulls(size)
         }
-    };
-
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-
-    public String getExample() {
-        return example;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setExample(String example) {
-        this.example = example;
-    }
-
-    public int getOrder() {
-        return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
-        parcel.writeString(type);
-        parcel.writeString(definition);
-        parcel.writeString(example);
-        parcel.writeInt(order);
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return definition;
-    }
-
-    @Override
-    public int compareTo(DefinitionModel definitionModel) {
-        return Integer.compare(order, definitionModel.getOrder());
     }
 }

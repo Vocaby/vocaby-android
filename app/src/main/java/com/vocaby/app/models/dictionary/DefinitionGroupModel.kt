@@ -1,165 +1,124 @@
-package com.vocaby.app.models.dictionary;
+package com.vocaby.app.models.dictionary
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Parcelable
+import android.os.Parcel
+import android.os.Parcelable.Creator
+import java.util.*
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+class DefinitionGroupModel : Parcelable, Comparable<DefinitionGroupModel> {
+    var groupId: Int
+    var type: String
+    var definitionData: MutableList<DefinitionModel>
+    var order: Int
 
-public class DefinitionGroupModel implements Parcelable, Comparable<DefinitionGroupModel> {
-    private int groupId;
-    private String type;
-    private List<DefinitionModel> definitionData;
-    private int order;
+    constructor(group: DefinitionGroupModel) {
+        groupId = group.groupId
+        type = group.type
+        definitionData = ArrayList()
 
-    public DefinitionGroupModel(DefinitionGroupModel group) {
-        this.groupId = group.groupId;
-        this.type = group.type;
-        definitionData = new ArrayList<>();
-        for (DefinitionModel def : group.getDefinitionData()) {
-            definitionData.add(new DefinitionModel(def));
-        }
-        this.order = group.order;
-    }
-
-    public DefinitionGroupModel(int groupId, String type, int order) {
-        this.groupId = groupId;
-        this.type = type;
-        this.definitionData = new ArrayList<>();
-        this.order = order;
-    }
-
-    public DefinitionGroupModel(String type, int order) {
-        this.groupId = -1;
-        this.type = type;
-        this.definitionData = new ArrayList<>();
-        this.order = order;
-    }
-
-    public DefinitionGroupModel(String type) {
-        this.groupId = -1;
-        this.type = type;
-        this.definitionData = new ArrayList<>();
-        this.order = 0;
-    }
-
-    protected DefinitionGroupModel(Parcel in) {
-        definitionData = new ArrayList<>();
-
-        groupId = in.readInt();
-        type = in.readString();
-        in.readTypedList(definitionData, DefinitionModel.CREATOR);
-        order = in.readInt();
-    }
-
-    public static final Creator<DefinitionGroupModel> CREATOR = new Creator<DefinitionGroupModel>() {
-        @Override
-        public DefinitionGroupModel createFromParcel(Parcel in) {
-            return new DefinitionGroupModel(in);
+        for (def in group.definitionData) {
+            definitionData.add(DefinitionModel(def))
         }
 
-        @Override
-        public DefinitionGroupModel[] newArray(int size) {
-            return new DefinitionGroupModel[size];
-        }
-    };
-
-    public String getType() {
-        return type;
+        order = group.order
     }
 
-    public List<DefinitionModel> getDefinitionData() {
-        return definitionData;
+    constructor(groupId: Int, type: String, order: Int) {
+        this.groupId = groupId
+        this.type = type
+        definitionData = ArrayList()
+        this.order = order
     }
 
-    public void setDefinitionData(List<DefinitionModel> newList) {
-        definitionData = newList;
+    constructor(type: String, order: Int) {
+        groupId = -1
+        this.type = type
+        definitionData = ArrayList()
+        this.order = order
     }
 
-    public DefinitionModel addNewDefinition(String definition, String example) {
-        DefinitionModel definitionToAdd = new DefinitionModel(type, definition, example, definitionData.size());
-        definitionData.add(definitionToAdd);
-        return definitionToAdd;
+    constructor(type: String) {
+        groupId = -1
+        this.type = type
+        definitionData = ArrayList()
+        order = 0
     }
 
-    public void addNewDefinition(DefinitionModel definitionModel) {
-        definitionData.add(definitionModel);
+    private constructor(`in`: Parcel) {
+        definitionData = ArrayList()
+        groupId = `in`.readInt()
+        type = `in`.readString().toString()
+        `in`.readTypedList(definitionData, DefinitionModel)
+        order = `in`.readInt()
     }
 
-    public boolean hasDefinition(String definition) {
-        definition = definition.trim();
-        for (DefinitionModel def : definitionData) {
-            if (def.getDefinition().equals(definition)) {
-                return true;
+    fun addNewDefinition(definition: String, example: String?): DefinitionModel {
+        val definitionToAdd = DefinitionModel(type, definition, example, definitionData.size)
+        definitionData.add(definitionToAdd)
+        return definitionToAdd
+    }
+
+    fun addNewDefinition(definitionModel: DefinitionModel) {
+        definitionData.add(definitionModel)
+    }
+
+    fun hasDefinition(definition: String): Boolean {
+        val cleanDefinition = definition.trim { it <= ' ' }
+        for (def in definitionData) {
+            if (def.definition == cleanDefinition) {
+                return true
             }
         }
 
-        return false;
+        return false
     }
 
     // TODO: Override list remove
-    public DefinitionModel removeDefinition(int position) {
-        DefinitionModel definitionToRemove = definitionData.get(position);
-        definitionData.remove(position);
-        if(position < definitionData.size()) {
-            for(int i = position; i < definitionData.size(); i++) {
-                definitionData.get(i).setOrder(i);
+    fun removeDefinition(position: Int): DefinitionModel {
+        val definitionToRemove = definitionData[position]
+        definitionData.removeAt(position)
+        if (position < definitionData.size) {
+            for (i in position until definitionData.size) {
+                definitionData[i].order = i
             }
         }
-
-        return definitionToRemove;
+        return definitionToRemove
     }
 
-    public int getGroupId() {
-        return groupId;
+    override fun describeContents(): Int {
+        return 0
     }
 
-    public void setGroupId(int groupId) { this.groupId = groupId; }
-
-    public void setType(String type) {
-        this.type = type;
+    override fun writeToParcel(parcel: Parcel, i: Int) {
+        parcel.writeInt(groupId)
+        parcel.writeString(type)
+        parcel.writeTypedList(definitionData)
+        parcel.writeInt(order)
     }
 
-    public int getOrder() {
-        return order;
+    val isEmpty: Boolean
+        get() = definitionData.isEmpty()
+
+    override fun compareTo(other: DefinitionGroupModel): Int {
+        return order.compareTo(other.order)
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return if (other == null || javaClass != other.javaClass) false else type == other.toString()
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    override fun hashCode(): Int {
+        return Objects.hash(type)
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(groupId);
-        parcel.writeString(type);
-        parcel.writeTypedList(definitionData);
-        parcel.writeInt(order);
-    }
+    companion object CREATOR : Creator<DefinitionGroupModel> {
+        override fun createFromParcel(parcel: Parcel): DefinitionGroupModel {
+            return DefinitionGroupModel(parcel)
+        }
 
-    public boolean isEmpty() {
-        return definitionData.isEmpty();
-    }
-
-    @Override
-    public int compareTo(DefinitionGroupModel otherGroup) {
-        return Integer.compare(order, otherGroup.getOrder());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        return type.equals(String.valueOf(o));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type);
+        override fun newArray(size: Int): Array<DefinitionGroupModel?> {
+            return arrayOfNulls(size)
+        }
     }
 }

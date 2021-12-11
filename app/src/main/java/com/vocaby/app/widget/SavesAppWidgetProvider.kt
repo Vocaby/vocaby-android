@@ -14,7 +14,6 @@ import com.vocaby.app.R
 import com.vocaby.app.data.VocabyDatabase
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.exceptions.SaveRepetitionException
-import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.ui.MainActivity
 import com.vocaby.app.utils.Logger
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -110,11 +109,9 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
                     editor.putString(WIDGET_PREV_KEY + id, wordData.entry)
                     editor.apply()
 
-                    val group: DefinitionGroupModel? = wordData.firstGroup
-                    if (group != null) {
-                        definition = group.definitionData[0].toString()
-                        example = group.definitionData[0].example
-                    }
+                    val group = wordData.firstGroup
+                    definition = group.definitionData[0].toString()
+                    example = group.definitionData[0].example ?: ""
                 }
 
                 remoteViews.setTextViewText(R.id.widget_word, saves[index])

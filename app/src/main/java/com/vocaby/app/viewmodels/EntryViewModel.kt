@@ -123,9 +123,9 @@ class EntryViewModel(
         }
     }
 
-    private fun addGroup(newGroup: DefinitionGroupModel?) {
+    private fun addGroup(newGroup: DefinitionGroupModel) {
         entryData.addDefinitionGroup(newGroup)
-        groupChanges.putItemAdded(newGroup!!.type, newGroup)
+        groupChanges.putItemAdded(newGroup.type, newGroup)
         _groupChange.value = ItemIntPayload(PayloadState.ADD, selectedGroup)
         _typeChange.value = ItemStringPayload(PayloadState.DELETE, newGroup.type)
     }

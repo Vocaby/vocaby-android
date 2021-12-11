@@ -20,18 +20,18 @@ class CustomDefinition : Comparable<CustomDefinition> {
     @ColumnInfo(name = "custom_entry_group_id")
     var groupId: Int
     var definition: String
-    var example: String
+    var example: String?
     var order: Int
 
     @Ignore
-    constructor(groupId: Int, definition: String, example: String, order: Int) {
+    constructor(groupId: Int, definition: String, example: String?, order: Int) {
         this.groupId = groupId
         this.definition = definition
         this.order = order
         this.example = example
     }
 
-    constructor(definitionId: Int, groupId: Int, definition: String, example: String, order: Int) {
+    constructor(definitionId: Int, groupId: Int, definition: String, example: String?, order: Int) {
         this.definitionId = definitionId
         this.groupId = groupId
         this.definition = definition
@@ -39,15 +39,7 @@ class CustomDefinition : Comparable<CustomDefinition> {
         this.example = example
     }
 
-    @Ignore
-    constructor(groupId: Int, definition: String, order: Int) {
-        this.groupId = groupId
-        this.definition = definition
-        this.order = order
-        example = ""
-    }
-
     override fun compareTo(other: CustomDefinition): Int {
-        return Integer.compare(order, other.order)
+        return order.compareTo(other.order)
     }
 }

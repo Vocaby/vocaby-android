@@ -37,25 +37,24 @@ class SearchResultsBodyFragment : Fragment() {
         header = view.findViewById(R.id.word_header)
         pronunciation = view.findViewById(R.id.pronunciation)
 
-        entryData?.let {
+        entryData?.let { data ->
             val recyclerView: RecyclerView = view.findViewById(R.id.definitions_recycler_container)
             val adapter = DefinitionsAdapter(ctx)
             recyclerView.isEnabled = false
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(ctx)
-            populateView(entryData)
-            adapter.setWordData(entryData)
+            populateView(data)
+            adapter.setWordData(data)
         } ?: populateNoDefinition()
 
         return view
     }
 
-    private fun populateView(entryData: EntryModel?) {
-        header.text = entryData!!.entry
-        val pronunciationText = entryData.pronunciation.replace("\n".toRegex(), "")
-        if (pronunciationText.isNotEmpty()) {
+    private fun populateView(entryData: EntryModel) {
+        header.text = entryData.entry
+        if (!entryData.pronunciation.isNullOrEmpty()) {
             pronunciation.visibility = View.VISIBLE
-            pronunciation.text = pronunciationText
+            pronunciation.text = entryData.pronunciation
         }
     }
 

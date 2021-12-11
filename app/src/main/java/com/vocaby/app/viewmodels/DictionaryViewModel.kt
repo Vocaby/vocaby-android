@@ -61,7 +61,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
         if (newQuery.isEmpty()) {
             _searchSuggestions.postValue(GenericState.Success(ArrayList()))
             entriesByCharacter = null
-        } else if (oldQuery.isEmpty() && newQuery.length == 1) {
+        } else if (entriesByCharacter == null && newQuery.isNotEmpty()) {
             _searchSuggestions.postValue(GenericState.InProgress)
             val initialCharacter = newQuery.substring(0, 1)
             viewModelScope.launch(Dispatchers.Default) {
