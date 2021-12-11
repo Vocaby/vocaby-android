@@ -65,36 +65,41 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
 
         when (actionType) {
             EXPORT_SAVE -> {
-                intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                intent.type = "text/plain"
-                intent.putExtra(Intent.EXTRA_TITLE, "vocaby_saves.txt")
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TITLE, "vocaby_saves.txt")
+                }
             }
 
             EXPORT_SAVE_BACKUP -> {
-                intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                intent.type = "application/json"
-                intent.putExtra(Intent.EXTRA_TITLE, "vocaby_saves_backup.json")
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_TITLE, "vocaby_saves_backup.json")
+                }
             }
 
             EXPORT_ENTRY_BACKUP -> {
-                intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                intent.type = "application/json"
-                intent.putExtra(Intent.EXTRA_TITLE, "vocaby_entries_backup.json")
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_TITLE, "vocaby_entries_backup.json")
+                }
             }
 
             IMPORT_SAVE -> {
-                intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "application/json"
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/*"
+                }
             }
 
             IMPORT_ENTRY -> {
-                intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "application/json"
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/*"
+                }
             }
 
             else -> {

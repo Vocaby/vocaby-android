@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,6 +22,7 @@ class SavesFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var ctx: Context
     private lateinit var savesAdapter: SaveListAdapter
     private lateinit var savesCount: TextView
+    private lateinit var emptyCard: LinearLayout
     private val userViewModel: UserViewModel by activityViewModels {
         UserViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
@@ -36,6 +38,7 @@ class SavesFragment : Fragment(), SaveListAdapter.Interaction {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_saves, container, false)
         savesCount = view.findViewById(R.id.saves_count)
+        emptyCard = view.findViewById(R.id.empty_card)
         return view
     }
 
@@ -45,6 +48,9 @@ class SavesFragment : Fragment(), SaveListAdapter.Interaction {
 
         userViewModel.savedWords.observe(viewLifecycleOwner) { saves ->
             saves?.let {
+                if (saves.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
+                else emptyCard.visibility = View.VISIBLE
+
                 savesAdapter.submitList(saves)
             }
         }

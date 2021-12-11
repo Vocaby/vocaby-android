@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -32,6 +33,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var entryCountView: TextView
     private lateinit var entryEditDialog: BottomSheetDialog
     private lateinit var customEntryAdapter: CustomEntryAdapter
+    private lateinit var emptyCard: LinearLayout
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
@@ -51,6 +53,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_entry, container, false)
         entryCountView = view.findViewById(R.id.entry_count)
+        emptyCard = view.findViewById(R.id.empty_card)
 
         setupButtons(view)
         setupEntryBuilderDialog()
@@ -74,6 +77,9 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                 PayloadState.DELETE -> customEntryAdapter.deleteEntry(entryStatePayload.payload)
                 PayloadState.ADD -> customEntryAdapter.addEntry()
             }
+
+            if (customEntryAdapter.itemCount > 0 ) emptyCard.visibility = View.INVISIBLE
+            else emptyCard.visibility = View.VISIBLE
 
             dictionaryViewModel.resetSearchSuggestion()
         }
