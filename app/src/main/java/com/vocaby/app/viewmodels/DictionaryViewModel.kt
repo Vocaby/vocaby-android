@@ -75,13 +75,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     }
     private fun setSearchSuggestionItems(searchQuery: String) {
         val searchSuggestionItems = ArrayList<SearchSuggestionItem>()
-        if (entriesByCharacter.isNullOrEmpty()) {
-            viewModelScope.launch(Dispatchers.Default) {
-                val initialCharacter = searchQuery.substring(0, 1)
-                entriesByCharacter = repository.getEntriesByCharacterFromDB(initialCharacter)
-                setSearchSuggestionItems(searchQuery)
-            }
-        } else {
+        if (!entriesByCharacter.isNullOrEmpty()) {
             var index = VocabyAlgo.binarySearchPrefix(entriesByCharacter!!, searchQuery)
             if (index > -1 && index < entriesByCharacter!!.size) {
                 val it: Iterator<String> = entriesByCharacter!!.listIterator(index)
@@ -96,9 +90,9 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
                     index++
                 }
             }
-
-            _searchSuggestions.postValue(GenericState.Success(searchSuggestionItems))
         }
+
+        _searchSuggestions.postValue(GenericState.Success(searchSuggestionItems))
     }
 
     fun resetSearchSuggestion() {

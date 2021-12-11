@@ -1,44 +1,39 @@
-package com.vocaby.app.models;
+package com.vocaby.app.models
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
+import android.os.Parcel
+import android.os.Parcelable.Creator
 
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+class SearchSuggestionItem : SearchSuggestion {
+    private val entry: String
 
-public class SearchSuggestionItem implements SearchSuggestion {
-    private final String entry;
-
-    public SearchSuggestionItem(String entry) {
-        this.entry = entry;
+    constructor(entry: String) {
+        this.entry = entry
     }
 
-    public static final Parcelable.Creator<SearchSuggestionItem> CREATOR
-            = new Parcelable.Creator<SearchSuggestionItem>() {
-        public SearchSuggestionItem createFromParcel(Parcel in) {
-            return new SearchSuggestionItem(in);
+    private constructor(`in`: Parcel) {
+        entry = `in`.readString()!!
+    }
+
+    override fun getBody(): String {
+        return entry
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(parcel: Parcel, i: Int) {
+        parcel.writeString(entry)
+    }
+
+    companion object CREATOR : Creator<SearchSuggestionItem> {
+        override fun createFromParcel(parcel: Parcel): SearchSuggestionItem {
+            return SearchSuggestionItem(parcel)
         }
 
-        public SearchSuggestionItem[] newArray(int size) {
-            return new SearchSuggestionItem[size];
+        override fun newArray(size: Int): Array<SearchSuggestionItem?> {
+            return arrayOfNulls(size)
         }
-    };
-
-    private SearchSuggestionItem(Parcel in) {
-        this.entry = in.readString();
-    }
-
-    @Override
-    public String getBody() {
-        return this.entry;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(entry);
     }
 }
