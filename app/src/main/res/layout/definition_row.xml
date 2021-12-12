@@ -1,77 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    app:cardCornerRadius="@dimen/radius"
+<LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-        <LinearLayout
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="18dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="6dp"
+        android:orientation="horizontal">
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/definition_counter"
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="6dp"
+        android:orientation="vertical">
+        <TextView
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/definition_header_singular"
+            android:textColor="@color/colorPrimaryAccent"
+            android:textSize="10sp"
+            tools:ignore="SmallSp" />
+        <TextView
+            android:id="@+id/definition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/box_white_stroked_gray"
-            android:padding="8dp">
-            <LinearLayout
-                android:layout_width="20dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="6dp"
-                android:orientation="horizontal">
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-                <TextView
-                    android:id="@+id/definition_counter"
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"/>
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="2dp"
-                android:orientation="vertical">
-                <TextView
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/definition_header_singular"
-                    android:textColor="@color/gray"
-                    android:textSize="10sp"
-                    tools:ignore="SmallSp" />
-                <TextView
-                    android:id="@+id/definition"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/sourcesanspro_regular"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-                <TextView
-                    android:id="@+id/example_header"
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/example_header"
-                    android:textColor="@color/gray"
-                    android:textSize="10sp"
-                    tools:ignore="SmallSp" />
-                <TextView
-                    android:id="@+id/sentence"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:fontFamily="@font/sourcesanspro_regular"
-                    android:text=""
-                    android:textColor="@color/black" />
-            </LinearLayout>
-        </LinearLayout>
-</androidx.cardview.widget.CardView>
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:fontFamily="@font/sourcesanspro_regular" />
+        <TextView
+            android:id="@+id/example_header"
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/example_header"
+            android:textColor="@color/colorPrimaryAccent"
+            android:textSize="10sp"
+            tools:ignore="SmallSp" />
+        <TextView
+            android:id="@+id/sentence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_regular"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>

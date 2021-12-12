@@ -1,8 +1,8 @@
 package com.vocaby.app.models
 
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import android.os.Parcel
 import android.os.Parcelable.Creator
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 
 class SearchSuggestionItem : SearchSuggestion {
     private val entry: String

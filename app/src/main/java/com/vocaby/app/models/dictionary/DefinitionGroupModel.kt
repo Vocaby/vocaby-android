@@ -1,7 +1,7 @@
 package com.vocaby.app.models.dictionary
 
-import android.os.Parcelable
 import android.os.Parcel
+import android.os.Parcelable
 import android.os.Parcelable.Creator
 import java.util.*
 

@@ -10,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vocaby.app.R;
@@ -53,7 +52,7 @@ public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.
             for(int i = 0; i < definitions.size(); i++) {
                 String def = definitions.get(i).getDefinition();
                 String sen = definitions.get(i).getExample();
-                CardView card = (CardView) inflater.inflate(R.layout.definition_row, null);
+                LinearLayout card = (LinearLayout) inflater.inflate(R.layout.definition_row, null);
                 TextView definition = card.findViewById(R.id.definition);
                 TextView sentence = card.findViewById(R.id.sentence);
                 TextView counter = card.findViewById(R.id.definition_counter);

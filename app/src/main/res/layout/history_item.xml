@@ -5,23 +5,24 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
-    app:cardElevation="2dp"
     app:cardCornerRadius="@dimen/radius">
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="12dp"
-        android:paddingBottom="6dp"
         android:paddingEnd="12dp"
+        android:paddingBottom="6dp"
         android:paddingTop="4dp"
-        android:background="@drawable/box_white_stroked_gray">
+        android:gravity="center"
+        android:background="@drawable/box_white_stroked_green">
 
         <TextView
             android:id="@+id/history_item"
-            style="@style/Theme.VocabyAndroid.TextHeader"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:gravity="center_vertical" />
+            android:gravity="center"
+            android:fontFamily="@font/playfairdisplay_bold"
+            android:textAllCaps="true"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

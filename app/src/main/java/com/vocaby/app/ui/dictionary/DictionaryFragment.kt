@@ -7,13 +7,19 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.arlib.floatingsearchview.FloatingSearchView
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
+import com.vocaby.app.states.GenericState
+import com.vocaby.app.utils.Logger
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
 
 class DictionaryFragment : Fragment() {
     private lateinit var backPressedCallback: OnBackPressedCallback
+    private lateinit var searchView: FloatingSearchView
+
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
@@ -32,6 +38,8 @@ class DictionaryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
+
         if (savedInstanceState == null) {
             childFragmentManager.beginTransaction().replace(
                 R.id.dictionary_fragment_container,
@@ -55,15 +63,89 @@ class DictionaryFragment : Fragment() {
         requireActivity().onBackPressedDispatcher
             .addCallback(viewLifecycleOwner, backPressedCallback)
 
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        searchView = view.findViewById(R.id.vocaby_search)
+        searchView.apply {
+            setOnSearchListener(searchListener)
+            setOnQueryChangeListener(queryChangeListener)
+            setOnFocusChangeListener(searchFocusListener)
+        }
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dictionaryViewModel.searchedEntry.observe(viewLifecycleOwner, {
-            if (parentFragmentManager.backStackEntryCount == 0) {
-                backPressedCallback.isEnabled = true
+        dictionaryViewModel.searchedEntry.observe(viewLifecycleOwner) { entry ->
+            addResultsFragment(entry)
+            Logger.reportToDebug("${childFragmentManager.backStackEntryCount}")
+        }
+
+        dictionaryViewModel.searchSuggestions.observe(viewLifecycleOwner,
+            { result ->
+                when(result) {
+                    is GenericState.InProgress -> searchView.showProgress()
+                    is GenericState.Success -> {
+                        searchView.hideProgress()
+                        searchView.swapSuggestions(result.data)
+                    }
+                    is GenericState.Error -> {
+                        searchView.clearSuggestions()
+                        searchView.hideProgress()
+                    }
+                }
             }
-        })
+        )
     }
+
+    private fun addResultsFragment(search: String) {
+        childFragmentManager.popBackStackImmediate()
+        childFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.anim.enter_bottom_to_top,
+                R.anim.exit_top_to_bottom,
+                R.anim.enter_bottom_to_top,
+                R.anim.exit_top_to_bottom
+            ).add(
+                R.id.dictionary_fragment_container,
+                SearchResultsFragment.newInstance(search)
+            ).addToBackStack(null).commit()
+    }
+
+    fun search(entry: String) {
+        dictionaryViewModel.search(entry)
+    }
+
+    private val searchListener: FloatingSearchView.OnSearchListener = object :
+        FloatingSearchView.OnSearchListener {
+        override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
+            searchView.setOnQueryChangeListener(null)
+            searchView.setSearchText(searchSuggestion.body)
+            searchView.setOnQueryChangeListener(queryChangeListener)
+            searchView.clearSearchFocus()
+            search(searchSuggestion.body)
+        }
+
+        override fun onSearchAction(currentQuery: String) {
+            search(currentQuery)
+        }
+    }
+
+    private val searchFocusListener: FloatingSearchView.OnFocusChangeListener =
+        object: FloatingSearchView.OnFocusChangeListener {
+            override fun onFocus() {
+                dictionaryViewModel.getSearchSuggestions("", searchView.query)
+            }
+
+            override fun onFocusCleared() {
+                searchView.clearSuggestions()
+            }
+        }
+
+    private val queryChangeListener =
+        FloatingSearchView.OnQueryChangeListener { oldQuery: String, newQuery: String ->
+            dictionaryViewModel.getSearchSuggestions(
+                oldQuery,
+                newQuery
+            )
+        }
 }

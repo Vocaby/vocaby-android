@@ -17,7 +17,7 @@
         <item name="android:windowBackground">@color/white</item>
 
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/colorPrimaryAccent</item>
 
         <item name="preferenceTheme">@style/Theme.VocabyAndroid.PreferenceThemeOverlay</item>
 
@@ -95,7 +95,7 @@
     </style>
 
     <style name="Theme.VocabyAndroid.TextHeader" parent="Widget.AppCompat.TextView">
-        <item name="android:fontFamily">@font/playfairdisplay_bold</item>
+        <item name="android:fontFamily">@font/playfairdisplay_black</item>
         <item name="android:textAllCaps">true</item>
     </style>
 

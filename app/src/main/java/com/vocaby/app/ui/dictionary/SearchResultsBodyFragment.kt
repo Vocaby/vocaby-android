@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.app.R
@@ -39,12 +40,19 @@ class SearchResultsBodyFragment : Fragment() {
 
         entryData?.let { data ->
             val recyclerView: RecyclerView = view.findViewById(R.id.definitions_recycler_container)
-            val adapter = DefinitionsAdapter(ctx)
-            recyclerView.isEnabled = false
-            recyclerView.adapter = adapter
-            recyclerView.layoutManager = LinearLayoutManager(ctx)
+            val definitionsAdapter = DefinitionsAdapter(ctx)
+            definitionsAdapter.setWordData(data)
+
+            recyclerView.apply {
+                isEnabled = false
+                adapter = definitionsAdapter
+                layoutManager = LinearLayoutManager(ctx)
+
+                if (data.definitionGroups.size > 1)
+                    recyclerView.addItemDecoration(DividerItemDecoration(ctx, LinearLayoutManager.VERTICAL))
+            }
+
             populateView(data)
-            adapter.setWordData(data)
         } ?: populateNoDefinition()
 
         return view

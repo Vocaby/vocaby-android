@@ -1,9 +1,9 @@
 package com.vocaby.app.ui
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.webkit.WebView
+import androidx.appcompat.app.AppCompatActivity
 
 class WebActivity : AppCompatActivity() {
     private lateinit var webView: WebView

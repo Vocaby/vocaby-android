@@ -4,19 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:clickable="true">
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingBottom="8dp"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
+        android:paddingTop="12dp"
         android:clipToPadding="false"
+        android:background="@drawable/box_white_bottom_straight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -28,7 +27,7 @@
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_close"
             android:drawablePadding="10dp"
-            android:fontFamily="@font/sourcesanspro_semibold"
+            android:fontFamily="@font/sourcesanspro_black"
             android:minWidth="0dp"
             android:minHeight="0dp"
             android:padding="8dp"
@@ -100,7 +99,8 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="0" />
+                android:layout_weight="0"
+                tools:ignore="InefficientWeight" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/save_button"
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_bookmark_unsaved"
                 android:drawablePadding="4dp"
-                android:fontFamily="@font/sourcesanspro_semibold"
+                android:fontFamily="@font/sourcesanspro_black"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
                 android:padding="4dp"
@@ -138,6 +138,7 @@
         android:id="@+id/search_results_body_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

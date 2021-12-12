@@ -18,7 +18,7 @@
     <!-- Sync Preferences -->
     <string name="refresh_button">Refresh Button</string>
     <string name="close">close</string>
-    <string name="daily_selection_header">Today\'s Selection</string>
+    <string name="daily_selection_header">Today\'s Pick</string>
     <!-- Strings used for fragments for navigation -->
 
     <string name="profile">Profile</string>
@@ -92,7 +92,9 @@
     <string name="danger_zone">Danger Zone</string>
     <string name="data_export">Export Data</string>
     <string name="data_import">Import Data</string>
-    <string name="application_not_found">Unable to open…</string>
     <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be deleted.</string>
+    <string name="background">background</string>
+    <string name="history">YOUR SEARCH HISTORY</string>
+    <string name="word_of_the_day">Word of the Day</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
