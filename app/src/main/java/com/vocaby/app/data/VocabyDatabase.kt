@@ -8,6 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.vocaby.app.data.dao.VocabyDao
 import com.vocaby.app.data.entity.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(entities = [User::class, UserSave::class,
@@ -42,7 +43,7 @@ abstract class VocabyDatabase : RoomDatabase() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
             INSTANCE?.let { database ->
-                scope.launch {
+                scope.launch(Dispatchers.IO) {
                     populateDatabase(database.vocabyDao())
                 }
             }

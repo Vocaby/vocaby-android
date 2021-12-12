@@ -3,6 +3,7 @@ package com.vocaby.app.data
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import com.vocaby.app.models.dictionary.SimpleEntryModel
 import java.io.File
 import java.io.IOException
 import java.io.ObjectInputStream
@@ -12,7 +13,7 @@ import java.util.*
 class DataManager private constructor(context: Context) {
     private val historyDataFileName = "hVocaby"
     private val ctx: Context = context.applicationContext
-    var history: LinkedList<String>? = null
+    var history: LinkedList<SimpleEntryModel>? = null
     var numHistoryItems = 6
 
     companion object {
@@ -31,7 +32,7 @@ class DataManager private constructor(context: Context) {
             try {
                 ctx.openFileInput(historyDataFileName).use { fis ->
                     val ois = ObjectInputStream(fis)
-                    history = ois.readObject() as LinkedList<String>
+                    history = ois.readObject() as LinkedList<SimpleEntryModel>?
                     ois.close()
                 }
             } catch (e: IOException) {
@@ -41,8 +42,7 @@ class DataManager private constructor(context: Context) {
             }
         } else {
             history = LinkedList()
-            history?.let { newList ->
-                newList.add("HISTORY")
+            history.let { newList ->
                 try {
                     ctx.openFileOutput(historyDataFileName, Context.MODE_PRIVATE).use { fos ->
                         val oos = ObjectOutputStream(fos)
@@ -57,9 +57,9 @@ class DataManager private constructor(context: Context) {
         }
     }
 
-    fun writeHistory(word: String): List<String>? {
+    fun writeHistory(entry: SimpleEntryModel): List<SimpleEntryModel>? {
         history?.let { list ->
-            list.add(1, word)
+            list.add(0, entry)
 
             if (list.size > numHistoryItems) {
                 list.removeAt(numHistoryItems)
@@ -79,11 +79,9 @@ class DataManager private constructor(context: Context) {
         return history
     }
 
-    fun clearHistory(): List<String>? {
+    fun clearHistory(): List<SimpleEntryModel>? {
         history = LinkedList()
         history?.let { newList ->
-            newList.add("HISTORY")
-
             try {
                 ctx.openFileOutput(historyDataFileName, Context.MODE_PRIVATE).use { fos ->
                     val oos = ObjectOutputStream(fos)

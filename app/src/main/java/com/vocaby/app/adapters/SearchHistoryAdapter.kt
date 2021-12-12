@@ -1,88 +1,57 @@
-package com.vocaby.app.adapters;
+package com.vocaby.app.adapters
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.vocaby.app.R
+import com.vocaby.app.adapters.SearchHistoryAdapter.HistoryViewHolder
+import com.vocaby.app.models.dictionary.SimpleEntryModel
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class SearchHistoryAdapter(
+    private val ctx: Context,
+    private val onItemTouchListener: OnItemTouchListener
+) : RecyclerView.Adapter<HistoryViewHolder>() {
+    private var history: List<SimpleEntryModel> = ArrayList()
 
-import com.vocaby.app.R;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdapter.HistoryViewHolder> {
-    private List<String> history;
-    private final Context ctx;
-    private final OnItemTouchListener onItemTouchListener;
-
-    private static final int STATIC_CARD = 0;
-    private static final int DYNAMIC_CARD = 1;
-
-    public interface OnItemTouchListener {
-        void onItemTouch(int position);
+    interface OnItemTouchListener {
+        fun onItemTouch(position: Int)
     }
 
-    public SearchHistoryAdapter(Context ctx, OnItemTouchListener onItemTouchListener) {
-        this.ctx = ctx;
-        this.onItemTouchListener = onItemTouchListener;
-        history = new ArrayList<>();
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateSearchHistory(newHistory: List<SimpleEntryModel>) {
+        history = newHistory
+        notifyDataSetChanged()
     }
 
-    public void updateSearchHistory(List<String> newHistory) {
-        if(newHistory.size() == 0)
-            newHistory.add("HISTORY");
-
-        this.history = newHistory;
-        notifyDataSetChanged();
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
+        return HistoryViewHolder(
+            LayoutInflater.from(ctx).inflate(R.layout.history_item, parent, false)
+        )
     }
 
-    @NonNull
-    @Override
-    public HistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(ctx);
-        View view;
-        if (viewType == STATIC_CARD) {
-            view = inflater.inflate(R.layout.history_static_item, parent, false);
-        } else {
-            view = inflater.inflate(R.layout.history_item, parent, false);
+    override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
+        if (holder.adapterPosition != 0) holder.itemView.setOnClickListener {
+            onItemTouchListener.onItemTouch(
+                holder.adapterPosition
+            )
         }
 
-        return new HistoryViewHolder(view);
+        holder.word.text = history[position].entry
+        holder.definition.text = history[position].definition
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (position == 0) {
-            return STATIC_CARD;
-        } else {
-            return DYNAMIC_CARD;
-        }
+    override fun getItemCount(): Int {
+        return history.size
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull SearchHistoryAdapter.HistoryViewHolder holder, int position) {
-        if (holder.getAdapterPosition() != 0)
-            holder.itemView.setOnClickListener(v -> {
-                onItemTouchListener.onItemTouch(holder.getAdapterPosition());
-            });
-        holder.word.setText(history.get(position));
-    }
+    class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var word: TextView = itemView.findViewById(R.id.history_item)
+        var definition: TextView = itemView.findViewById(R.id.history_definition)
 
-    @Override
-    public int getItemCount() {
-        return history.size();
-    }
-
-    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
-        TextView word;
-
-        public HistoryViewHolder(@NonNull View itemView) {
-            super(itemView);
-            word = itemView.findViewById(R.id.history_item);
-        }
     }
 }

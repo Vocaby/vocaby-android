@@ -1,7 +1,6 @@
 package com.vocaby.app.ui
 
 import android.app.AlarmManager
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.SharedPreferences
@@ -111,24 +110,30 @@ open class MainActivity : AppCompatActivity() {
     private fun updateNotificationStatus(sharedPreferences: SharedPreferences, key: String) {
         if (sharedPreferences.getBoolean(key, false)) {
             sendBroadcast(notificationIntent)
-            val minutes = sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "5")!!.toInt()
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 * minutes, pendingIntent)
+            val minutes = sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "15")!!.toInt()
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis(),
+                1000L * 60 * minutes,
+                pendingIntent
+            )
         } else {
             alarmManager.cancel(pendingIntent)
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(313)
         }
     }
 
     private fun updateNotificationFrequency(sharedPreferences: SharedPreferences, key: String) {
         if (sharedPreferences.getBoolean(key, false)) {
-            alarmManager.cancel(pendingIntent)
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(313)
-            val minutes = sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "5")!!.toInt()
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 * minutes, pendingIntent)
+            val minutes = sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "15")!!.toInt()
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis(),
+                1000L * 60 * minutes,
+                pendingIntent
+            )
         }
     }
+
 
     fun showDefinition(entry: String) {
         viewPager.currentItem = 0

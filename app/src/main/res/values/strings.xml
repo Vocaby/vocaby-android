@@ -53,6 +53,7 @@
     <string name="custom">CUSTOM</string>
     <string name="entry">entry</string>
     <string name="empty_saves">empty saves</string>
+    <string name="empty_history">Empty history</string>
     <string name="hi_vocabler">Hi Vocabler!</string>
     <string name="nav_data_management">Data Management</string>
     <string name="nav_support">Support</string>

@@ -23,9 +23,7 @@ import com.vocaby.app.VocabyApplication
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.viewstate.SaveStateModel
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
-import com.vocaby.app.viewmodels.SearchResultsViewModel
-import com.vocaby.app.viewmodels.SearchResultsViewModelFactory
-import com.vocaby.app.viewmodels.UserViewModel
+import com.vocaby.app.viewmodels.*
 
 class SearchResultsFragment : Fragment() {
     private lateinit var ctx: Context
@@ -48,6 +46,9 @@ class SearchResultsFragment : Fragment() {
                 R.string.save_button_saved
             )
         )
+    }
+    private val dictionaryViewModel: DictionaryViewModel by activityViewModels {
+        DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +85,7 @@ class SearchResultsFragment : Fragment() {
         searchResultsViewModel.entryData.observeOnce(viewLifecycleOwner) { entryList ->
             entryList?.let {
                 setupDictionary(entryList.size)
+                dictionaryViewModel.writeToHistory(searchedWord, entryList)
                 viewPager.adapter = FragmentAdapter(this, entryList)
                 searchProgress.visibility = GONE
             }

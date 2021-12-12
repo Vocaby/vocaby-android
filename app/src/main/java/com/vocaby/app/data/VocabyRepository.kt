@@ -20,6 +20,7 @@ import com.vocaby.app.models.datapackage.EntryDataPackage
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
+import com.vocaby.app.models.dictionary.SimpleEntryModel
 import com.vocaby.app.utils.StringFormatter
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -483,9 +484,9 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     }
 
     /** --------------------- HISTORY -------------------- **/
-    fun writeToHistory(entry: String): List<String>? = dataManager.writeHistory(entry)
-    fun getHistory(): LinkedList<String>? = dataManager.history
-    fun clearHistory(): List<String>? = dataManager.clearHistory()
+    fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>? = dataManager.writeHistory(entry)
+    fun getHistory(): LinkedList<SimpleEntryModel>? = dataManager.history
+    fun clearHistory(): List<SimpleEntryModel>? = dataManager.clearHistory()
 
     /** --------------------- TYPES -------------------- **/
     suspend fun getTypes() = vocabyDao.getTypes()

@@ -18,7 +18,7 @@
             android:title="Notification Frequency"
             android:entries="@array/pref_notification_frequency_entries"
             android:entryValues="@array/pref_notification_frequency_values"
-            android:defaultValue="5"
+            android:defaultValue="15"
             app:useSimpleSummaryProvider="true"
             android:dependency="pref_notification" />
     </PreferenceCategory>

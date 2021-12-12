@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -28,6 +29,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     private lateinit var wordBox: View
     private lateinit var progressBar: ProgressBar
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
+    private lateinit var emptyCard: LinearLayout
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels {
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
@@ -56,10 +58,13 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         wordBox = view.findViewById(R.id.word_box)
         progressBar = view.findViewById(R.id.randomword_progress)
 
+
         progressBar.visibility = View.VISIBLE
         definition.visibility = View.GONE
         sentence.visibility = View.GONE
         posView.visibility = View.GONE
+
+        emptyCard = view.findViewById(R.id.empty_card)
 
         setUpHistoryRecyclerView(view)
         return view
@@ -68,9 +73,14 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dictionaryViewModel.searchHistory.observe(viewLifecycleOwner) { searchHistory ->
-            searchHistoryAdapter.updateSearchHistory(
-                searchHistory
-            )
+            searchHistory?.let {
+                searchHistoryAdapter.updateSearchHistory(
+                    searchHistory
+                )
+
+                if (searchHistory.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
+                else emptyCard.visibility = View.VISIBLE
+            }
         }
 
         dictionaryViewModel.randomEntry.observe(viewLifecycleOwner, { randomEntryModel ->

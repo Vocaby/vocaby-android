@@ -12,7 +12,6 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.states.GenericState
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
 
@@ -77,8 +76,6 @@ class DictionaryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         dictionaryViewModel.searchedEntry.observe(viewLifecycleOwner) { entry ->
             addResultsFragment(entry)
-
-            if (childFragmentManager.backStackEntryCount > 0) backPressedCallback.isEnabled = true
         }
 
         dictionaryViewModel.searchSuggestions.observe(viewLifecycleOwner,
@@ -110,6 +107,8 @@ class DictionaryFragment : Fragment() {
                 R.id.dictionary_fragment_container,
                 SearchResultsFragment.newInstance(search)
             ).addToBackStack(null).commit()
+
+        backPressedCallback.isEnabled = true
     }
 
     fun search(entry: String) {

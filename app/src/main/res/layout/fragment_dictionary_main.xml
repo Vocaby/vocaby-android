@@ -13,7 +13,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <ImageView
-            android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:contentDescription="@string/background"
@@ -141,6 +140,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/card_content_margin"
                         android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginEnd="@dimen/card_content_margin"
                         android:ellipsize="end"
                         android:maxLines="1"
@@ -166,38 +166,55 @@
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/textView"
+        style="@style/Theme.VocabyAndroid.TextHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin"
+        android:text="@string/history"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
     <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/container_side_margin"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/empty_card"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin"
+        android:background="@drawable/box_gray_stroked_dash_gray"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintBottom_toBottomOf="@+id/search_history_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
-
+        app:layout_constraintTop_toTopOf="@+id/search_history_container">
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            android:text="@string/history" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_history_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:clipToPadding="false"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/container_side_margin"
-            android:paddingEnd="@dimen/container_side_margin"
-            android:paddingBottom="12dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dictionary_header" />
+            android:text="@string/empty_history"
+            android:textAllCaps="true"
+            android:textColor="@color/gray" />
     </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_history_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:paddingBottom="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

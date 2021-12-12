@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.SearchSuggestionItem
 import com.vocaby.app.models.dictionary.EntryModel
+import com.vocaby.app.models.dictionary.SimpleEntryModel
 import com.vocaby.app.states.GenericState
 import com.vocaby.app.utils.SingleLiveEvent
 import com.vocaby.app.utils.StringFormatter.cleanText
@@ -15,20 +16,22 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     var searchSuggestionThreshold: Int = 4
 
     private val _searchedEntry: MutableLiveData<String> = MutableLiveData()
-    private val _searchHistory: MutableLiveData<List<String>> = MutableLiveData()
     private val _randomEntry: MutableLiveData<EntryModel> = MutableLiveData()
+    private val _searchHistory: SingleLiveEvent<List<SimpleEntryModel>?> = SingleLiveEvent()
     private val _searchSuggestions: SingleLiveEvent<GenericState<List<SearchSuggestionItem>>> = SingleLiveEvent()
     private val searchStack: ArrayDeque<String> = ArrayDeque()
     private var entriesByCharacter: List<String>? = null
 
     val searchedEntry: LiveData<String> get() = _searchedEntry
-    val searchHistory: LiveData<List<String>> get() = _searchHistory
+    val searchHistory: LiveData<List<SimpleEntryModel>?> get() = _searchHistory
     val randomEntry: LiveData<EntryModel> get() = _randomEntry
     val searchSuggestions: LiveData<GenericState<List<SearchSuggestionItem>>> get() = _searchSuggestions
 
     init {
         val historyList = repository.getHistory()
-        _searchHistory.postValue(historyList)
+        historyList?.let {
+            _searchHistory.value = historyList
+        }
     }
 
     // notify observer of new search
@@ -39,12 +42,10 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
                 if (!searchStack.contains(searchedEntry)) {
                     searchStack.removeLast()
                     searchStack.addLast(searchedEntry)
-                    writeToHistory(searchedEntry)
                     _searchedEntry.postValue(searchedEntry)
                 }
             } else {
                 searchStack.addLast(searchedEntry)
-                writeToHistory(searchedEntry)
                 _searchedEntry.postValue(searchedEntry)
             }
         }
@@ -53,7 +54,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     // notify observer of history selection
     fun getHistoryDefinition(position: Int) {
         _searchHistory.value?.let { list ->
-            search(list[position])
+            search(list[position].entry)
         }
     }
 
@@ -113,9 +114,21 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
         _searchHistory.value = repository.clearHistory()
     }
 
-    private fun writeToHistory(entry: String) {
-        val historyList = repository.writeToHistory(entry)
-        _searchHistory.postValue(historyList)
+    fun writeToHistory(entry: String, entryList: List<EntryModel?>) {
+        val historyList: List<SimpleEntryModel>?
+
+        if (entryList.isEmpty()) {
+            historyList = repository.writeToHistory(SimpleEntryModel(entry, ""))
+        } else {
+            val definition = entryList[0]?.firstGroup?.let {
+                it.definitionData[0].definition
+            } ?: ""
+
+            historyList = repository.writeToHistory(SimpleEntryModel(entry, definition))
+        }
+
+
+        _searchHistory.value = historyList
     }
 
     fun popSearchStack() {

@@ -48,28 +48,13 @@
             android:textSize="12sp"
             android:visibility="gone" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/definition_indicator"
-        android:layout_width="200dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="12dp"
-        android:contentDescription="@string/background"
-        android:src="@drawable/definition_indicator"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/word_box"
-        app:layout_constraintVertical_bias="0.0" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/definitions_recycler_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/definition_container"
         android:clipToPadding="false"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/definition_container_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
