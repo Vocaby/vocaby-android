@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
-        android:layout_height="98dp"
+        android:layout_height="104dp"
         android:paddingTop="12dp"
         android:background="@color/colorPrimaryAccent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,7 +61,7 @@
         app:floatingSearch_hintTextColor="@color/gray"
         app:floatingSearch_close_search_on_keyboard_dismiss="false"
         app:floatingSearch_dimBackground="true"
-        app:floatingSearch_leftActionMode="noLeftAction"
+        app:floatingSearch_leftActionMode="showSearch"
         app:floatingSearch_searchBarMarginLeft="@dimen/container_side_margin"
         app:floatingSearch_searchBarMarginRight="@dimen/container_side_margin"
         app:floatingSearch_searchBarMarginTop="38dp"

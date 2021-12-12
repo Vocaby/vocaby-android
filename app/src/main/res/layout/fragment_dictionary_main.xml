@@ -157,7 +157,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/word_of_the_day"
                             android:fontFamily="@font/sourcesanspro_black"
-                            android:textSize="8sp"
+                            android:textSize="10sp"
                             android:textColor="@color/colorPrimaryAccent"
                             tools:ignore="SmallSp" />
                     </FrameLayout>
