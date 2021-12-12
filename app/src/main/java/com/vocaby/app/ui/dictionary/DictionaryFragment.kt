@@ -77,7 +77,8 @@ class DictionaryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         dictionaryViewModel.searchedEntry.observe(viewLifecycleOwner) { entry ->
             addResultsFragment(entry)
-            Logger.reportToDebug("${childFragmentManager.backStackEntryCount}")
+
+            if (childFragmentManager.backStackEntryCount > 0) backPressedCallback.isEnabled = true
         }
 
         dictionaryViewModel.searchSuggestions.observe(viewLifecycleOwner,
