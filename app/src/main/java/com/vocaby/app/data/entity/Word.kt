@@ -1,5 +1,6 @@
 package com.vocaby.app.data.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -10,5 +11,6 @@ class Word {
     var id = 0
     var word = ""
     var pronunciation:String? = null
-    var last_updated:String = ""
+    @ColumnInfo(name = "last_updated")
+    var lastUpdated:String = ""
 }

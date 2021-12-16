@@ -108,6 +108,13 @@ interface VocabyDao {
     @Query("SELECT EXISTS(SELECT 1 FROM saves WHERE entry = :entry AND user_id = :userId)")
     fun hasSave(userId: Int, entry: String): Flow<Int>
 
+    /** --------------------- DATA -------------------- **/
+    @Insert
+    suspend fun recordVisit(dictionaryViewCount: DictionaryViewCount)
+
+    @Insert
+    suspend fun recordCustomVisit(customDictionaryViewCount: CustomDictionaryViewCount)
+
     /** --------------------- TYPES -------------------- **/
     @Insert
     fun insertTypes(vararg types: Type)

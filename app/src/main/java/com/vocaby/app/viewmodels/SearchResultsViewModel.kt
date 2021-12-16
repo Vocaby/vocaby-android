@@ -1,11 +1,10 @@
 package com.vocaby.app.viewmodels
 
-import android.view.View.GONE
 import androidx.lifecycle.*
 import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.dictionary.EntryModel
-import com.vocaby.app.models.viewstate.SaveStateModel
+import com.vocaby.app.states.SaveState
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -13,68 +12,62 @@ import kotlinx.coroutines.launch
 
 class SearchResultsViewModel(
     private val entry: String,
-    private val repository: VocabyRepository,
-    private val saveModel: SaveStateModel,
+    private val repository: VocabyRepository
 ): ViewModel() {
     private var _entryData: MutableLiveData<ArrayList<EntryModel?>> = MutableLiveData()
-    private var _saveState: SingleLiveEvent<SaveStateModel> = SingleLiveEvent()
+    private var _saveState: SingleLiveEvent<SaveState> = SingleLiveEvent()
     private var _missingDictionary: MutableLiveData<Int> = MutableLiveData()
 
     val entryData: LiveData<ArrayList<EntryModel?>> get() = _entryData
-    val saveState: LiveData<SaveStateModel> get() = _saveState
+    val saveState: LiveData<SaveState> get() = _saveState
     val missingDictionary: LiveData<Int> get() = _missingDictionary
 
     init {
-        saveModel.enabled = false
-        _saveState.postValue(saveModel)
+        _saveState.postValue(SaveState.InProgress)
 
-        viewModelScope.launch {
+        val scope = viewModelScope.launch(Dispatchers.IO) {
+            _saveState.postValue(SaveState.InProgress)
+
             repository.hasSaved(entry).collect {
-                saveModel.enabled = true
-                saveModel.saved = it != 0
-                _saveState.postValue(saveModel)
+                _saveState.postValue(SaveState.Fetched(it != 0))
             }
         }
 
         viewModelScope.launch(Dispatchers.Default) {
-            saveModel.enabled = false
-            _saveState.postValue(saveModel)
-
             val wordPackage = repository.getEntryPackage(entry)
             val data = ArrayList<EntryModel?>()
-
-            if (wordPackage.bothDataAvailable()) {
+            if (wordPackage.customData != null && wordPackage.originalData != null) {
                 data.add(wordPackage.customData)
                 data.add(wordPackage.originalData)
-            } else if (wordPackage.onlyCustomAvailable()) {
+                repository.recordVisit(wordPackage.originalData.id)
+            } else if (wordPackage.customData != null) {
                 data.add(wordPackage.customData)
                 _missingDictionary.postValue(R.id.selection_original)
+                repository.recordCustomVisit(wordPackage.customData.id)
             } else {
-                data.add(wordPackage.originalData)
-                _missingDictionary.postValue(R.id.selection_custom)
-
-                // NO DEFINITION FOUND
-                if (wordPackage.originalData == null) {
-                    saveModel.visibility = GONE
+                if (wordPackage.originalData != null) {
+                    repository.recordVisit(wordPackage.originalData.id)
+                } else {
+                    scope.cancel()
+                    _saveState.postValue(SaveState.Remove)
                 }
-            }
 
-            saveModel.enabled = true
-            _saveState.postValue(saveModel)
-            _entryData.postValue(data)
+                data.add(wordPackage.originalData)
+                _entryData.postValue(data)
+                _missingDictionary.postValue(R.id.selection_custom)
+            }
         }
     }
 }
 
 class SearchResultsViewModelFactory(
     private val entry: String,
-    private val repository: VocabyRepository,
-    private val saveModel: SaveStateModel
+    private val repository: VocabyRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SearchResultsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SearchResultsViewModel(entry, repository, saveModel) as T
+            return SearchResultsViewModel(entry, repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

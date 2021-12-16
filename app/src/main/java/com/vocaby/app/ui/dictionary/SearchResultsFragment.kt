@@ -1,6 +1,7 @@
 package com.vocaby.app.ui.dictionary
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +22,7 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.models.dictionary.EntryModel
-import com.vocaby.app.models.viewstate.SaveStateModel
+import com.vocaby.app.states.SaveState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.viewmodels.*
 
@@ -36,15 +37,7 @@ class SearchResultsFragment : Fragment() {
     private val searchResultsViewModel: SearchResultsViewModel by viewModels{
         SearchResultsViewModelFactory(
             searchedWord,
-            (requireActivity().application as VocabyApplication).repository,
-            SaveStateModel(
-                View.VISIBLE,
-                R.drawable.ic_bookmark_disabled,
-                R.drawable.ic_bookmark_unsaved,
-                R.drawable.ic_bookmark_saved,
-                R.string.save_button_unsaved,
-                R.string.save_button_saved
-            )
+            (requireActivity().application as VocabyApplication).repository
         )
     }
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels {
@@ -95,22 +88,41 @@ class SearchResultsFragment : Fragment() {
             val button = dictionarySelector.findViewById<RadioButton>(id)
             dictionarySelector.removeView(button)
             dictionarySelector.check(dictionarySelector.getChildAt(0).id)
+            dictionarySelector.visibility = View.VISIBLE
         }
 
         // Observe changes to entry save state
         searchResultsViewModel.saveState.observe(viewLifecycleOwner) { saveState ->
-            val icon = AppCompatResources.getDrawable(ctx, saveState.icon)
+            when (saveState) {
+                is SaveState.Fetched -> {
+                    saveButton.isEnabled = true
+                    val icon: Drawable?
+                    if (saveState.saved) {
+                        icon = AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved)
+                        saveButton.text = getString(R.string.save_button_saved)
+                    } else {
+                        icon = AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved)
+                        saveButton.text = getString(R.string.save_button_unsaved)
+                    }
 
-            saveButton.visibility = saveState.visibility
-            saveButton.text = getString(saveState.text)
-            saveButton.isEnabled = saveState.enabled
-            saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+                    saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+                    saveButton.setOnClickListener {
+                        if (saveState.saved) {
+                            userViewModel.removeSaveItem(searchedWord)
+                        } else {
+                            userViewModel.addSaveItem(searchedWord)
+                        }
+                    }
+                }
 
-            saveButton.setOnClickListener {
-                if (saveState.saved) {
-                    userViewModel.removeSaveItem(searchedWord)
-                } else {
-                    userViewModel.addSaveItem(searchedWord)
+                is SaveState.InProgress -> {
+                    saveButton.isEnabled = false
+                    val icon = AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_disabled)
+                    saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+                }
+
+                is SaveState.Remove -> {
+                    saveButton.visibility = View.GONE
                 }
             }
         }

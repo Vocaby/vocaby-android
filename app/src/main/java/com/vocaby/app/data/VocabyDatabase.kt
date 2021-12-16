@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 @Database(entities = [User::class, UserSave::class,
     Type::class, Word::class, Definition::class, CustomEntry::class, CustomDefinition::class,
-    CustomEntryGroup::class], version = 1, exportSchema = false)
+    CustomEntryGroup::class, DictionaryViewCount::class, CustomDictionaryViewCount::class], version = 1, exportSchema = false)
 abstract class VocabyDatabase : RoomDatabase() {
     abstract fun vocabyDao() : VocabyDao
 

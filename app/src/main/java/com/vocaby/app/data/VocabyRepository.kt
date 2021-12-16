@@ -26,6 +26,7 @@ import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -527,4 +528,15 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     /** --------------------- TYPES -------------------- **/
     suspend fun getTypes() = vocabyDao.getTypes()
+
+    /** --------------------- DATA -------------------- **/
+    suspend fun recordVisit(entryId: Int) {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        vocabyDao.recordVisit(DictionaryViewCount(0, userId, entryId, formatter.format(Date())))
+    }
+
+    suspend fun recordCustomVisit(entryId: Int) {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        vocabyDao.recordCustomVisit(CustomDictionaryViewCount(0, userId, entryId, formatter.format(Date())))
+    }
 }
