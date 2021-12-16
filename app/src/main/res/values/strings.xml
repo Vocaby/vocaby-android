@@ -27,7 +27,9 @@
     <string name="zero">0</string>
     <string name="custom_entries">Custom Entries</string>
     <string name="nav_custom_entries">My Entries</string>
-    <string name="custom_entry_header_hint">Please enter a word or phrase</string>
+    <string name="custom_entry_header_empty">Please enter a word or phrase</string>
+    <string name="custom_entry_header_long">This entry is too long</string>
+    <string name="custom_entry_header_invalid">An entry cannot contain special characters</string>
     <string name="new_dictionary_entry">Custom Dictionary Entry</string>
     <string name="definition_add_alert">You must add a definition</string>
     <string name="definition_empty_alert">You must enter a definition</string>
@@ -39,13 +41,11 @@
     <string name="nav_close">Close</string>
     <string name="add_definition_button">Add Definition</string>
     <string name="nav_save">Save</string>
-    <string name="custom_entry_word_header">Word / Phrase</string>
     <string name="custom_definition_group_header">Definition Groups</string>
     <string name="custom_group_add_button">Add a group</string>
     <string name="create">Create</string>
     <string name="custom_definition_add_button">Add a definition</string>
     <string name="drag_icon">drag icon</string>
-    <string name="word_phrase_header">Word / Phrase</string>
     <string name="entry_edit_hint">Enter a word or a phrase…</string>
     <string name="group_header_alert">Please add a group</string>
     <string name="dictionary_header">Dictionary</string>
@@ -97,5 +97,7 @@
     <string name="background">background</string>
     <string name="history">YOUR SEARCH HISTORY</string>
     <string name="word_of_the_day">Word of the Day</string>
+    <string name="entry_header">Entry</string>
+    <string name="create_a_new_entry">Add a new entry</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

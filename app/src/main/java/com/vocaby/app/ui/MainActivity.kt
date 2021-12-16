@@ -109,7 +109,6 @@ open class MainActivity : AppCompatActivity() {
 
     private fun updateNotificationStatus(sharedPreferences: SharedPreferences, key: String) {
         if (sharedPreferences.getBoolean(key, false)) {
-            sendBroadcast(notificationIntent)
             val minutes = sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "15")!!.toInt()
             alarmManager.setRepeating(
                 AlarmManager.RTC_WAKEUP,

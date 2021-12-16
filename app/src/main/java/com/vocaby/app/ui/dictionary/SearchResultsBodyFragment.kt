@@ -19,6 +19,7 @@ class SearchResultsBodyFragment : Fragment() {
     private var entryData: EntryModel? = null
     private lateinit var header: TextView
     private lateinit var pronunciation: TextView
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +38,9 @@ class SearchResultsBodyFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_search_results_body, container, false)
         header = view.findViewById(R.id.word_header)
         pronunciation = view.findViewById(R.id.pronunciation)
+        recyclerView = view.findViewById(R.id.definitions_recycler_container)
 
         entryData?.let { data ->
-            val recyclerView: RecyclerView = view.findViewById(R.id.definitions_recycler_container)
             val definitionsAdapter = DefinitionsAdapter(ctx)
             definitionsAdapter.setWordData(data)
 
@@ -69,6 +70,7 @@ class SearchResultsBodyFragment : Fragment() {
     private fun populateNoDefinition() {
         header.text = resources.getString(R.string.no_definition_found)
         pronunciation.visibility = View.GONE
+        recyclerView.visibility = View.GONE
     }
 
     companion object {

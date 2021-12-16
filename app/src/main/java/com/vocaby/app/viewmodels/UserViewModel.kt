@@ -2,7 +2,6 @@ package com.vocaby.app.viewmodels
 
 import androidx.lifecycle.*
 import com.vocaby.app.data.VocabyRepository
-import com.vocaby.app.utils.Logger
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -23,7 +22,6 @@ class UserViewModel(private val repository: VocabyRepository) : ViewModel() {
     }
 
     fun addSaveItem(entry: String) = viewModelScope.launch {
-        Logger.reportToDebug(entry)
         repository.addSaveItem(entry)
     }
 

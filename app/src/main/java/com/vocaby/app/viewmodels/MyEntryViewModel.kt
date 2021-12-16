@@ -9,7 +9,9 @@ import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.payload.ItemIntPayload
 import com.vocaby.app.models.payload.ItemStringPayload
 import com.vocaby.app.models.payload.PayloadState
+import com.vocaby.app.states.UserInputState
 import com.vocaby.app.utils.SingleLiveEvent
+import com.vocaby.app.utils.StringFormatter
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -17,6 +19,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private val _entryCount: MutableLiveData<Int> = MutableLiveData(0)
     private val _entries: SingleLiveEvent<List<String>> = SingleLiveEvent()
     private val _entryState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
+    private val _userInput: SingleLiveEvent<UserInputState> = SingleLiveEvent()
 
     private var selectedPosition: Int = -1
     private var customEntries: MutableList<String> = ArrayList()
@@ -25,8 +28,10 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
         get() = _entries
     val customEntryCount: LiveData<Int>
         get() = _entryCount
-    val entryState: LiveData<ItemIntPayload>
+    val entryResult: LiveData<ItemIntPayload>
         get() = _entryState
+    val entryCreationState: LiveData<UserInputState>
+        get() = _userInput
 
     init {
         // populate user entries
@@ -85,6 +90,21 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
             customEntries.removeAt(position)
             _entryCount.postValue(customEntries.size)
             _entryState.value = ItemIntPayload(PayloadState.DELETE, position)
+        }
+    }
+
+    fun createCustomEntry(entry:String) {
+        if (entry.isEmpty()) {
+            _userInput.value = UserInputState.EmptyInput
+        } else if (StringFormatter.containsSpecialCharacter(entry)) {
+            _userInput.value = UserInputState.InvalidInput
+        } else {
+            val sanitizedEntry = StringFormatter.cleanText(entry)
+            if (sanitizedEntry.length >= Constants.ENTRY_MAX_LENGTH) {
+                _userInput.value = UserInputState.LongInput
+            } else {
+                _userInput.value = UserInputState.Valid(sanitizedEntry)
+            }
         }
     }
 

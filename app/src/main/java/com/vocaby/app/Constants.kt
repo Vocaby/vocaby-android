@@ -8,4 +8,7 @@ object Constants {
     const val DICTIONARY_ENTRIES_KEY = "DICT_ENTS"
     const val EXPORT_FILE_TYPE_FIELD = "vocabyExportType"
     const val VOCABY_BASE_URL = "https://vocaby.app/"
+
+    const val DEFINITION_MAX_LENGTH = 1000
+    const val ENTRY_MAX_LENGTH = 100
 }

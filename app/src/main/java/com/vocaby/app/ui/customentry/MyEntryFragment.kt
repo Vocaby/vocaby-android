@@ -21,6 +21,7 @@ import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.CustomEntryAdapter
 import com.vocaby.app.models.payload.PayloadState
+import com.vocaby.app.states.UserInputState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.utils.StringFormatter
 import com.vocaby.app.viewmodels.DictionaryViewModel
@@ -31,9 +32,11 @@ import com.vocaby.app.viewmodels.MyEntryViewModelFactory
 class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var ctx: Context
     private lateinit var entryCountView: TextView
-    private lateinit var entryEditDialog: BottomSheetDialog
     private lateinit var customEntryAdapter: CustomEntryAdapter
     private lateinit var emptyCard: LinearLayout
+    private lateinit var entryEditDialog: BottomSheetDialog
+    private lateinit var entryEdit: EditText
+    private lateinit var entryAlert: TextView
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
@@ -72,7 +75,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                 entryCountView.text = StringFormatter.cleanNumber(count)
         })
 
-        entryViewModel.entryState.observe(viewLifecycleOwner) { entryStatePayload ->
+        entryViewModel.entryResult.observe(viewLifecycleOwner) { entryStatePayload ->
             when (entryStatePayload.state) {
                 PayloadState.DELETE -> customEntryAdapter.deleteEntry(entryStatePayload.payload)
                 PayloadState.ADD -> customEntryAdapter.addEntry()
@@ -82,6 +85,38 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             else emptyCard.visibility = View.VISIBLE
 
             dictionaryViewModel.resetSearchSuggestion()
+        }
+
+        entryViewModel.entryCreationState.observe(viewLifecycleOwner) { input ->
+            when(input) {
+                is UserInputState.EmptyInput -> {
+                    entryAlert.text = getString(R.string.custom_entry_header_empty)
+                    entryAlert.visibility = View.VISIBLE
+                }
+                is UserInputState.InvalidInput -> {
+                    entryAlert.text = getString(R.string.custom_entry_header_invalid)
+                    entryAlert.visibility = View.VISIBLE
+                }
+                is UserInputState.LongInput -> {
+                    entryAlert.text = getString(R.string.custom_entry_header_long)
+                    entryAlert.visibility = View.VISIBLE
+                }
+                is UserInputState.Valid -> {
+                    entryEdit.text.clear()
+                    entryAlert.visibility = View.INVISIBLE
+                    entryEditDialog.dismiss()
+
+                    var startEntryBuilderIntent =
+                        Intent(requireActivity(), EntryBuilderActivity::class.java)
+                    startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(
+                        startEntryBuilderIntent,
+                        input.data,
+                        -1
+                    )
+
+                    entryBuilderActivity.launch(startEntryBuilderIntent)
+                }
+            }
         }
     }
 
@@ -101,35 +136,23 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         entryEditDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
         entryEditDialog.setContentView(R.layout.custom_entry_header_dialog)
-        val entryEdit = entryEditDialog.findViewById<EditText>(R.id.entry_edit)
-        val entryAlert = entryEditDialog.findViewById<TextView>(R.id.entry_header_alert)
+        entryEdit = entryEditDialog.findViewById(R.id.entry_edit)!!
+        entryAlert = entryEditDialog.findViewById(R.id.entry_header_alert)!!
+
         val button = entryEditDialog.findViewById<Button>(R.id.close_button)
         button?.setOnClickListener { entryEditDialog.dismiss() }
 
-        val saveButton = entryEditDialog.findViewById<Button>(R.id.dialog_save_button)
+        val createButton = entryEditDialog.findViewById<Button>(R.id.dialog_entry_create_button)
 
-        saveButton?.setText(R.string.create)
-        saveButton?.setOnClickListener {
-            val entry = StringFormatter.cleanText(entryEdit!!.text.toString())
-            if (entry.isEmpty()) {
-                entryAlert?.visibility = View.VISIBLE
-            } else {
-                entryEdit.text.clear()
-                entryAlert?.visibility = View.INVISIBLE
-                entryEditDialog.dismiss()
-                var startEntryBuilderIntent =
-                    Intent(requireActivity(), EntryBuilderActivity::class.java)
-                startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(
-                    startEntryBuilderIntent, entry, -1
-                )
-                entryBuilderActivity.launch(startEntryBuilderIntent)
-            }
+        createButton?.setText(R.string.create)
+        createButton?.setOnClickListener {
+            entryViewModel.createCustomEntry(entryEdit.text.toString())
         }
 
         // Clear content on show
         entryEditDialog.setOnShowListener {
-            entryEdit?.text?.clear()
-            entryAlert?.visibility = View.INVISIBLE
+            entryEdit.text?.clear()
+            entryAlert.visibility = View.INVISIBLE
         }
     }
 

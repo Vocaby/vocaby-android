@@ -18,7 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@drawable/box_bottom_stroke_white"
+            android:background="@drawable/nav_header"
             android:gravity="center"
             android:orientation="horizontal">
 

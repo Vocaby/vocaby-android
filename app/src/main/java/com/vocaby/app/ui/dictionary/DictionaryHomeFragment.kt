@@ -47,7 +47,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         val view = inflater.inflate(R.layout.fragment_dictionary_main, container, false)
 
         val dateView = view.findViewById<TextView>(R.id.date)
-        val formatter = SimpleDateFormat("EEE dd.MM.yyyy", Locale.getDefault())
+        val formatter = SimpleDateFormat("EEE MM.dd.yyyy", Locale.getDefault())
         dateView.text = formatter.format(Date())
 
         // Random Word of the Day

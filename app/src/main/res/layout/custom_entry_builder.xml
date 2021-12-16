@@ -101,21 +101,9 @@
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/custom_entry_word_header"
+            android:text="@string/entry_header"
             android:textSize="14sp"
             android:textColor="@color/colorPrimaryAccent"/>
-
-        <TextView
-            android:id="@+id/entry_header_alert"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:labelFor="@+id/definition_edit"
-            android:text="@string/custom_entry_header_hint"
-            android:textColor="@color/colorHeadline"
-            android:textSize="12sp"
-            android:visibility="invisible" />
 
         <Space
             android:layout_width="0dp"

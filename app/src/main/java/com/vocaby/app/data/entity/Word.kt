@@ -10,4 +10,5 @@ class Word {
     var id = 0
     var word = ""
     var pronunciation:String? = null
+    var last_updated:String = ""
 }

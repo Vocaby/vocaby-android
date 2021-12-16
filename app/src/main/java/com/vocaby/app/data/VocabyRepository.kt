@@ -49,7 +49,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     private fun convertToEntryModel(wordDefinitions: WordDefinitions?): EntryModel? {
         wordDefinitions?.let {
             val pronunciation =
-                wordDefinitions.wordData.pronunciation?.let { wordDefinitions.wordData.pronunciation } ?: ""
+                wordDefinitions.wordData.pronunciation?.let { wordDefinitions.wordData.pronunciation }
+                    ?: ""
 
             val wordData = EntryModel(
                 wordDefinitions.wordData.id,
@@ -67,8 +68,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         return null
     }
 
-    suspend fun getEntriesByCharacterFromDB(character: String): List<String>
-        = vocabyDao.getDictionaryEntriesByCharacter(character)
+    suspend fun getEntriesByCharacterFromDB(character: String): List<String> =
+        vocabyDao.getDictionaryEntriesByCharacter(character)
 
     suspend fun getEntryPackage(entry: String): EntryDataPackage {
         val entryData = convertToEntryModel(vocabyDao.getEntryData(entry))
@@ -76,7 +77,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         return EntryDataPackage(entryData, customEntryData)
     }
 
-    suspend fun getEntryData(entry: String): EntryModel? = convertToEntryModel(vocabyDao.getEntryData(entry))
+    private suspend fun getEntryData(entry: String): EntryModel? =
+        convertToEntryModel(vocabyDao.getEntryData(entry))
 
     suspend fun getRandomEntry(): EntryModel? {
         val randomWordPicker = PreferenceManager.getDefaultSharedPreferences(application)
@@ -98,7 +100,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         } else {
             val id = randomWordPicker.getInt("randomWordId", 100000)
             val data: WordDefinitions? = vocabyDao.getEntryDataWithId(id)
-           randomEntry = convertToEntryModel(data)
+            randomEntry = convertToEntryModel(data)
         }
 
         return randomEntry
@@ -116,7 +118,9 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     /** --------------------- CUSTOM ENTRY -------------------- **/
 
     suspend fun getUserEntries() = vocabyDao.getUserEntries(userId)
-    suspend fun getUserEntryData(entry: String) = convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
+    suspend fun getUserEntryData(entry: String) =
+        convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
+
     suspend fun removeCustomEntry(entryId: Int) = vocabyDao.deleteUserEntry(entryId)
     suspend fun removeCustomEntry(entry: String) = vocabyDao.deleteUserEntry(entry)
     suspend fun clearUserEntries() = vocabyDao.clearUserEntries(userId)
@@ -132,6 +136,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
         return entryModels
     }
+
     suspend fun insertOrUpdateEntry(
         entry: String,
         pronunciation: String,
@@ -251,18 +256,19 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
         return entryId
     }
+
     suspend fun insertNewEntries(data: EntryImportData) {
         val entryIds = vocabyDao.insertCustomEntries(data.entries)
         for (i in entryIds.indices) {
             val addedGroups = mutableListOf<CustomEntryGroup>()
             for (group in data.entryModels[i].definitionGroups)
-            addedGroups.add(
-                CustomEntryGroup(
-                    entryIds[i].toInt(),
-                    group.type,
-                    group.order
+                addedGroups.add(
+                    CustomEntryGroup(
+                        entryIds[i].toInt(),
+                        group.type,
+                        group.order
+                    )
                 )
-            )
 
             val groupIds = vocabyDao.insertCustomEntryGroups(addedGroups)
             for (j in groupIds.indices) {
@@ -335,14 +341,27 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     suspend fun addSaveItem(entry: String) {
         vocabyDao.addSave(UserSave(userId, entry))
     }
+
     suspend fun addSaveItems(saves: List<UserSave>) {
         vocabyDao.addSaves(saves)
     }
+
     suspend fun removeSaveItem(entry: String) = vocabyDao.removeSave(userId, entry)
     suspend fun clearSaves() = vocabyDao.clearSaves(userId)
 
     /** --------------------- IMPORT / EXPORT -------------------- **/
-     fun importSavesFromExternalStorage(uri: Uri): List<UserSave> {
+    private fun checkEntryValidity(entry: String) {
+        if (entry.length >= Constants.ENTRY_MAX_LENGTH
+            || entry.isEmpty()
+            || StringFormatter.containsSpecialCharacter(entry)
+        ) {
+            throw IllegalFileException(
+                IllegalFileException.INVALID_FILE
+            )
+        }
+    }
+
+    fun importSavesFromExternalStorage(uri: Uri): List<UserSave> {
         val inputStream = application.contentResolver.openInputStream(uri)
         val reader = BufferedReader(InputStreamReader(inputStream))
 
@@ -355,12 +374,9 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                         .asString == "saves"
                 ) {
                     for (item in jsonObject.getAsJsonArray("data")) {
-                        saves.add(
-                            UserSave(
-                                userId,
-                                StringFormatter.cleanText(item.asString)
-                            )
-                        )
+                        val save = item.asString
+                        checkEntryValidity(save)
+                        saves.add(UserSave(userId, save))
                     }
 
                     return saves
@@ -401,12 +417,15 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                         val item = i.asJsonObject
                         val entryModel = EntryModel(item.getAsJsonPrimitive("entry").asString)
                         entryModel.pronunciation = item.getAsJsonPrimitive("pronunciation").asString
-                        entries.add(CustomEntry(
-                            userId,
-                            entryModel.entry,
-                            entryModel.pronunciation,
-                            OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
-                        ))
+                        checkEntryValidity(entryModel.entry)
+                        entries.add(
+                            CustomEntry(
+                                userId,
+                                entryModel.entry,
+                                entryModel.pronunciation,
+                                OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+                            )
+                        )
 
                         for (g in item.getAsJsonArray("definitionGroups")) {
                             val group = g.asJsonObject
@@ -416,10 +435,26 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
                             for (d in group.getAsJsonArray("definitionData")) {
                                 val definitionData = d.asJsonObject
-                                val definition = definitionData.getAsJsonPrimitive("definition").asString
+                                val definition =
+                                    definitionData.getAsJsonPrimitive("definition").asString
                                 val example = definitionData.getAsJsonPrimitive("example").asString
-                                val definitionOrder = definitionData.getAsJsonPrimitive("order").asInt
-                                groupModel.addNewDefinition(DefinitionModel(type, definition, example, definitionOrder))
+                                val definitionOrder =
+                                    definitionData.getAsJsonPrimitive("order").asInt
+
+                                if (definition.length >= Constants.DEFINITION_MAX_LENGTH) {
+                                    throw IllegalFileException(
+                                        IllegalFileException.INVALID_FILE
+                                    )
+                                }
+
+                                groupModel.addNewDefinition(
+                                    DefinitionModel(
+                                        type,
+                                        definition,
+                                        example,
+                                        definitionOrder
+                                    )
+                                )
                             }
 
                             entryModel.addDefinitionGroup(groupModel)
@@ -484,7 +519,9 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     }
 
     /** --------------------- HISTORY -------------------- **/
-    fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>? = dataManager.writeHistory(entry)
+    fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>? =
+        dataManager.writeHistory(entry)
+
     fun getHistory(): LinkedList<SimpleEntryModel>? = dataManager.history
     fun clearHistory(): List<SimpleEntryModel>? = dataManager.clearHistory()
 

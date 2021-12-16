@@ -24,12 +24,14 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val scope = CoroutineScope(Dispatchers.Main.immediate)
         val vocabyDao =
-            VocabyDatabase.getDatabase(context.applicationContext, CoroutineScope(Dispatchers.Main.immediate))
+            VocabyDatabase.getDatabase(context.applicationContext, scope)
                 .vocabyDao()
         val vocabyRepository = VocabyRepository(vocabyDao, context.applicationContext as Application)
         val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
-        CoroutineScope(Dispatchers.Main.immediate).launch(CoroutineExceptionHandler { _, throwable ->
+
+        scope.launch(CoroutineExceptionHandler { _, throwable ->
             when (throwable) {
                 is EmptyResultSetException -> {
                     val title = "No Saved Words"
@@ -41,35 +43,32 @@ class NotificationReceiver : BroadcastReceiver() {
             }
         }) {
             val saves = vocabyRepository.getSavedWords()
-            val prev_word = sp.getString("NOTIF_PREV_SELECT", "")
 
             if (saves.isEmpty()) {
                 val editor = sp.edit()
                 editor.putString("NOTIF_PREV_SELECT", "")
                 editor.apply()
                 throw EmptyResultSetException("User has no saves!")
-            }
+            } else {
+                var index = ThreadLocalRandom.current().nextInt(0, saves.size)
+                val prevWord = sp.getString("NOTIF_PREV_SELECT", "")
 
-            var index = ThreadLocalRandom.current().nextInt(0, saves.size)
-            if (saves.size > 1) {
-                while (saves[index] == prev_word) {
+                while (saves.size != 1 && saves[index] == prevWord) {
                     index = ThreadLocalRandom.current().nextInt(0, saves.size)
                 }
+
+                val entry = saves[index]
+                val entryModel = vocabyRepository.getAllEntryData(entry)
+                var message = "No definition found"
+
+                entryModel?.let { model ->
+                    val group = model.firstGroup
+                    message = group.definitionData.get(0).toString()
+                }
+
+                sp.edit().putString("NOTIF_PREV_SELECT", entry).apply()
+                createNotification(context, notificationManager, entry, message)
             }
-
-            val entry = saves[index]
-            val entryModel = vocabyRepository.getAllEntryData(entry)
-            var message = "No definition found"
-
-            entryModel?.let { model ->
-                val group = model.firstGroup
-                message = group?.definitionData?.get(0).toString()
-            }
-
-            val editor = sp.edit()
-            editor.putString("NOTIF_PREV_SELECT", entry)
-            editor.apply()
-            createNotification(context, notificationManager, entry, message)
         }
     }
 

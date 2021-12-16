@@ -1,88 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
+<LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/rounded_background"
+    android:clickable="true"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/box_bottom_stroke_gray"
-        android:padding="8dp">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/close_button"
-            style="?android:attr/borderlessButtonStyle"
+        android:background="@drawable/nav_header"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center">
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:text="@string/nav_close"
-            android:textAllCaps="false"
+            android:text="@string/create_a_new_entry"
             android:textColor="@color/black"
-            android:textSize="14sp"
-            tools:ignore="SmallSp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/dialog_save_button"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:text="@string/nav_save"
-            android:textAllCaps="false"
-            android:textColor="@color/colorPrimaryAccent"
-            android:textSize="14sp"
-            tools:ignore="SmallSp" />
+            android:textSize="14sp" />
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/container_side_margin"
-        android:padding="18dp"
+        android:background="@drawable/box_top_stroke_white"
+        android:padding="@dimen/container_side_margin"
         android:orientation="vertical">
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
             android:orientation="horizontal">
             <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:id="@+id/entry_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:textSize="12sp"
-                android:layout_marginBottom="8dp"
+                android:textColor="@color/dark_gray"
                 android:labelFor="@+id/definition_edit"
-                android:text="@string/word_phrase_header" />
+                android:text="@string/entry_header"
+                android:textSize="12sp"/>
 
             <TextView
                 android:id="@+id/entry_header_alert"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
                 android:fontFamily="@font/sourcesanspro_semibold"
                 android:textColor="@color/colorHeadline"
                 android:textSize="12sp"
-                android:layout_marginStart="12dp"
-                android:visibility="invisible"
-                android:layout_marginBottom="8dp"
-                android:labelFor="@+id/definition_edit"
-                android:text="@string/custom_entry_header_hint" />
+                android:visibility="invisible" />
         </LinearLayout>
 
         <EditText
@@ -94,10 +62,17 @@
             android:importantForAutofill="no"
             android:imeOptions="actionDone"
             android:textColor="@color/colorPrimaryAccent"
-            android:fontFamily="@font/playfairdisplay_mid"
+            android:fontFamily="@font/sourcesanspro_regular"
             android:background="@drawable/gray_background"
-            android:textSize="22sp"
+            android:textSize="14sp"
             android:inputType="text"/>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/dialog_entry_create_button"
+            style="@style/Theme.VocabyAndroid.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/container_side_margin"
+            android:text="@string/create" />
     </LinearLayout>
 </LinearLayout>

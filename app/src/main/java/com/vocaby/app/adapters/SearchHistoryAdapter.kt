@@ -35,7 +35,7 @@ class SearchHistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
-        if (holder.adapterPosition != 0) holder.itemView.setOnClickListener {
+        holder.itemView.setOnClickListener {
             onItemTouchListener.onItemTouch(
                 holder.adapterPosition
             )
@@ -45,13 +45,10 @@ class SearchHistoryAdapter(
         holder.definition.text = history[position].definition
     }
 
-    override fun getItemCount(): Int {
-        return history.size
-    }
+    override fun getItemCount(): Int = history.size
 
     class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var word: TextView = itemView.findViewById(R.id.history_item)
         var definition: TextView = itemView.findViewById(R.id.history_definition)
-
     }
 }

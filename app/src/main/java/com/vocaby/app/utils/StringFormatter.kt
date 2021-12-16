@@ -5,7 +5,11 @@ import java.util.*
 
 object StringFormatter {
     fun cleanText(text: String): String {
-        return text.trim { it <= ' ' }.replace("[^\\p{L}0-9!?'.,_ -]".toRegex(), "").lowercase()
+        return text.trim { it <= ' ' }.replace("[^\\p{L}0-9!$*()+?=~:;'.,_ -]".toRegex(), "").lowercase()
+    }
+
+    fun containsSpecialCharacter(text: String): Boolean {
+        return text.contains("[^\\p{L}0-9!$*()+?=~:;'.,_ -]".toRegex())
     }
 
     fun firstLetterUpperOnly(text: String): String {

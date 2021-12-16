@@ -122,7 +122,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
         } else {
             val definition = entryList[0]?.firstGroup?.let {
                 it.definitionData[0].definition
-            } ?: ""
+            } ?: "No definition was found"
 
             historyList = repository.writeToHistory(SimpleEntryModel(entry, definition))
         }
