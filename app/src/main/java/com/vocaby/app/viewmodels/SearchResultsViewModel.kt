@@ -9,6 +9,7 @@ import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class SearchResultsViewModel(
     private val entry: String,
@@ -34,25 +35,46 @@ class SearchResultsViewModel(
         }
 
         viewModelScope.launch(Dispatchers.Default) {
-            val wordPackage = repository.getEntryPackage(entry)
+            var originalData = repository.getEntryDataFromDatabase(entry)
+
+            originalData?.let { og ->
+                val remoteDate = repository.getUpdatedDateFromApi(entry)
+                val localDate = LocalDate.parse(og.lastUpdated)
+                remoteDate?.let {
+                    if (localDate.isBefore(remoteDate)) {
+                        // Replace og data with updated definitions
+                        val retrievedEntry = repository.getEntryDataFromApi(entry)
+                        retrievedEntry?.let {
+                            retrievedEntry.id = repository.replaceEntry(og, retrievedEntry)
+                        }
+
+                        originalData = retrievedEntry
+                    }
+                }
+
+                repository.recordVisit(originalData!!.id)
+            }
+
+
+            val customData = repository.getUserEntryData(entry)
+
             val data = ArrayList<EntryModel?>()
-            if (wordPackage.customData != null && wordPackage.originalData != null) {
-                data.add(wordPackage.customData)
-                data.add(wordPackage.originalData)
-                repository.recordVisit(wordPackage.originalData.id)
-            } else if (wordPackage.customData != null) {
-                data.add(wordPackage.customData)
+            if (customData != null && originalData != null) {
+                data.add(customData)
+                data.add(originalData)
+            } else if (customData != null) {
+                // Only Custom Available
+                repository.recordCustomVisit(customData.id)
+                data.add(customData)
                 _missingDictionary.postValue(R.id.selection_original)
-                repository.recordCustomVisit(wordPackage.customData.id)
             } else {
-                if (wordPackage.originalData != null) {
-                    repository.recordVisit(wordPackage.originalData.id)
-                } else {
+                // No definition
+                if (originalData == null) {
                     scope.cancel()
                     _saveState.postValue(SaveState.Remove)
                 }
 
-                data.add(wordPackage.originalData)
+                data.add(originalData)
                 _entryData.postValue(data)
                 _missingDictionary.postValue(R.id.selection_custom)
             }

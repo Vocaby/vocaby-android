@@ -1,9 +1,6 @@
 package com.vocaby.app.data.entity
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     tableName = "dictionary_view_count",
@@ -18,6 +15,7 @@ import androidx.room.PrimaryKey
         parentColumns = ["id"],
         childColumns = ["entry_id"]
     )],
+    indices = [Index("entry_id"), Index("user_id")]
 )
 data class DictionaryViewCount(
     @PrimaryKey(autoGenerate = true)

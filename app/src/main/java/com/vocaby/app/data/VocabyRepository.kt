@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.vocaby.app.Constants
+import com.vocaby.app.api.ApiManager
 import com.vocaby.app.data.dao.VocabyDao
 import com.vocaby.app.data.entity.*
 import com.vocaby.app.exceptions.IllegalFileException
@@ -16,7 +17,6 @@ import com.vocaby.app.models.BasicExportModel
 import com.vocaby.app.models.EntryImportData
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
-import com.vocaby.app.models.datapackage.EntryDataPackage
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
@@ -27,6 +27,7 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -36,6 +37,50 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE)
     private var userId: Int = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1)
     private val dataManager: DataManager = DataManager.getInstance(application)
+    private val apiService  = ApiManager.apiService
+
+    /** --------------------- ENTRY -------------------- **/
+    suspend fun replaceEntry(original: EntryModel, remote: EntryModel): Int {
+        vocabyDao.deleteEntry(Word(original.id))
+        val id = vocabyDao.insertEntry(Word(remote.entry, remote.pronunciation, remote.lastUpdated)).toInt()
+        val definitions = mutableListOf<Definition>()
+        for(groupData in remote.definitionGroups) {
+            for (definitionData in groupData.definitionData) {
+                definitions.add(
+                    Definition(
+                    id,
+                    definitionData.definition,
+                    definitionData.example,
+                    groupData.type)
+                )
+            }
+        }
+
+        vocabyDao.insertDefinitions(definitions)
+        return id
+    }
+
+    suspend fun getEntryDataFromApi(entry: String): EntryModel? {
+        return try {
+            val response = apiService.getDefinitions(entry)
+            response.body()
+        } catch (throwable: Throwable) {
+            null
+        }
+    }
+
+    suspend fun getUpdatedDateFromApi(entry: String): LocalDate? {
+        return try {
+            val response = apiService.checkEntryUpdate(entry)
+            if (response.isSuccessful && response.code() == 200) {
+                LocalDate.parse(response.body())
+            } else {
+                null
+            }
+        } catch (throwable: Throwable) {
+            null
+        }
+    }
 
     /** --------------------- USER -------------------- **/
     suspend fun setupUser() {
@@ -47,6 +92,9 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     }
 
     /** --------------------- ENTRY -------------------- **/
+    suspend fun getEntryDataFromDatabase(entry: String): EntryModel?
+        = convertToEntryModel(vocabyDao.getEntryData(entry))
+
     private fun convertToEntryModel(wordDefinitions: WordDefinitions?): EntryModel? {
         wordDefinitions?.let {
             val pronunciation =
@@ -58,6 +106,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                 wordDefinitions.wordData.word,
                 pronunciation
             )
+
+            wordData.lastUpdated = wordDefinitions.wordData.lastUpdated
 
             for (data in wordDefinitions.definitions) {
                 wordData.addDefinition(data.pos, data.definition, data.sentence)
@@ -71,15 +121,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     suspend fun getEntriesByCharacterFromDB(character: String): List<String> =
         vocabyDao.getDictionaryEntriesByCharacter(character)
-
-    suspend fun getEntryPackage(entry: String): EntryDataPackage {
-        val entryData = convertToEntryModel(vocabyDao.getEntryData(entry))
-        val customEntryData = convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
-        return EntryDataPackage(entryData, customEntryData)
-    }
-
-    private suspend fun getEntryData(entry: String): EntryModel? =
-        convertToEntryModel(vocabyDao.getEntryData(entry))
 
     suspend fun getRandomEntry(): EntryModel? {
         val randomWordPicker = PreferenceManager.getDefaultSharedPreferences(application)
@@ -112,14 +153,13 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         customEntry?.let {
             return customEntry
         } ?: run {
-            return getEntryData(entry)
+            return getEntryDataFromDatabase(entry)
         }
     }
 
     /** --------------------- CUSTOM ENTRY -------------------- **/
-
     suspend fun getUserEntries() = vocabyDao.getUserEntries(userId)
-    suspend fun getUserEntryData(entry: String) =
+    suspend fun getUserEntryData(entry: String): EntryModel? =
         convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
 
     suspend fun removeCustomEntry(entryId: Int) = vocabyDao.deleteUserEntry(entryId)

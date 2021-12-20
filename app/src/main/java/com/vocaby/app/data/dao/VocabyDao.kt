@@ -14,6 +14,15 @@ interface VocabyDao {
     suspend fun createUser(user: User): Long
 
     /** --------------------- ENTRY -------------------- **/
+    @Delete
+    suspend fun deleteEntry(word: Word)
+
+    @Insert
+    suspend fun insertEntry(word: Word): Long
+
+    @Insert
+    suspend fun insertDefinitions(wordDefinitions: List<Definition>)
+
     @Query("SELECT EXISTS(SELECT 1 FROM dictionary_word WHERE word = :entry)")
     suspend fun checkEntryExistence(entry: String): Boolean
 

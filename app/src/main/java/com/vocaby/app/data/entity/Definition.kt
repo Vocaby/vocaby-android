@@ -12,9 +12,13 @@ import androidx.room.*
     )],
     indices = [Index(value = ["word_id"])]
 )
-class Definition {
-    @PrimaryKey(autoGenerate = true)
-    var id = 0
+data class Definition(@PrimaryKey(autoGenerate = true) var id: Int) {
+    constructor(wordId: Int, definition: String, sentence: String?, pos: String) : this(0) {
+        this.wordId = wordId
+        this.definition = definition
+        this.sentence = sentence
+        this.pos = pos
+    }
 
     @ColumnInfo(name = "word_id")
     var wordId = 0

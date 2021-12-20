@@ -10,6 +10,7 @@ class EntryModel : Parcelable {
     val entry: String
     var pronunciation: String?
     var definitionGroups: MutableList<DefinitionGroupModel>
+    var lastUpdated: String = ""
 
     constructor(id: Int, entry: String, pronunciation: String) {
         this.id = id
@@ -104,5 +105,9 @@ class EntryModel : Parcelable {
         override fun newArray(size: Int): Array<EntryModel?> {
             return arrayOfNulls(size)
         }
+    }
+
+    override fun toString(): String {
+        return "$entry with ${definitionGroups.size} type groups"
     }
 }
