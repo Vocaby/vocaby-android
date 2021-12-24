@@ -24,6 +24,7 @@ import com.vocaby.app.VocabyApplication
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.SaveState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
+import com.vocaby.app.utils.Logger
 import com.vocaby.app.viewmodels.*
 
 class SearchResultsFragment : Fragment() {
@@ -76,19 +77,18 @@ class SearchResultsFragment : Fragment() {
         viewPager.setPageTransformer(MarginPageTransformer(40))
 
         searchResultsViewModel.entryData.observeOnce(viewLifecycleOwner) { entryList ->
-            entryList?.let {
-                setupDictionary(entryList.size)
-                dictionaryViewModel.writeToHistory(searchedWord, entryList)
-                viewPager.adapter = FragmentAdapter(this, entryList)
-                searchProgress.visibility = GONE
-            }
+            Logger.reportToDebug("setting up...")
+            setupDictionary(entryList.size)
+            dictionaryViewModel.writeToHistory(searchedWord, entryList)
+            viewPager.adapter = FragmentAdapter(this, entryList)
+            dictionarySelector.visibility = View.VISIBLE
+            searchProgress.visibility = GONE
         }
 
         searchResultsViewModel.missingDictionary.observeOnce(viewLifecycleOwner) { id ->
             val button = dictionarySelector.findViewById<RadioButton>(id)
             dictionarySelector.removeView(button)
             dictionarySelector.check(dictionarySelector.getChildAt(0).id)
-            dictionarySelector.visibility = View.VISIBLE
         }
 
         // Observe changes to entry save state

@@ -6,8 +6,68 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:paddingTop="8dp"
     tools:context=".ui.profile.ProfileHomeFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin">
+        <TextView
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/chart_header"
+            android:textColor="@color/gray" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        <View
+            android:id="@+id/indicator"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="center"
+            android:background="@drawable/indicator"/>
+        <TextView
+            android:id="@+id/chart_placeholder_alert"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="6dp"
+            android:text="@string/chart_placeholder_alert"
+            android:textSize="10sp"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:textColor="@color/colorHeadline"
+            tools:ignore="SmallSp" />
+    </LinearLayout>
+    <include layout="@layout/chart_placeholder" />
+    <LinearLayout
+        android:id="@+id/chart_container"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/favorite_entry"
+            style="@style/Theme.VocabyAndroid.TextHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin" />
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bar_chart"
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin" />
+    </LinearLayout>
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/notification_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
@@ -31,13 +91,6 @@
         android:layout_height="wrap_content"
         android:text="@string/nav_support"
         android:drawableStart="@drawable/ic_boxed_support" />
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/feedback_button"
-        style="@style/Theme.VocabyAndroid.ProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/nav_feedback_button"
-        android:drawableStart="@drawable/ic_boxed_feedback" />
     <Space
         android:layout_width="wrap_content"
         android:layout_height="0dp"

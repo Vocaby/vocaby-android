@@ -93,6 +93,7 @@
     <style name="Theme.VocabyAndroid.TextHeadline" parent="Widget.AppCompat.TextView">
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="Theme.VocabyAndroid.TextHeader" parent="Widget.AppCompat.TextView">
@@ -113,7 +114,7 @@
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="iconTint">@color/colorPrimaryAccent</item>
         <item name="android:fontFamily">@font/sourcesanspro_semibold</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingStart">@dimen/container_side_margin</item>

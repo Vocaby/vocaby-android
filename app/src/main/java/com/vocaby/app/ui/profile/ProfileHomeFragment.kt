@@ -1,24 +1,145 @@
 package com.vocaby.app.ui.profile
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.facebook.shimmer.ShimmerFrameLayout
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.vocaby.app.Constants.VOCABY_BASE_URL
 import com.vocaby.app.R
+import com.vocaby.app.VocabyApplication
 import com.vocaby.app.ui.WebActivity
+import com.vocaby.app.utils.AxisValueFormatter
+import com.vocaby.app.viewmodels.ProfileViewModel
+import com.vocaby.app.viewmodels.ProfileViewModelFactory
 
 class ProfileHomeFragment : Fragment() {
+    private lateinit var ctx: Context
+    private lateinit var barChart: BarChart
+    private lateinit var placeholder: ShimmerFrameLayout
+    private lateinit var chartContainer: LinearLayout
+    private lateinit var chartAlert: TextView
+    private lateinit var indicator: View
+    private lateinit var favoriteEntry: TextView
+
+    private val profileViewModel: ProfileViewModel by viewModels {
+        ProfileViewModelFactory((requireActivity().application as VocabyApplication).repository)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_profile_main, container, false)
+        ctx = requireActivity().applicationContext
+        placeholder = view.findViewById(R.id.chart_placeholder)
+        chartContainer = view.findViewById(R.id.chart_container)
+        barChart = view.findViewById(R.id.bar_chart)
+        chartAlert = view.findViewById(R.id.chart_placeholder_alert)
+        indicator = view.findViewById(R.id.indicator)
+        favoriteEntry = view.findViewById(R.id.favorite_entry)
+
+        barChart.apply {
+            setTouchEnabled(false)
+            setScaleEnabled(false)
+            setViewPortOffsets(0f, 40f, 0f, 50f)
+            minOffset = 0f
+            axisRight.isEnabled = false
+            axisLeft.isEnabled = true
+            axisLeft.axisMinimum = 0f
+            axisLeft.axisLineColor = ContextCompat.getColor(ctx, R.color.colorHeadline)
+            axisLeft.textColor = ContextCompat.getColor(ctx, R.color.colorHeadline)
+            legend.isEnabled = false
+        }
+
+        barChart.xAxis.apply {
+            setCenterAxisLabels(false)
+            setDrawGridLines(false)
+            setDrawAxisLine(false)
+            textSize = 10f
+            textColor = ContextCompat.getColor(ctx, R.color.dark_gray)
+            typeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_semibold)
+            position = XAxis.XAxisPosition.BOTTOM
+        }
+
+        placeholder.startShimmer()
+
+        barChart.description = Description().apply {
+            text = ""
+        }
+
         setupButtons(view)
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        profileViewModel.values.observe(viewLifecycleOwner) { chartData ->
+            if (chartData.values.size < 3) {
+                indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                chartAlert.visibility = View.VISIBLE
+            } else {
+                indicator.visibility = View.INVISIBLE
+                chartContainer.visibility = View.VISIBLE
+                placeholder.visibility = View.GONE
+                chartAlert.visibility = View.GONE
+
+                barChart.apply {
+                    animateXY(600, 1000, Easing.EaseInOutQuad)
+                    xAxis.labelCount = chartData.values.size
+                }
+
+                val colorsList: ArrayList<Int> = ArrayList()
+                colorsList.add(Color.parseColor("#7BB38D"))
+                colorsList.add(Color.parseColor("#89BB99"))
+                colorsList.add(Color.parseColor("#A6CCB0"))
+                colorsList.add(Color.parseColor("#C3DDC7"))
+                colorsList.add(Color.parseColor("#D1E5D3"))
+
+                val dataSet = BarDataSet(chartData.entries, "").apply {
+                    setDrawValues(true)
+                    colors = colorsList
+                    valueTextColor = ContextCompat.getColor(ctx, R.color.colorPrimaryAccent)
+                    valueTextSize = 10f
+                    valueTypeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_black)
+                    valueFormatter = object: ValueFormatter() {
+                        override fun getFormattedValue(value: Float): String {
+                            return String.format("%.0f",value)
+                        }
+                    }
+                }
+
+                val data = BarData(dataSet).apply {
+                    barWidth = 0.85f
+                }
+
+                barChart.data = data
+                barChart.xAxis.valueFormatter = AxisValueFormatter(chartData.values, 12)
+                barChart.invalidate()
+            }
+        }
+
+        profileViewModel.favoriteEntry.observe(viewLifecycleOwner) { entry ->
+            favoriteEntry.text = entry
+        }
     }
 
     private fun setupButtons(view: View) {
@@ -54,13 +175,6 @@ class ProfileHomeFragment : Fragment() {
         supportButton.setOnClickListener {
             val intent = Intent(requireActivity().applicationContext, WebActivity::class.java)
             intent.putExtra("URL", VOCABY_BASE_URL + "support")
-            startActivity(intent)
-        }
-
-        val feedbackButton = view.findViewById<Button>(R.id.feedback_button)
-        feedbackButton.setOnClickListener {
-            val intent = Intent(requireActivity().applicationContext, WebActivity::class.java)
-            intent.putExtra("URL", VOCABY_BASE_URL + "feedback")
             startActivity(intent)
         }
 

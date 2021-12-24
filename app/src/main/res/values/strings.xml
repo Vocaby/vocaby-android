@@ -18,7 +18,6 @@
     <!-- Sync Preferences -->
     <string name="refresh_button">Refresh Button</string>
     <string name="close">close</string>
-    <string name="daily_selection_header">Today\'s Pick</string>
     <!-- Strings used for fragments for navigation -->
 
     <string name="profile">Profile</string>
@@ -57,7 +56,6 @@
     <string name="hi_vocabler">Hi Vocabler!</string>
     <string name="nav_data_management">Data Management</string>
     <string name="nav_support">Support</string>
-    <string name="nav_feedback_button">Feedback</string>
     <string name="nav_danger_zone">Danger Zone</string>
     <string name="empty_custom_entry">Empty Custom Entry</string>
     <string name="add_an_entry">Add An Entry</string>
@@ -102,5 +100,7 @@
     <string name="wod_random_pick">Random Pick</string>
     <string name="entry_header">Entry</string>
     <string name="create_a_new_entry">Add a new entry</string>
+    <string name="chart_header">Your favorite word</string>
+    <string name="chart_placeholder_alert">Need more data</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

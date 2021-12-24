@@ -19,6 +19,7 @@ import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.dictionary.*
 import com.vocaby.app.utils.StringFormatter
+import kotlinx.coroutines.flow.Flow
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -603,5 +604,9 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     suspend fun recordCustomVisit(entryId: Int) {
         val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         vocabyDao.recordCustomVisit(CustomDictionaryViewCount(0, userId, entryId, formatter.format(Date())))
+    }
+
+    fun getWeeklyData(): Flow<List<VisitData>> {
+        return vocabyDao.getSearchData()
     }
 }

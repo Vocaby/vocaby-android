@@ -7,7 +7,6 @@ import com.vocaby.app.models.dictionary.DailyPick
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.dictionary.SimpleEntryModel
 import com.vocaby.app.states.GenericState
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import com.vocaby.app.utils.StringFormatter.cleanText
 import com.vocaby.app.utils.VocabyAlgo
@@ -61,21 +60,23 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     }
 
     fun getSearchSuggestions(oldQuery: String, newQuery:String) {
-        if (newQuery.isEmpty()) {
+        val query = newQuery.lowercase()
+        if (query.isEmpty()) {
             _searchSuggestions.postValue(GenericState.Success(ArrayList()))
             entriesByCharacter = null
-        } else if (entriesByCharacter == null && newQuery.isNotEmpty()) {
+        } else if (entriesByCharacter == null && query.isNotEmpty()) {
             _searchSuggestions.postValue(GenericState.InProgress)
-            val initialCharacter = newQuery.substring(0, 1)
+            val initialCharacter = query.substring(0, 1)
             viewModelScope.launch(Dispatchers.Default) {
                 entriesByCharacter = repository.getEntriesByCharacterFromDB(initialCharacter)
-                setSearchSuggestionItems(newQuery)
+                setSearchSuggestionItems(query)
             }
         } else {
             _searchSuggestions.postValue(GenericState.InProgress)
-            setSearchSuggestionItems(newQuery)
+            setSearchSuggestionItems(query)
         }
     }
+
     private fun setSearchSuggestionItems(searchQuery: String) {
         val searchSuggestionItems = ArrayList<SearchSuggestionItem>()
         if (!entriesByCharacter.isNullOrEmpty()) {

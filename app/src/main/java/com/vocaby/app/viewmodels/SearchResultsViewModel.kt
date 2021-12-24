@@ -5,7 +5,6 @@ import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.SaveState
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -79,9 +78,10 @@ class SearchResultsViewModel(
                 }
 
                 data.add(originalData)
-                _entryData.postValue(data)
                 _missingDictionary.postValue(R.id.selection_custom)
             }
+
+            _entryData.postValue(data)
         }
     }
 }
