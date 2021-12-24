@@ -12,6 +12,6 @@ interface ApiService {
     @GET("dictionary/update-check/{entry}")
     suspend fun checkEntryUpdate(@Path("entry") entry: String): Response<String>
 
-    @GET("wod/{date}")
+    @GET("wod/get/{date}/")
     suspend fun getWoD(@Path("date") date: String): Response<EntryModel>
 }

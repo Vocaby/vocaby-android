@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +29,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     private lateinit var definition: TextView
     private lateinit var sentence: TextView
     private lateinit var wordBox: View
+    private lateinit var wordBoxTag: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
     private lateinit var emptyCard: LinearLayout
@@ -57,7 +60,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         sentence = view.findViewById(R.id.card_sentence)
         wordBox = view.findViewById(R.id.word_box)
         progressBar = view.findViewById(R.id.randomword_progress)
-
+        wordBoxTag = view.findViewById(R.id.word_box_tag)
 
         progressBar.visibility = View.VISIBLE
         definition.visibility = View.GONE
@@ -83,22 +86,39 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
             }
         }
 
-        dictionaryViewModel.randomEntry.observe(viewLifecycleOwner, { randomEntryModel ->
-            wordView.text = randomEntryModel.entry
-            posView.text =  randomEntryModel.firstGroup.type
-            definition.text = randomEntryModel.firstGroup.definitionData[0].toString()
-            randomEntryModel.firstGroup.definitionData[0].example?.let { example ->
-                if (example.isNotEmpty()) {
-                    sentence.visibility = View.VISIBLE
-                    sentence.text = example
+        dictionaryViewModel.dailyPick.observe(viewLifecycleOwner, { dailyPick ->
+            dailyPick.entryModel?.let { entryModel ->
+                wordView.text = entryModel.entry
+                posView.text =  entryModel.firstGroup.type
+                definition.text = entryModel.firstGroup.definitionData[0].toString()
+
+                entryModel.firstGroup.definitionData[0].example?.let { example ->
+                    if (example.isNotEmpty()) {
+                        sentence.visibility = View.VISIBLE
+                        sentence.text = example
+                    }
                 }
+
+                wordBoxTag.visibility = View.VISIBLE
+                if (dailyPick.random) {
+                    wordBoxTag.text = getString(R.string.wod_random_pick)
+                    wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadlineSoft))
+                } else {
+                    wordBoxTag.text = getString(R.string.wod_our_pick)
+                    wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
+                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorTertiary))
+                }
+
+                wordBox.setOnClickListener { dictionaryViewModel.search(entryModel.entry) }
+            } ?: run {
+                wordView.text = getString(R.string.wod_error_header)
+                definition.text = getString(R.string.wod_error_body)
             }
 
             definition.visibility = View.VISIBLE
             posView.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
-
-            wordBox.setOnClickListener { dictionaryViewModel.search(randomEntryModel.entry) }
         })
     }
 
@@ -114,7 +134,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
 
     override fun onResume() {
         super.onResume()
-        dictionaryViewModel.updateRandomWord()
+        dictionaryViewModel.updateDailyPick()
     }
 
     override fun onItemTouch(position: Int) {

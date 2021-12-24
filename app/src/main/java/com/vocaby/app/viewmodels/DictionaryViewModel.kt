@@ -3,9 +3,11 @@ package com.vocaby.app.viewmodels
 import androidx.lifecycle.*
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.SearchSuggestionItem
+import com.vocaby.app.models.dictionary.DailyPick
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.dictionary.SimpleEntryModel
 import com.vocaby.app.states.GenericState
+import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import com.vocaby.app.utils.StringFormatter.cleanText
 import com.vocaby.app.utils.VocabyAlgo
@@ -16,7 +18,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     var searchSuggestionThreshold: Int = 4
 
     private val _searchedEntry: MutableLiveData<String> = MutableLiveData()
-    private val _randomEntry: MutableLiveData<EntryModel> = MutableLiveData()
+    private val _dailyPick: MutableLiveData<DailyPick> = MutableLiveData()
     private val _searchHistory: SingleLiveEvent<List<SimpleEntryModel>?> = SingleLiveEvent()
     private val _searchSuggestions: SingleLiveEvent<GenericState<List<SearchSuggestionItem>>> = SingleLiveEvent()
     private val searchStack: ArrayDeque<String> = ArrayDeque()
@@ -24,7 +26,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
 
     val searchedEntry: LiveData<String> get() = _searchedEntry
     val searchHistory: LiveData<List<SimpleEntryModel>?> get() = _searchHistory
-    val randomEntry: LiveData<EntryModel> get() = _randomEntry
+    val dailyPick: LiveData<DailyPick> get() = _dailyPick
     val searchSuggestions: LiveData<GenericState<List<SearchSuggestionItem>>> get() = _searchSuggestions
 
     init {
@@ -101,12 +103,10 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     }
 
     // return to observer of random word
-    fun updateRandomWord() {
+    fun updateDailyPick() {
         viewModelScope.launch {
-            val data: EntryModel? = repository.getRandomEntry()
-            data?.let {
-                _randomEntry.postValue(data)
-            }
+            val pick: DailyPick = repository.getDailyPick()
+            _dailyPick.postValue(pick)
         }
     }
 

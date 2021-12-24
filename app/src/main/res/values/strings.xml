@@ -96,7 +96,10 @@
     <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be deleted.</string>
     <string name="background">background</string>
     <string name="history">YOUR SEARCH HISTORY</string>
-    <string name="word_of_the_day">Word of the Day</string>
+    <string name="wod_error_header">Oh no!</string>
+    <string name="wod_error_body">Something went terribly wrong when picking an entry :(</string>
+    <string name="wod_our_pick">Vocaby\'s Pick</string>
+    <string name="wod_random_pick">Random Pick</string>
     <string name="entry_header">Entry</string>
     <string name="create_a_new_entry">Add a new entry</string>
     <!-- TODO: Remove or change this placeholder text -->

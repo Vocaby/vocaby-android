@@ -17,11 +17,7 @@ import com.vocaby.app.models.BasicExportModel
 import com.vocaby.app.models.EntryImportData
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
-import com.vocaby.app.models.dictionary.DefinitionGroupModel
-import com.vocaby.app.models.dictionary.DefinitionModel
-import com.vocaby.app.models.dictionary.EntryModel
-import com.vocaby.app.models.dictionary.SimpleEntryModel
-import com.vocaby.app.utils.Logger
+import com.vocaby.app.models.dictionary.*
 import com.vocaby.app.utils.StringFormatter
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -138,30 +134,43 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     suspend fun getEntriesByCharacterFromDB(character: String): List<String> =
         vocabyDao.getDictionaryEntriesByCharacter(character)
 
-    suspend fun getRandomEntry(): EntryModel? {
+    suspend fun getDailyPick(): DailyPick {
         val randomWordPicker = PreferenceManager.getDefaultSharedPreferences(application)
         val editor = randomWordPicker.edit()
-        val lastTimeStarted = randomWordPicker.getInt("appStarted", -1)
+        val lastTimeStarted = randomWordPicker.getInt(Constants.LAST_APP_STARTED, -1)
         val calendar = Calendar.getInstance()
         val today = calendar[Calendar.DAY_OF_YEAR]
-        val randomEntry: EntryModel?
+        val dailyPick: DailyPick
 
         if (today != lastTimeStarted) {
-            val data: WordDefinitions = vocabyDao.getRandomWord()
-            randomEntry = convertToEntryModel(data)
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            dailyPick = try {
+                val response = apiService.getWoD(formatter.format(Date()))
+                if (response.isSuccessful && response.code() == 200) {
+                    DailyPick(response.body(), false)
+                } else {
+                    val data: WordDefinitions = vocabyDao.getRandomWord()
+                    DailyPick(convertToEntryModel(data), true)
+                }
+            } catch (throwable: Throwable) {
+                val data: WordDefinitions = vocabyDao.getRandomWord()
+                DailyPick(convertToEntryModel(data), true)
+            }
 
-            randomEntry?.let {
-                editor.putInt("randomWordId", randomEntry.id)
-                editor.putInt("appStarted", today)
+            dailyPick.entryModel?.let { it ->
+                editor.putString(Constants.DICTIONARY_PICK_ID, it.entry)
+                editor.putInt(Constants.LAST_APP_STARTED, today)
+                editor.putBoolean(Constants.DICTIONARY_PICK_RANDOM, dailyPick.random)
                 editor.apply()
             }
-        } else {
-            val id = randomWordPicker.getInt("randomWordId", 100000)
-            val data: WordDefinitions? = vocabyDao.getEntryDataWithId(id)
-            randomEntry = convertToEntryModel(data)
-        }
 
-        return randomEntry
+            return dailyPick
+        } else {
+            val pick = randomWordPicker.getString(Constants.DICTIONARY_PICK_ID, "vocaby")!!
+            val random = randomWordPicker.getBoolean(Constants.DICTIONARY_PICK_RANDOM, true)
+            val data: WordDefinitions? = vocabyDao.getEntryData(pick)
+            return DailyPick(convertToEntryModel(data), random)
+        }
     }
 
     suspend fun getAllEntryData(entry: String): EntryModel? {

@@ -145,23 +145,19 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_weight="1" />
-                    <FrameLayout
+                    <TextView
                         android:id="@+id/word_box_tag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/box_green"
-                        android:layout_gravity="end"
+                        android:visibility="gone"
                         android:padding="6dp"
-                        android:layout_margin="12dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/word_of_the_day"
-                            android:fontFamily="@font/sourcesanspro_black"
-                            android:textSize="10sp"
-                            android:textColor="@color/colorPrimaryAccent"
-                            tools:ignore="SmallSp" />
-                    </FrameLayout>
+                        android:layout_margin="12dp"
+                        android:layout_gravity="end"
+                        android:fontFamily="@font/sourcesanspro_black"
+                        android:textSize="10sp"
+                        android:textColor="@color/colorPrimaryAccent"
+                        tools:ignore="SmallSp" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
