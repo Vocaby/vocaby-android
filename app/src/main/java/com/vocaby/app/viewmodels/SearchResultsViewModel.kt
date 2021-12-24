@@ -5,6 +5,7 @@ import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.SaveState
+import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -38,17 +39,20 @@ class SearchResultsViewModel(
             var originalData = repository.getEntryDataFromDatabase(entry)
 
             originalData?.let { og ->
-                val remoteDate = repository.getUpdatedDateFromApi(entry)
-                val localDate = LocalDate.parse(og.lastUpdated)
-                remoteDate?.let {
-                    if (localDate.isBefore(remoteDate)) {
-                        // Replace og data with updated definitions
-                        val retrievedEntry = repository.getEntryDataFromApi(entry)
-                        retrievedEntry?.let {
-                            retrievedEntry.id = repository.replaceEntry(og, retrievedEntry)
-                        }
+                val isCached = repository.checkApiCache(entry)
+                if (!isCached) {
+                    val remoteDate = repository.getUpdatedDateFromApi(entry)
+                    val localDate = LocalDate.parse(og.lastUpdated)
+                    remoteDate?.let {
+                        if (localDate.isBefore(remoteDate)) {
+                            // Replace og data with updated definitions
+                            val retrievedEntry = repository.getEntryDataFromApi(entry)
+                            retrievedEntry?.let {
+                                retrievedEntry.id = repository.replaceEntry(og, retrievedEntry)
+                            }
 
-                        originalData = retrievedEntry
+                            originalData = retrievedEntry
+                        }
                     }
                 }
 

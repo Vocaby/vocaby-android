@@ -21,6 +21,7 @@ import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.dictionary.SimpleEntryModel
+import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.StringFormatter
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -35,6 +36,8 @@ import java.util.*
 class VocabyRepository(private val vocabyDao: VocabyDao, val application: Application) {
     private val userSharedPreference: SharedPreferences =
         application.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE)
+    private val dictionaryCacheSharedPreferences: SharedPreferences =
+        application.getSharedPreferences(Constants.DICTIONARY_CACHE_ID, Context.MODE_PRIVATE)
     private var userId: Int = userSharedPreference.getInt(Constants.CURRENT_USER_ID_KEY, 1)
     private val dataManager: DataManager = DataManager.getInstance(application)
     private val apiService  = ApiManager.apiService
@@ -73,6 +76,10 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         return try {
             val response = apiService.checkEntryUpdate(entry)
             if (response.isSuccessful && response.code() == 200) {
+                val oldSet = dictionaryCacheSharedPreferences.getStringSet(Constants.SEARCH_CACHE, mutableSetOf<String>())!!
+                val newSet = oldSet.toMutableSet()
+                newSet.add(entry)
+                dictionaryCacheSharedPreferences.edit().putStringSet(Constants.SEARCH_CACHE, newSet).apply()
                 LocalDate.parse(response.body())
             } else {
                 null
@@ -80,6 +87,15 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         } catch (throwable: Throwable) {
             null
         }
+    }
+
+    fun checkApiCache(entry: String): Boolean {
+        val set = dictionaryCacheSharedPreferences.getStringSet(Constants.SEARCH_CACHE, mutableSetOf<String>())!!
+        return set.contains(entry)
+    }
+
+    fun clearDictionaryCache() {
+        dictionaryCacheSharedPreferences.edit().clear().apply()
     }
 
     /** --------------------- USER -------------------- **/

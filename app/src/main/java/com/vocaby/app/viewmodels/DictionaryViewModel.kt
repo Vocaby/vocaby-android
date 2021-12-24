@@ -134,6 +134,10 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     fun popSearchStack() {
         if (searchStack.isNotEmpty()) searchStack.removeLast()
     }
+
+    fun clearCache() {
+        repository.clearDictionaryCache()
+    }
 }
 
 class DictionaryViewModelFactory(

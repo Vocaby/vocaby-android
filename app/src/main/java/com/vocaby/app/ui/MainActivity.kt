@@ -42,10 +42,12 @@ open class MainActivity : AppCompatActivity() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
+
         val userViewModel: UserViewModel by viewModels {
             UserViewModelFactory((application as VocabyApplication).repository)
         }
         userViewModel.setupUser()
+        dictionaryViewModel.clearCache()
 
         setupNotification()
         setupNavigation()
