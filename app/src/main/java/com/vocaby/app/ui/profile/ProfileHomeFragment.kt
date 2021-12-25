@@ -25,6 +25,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.vocaby.app.Constants.VOCABY_BASE_URL
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
+import com.vocaby.app.states.GenericState
 import com.vocaby.app.ui.WebActivity
 import com.vocaby.app.utils.AxisValueFormatter
 import com.vocaby.app.viewmodels.ProfileViewModel
@@ -63,9 +64,8 @@ class ProfileHomeFragment : Fragment() {
             minOffset = 0f
             axisRight.isEnabled = false
             axisLeft.isEnabled = true
+            axisLeft.axisLineColor = Color.WHITE
             axisLeft.axisMinimum = 0f
-            axisLeft.axisLineColor = ContextCompat.getColor(ctx, R.color.colorHeadline)
-            axisLeft.textColor = ContextCompat.getColor(ctx, R.color.colorHeadline)
             legend.isEnabled = false
         }
 
@@ -89,51 +89,78 @@ class ProfileHomeFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        profileViewModel.updateChart()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profileViewModel.values.observe(viewLifecycleOwner) { chartData ->
-            if (chartData.values.size < 3) {
-                indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                chartAlert.visibility = View.VISIBLE
-            } else {
-                indicator.visibility = View.INVISIBLE
-                chartContainer.visibility = View.VISIBLE
-                placeholder.visibility = View.GONE
-                chartAlert.visibility = View.GONE
+        profileViewModel.values.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is GenericState.Success -> {
+                    if (state.data.values.size < 3) {
+                        indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                        chartAlert.text = getString(R.string.chart_placeholder_alert)
+                        chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                        chartContainer.visibility = View.GONE
+                    } else {
+                        indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorPrimary))
+                        chartContainer.visibility = View.VISIBLE
+                        placeholder.visibility = View.GONE
+                        chartAlert.text = ""
 
-                barChart.apply {
-                    animateXY(600, 1000, Easing.EaseInOutQuad)
-                    xAxis.labelCount = chartData.values.size
-                }
-
-                val colorsList: ArrayList<Int> = ArrayList()
-                colorsList.add(Color.parseColor("#7BB38D"))
-                colorsList.add(Color.parseColor("#89BB99"))
-                colorsList.add(Color.parseColor("#A6CCB0"))
-                colorsList.add(Color.parseColor("#C3DDC7"))
-                colorsList.add(Color.parseColor("#D1E5D3"))
-
-                val dataSet = BarDataSet(chartData.entries, "").apply {
-                    setDrawValues(true)
-                    colors = colorsList
-                    valueTextColor = ContextCompat.getColor(ctx, R.color.colorPrimaryAccent)
-                    valueTextSize = 10f
-                    valueTypeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_black)
-                    valueFormatter = object: ValueFormatter() {
-                        override fun getFormattedValue(value: Float): String {
-                            return String.format("%.0f",value)
+                        barChart.apply {
+                            animateXY(600, 1000, Easing.EaseInOutQuad)
+                            xAxis.labelCount = state.data.values.size
                         }
+
+                        val colorsList: ArrayList<Int> = ArrayList()
+                        colorsList.add(Color.parseColor("#7BB38D"))
+                        colorsList.add(Color.parseColor("#89BB99"))
+                        colorsList.add(Color.parseColor("#A6CCB0"))
+                        colorsList.add(Color.parseColor("#C3DDC7"))
+                        colorsList.add(Color.parseColor("#D1E5D3"))
+
+                        val dataSet = BarDataSet(state.data.entries, "").apply {
+                            setDrawValues(true)
+                            colors = colorsList
+                            valueTextColor = ContextCompat.getColor(ctx, R.color.colorPrimaryAccent)
+                            valueTextSize = 10f
+                            valueTypeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_black)
+                            valueFormatter = object: ValueFormatter() {
+                                override fun getFormattedValue(value: Float): String {
+                                    return String.format("%.0f",value)
+                                }
+                            }
+                        }
+
+                        val data = BarData(dataSet).apply {
+                            barWidth = 0.85f
+                        }
+
+                        barChart.data = data
+                        barChart.xAxis.valueFormatter = AxisValueFormatter(state.data.values, 12)
+                        barChart.invalidate()
                     }
                 }
 
-                val data = BarData(dataSet).apply {
-                    barWidth = 0.85f
+                is GenericState.InProgress -> {
+                    indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorPrimary))
+                    chartContainer.visibility = View.GONE
+                    placeholder.visibility = View.VISIBLE
+                    chartAlert.text = getString(R.string.chart_placeholder_fetching)
+                    chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimary))
                 }
 
-                barChart.data = data
-                barChart.xAxis.valueFormatter = AxisValueFormatter(chartData.values, 12)
-                barChart.invalidate()
+                else -> {
+                    indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                    chartContainer.visibility = View.GONE
+                    placeholder.visibility = View.VISIBLE
+                    chartAlert.text = getString(R.string.chart_placeholder_error)
+                    chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                }
             }
         }
 

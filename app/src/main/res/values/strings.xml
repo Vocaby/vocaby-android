@@ -102,5 +102,7 @@
     <string name="create_a_new_entry">Add a new entry</string>
     <string name="chart_header">Your favorite word</string>
     <string name="chart_placeholder_alert">Need more data</string>
+    <string name="chart_placeholder_fetching">Fetching your data…</string>
+    <string name="chart_placeholder_error">Something went wrong…</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
