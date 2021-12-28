@@ -13,7 +13,7 @@
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@drawable/nav_header"
+        android:background="@drawable/box_bottom_stroke_gray"
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
 
