@@ -44,6 +44,7 @@
     <string name="custom_definition_group_header">Definition Groups</string>
     <string name="custom_group_add_button">Add a group</string>
     <string name="create">Create</string>
+    <string name="create_group">Add Group</string>
     <string name="custom_definition_add_button">Add a definition</string>
     <string name="drag_icon">drag icon</string>
     <string name="entry_edit_hint">Enter a word or a phrase…</string>
@@ -101,7 +102,10 @@
     <string name="wod_our_pick">Vocaby\'s Pick</string>
     <string name="wod_random_pick">Random Pick</string>
     <string name="entry_header">Entry</string>
+    <string name="group_header">Group Type</string>
     <string name="create_a_new_entry">Add a new entry</string>
+    <string name="create_a_new_group">Add a new group</string>
+    <string name="create_a_new_definition">Add a new definition</string>
     <string name="chart_header">Your favorite entry</string>
     <string name="chart_placeholder_alert">Need more data</string>
     <string name="chart_placeholder_fetching">Fetching your data…</string>
@@ -109,5 +113,6 @@
     <string name="chart_guide">* Tap on the chart to refresh</string>
     <string name="expandable_button">expand</string>
     <string name="entry_character_limit">/ 100</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="enter_a_definition">Enter a definition</string>
+    <string name="enter_an_example_sentence">Enter an example sentence</string>
 </resources>

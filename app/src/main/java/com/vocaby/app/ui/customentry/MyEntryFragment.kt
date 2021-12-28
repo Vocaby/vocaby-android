@@ -146,9 +146,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         entryEdit = entryEditDialog.findViewById(R.id.entry_edit)!!
         entryAlert = entryEditDialog.findViewById(R.id.entry_header_alert)!!
 
-        val button = entryEditDialog.findViewById<Button>(R.id.close_button)
-        button?.setOnClickListener { entryEditDialog.dismiss() }
-
         val createButton = entryEditDialog.findViewById<Button>(R.id.dialog_entry_create_button)
 
         createButton?.setText(R.string.create)

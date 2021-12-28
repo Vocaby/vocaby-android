@@ -35,7 +35,7 @@
             android:layout_gravity="center_vertical"
             android:textAllCaps="true"
             android:textSize="20sp"
-            android:fontFamily="@font/playfairdisplay_mid"
+            android:fontFamily="@font/playfairdisplay_bold"
             android:textColor="@color/colorPrimaryAccent"/>
         <Space
             android:layout_width="0dp"

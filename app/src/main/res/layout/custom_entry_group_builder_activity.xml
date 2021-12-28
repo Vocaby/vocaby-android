@@ -13,63 +13,57 @@
     tools:context=".ui.customentry.EntryGroupBuilderActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
         android:background="@drawable/box_bottom_stroke_gray">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/back_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp">
+            android:fontFamily="@font/sourcesanspro_black"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:background="@color/white"
+            android:text="@string/nav_close"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/back_button"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:text="@string/nav_close"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                tools:ignore="SmallSp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+        <TextView
+            android:id="@+id/custom_group_activity_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/custom_group_activity_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/save_button"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:text="@string/nav_save"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimaryAccent"
-                android:textSize="14sp"
-                tools:ignore="SmallSp" />
-        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/save_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_black"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:background="@color/white"
+            android:text="@string/nav_save"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <TextView
@@ -80,8 +74,8 @@
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
         android:text="@string/type"
-        android:textSize="14sp"
-        android:textColor="@color/colorPrimaryAccent"/>
+        android:textSize="12sp"
+        android:textColor="@color/gray" />
 
     <TextView
         style="@style/Theme.VocabyAndroid.TextHeader"
@@ -107,7 +101,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/definition_header_singular"
-            android:textColor="@color/colorPrimaryAccent"/>
+            android:textSize="12sp"
+            android:textColor="@color/gray" />
 
         <TextView
             android:id="@+id/definition_add_alert"

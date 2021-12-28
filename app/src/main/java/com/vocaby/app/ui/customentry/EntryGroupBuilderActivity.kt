@@ -44,7 +44,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         entryGroupViewModel.definitions.observe(this) { list -> customDefAdapter.setList(list) }
 
         entryGroupViewModel.type.observeOnce(this) { type ->
-            val header = StringFormatter.firstLetterUpperOnly(type) + " Definitions"
+            val header = StringFormatter.firstLetterUpperOnly(type) + " Group"
             val activityHeader = findViewById<TextView>(R.id.custom_group_activity_header)
             val typeHeader = findViewById<TextView>(R.id.type_header)
 
@@ -71,14 +71,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
 
         val definitionView = definitionBuilder.findViewById<EditText>(R.id.definition_edit)!!
         val exampleView = definitionBuilder.findViewById<EditText>(R.id.example_edit)!!
-        val closeButton = definitionBuilder.findViewById<Button>(R.id.close_button)!!
         definitionAlertView = definitionBuilder.findViewById(R.id.definition_header_alert)!!
-
-        // Close Definition Builder Button
-        closeButton.setOnClickListener {
-            entryGroupViewModel.removeAlert()
-            definitionBuilder.dismiss()
-        }
 
         definitionBuilder.setOnShowListener {
             definitionView.text.clear()

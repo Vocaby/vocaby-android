@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="@string/zero"
-            android:textColor="@color/colorSecondary"
+            android:textColor="@color/colorPrimary"
             android:textSize="14sp" />
 
         <TextView
@@ -122,9 +122,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:textSize="12sp"
-        android:text="@string/add_an_entry"
+        android:text="@string/add_dictionary_entry"
         android:drawableStart="@drawable/ic_add"
-        android:drawablePadding="8dp"
+        android:drawablePadding="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/custom_entry_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

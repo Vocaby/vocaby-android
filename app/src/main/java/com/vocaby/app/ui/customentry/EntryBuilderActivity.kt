@@ -188,9 +188,6 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         typeAdapter = TypeAdapter(this)
         builderRecyclerView.adapter = typeAdapter
-
-        val button = groupBuilder.findViewById<Button>(R.id.close_button)!!
-        button.setOnClickListener { groupBuilder.dismiss() }
     }
 
     private val groupBuilderActivity = registerForActivityResult(StartActivityForResult()) {

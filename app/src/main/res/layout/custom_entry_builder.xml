@@ -13,74 +13,67 @@
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:background="@drawable/box_bottom_stroke_gray"
-        android:orientation="vertical"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/back_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:padding="8dp"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp">
+            android:fontFamily="@font/sourcesanspro_black"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:background="@color/white"
+            android:text="@string/nav_close"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/back_button"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:text="@string/nav_close"
-                android:textAllCaps="false"
-                android:textColor="@color/dark_gray"
-                android:textSize="14sp"
-                tools:ignore="SmallSp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+        <TextView
+            android:id="@+id/editor_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/editor_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+        <ProgressBar
+            android:id="@+id/save_progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:visibility="invisible" />
 
-            <ProgressBar
-                android:id="@+id/save_progress_bar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:visibility="invisible" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/save_button"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:text="@string/nav_save"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimaryAccent"
-                android:textSize="14sp"
-                tools:ignore="SmallSp" />
-        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/save_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_black"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:background="@color/white"
+            android:text="@string/nav_save"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -89,9 +82,9 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/container_side_margin"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
+        android:layout_marginTop="@dimen/container_side_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
@@ -101,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/entry_header"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textColor="@color/gray"/>
 
         <Space
@@ -147,7 +140,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pronunciation"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textColor="@color/gray"/>
 
         <TextView
@@ -157,7 +150,7 @@
             android:fontFamily="@font/sourcesanspro_semibold"
             android:text="@string/optional"
             android:textSize="12sp"
-            android:textColor="@color/dark_gray" />
+            android:textColor="@color/colorPrimary" />
 
         <Space
             android:layout_width="0dp"
@@ -167,7 +160,7 @@
 
     <EditText
         android:id="@+id/pronunciation_input"
-        android:background="@drawable/box_gray"
+        android:background="@drawable/text_input_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
@@ -175,7 +168,7 @@
         android:imeOptions="actionDone"
         android:padding="12dp"
         android:textSize="14sp"
-        android:fontFamily="@font/sourcesanspro_semibold"
+        android:fontFamily="@font/sourcesanspro_regular"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginTop="@dimen/container_gap_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
@@ -202,7 +195,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/custom_definition_group_header"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textColor="@color/gray"/>
 
         <TextView

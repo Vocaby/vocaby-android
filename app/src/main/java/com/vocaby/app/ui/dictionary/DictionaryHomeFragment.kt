@@ -106,7 +106,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
                 } else {
                     wordBoxTag.text = getString(R.string.wod_our_pick)
                     wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
-                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorTertiary))
+                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
                 }
 
                 wordBox.setOnClickListener { dictionaryViewModel.search(entryModel.entry) }
