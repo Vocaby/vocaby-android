@@ -9,7 +9,6 @@ import com.vocaby.app.data.entity.VisitData
 import com.vocaby.app.models.profile.ChartData
 import com.vocaby.app.states.GenericState
 import com.vocaby.app.utils.Generators.generateRandomInt
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

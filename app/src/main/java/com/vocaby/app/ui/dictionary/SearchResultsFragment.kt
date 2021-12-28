@@ -24,7 +24,6 @@ import com.vocaby.app.VocabyApplication
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.SaveState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.viewmodels.*
 
 class SearchResultsFragment : Fragment() {

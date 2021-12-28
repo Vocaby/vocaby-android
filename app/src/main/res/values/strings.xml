@@ -60,7 +60,6 @@
     <string name="nav_support">Support</string>
     <string name="nav_danger_zone">Danger Zone</string>
     <string name="empty_custom_entry">Empty Custom Entry</string>
-    <string name="add_an_entry">Add An Entry</string>
     <string name="drag_to_rearrange">Drag to rearrange</string>
     <string name="swipe_to_delete">Swipe to delete</string>
     <string name="pronunciation">Pronunciation</string>
@@ -111,7 +110,6 @@
     <string name="chart_placeholder_fetching">Fetching your data…</string>
     <string name="chart_placeholder_error">Something went wrong…</string>
     <string name="chart_guide">* Tap on the chart to refresh</string>
-    <string name="expandable_button">expand</string>
     <string name="entry_character_limit">/ 100</string>
     <string name="enter_a_definition">Enter a definition</string>
     <string name="enter_an_example_sentence">Enter an example sentence</string>

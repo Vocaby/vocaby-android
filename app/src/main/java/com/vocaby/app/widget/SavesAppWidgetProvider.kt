@@ -15,14 +15,12 @@ import com.vocaby.app.data.VocabyDatabase
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.exceptions.SaveRepetitionException
 import com.vocaby.app.ui.MainActivity
-import com.vocaby.app.utils.Generators
 import com.vocaby.app.utils.Generators.generateRandomInt
 import com.vocaby.app.utils.Logger
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.ThreadLocalRandom
 
 class SavesAppWidgetProvider : AppWidgetProvider() {
     companion object {

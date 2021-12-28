@@ -3,6 +3,8 @@ package com.vocaby.app.ui.customentry
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,11 +30,6 @@ import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
 import com.vocaby.app.viewmodels.MyEntryViewModel
 import com.vocaby.app.viewmodels.MyEntryViewModelFactory
-import android.text.Editable
-
-import android.text.TextWatcher
-
-
 
 
 class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
