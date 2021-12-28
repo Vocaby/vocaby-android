@@ -28,6 +28,24 @@
 
         <item name="materialAlertDialogTheme">@style/Theme.VocabyAndroid.MaterialDialogAlert</item>
         <item name="bottomSheetDialogTheme">@style/Theme.VocabyAndroid.BottomSheetDialog</item>
+
+        <item name="alertDialogTheme">@style/AlertDialogStyle</item>
+    </style>
+
+    <style name="AlertDialogStyle" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryAccent</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:windowTitleStyle">@style/Theme.VocabyAndroid.AlertDialog.Title</item>
+        <item name="android:textAppearanceMedium">@style/Theme.VocabyAndroid.AlertDialog.Title</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Positive</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Negative</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.AlertDialog.Title" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:fontFamily">@font/sourcesanspro_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="Theme.VocabyAndroid.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">
