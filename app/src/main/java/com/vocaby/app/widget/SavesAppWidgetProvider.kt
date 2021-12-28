@@ -15,6 +15,8 @@ import com.vocaby.app.data.VocabyDatabase
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.exceptions.SaveRepetitionException
 import com.vocaby.app.ui.MainActivity
+import com.vocaby.app.utils.Generators
+import com.vocaby.app.utils.Generators.generateRandomInt
 import com.vocaby.app.utils.Logger
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -95,9 +97,9 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
                     }
                 }
 
-                var index = ThreadLocalRandom.current().nextInt(0, saves.size)
+                var index = generateRandomInt(0, saves.size - 1)
                 while (saves[index] == prevWord) {
-                    index = ThreadLocalRandom.current().nextInt(0, saves.size)
+                    index = generateRandomInt(0, saves.size - 1)
                 }
 
                 val entryModel = vocabyRepository.getAllEntryData(saves[index])

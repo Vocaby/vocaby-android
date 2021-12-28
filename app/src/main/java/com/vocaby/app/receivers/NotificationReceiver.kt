@@ -13,12 +13,12 @@ import com.vocaby.app.R
 import com.vocaby.app.data.VocabyDatabase
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.ui.MainActivity
+import com.vocaby.app.utils.Generators.generateRandomInt
 import com.vocaby.app.utils.Logger
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.ThreadLocalRandom
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -50,11 +50,11 @@ class NotificationReceiver : BroadcastReceiver() {
                 editor.apply()
                 throw EmptyResultSetException("User has no saves!")
             } else {
-                var index = ThreadLocalRandom.current().nextInt(0, saves.size)
+                var index = generateRandomInt(0, saves.size-1)
                 val prevWord = sp.getString("NOTIF_PREV_SELECT", "")
 
                 while (saves.size != 1 && saves[index] == prevWord) {
-                    index = ThreadLocalRandom.current().nextInt(0, saves.size)
+                    index = generateRandomInt(0, saves.size-1)
                 }
 
                 val entry = saves[index]
