@@ -53,7 +53,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         dateView.text = formatter.format(Date())
 
         // Random Word of the Day
-        wordView = view.findViewById(R.id.word_header)
+        wordView = view.findViewById(R.id.entry_header)
         posView = view.findViewById(R.id.pos)
         definition = view.findViewById(R.id.card_definition)
         sentence = view.findViewById(R.id.card_sentence)

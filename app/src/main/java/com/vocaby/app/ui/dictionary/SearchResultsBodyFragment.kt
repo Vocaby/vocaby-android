@@ -14,6 +14,7 @@ import com.vocaby.app.R
 import com.vocaby.app.adapters.DefinitionsAdapter
 import com.vocaby.app.models.dictionary.EntryModel
 
+
 class SearchResultsBodyFragment : Fragment() {
     private lateinit var ctx: Context
     private var entryData: EntryModel? = null
@@ -36,7 +37,7 @@ class SearchResultsBodyFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_search_results_body, container, false)
-        header = view.findViewById(R.id.word_header)
+        header = view.findViewById(R.id.entry_header)
         pronunciation = view.findViewById(R.id.pronunciation)
         recyclerView = view.findViewById(R.id.definitions_recycler_container)
 
@@ -55,6 +56,7 @@ class SearchResultsBodyFragment : Fragment() {
 
             populateView(data)
         } ?: populateNoDefinition()
+
 
         return view
     }

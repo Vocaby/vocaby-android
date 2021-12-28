@@ -107,5 +107,7 @@
     <string name="chart_placeholder_fetching">Fetching your data…</string>
     <string name="chart_placeholder_error">Something went wrong…</string>
     <string name="chart_guide">* Tap on the chart to refresh</string>
+    <string name="expandable_button">expand</string>
+    <string name="entry_character_limit">/ 100</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

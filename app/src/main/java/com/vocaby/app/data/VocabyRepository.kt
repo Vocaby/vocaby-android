@@ -417,7 +417,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     /** --------------------- IMPORT / EXPORT -------------------- **/
     private fun checkEntryValidity(entry: String) {
-        if (entry.length >= Constants.ENTRY_MAX_LENGTH
+        if (entry.length > Constants.ENTRY_MAX_LENGTH
             || entry.isEmpty()
             || StringFormatter.containsSpecialCharacter(entry)
         ) {

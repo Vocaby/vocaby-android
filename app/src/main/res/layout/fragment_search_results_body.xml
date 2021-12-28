@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/container_side_margin"
-    android:paddingEnd="@dimen/container_side_margin"
     android:clipToPadding="false"
-    xmlns:autofit="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     tools:context=".ui.dictionary.SearchResultsBodyFragment">
-
     <LinearLayout
         android:id="@+id/word_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:paddingBottom="12dp"
         android:orientation="vertical"
-        android:layout_marginTop="20dp"
+        android:background="@drawable/box_bottom_stroke_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <me.grantland.widget.AutofitTextView
-            android:id="@+id/word_header"
+        <TextView
+            android:id="@+id/entry_header"
             style="@style/Theme.VocabyAndroid.TextHeader"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:gravity="center"
             android:maxLines="3"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="14sp"
+            android:autoSizeMaxTextSize="32sp"
+            android:autoSizeStepGranularity="2sp"
             android:textAllCaps="true"
-            android:textColor="@color/colorPrimaryAccent"
-            android:textSize="32sp"
-            autofit:minTextSize="14sp" />
-
+            android:textColor="@color/colorPrimaryAccent" />
         <TextView
             android:id="@+id/pronunciation"
             android:layout_width="wrap_content"
@@ -53,8 +51,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/definition_container_background"
+        android:background="@color/very_light_gray"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

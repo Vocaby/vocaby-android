@@ -79,7 +79,7 @@
                     android:paddingBottom="@dimen/card_content_margin">
 
                     <TextView
-                        android:id="@+id/word_header"
+                        android:id="@+id/entry_header"
                         style="@style/Theme.VocabyAndroid.TextHeader"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

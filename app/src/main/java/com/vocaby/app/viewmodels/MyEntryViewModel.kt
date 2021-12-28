@@ -98,7 +98,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
             _userInput.value = UserInputState.InvalidInput
         } else {
             val sanitizedEntry = StringFormatter.cleanText(entry)
-            if (sanitizedEntry.length >= Constants.ENTRY_MAX_LENGTH) {
+            if (sanitizedEntry.length > Constants.ENTRY_MAX_LENGTH) {
                 _userInput.value = UserInputState.LongInput
             } else {
                 _userInput.value = UserInputState.Valid(sanitizedEntry)
