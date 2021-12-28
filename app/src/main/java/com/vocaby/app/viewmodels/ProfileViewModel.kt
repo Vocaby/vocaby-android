@@ -22,6 +22,7 @@ class ProfileViewModel(val repository: VocabyRepository): ViewModel() {
 
     private val _values = SingleLiveEvent<GenericState<ChartData>>()
     private val _favoriteEntry = SingleLiveEvent<String>()
+    private var userChartPopulated: Boolean = false
 
     val values get() = _values
     val favoriteEntry get() = _favoriteEntry
@@ -53,10 +54,17 @@ class ProfileViewModel(val repository: VocabyRepository): ViewModel() {
                     if (maxData.count <= data.count) maxData = data
                 }
 
+                userChartPopulated = true
                 _values.postValue(GenericState.Success(ChartData(values, dataEntries, false)))
             }
 
             _favoriteEntry.postValue(maxData.entry)
+        }
+    }
+
+    fun eraseChartData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.eraseVisitData()
         }
     }
 }

@@ -606,4 +606,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     }
 
     suspend fun getWeeklyData(size: Int): List<VisitData> = vocabyDao.getSearchData(size)
+    suspend fun eraseVisitData() {
+        vocabyDao.deleteVisit(userId)
+        vocabyDao.deleteCustomVisit(userId)
+    }
 }

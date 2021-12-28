@@ -65,7 +65,16 @@
             android:layout_marginStart="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin" />
     </LinearLayout>
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="@dimen/container_side_margin"
+        android:textSize="10sp"
+        android:fontFamily="@font/sourcesanspro_regular"
+        android:textColor="@color/black"
+        android:text="@string/chart_guide"
+        tools:ignore="SmallSp" />
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/notification_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"

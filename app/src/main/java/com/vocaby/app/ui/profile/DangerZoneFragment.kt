@@ -14,15 +14,19 @@ import com.vocaby.app.viewmodels.*
 
 class DangerZoneFragment : Fragment() {
     private lateinit var builder: MaterialAlertDialogBuilder
-    private val userViewModel: UserViewModel by activityViewModels{
+    private val userViewModel: UserViewModel by activityViewModels {
         UserViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
-    private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
+    private val dictionaryViewModel: DictionaryViewModel by activityViewModels {
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
 
-    private val myEntryViewModel: MyEntryViewModel by activityViewModels{
+    private val myEntryViewModel: MyEntryViewModel by activityViewModels {
         MyEntryViewModelFactory((requireActivity().application as VocabyApplication).repository)
+    }
+
+    private val profileViewModel: ProfileViewModel by activityViewModels {
+        ProfileViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
 
     override fun onCreateView(
@@ -33,10 +37,10 @@ class DangerZoneFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_profile_danger_zone, container, false)
         val backButton = view.findViewById<Button>(R.id.back_button)
-        val clearHistoryButton = view.findViewById<Button>(R.id.clear_history_button)
-
         backButton.setOnClickListener { requireActivity().onBackPressed() }
-        clearHistoryButton.setOnClickListener {
+
+        val eraseHistoryButton = view.findViewById<Button>(R.id.erase_history_button)
+        eraseHistoryButton.setOnClickListener {
             builder.setTitle("Are you sure you wish to clear your search history?")
                 .setMessage("This action is irreversible.")
                 .setPositiveButton("CLEAR") { _, _ -> dictionaryViewModel.clearHistory() }
@@ -45,19 +49,27 @@ class DangerZoneFragment : Fragment() {
             alert.show()
         }
 
-        val clearSavesButton = view.findViewById<Button>(R.id.clear_saves_button)
-        clearSavesButton.setOnClickListener {
+        val eraseSavesButton = view.findViewById<Button>(R.id.erase_saves_button)
+        eraseSavesButton.setOnClickListener {
             builder.setTitle("Are you sure you wish to clear your saves?")
                 .setMessage("This action is irreversible.")
                 .setPositiveButton("CLEAR") { _, _ -> userViewModel.clearSaves()}
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
-        val clearEntriesButton = view.findViewById<Button>(R.id.clear_custom_entries_button)
-        clearEntriesButton.setOnClickListener {
+        val eraseEntriesButton = view.findViewById<Button>(R.id.erase_custom_entries_button)
+        eraseEntriesButton.setOnClickListener {
             builder.setTitle("Are you sure you wish to clear your entries?")
                 .setMessage("This action is irreversible.")
                 .setPositiveButton("CLEAR") { _, _ -> myEntryViewModel.clearEntries() }
+                .setNegativeButton("CANCEL", null).create().show()
+        }
+
+        val eraseChartDataButton = view.findViewById<Button>(R.id.erase_chart_button)
+        eraseChartDataButton.setOnClickListener {
+            builder.setTitle("Are you sure you wish to clear your entries?")
+                .setMessage("This action is irreversible.")
+                .setPositiveButton("CLEAR") { _, _ -> profileViewModel.eraseChartData() }
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
@@ -69,6 +81,7 @@ class DangerZoneFragment : Fragment() {
                     userViewModel.clearSaves()
                     dictionaryViewModel.clearHistory()
                     myEntryViewModel.clearEntries()
+                    profileViewModel.eraseChartData()
                 }.setNegativeButton("CANCEL", null).create().show()
         }
 

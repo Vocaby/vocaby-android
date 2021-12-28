@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
@@ -40,7 +40,7 @@ class ProfileHomeFragment : Fragment() {
     private lateinit var indicator: View
     private lateinit var favoriteEntry: TextView
 
-    private val profileViewModel: ProfileViewModel by viewModels {
+    private val profileViewModel: ProfileViewModel by activityViewModels {
         ProfileViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
 
@@ -87,11 +87,6 @@ class ProfileHomeFragment : Fragment() {
 
         setupButtons(view)
         return view
-    }
-
-    override fun onResume() {
-        super.onResume()
-        profileViewModel.updateChart()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -172,6 +167,12 @@ class ProfileHomeFragment : Fragment() {
 
         profileViewModel.favoriteEntry.observe(viewLifecycleOwner) { entry ->
             favoriteEntry.text = entry
+        }
+
+        profileViewModel.updateChart()
+
+        chartContainer.setOnClickListener {
+            profileViewModel.updateChart()
         }
     }
 

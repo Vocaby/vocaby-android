@@ -124,15 +124,21 @@ interface VocabyDao {
     @Insert
     suspend fun recordCustomVisit(customDictionaryViewCount: CustomDictionaryViewCount)
 
-    @Query("SELECT word as entry, COUNT(*) AS count FROM dictionary_view_count " +
+    @Query("SELECT word as entry, COUNT(entry_id) AS count FROM dictionary_view_count " +
             "JOIN dictionary_word ON dictionary_view_count.entry_id = dictionary_word.id GROUP BY entry_id " +
             "UNION " +
-            "SELECT entry, COUNT(*) AS count FROM custom_dictionary_view_count " +
+            "SELECT entry, COUNT(custom_dictionary_view_count.custom_entry_id) AS count FROM custom_dictionary_view_count " +
             "JOIN custom_user_entry ON custom_dictionary_view_count.custom_entry_id = custom_user_entry.custom_entry_id " +
             "GROUP BY custom_dictionary_view_count.custom_entry_id " +
             "ORDER BY count DESC " +
-            "LIMIT :size;")
+            "LIMIT :size")
     suspend fun getSearchData(size: Int): List<VisitData>
+
+    @Query("DELETE FROM dictionary_view_count WHERE user_id = :userId")
+    suspend fun deleteVisit(userId: Int)
+
+    @Query("DELETE FROM custom_dictionary_view_count WHERE user_id = :userId")
+    suspend fun deleteCustomVisit(userId: Int)
 
     /** --------------------- TYPES -------------------- **/
     @Insert

@@ -33,7 +33,7 @@
         android:text="@string/danger_zone" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/clear_history_button"
+        android:id="@+id/erase_history_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         android:textColor="@color/colorHeadline"/>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/clear_saves_button"
+        android:id="@+id/erase_saves_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
         android:textColor="@color/colorHeadline"/>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/clear_custom_entries_button"
+        android:id="@+id/erase_custom_entries_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,10 +57,24 @@
         android:textColor="@color/colorHeadline"/>
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/erase_chart_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/danger_clear_chart"
+        android:textColor="@color/colorHeadline"/>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/erase_data_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/danger_erase_all_data"
+        android:drawableStart="@drawable/ic_boxed_danger_zone"
         android:textColor="@color/colorHeadline"/>
 </LinearLayout>
