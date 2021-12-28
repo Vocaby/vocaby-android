@@ -1,6 +1,7 @@
 package com.vocaby.app.viewmodels
 
 import android.content.Intent
+import android.os.Parcelable
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -9,8 +10,8 @@ import com.vocaby.app.R
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.DefinitionModel
-import com.vocaby.app.models.payload.PayloadState
 import com.vocaby.app.models.viewstate.TextViewStateModel
+import com.vocaby.app.states.ItemState
 import com.vocaby.app.utils.SingleLiveEvent
 import java.util.*
 
@@ -18,7 +19,7 @@ class EntryGroupViewModel : ViewModel() {
     private lateinit var definitionGroup: DefinitionGroupModel
     private var definitionChanges: DefinitionChanges = DefinitionChanges()
     private val initialDefinitions: HashMap<String, DefinitionModel> = HashMap()
-    private var resultState: Int
+    private var resultState: ItemState? = null
 
     private val _type: SingleLiveEvent<String> = SingleLiveEvent()
     private val _definitions: SingleLiveEvent<List<DefinitionModel>> = SingleLiveEvent()
@@ -29,10 +30,6 @@ class EntryGroupViewModel : ViewModel() {
     val type: LiveData<String> get() = _type
     val definitionAlert: LiveData<TextViewStateModel> get() = _definitionsAlert
     val definitionAddStatus: LiveData<Boolean> get() = _definitionsAddStatus
-
-    init {
-        resultState = PayloadState.ADD
-    }
 
     fun handleIntent(receivedIntent: Intent) {
         definitionGroup = receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY)!!
@@ -47,7 +44,7 @@ class EntryGroupViewModel : ViewModel() {
         }
 
         definitionChanges = receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES)!!
-        resultState = receivedIntent.getIntExtra(Constants.ITEM_PAYLOAD_KEY, PayloadState.UNCHANGED)
+        resultState = receivedIntent.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
     }
 
     fun removeAlert() {
@@ -104,9 +101,9 @@ class EntryGroupViewModel : ViewModel() {
     fun addSaveDataToIntent(intent: Intent): Intent {
         checkForUpdatedItems()
         fixOrdering()
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, resultState)
         intent.putExtra(EntryViewModel.DEFINITION_CHANGES, definitionChanges)
         intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup)
+        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, resultState as Parcelable)
         return intent
     }
 
@@ -136,7 +133,7 @@ class EntryGroupViewModel : ViewModel() {
     // will not be reflected in definition changes. this method will fix that
     private fun fixOrdering() {
         // if it's a new group that's being updated
-        if (definitionGroup.groupId == -1 && resultState == PayloadState.UPDATE) {
+        if (definitionGroup.groupId == -1 && resultState == ItemState.UPDATE) {
             for (def in definitionGroup.definitionData) {
                 if (definitionChanges.hasItemAdded(def.definition)) {
                     definitionChanges.putItemAdded(def.definition, def)

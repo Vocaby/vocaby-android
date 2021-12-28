@@ -20,7 +20,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.CustomEntryAdapter
-import com.vocaby.app.models.payload.PayloadState
+import com.vocaby.app.states.ItemState
 import com.vocaby.app.states.UserInputState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.utils.StringFormatter
@@ -75,10 +75,11 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                 entryCountView.text = StringFormatter.cleanNumber(count)
         })
 
-        entryViewModel.entryResult.observe(viewLifecycleOwner) { entryStatePayload ->
-            when (entryStatePayload.state) {
-                PayloadState.DELETE -> customEntryAdapter.deleteEntry(entryStatePayload.payload)
-                PayloadState.ADD -> customEntryAdapter.addEntry()
+        entryViewModel.entryResult.observe(viewLifecycleOwner) { itemPayload ->
+            when (itemPayload.state) {
+                ItemState.DELETE -> customEntryAdapter.deleteEntry(itemPayload.payload)
+                ItemState.ADD -> customEntryAdapter.addEntry()
+                else -> {}
             }
 
             if (customEntryAdapter.itemCount > 0 ) emptyCard.visibility = View.INVISIBLE

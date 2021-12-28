@@ -14,9 +14,9 @@ import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.EntryModel
-import com.vocaby.app.models.payload.ItemIntPayload
-import com.vocaby.app.models.payload.ItemStringPayload
-import com.vocaby.app.models.payload.PayloadState
+import com.vocaby.app.states.ItemIntPayload
+import com.vocaby.app.states.ItemState
+import com.vocaby.app.states.ItemStringPayload
 import com.vocaby.app.utils.SingleLiveEvent
 import com.vocaby.app.utils.StringFormatter
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +47,7 @@ class EntryViewModel(
     private val _saveResult: SingleLiveEvent<Boolean> = SingleLiveEvent()
     private val _types: SingleLiveEvent<List<String>> = SingleLiveEvent()
     private val _selectedType: SingleLiveEvent<String> = SingleLiveEvent()
+    private val _editorState: SingleLiveEvent<ItemState> = SingleLiveEvent()
 
     val entry: LiveData<String> get() = _entry
     val pronunciation: LiveData<String> get() = _pronunciation
@@ -56,7 +57,7 @@ class EntryViewModel(
     val saveResult: LiveData<Boolean> get() = _saveResult
     val types: LiveData<List<String>?> get() = _types
     val selectedType: LiveData<String> get() = _selectedType
-
+    val editorState: LiveData<ItemState> get() = _editorState
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
@@ -80,8 +81,14 @@ class EntryViewModel(
 
                 _types.postValue(types)
 
+                if (p.state == ItemState.ADD) {
+                    _editorState.postValue(ItemState.ADD)
+                } else if (p.state == ItemState.UPDATE) {
+                    _editorState.postValue(ItemState.UPDATE)
+                }
+
                 // In case user attempts to create a new entry but the entry already exists
-                if (!entryData.isEmpty) p.state = PayloadState.UPDATE
+                if (!entryData.isEmpty) p.state = ItemState.UPDATE
             }
         }
 
@@ -93,7 +100,7 @@ class EntryViewModel(
         intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position))
         intent.putExtra(DEFINITION_CHANGES, definitionChangesMap[type])
         intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups[type])
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, PayloadState.UPDATE)
+        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.UPDATE as Parcelable)
         return intent
     }
 
@@ -103,7 +110,7 @@ class EntryViewModel(
         intent.putExtra(GROUP_KEY, newGroup)
         intent.putExtra(DEFINITION_CHANGES, DefinitionChanges())
         intent.putExtra(INITIAL_DEFINITIONS_KEY, newGroup)
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, PayloadState.ADD)
+        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.ADD as Parcelable)
         return intent
     }
 
@@ -111,23 +118,23 @@ class EntryViewModel(
         this.selectedGroup = selectedGroup
     }
 
-    fun removeGroup(groupDefinitionState: Int, position: Int) {
-        if (groupDefinitionState == PayloadState.UPDATE) {
+    fun removeGroup(groupDefinitionState: ItemState, position: Int) {
+        if (groupDefinitionState == ItemState.UPDATE) {
             val groupRemoved = entryData.removeGroup(position)
 
             // clear definition changes as well for the removed group
             definitionChangesMap.remove(groupRemoved.type)
             groupChanges.removeItem(groupRemoved.type, groupRemoved)
-            _groupChange.value = ItemIntPayload(PayloadState.DELETE, position)
-            _typeChange.value = ItemStringPayload(PayloadState.ADD, groupRemoved.type)
+            _groupChange.value = ItemIntPayload(position, ItemState.DELETE)
+            _typeChange.value = ItemStringPayload(groupRemoved.type, ItemState.ADD)
         }
     }
 
     private fun addGroup(newGroup: DefinitionGroupModel) {
         entryData.addDefinitionGroup(newGroup)
         groupChanges.putItemAdded(newGroup.type, newGroup)
-        _groupChange.value = ItemIntPayload(PayloadState.ADD, selectedGroup)
-        _typeChange.value = ItemStringPayload(PayloadState.DELETE, newGroup.type)
+        _groupChange.value = ItemIntPayload(selectedGroup, ItemState.ADD)
+        _typeChange.value = ItemStringPayload(newGroup.type, ItemState.DELETE)
     }
 
     fun handleGroupCreationResult(result: ActivityResult) {
@@ -138,15 +145,15 @@ class EntryViewModel(
 
                     definitionGroup?.let {
                         val type: String = definitionGroup.type
-                        val groupDefinitionState = data.getIntExtra(Constants.ITEM_PAYLOAD_KEY, PayloadState.ADD)
+                        val groupDefinitionState: ItemState? = data.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
 
                         if (definitionGroup.isEmpty) {
-                            removeGroup(groupDefinitionState, selectedGroup)
+                            removeGroup(groupDefinitionState!!, selectedGroup)
                         } else {
-                            if (groupDefinitionState == PayloadState.UPDATE) {
+                            if (groupDefinitionState == ItemState.UPDATE) {
                                 entryData.replaceDefinitionGroup(type, definitionGroup)
                                 groupChanges.putItemUpdated(definitionGroup.type, definitionGroup)
-                                _groupChange.setValue(ItemIntPayload(PayloadState.UPDATE, selectedGroup))
+                                _groupChange.setValue(ItemIntPayload(selectedGroup, ItemState.UPDATE))
                             } else {
                                 addGroup(definitionGroup)
                             }
@@ -177,14 +184,14 @@ class EntryViewModel(
         checkForUpdatedItems()
 
         if (entryData.definitionGroups.isEmpty()) {
-            if (payload?.state == PayloadState.ADD) {
+            if (payload?.state == ItemState.ADD) {
                 // NEW ENTRY IS EMPTY SO CANCEL
                 _saveResult.setValue(false)
             } else {
                 // DELETE THE EXISTING ENTRY BECAUSE THE USER DELETED ALL GROUPS
                 viewModelScope.launch {
                     repository.removeCustomEntry(entryData.id)
-                    payload?.state = PayloadState.DELETE
+                    payload?.state = ItemState.DELETE
                     _saveResult.postValue(true)
                 }
             }
@@ -203,7 +210,7 @@ class EntryViewModel(
     }
 
     private fun checkForUpdatedItems() {
-        if (entryData.definitionGroups.isNotEmpty() && payload?.state == PayloadState.UPDATE) {
+        if (entryData.definitionGroups.isNotEmpty() && payload?.state == ItemState.UPDATE) {
             for (i in entryData.definitionGroups.indices) {
                 val currentGroup = entryData.definitionGroups[i]
                 val originalGroup = initialGroups[currentGroup.type]

@@ -6,9 +6,9 @@ import androidx.activity.result.ActivityResult
 import androidx.lifecycle.*
 import com.vocaby.app.Constants
 import com.vocaby.app.data.VocabyRepository
-import com.vocaby.app.models.payload.ItemIntPayload
-import com.vocaby.app.models.payload.ItemStringPayload
-import com.vocaby.app.models.payload.PayloadState
+import com.vocaby.app.states.ItemIntPayload
+import com.vocaby.app.states.ItemState
+import com.vocaby.app.states.ItemStringPayload
 import com.vocaby.app.states.UserInputState
 import com.vocaby.app.utils.SingleLiveEvent
 import com.vocaby.app.utils.StringFormatter
@@ -48,20 +48,18 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     }
 
     fun addEntryDataToIntent(intent: Intent, entry: String, position: Int): Intent {
-        val itemStringPayload = ItemStringPayload(entry)
+        val itemPayload = ItemStringPayload(entry, ItemState.ADD)
         selectedPosition = if (position == -1) {
             customEntries.indexOf(entry)
         } else {
             position
         }
 
-        if (selectedPosition == -1) {
-            itemStringPayload.state = PayloadState.ADD
-        } else {
-            itemStringPayload.state = PayloadState.UPDATE
+        if (selectedPosition != -1) {
+            itemPayload.state = ItemState.UPDATE
         }
 
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, itemStringPayload)
+        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, itemPayload)
         return intent
     }
 
@@ -71,12 +69,12 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
                 result.data!!.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
 
             receivedPayload?.let {
-                if (receivedPayload.state == PayloadState.ADD) {
+                if (receivedPayload.state == ItemState.ADD) {
                     customEntries.add(0, receivedPayload.payload)
-                    _entryState.value = ItemIntPayload(PayloadState.ADD, 0)
-                } else if (receivedPayload.state == PayloadState.DELETE && selectedPosition != -1) {
+                    _entryState.value = ItemIntPayload(0, ItemState.ADD)
+                } else if (receivedPayload.state == ItemState.DELETE && selectedPosition != -1) {
                     customEntries.removeAt(selectedPosition)
-                    _entryState.value = ItemIntPayload(PayloadState.DELETE, selectedPosition)
+                    _entryState.value = ItemIntPayload(selectedPosition, ItemState.DELETE)
                 }
 
                 _entryCount.value = customEntries.size
@@ -89,7 +87,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
             repository.removeCustomEntry(entry)
             customEntries.removeAt(position)
             _entryCount.postValue(customEntries.size)
-            _entryState.value = ItemIntPayload(PayloadState.DELETE, position)
+            _entryState.value = ItemIntPayload(position, ItemState.DELETE)
         }
     }
 

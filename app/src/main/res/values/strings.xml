@@ -29,7 +29,8 @@
     <string name="custom_entry_header_empty">Please enter a word or phrase</string>
     <string name="custom_entry_header_long">This entry is too long</string>
     <string name="custom_entry_header_invalid">An entry cannot contain special characters</string>
-    <string name="new_dictionary_entry">Custom Dictionary Entry</string>
+    <string name="add_dictionary_entry">New Entry</string>
+    <string name="update_dictionary_entry">Update Entry</string>
     <string name="definition_add_alert">You must add a definition</string>
     <string name="definition_empty_alert">You must enter a definition</string>
     <string name="definition_exists_alert">The definition already exists</string>

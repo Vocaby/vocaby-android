@@ -19,14 +19,15 @@ import com.vocaby.app.adapters.CustomGroupAdapter
 import com.vocaby.app.adapters.DragStartListener
 import com.vocaby.app.adapters.ItemTouchCallback
 import com.vocaby.app.adapters.TypeAdapter
-import com.vocaby.app.models.payload.ItemIntPayload
-import com.vocaby.app.models.payload.PayloadState
+import com.vocaby.app.states.ItemIntPayload
+import com.vocaby.app.states.ItemState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.viewmodels.EntryViewModel
 import com.vocaby.app.viewmodels.EntryViewModelFactory
 
 class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     CustomGroupAdapter.ItemInteractionListener, TypeAdapter.ItemInteractionListener {
+    private lateinit var editorHeader: TextView
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var recyclerView: RecyclerView
     private lateinit var customGroupAdapter: CustomGroupAdapter
@@ -51,11 +52,22 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         val entryView = findViewById<TextView>(R.id.entry_header)
         val instruction = findViewById<LinearLayout>(R.id.card_instruction)
 
+        editorHeader = findViewById(R.id.editor_header)
+
         groupAlert = findViewById(R.id.group_header_alert)
         pronunciationInput = findViewById(R.id.pronunciation_input)
         setUpGroupBuilder()
         setupRecyclerView()
         setupButtons()
+
+        entryViewModel.editorState.observeOnce(this) { itemState ->
+            when (itemState) {
+                ItemState.ADD -> editorHeader.text = getString(R.string.add_dictionary_entry)
+                else -> {
+                    editorHeader.text = getString(R.string.update_dictionary_entry)
+                }
+            }
+        }
 
         entryViewModel.types.observe(this) { newList ->
             typeAdapter.setList(newList)
@@ -75,14 +87,14 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
 
         entryViewModel.groupChange.observe(this) { groupPayload: ItemIntPayload ->
             when (groupPayload.state) {
-                PayloadState.ADD -> {
+                ItemState.ADD -> {
                     groupAlert.visibility = View.INVISIBLE
                     customGroupAdapter.addItem()
                 }
-                PayloadState.DELETE -> {
+                ItemState.DELETE -> {
                     customGroupAdapter.removeItem(groupPayload.payload)
                 }
-                PayloadState.UPDATE -> {
+                ItemState.UPDATE -> {
                     customGroupAdapter.editItem(groupPayload.payload)
                 }
             }
@@ -94,12 +106,13 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
 
         entryViewModel.typeChange.observe(this) { typePayload ->
             when (typePayload.state) {
-                PayloadState.ADD -> {
+                ItemState.ADD -> {
                     typeAdapter.addItem(typePayload.payload)
                 }
-                PayloadState.DELETE -> {
+                ItemState.DELETE -> {
                     typeAdapter.removeItem(typePayload.payload)
                 }
+                else -> {}
             }
         }
 
@@ -199,7 +212,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
 
     override fun onItemRemoved(position: Int) {
         val holder = recyclerView.findViewHolderForAdapterPosition(position)
-        entryViewModel.removeGroup(PayloadState.UPDATE, position)
+        entryViewModel.removeGroup(ItemState.UPDATE, position)
 
         // Google's Implementation of ItemTouchHelper assumes that
         // the swiped items are cleaned up. Because the view is recycled
