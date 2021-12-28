@@ -130,8 +130,9 @@ interface VocabyDao {
             "SELECT entry, COUNT(*) AS count FROM custom_dictionary_view_count " +
             "JOIN custom_user_entry ON custom_dictionary_view_count.custom_entry_id = custom_user_entry.custom_entry_id " +
             "GROUP BY custom_dictionary_view_count.custom_entry_id " +
-            "ORDER BY count DESC")
-    suspend fun getSearchData(): List<VisitData>
+            "ORDER BY count DESC " +
+            "LIMIT :size;")
+    suspend fun getSearchData(size: Int): List<VisitData>
 
     /** --------------------- TYPES -------------------- **/
     @Insert

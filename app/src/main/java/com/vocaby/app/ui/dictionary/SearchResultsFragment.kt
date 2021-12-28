@@ -77,7 +77,6 @@ class SearchResultsFragment : Fragment() {
         viewPager.setPageTransformer(MarginPageTransformer(40))
 
         searchResultsViewModel.entryData.observeOnce(viewLifecycleOwner) { entryList ->
-            Logger.reportToDebug("setting up...")
             setupDictionary(entryList.size)
             dictionaryViewModel.writeToHistory(searchedWord, entryList)
             viewPager.adapter = FragmentAdapter(this, entryList)

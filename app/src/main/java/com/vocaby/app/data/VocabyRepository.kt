@@ -605,5 +605,5 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         vocabyDao.recordCustomVisit(CustomDictionaryViewCount(0, userId, entryId, formatter.format(Date())))
     }
 
-    suspend fun getWeeklyData(): List<VisitData> = vocabyDao.getSearchData()
+    suspend fun getWeeklyData(size: Int): List<VisitData> = vocabyDao.getSearchData(size)
 }

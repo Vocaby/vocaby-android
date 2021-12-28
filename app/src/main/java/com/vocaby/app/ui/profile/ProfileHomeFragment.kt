@@ -100,50 +100,56 @@ class ProfileHomeFragment : Fragment() {
         profileViewModel.values.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is GenericState.Success -> {
-                    if (state.data.values.size < 3) {
+                    val colorsList: ArrayList<Int> = ArrayList()
+                    chartContainer.visibility = View.VISIBLE
+                    placeholder.visibility = View.GONE
+
+                    if (state.data.isUserData) {
                         indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
                         chartAlert.text = getString(R.string.chart_placeholder_alert)
                         chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                        chartContainer.visibility = View.GONE
+
+                        colorsList.add(Color.parseColor("#C1C1C1"))
+                        colorsList.add(Color.parseColor("#C8C8C8"))
+                        colorsList.add(Color.parseColor("#CFCFCF"))
+                        colorsList.add(Color.parseColor("#D6D6D6"))
+                        colorsList.add(Color.parseColor("#DCDCDC"))
                     } else {
                         indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorPrimary))
-                        chartContainer.visibility = View.VISIBLE
-                        placeholder.visibility = View.GONE
                         chartAlert.text = ""
 
-                        barChart.apply {
-                            animateXY(600, 1000, Easing.EaseInOutQuad)
-                            xAxis.labelCount = state.data.values.size
-                        }
-
-                        val colorsList: ArrayList<Int> = ArrayList()
                         colorsList.add(Color.parseColor("#7BB38D"))
                         colorsList.add(Color.parseColor("#89BB99"))
                         colorsList.add(Color.parseColor("#A6CCB0"))
                         colorsList.add(Color.parseColor("#C3DDC7"))
                         colorsList.add(Color.parseColor("#D1E5D3"))
+                    }
 
-                        val dataSet = BarDataSet(state.data.entries, "").apply {
-                            setDrawValues(true)
-                            colors = colorsList
-                            valueTextColor = ContextCompat.getColor(ctx, R.color.colorPrimaryAccent)
-                            valueTextSize = 10f
-                            valueTypeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_black)
-                            valueFormatter = object: ValueFormatter() {
-                                override fun getFormattedValue(value: Float): String {
-                                    return String.format("%.0f",value)
-                                }
+                    val dataSet: BarDataSet = BarDataSet(state.data.entries, "").apply {
+                        setDrawValues(true)
+                        valueTextColor = ContextCompat.getColor(ctx, R.color.colorPrimaryAccent)
+                        colors = colorsList
+                        valueTextSize = 10f
+                        valueTypeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_semibold)
+                        valueFormatter = object: ValueFormatter() {
+                            override fun getFormattedValue(value: Float): String {
+                                return String.format("%.0f",value)
                             }
                         }
-
-                        val data = BarData(dataSet).apply {
-                            barWidth = 0.85f
-                        }
-
-                        barChart.data = data
-                        barChart.xAxis.valueFormatter = AxisValueFormatter(state.data.values, 12)
-                        barChart.invalidate()
                     }
+
+                    val data = BarData(dataSet).apply {
+                        barWidth = 0.85f
+                    }
+
+                    barChart.apply {
+                        animateXY(600, 1000, Easing.EaseInOutQuad)
+                        xAxis.labelCount = state.data.values.size
+                    }
+
+                    barChart.data = data
+                    barChart.xAxis.valueFormatter = AxisValueFormatter(state.data.values, 12)
+                    barChart.invalidate()
                 }
 
                 is GenericState.InProgress -> {
