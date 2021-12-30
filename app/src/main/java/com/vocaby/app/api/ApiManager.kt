@@ -1,7 +1,7 @@
 package com.vocaby.app.api
 
 import com.google.gson.GsonBuilder
-import com.vocaby.app.Constants.VOCABY_BASE_URL
+import com.vocaby.app.Constants.VOCABY_API_BASE_URL
 import com.vocaby.app.models.dictionary.EntryModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -22,7 +22,7 @@ object ApiManager {
 
 
         Retrofit.Builder()
-            .baseUrl(VOCABY_BASE_URL)
+            .baseUrl(VOCABY_API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(vocabyGson))
             .client(okHttpClient)
             .build()

@@ -22,7 +22,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.vocaby.app.Constants.VOCABY_BASE_URL
+import com.vocaby.app.Constants.VOCABY_WEB_BASE_URL
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.states.GenericState
@@ -208,7 +208,7 @@ class ProfileHomeFragment : Fragment() {
         val supportButton = view.findViewById<Button>(R.id.support_button)
         supportButton.setOnClickListener {
             val intent = Intent(requireActivity().applicationContext, WebActivity::class.java)
-            intent.putExtra("URL", VOCABY_BASE_URL + "support")
+            intent.putExtra("URL", VOCABY_WEB_BASE_URL + "app/support")
             startActivity(intent)
         }
 

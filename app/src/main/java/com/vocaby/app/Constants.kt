@@ -12,7 +12,8 @@ object Constants {
     const val LAST_APP_STARTED = "APP_STARTED"
     const val SEARCH_CACHE = "DICT_CACHE_ID"
     const val EXPORT_FILE_TYPE_FIELD = "vocabyExportType"
-    const val VOCABY_BASE_URL = "https://api.vocaby.app/"
+    const val VOCABY_API_BASE_URL = "https://api.vocaby.app/"
+    const val VOCABY_WEB_BASE_URL = "https://vocaby.app/"
 
     const val DEFINITION_MAX_LENGTH = 1000
     const val ENTRY_MAX_LENGTH = 100
