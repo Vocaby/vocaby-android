@@ -35,7 +35,7 @@ class SearchResultsFragment : Fragment() {
     private lateinit var searchProgress: ProgressBar
     private val userViewModel: UserViewModel by activityViewModels()
     private val searchResultsViewModel: SearchResultsViewModel by viewModels{
-        SearchResultsViewModelFactory(
+        SearchResultsViewModel.Factory(
             searchedWord,
             (requireActivity().application as VocabyApplication).repository
         )

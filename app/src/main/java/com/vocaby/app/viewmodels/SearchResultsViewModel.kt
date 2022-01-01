@@ -5,6 +5,7 @@ import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.SaveState
+import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -84,17 +85,17 @@ class SearchResultsViewModel(
             _entryData.postValue(data)
         }
     }
-}
 
-class SearchResultsViewModelFactory(
-    private val entry: String,
-    private val repository: VocabyRepository
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SearchResultsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return SearchResultsViewModel(entry, repository) as T
+    class Factory(
+        private val entry: String,
+        private val repository: VocabyRepository
+    ) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(SearchResultsViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return SearchResultsViewModel(entry, repository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

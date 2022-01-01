@@ -12,6 +12,7 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.states.GenericState
+import com.vocaby.app.utils.Logger
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
 

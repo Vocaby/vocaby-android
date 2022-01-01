@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel() {
     var searchSuggestionThreshold: Int = 4
 
-    private val _searchedEntry: MutableLiveData<String> = MutableLiveData()
+    private val _searchedEntry: SingleLiveEvent<String> = SingleLiveEvent()
     private val _dailyPick: MutableLiveData<DailyPick> = MutableLiveData()
     private val _searchHistory: SingleLiveEvent<List<SimpleEntryModel>?> = SingleLiveEvent()
     private val _searchSuggestions: SingleLiveEvent<GenericState<List<SearchSuggestionItem>>> = SingleLiveEvent()
@@ -43,11 +43,11 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
                 if (!searchStack.contains(searchedEntry)) {
                     searchStack.removeLast()
                     searchStack.addLast(searchedEntry)
-                    _searchedEntry.postValue(searchedEntry)
+                    _searchedEntry.value = searchedEntry
                 }
             } else {
                 searchStack.addLast(searchedEntry)
-                _searchedEntry.postValue(searchedEntry)
+                _searchedEntry.value = searchedEntry
             }
         }
     }
