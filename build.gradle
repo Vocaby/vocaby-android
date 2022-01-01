@@ -20,6 +20,10 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
     }
+
+    tasks.matching {it instanceof Test}.all {
+        testLogging.events = ["failed", "passed", "skipped"]
+    }
 }
 
 task clean(type: Delete) {
