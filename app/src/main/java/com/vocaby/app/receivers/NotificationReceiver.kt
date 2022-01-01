@@ -14,7 +14,6 @@ import com.vocaby.app.data.VocabyDatabase
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.ui.MainActivity
 import com.vocaby.app.utils.Generators.generateRandomInt
-import com.vocaby.app.utils.Logger
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +38,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     createNotification(context, notificationManager, title, message)
                 }
 
-                else -> Logger.reportErrorToBugsnag(throwable)
+                else -> {}
             }
         }) {
             val saves = vocabyRepository.getSavedWords()

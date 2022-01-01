@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.bugsnag.android.Bugsnag
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
@@ -38,7 +37,6 @@ open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Bugsnag.start(this)
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 

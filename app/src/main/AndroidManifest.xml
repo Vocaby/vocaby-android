@@ -43,11 +43,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="com.bugsnag.android.API_KEY"
-            android:value="@string/bugsnag_api_key" />
-
         <receiver
             android:name=".widget.SavesAppWidgetProvider"
             android:exported="true">

@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.exceptions.IllegalFileException
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.*
 
@@ -49,7 +48,6 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
             }
             else -> {
                 _progressText.postValue(R.string.data_transfer_import_error_generic)
-                Logger.reportErrorToBugsnag(throwable)
             }
         }
     }

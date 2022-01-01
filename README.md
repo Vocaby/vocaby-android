@@ -1,4 +1,6 @@
 # Vocaby on Android
+![Tests](https://github.com/Vocaby/vocaby-android/actions/workflows/android_build.yml/badge.svg)
+
 Vocaby provides tools that empower individuals learning the English language.
 
 ## Terms
