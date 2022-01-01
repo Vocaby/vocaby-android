@@ -24,7 +24,6 @@ import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.CustomEntryAdapter
 import com.vocaby.app.states.ItemState
 import com.vocaby.app.states.UserInputState
-import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.utils.StringFormatter
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
@@ -70,7 +69,12 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(view)
 
-        entryViewModel.entries.observeOnce(viewLifecycleOwner, {
+        // On config change
+        if (savedInstanceState != null) {
+            entryViewModel.reinitializeEntries()
+        }
+
+        entryViewModel.entries.observe(viewLifecycleOwner, {
                 customEntries -> customEntryAdapter.submitList(customEntries)
         })
 

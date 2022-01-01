@@ -5,7 +5,6 @@ import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.SaveState
-import com.vocaby.app.utils.Logger
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -19,19 +18,18 @@ class SearchResultsViewModel(
     private var _entryData: MutableLiveData<ArrayList<EntryModel?>> = MutableLiveData()
     private var _saveState: SingleLiveEvent<SaveState> = SingleLiveEvent()
     private var _missingDictionary: MutableLiveData<Int> = MutableLiveData()
+    private var saved:Boolean = false
 
     val entryData: LiveData<ArrayList<EntryModel?>> get() = _entryData
     val saveState: LiveData<SaveState> get() = _saveState
     val missingDictionary: LiveData<Int> get() = _missingDictionary
 
     init {
-        _saveState.postValue(SaveState.InProgress)
-
         val scope = viewModelScope.launch(Dispatchers.IO) {
             _saveState.postValue(SaveState.InProgress)
-
             repository.hasSaved(entry).collect {
-                _saveState.postValue(SaveState.Fetched(it != 0))
+                saved = it != 0
+                _saveState.postValue(SaveState.Fetched(saved))
             }
         }
 
@@ -84,6 +82,10 @@ class SearchResultsViewModel(
 
             _entryData.postValue(data)
         }
+    }
+
+    fun resetSaveState() {
+        _saveState.postValue(SaveState.Fetched(saved))
     }
 
     class Factory(

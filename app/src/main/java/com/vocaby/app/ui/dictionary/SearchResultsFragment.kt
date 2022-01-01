@@ -24,7 +24,10 @@ import com.vocaby.app.VocabyApplication
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.SaveState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
-import com.vocaby.app.viewmodels.*
+import com.vocaby.app.viewmodels.DictionaryViewModel
+import com.vocaby.app.viewmodels.DictionaryViewModelFactory
+import com.vocaby.app.viewmodels.SearchResultsViewModel
+import com.vocaby.app.viewmodels.UserViewModel
 
 class SearchResultsFragment : Fragment() {
     private lateinit var ctx: Context
@@ -67,6 +70,10 @@ class SearchResultsFragment : Fragment() {
         dictionarySelector = view.findViewById(R.id.dictionary_selector)
         saveButton = view.findViewById(R.id.save_button)
         searchProgress = view.findViewById(R.id.search_progress)
+
+        if (savedInstanceState != null) {
+            searchResultsViewModel.resetSaveState()
+        }
 
         return view
     }
@@ -115,8 +122,6 @@ class SearchResultsFragment : Fragment() {
 
                 is SaveState.InProgress -> {
                     saveButton.isEnabled = false
-                    val icon = AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_disabled)
-                    saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
                 }
 
                 is SaveState.Remove -> {

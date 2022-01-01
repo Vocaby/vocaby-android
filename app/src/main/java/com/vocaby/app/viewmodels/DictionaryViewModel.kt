@@ -28,7 +28,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     val dailyPick: LiveData<DailyPick> get() = _dailyPick
     val searchSuggestions: LiveData<GenericState<List<SearchSuggestionItem>>> get() = _searchSuggestions
 
-    init {
+    fun getHistory() {
         val historyList = repository.getHistory()
         historyList?.let {
             _searchHistory.value = historyList

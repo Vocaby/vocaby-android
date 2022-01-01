@@ -42,8 +42,8 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
         viewModelScope.launch {
             repository.clearUserEntries()
             customEntries = ArrayList()
-            _entries.value = customEntries
-            _entryCount.value = 0
+            _entries.postValue(customEntries)
+            _entryCount.postValue(0)
         }
     }
 
@@ -112,6 +112,11 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
             _entries.postValue(customEntries)
             _entryCount.postValue(customEntries.size)
         }
+    }
+
+    fun reinitializeEntries() {
+        _entries.postValue(customEntries)
+        _entryCount.postValue(customEntries.size)
     }
 }
 

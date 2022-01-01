@@ -95,6 +95,15 @@ class EntryViewModel(
         _selectedType.value = ""
     }
 
+    fun repopulateUI() {
+        _entry.value = entryData.entry
+        _definitionGroups.value = entryData.definitionGroups
+        _pronunciation.value = entryData.pronunciation
+        _types.value = _types.value
+        _editorState.value = _editorState.value
+        _selectedType.value = ""
+    }
+
     fun addExistingGroupDataToIntent(intent: Intent, position: Int): Intent {
         val type = entryData.getDefinitionGroup(position).type
         intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position))

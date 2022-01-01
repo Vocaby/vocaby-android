@@ -84,7 +84,7 @@
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
-        android:layout_marginTop="@dimen/container_side_margin"
+        android:layout_marginTop="@dimen/container_gap_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
@@ -142,16 +142,6 @@
             android:text="@string/pronunciation"
             android:textSize="12sp"
             android:textColor="@color/gray"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/container_gap_margin"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="@string/optional"
-            android:textSize="12sp"
-            android:textColor="@color/colorPrimary" />
-
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -168,6 +158,7 @@
         android:imeOptions="actionDone"
         android:padding="12dp"
         android:textSize="14sp"
+        android:textColor="@color/black"
         android:fontFamily="@font/sourcesanspro_regular"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginTop="@dimen/container_gap_margin"

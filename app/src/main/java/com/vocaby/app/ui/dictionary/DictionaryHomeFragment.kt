@@ -69,6 +69,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         emptyCard = view.findViewById(R.id.empty_card)
 
         setUpHistoryRecyclerView(view)
+        dictionaryViewModel.getHistory()
         return view
     }
 

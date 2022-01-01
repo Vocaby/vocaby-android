@@ -14,6 +14,7 @@
         <item name="colorPrimary">@color/colorPrimaryAccent</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryAccent</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="android:textColorHint">@color/gray</item>
         <item name="android:windowBackground">@color/white</item>
 
         <!-- Status bar color. -->
@@ -47,6 +48,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryAccent</item>
         <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:background">@drawable/box_white</item>
+        <item name="android:textColorSecondary">@color/gray</item>
+        <item name="textColorAlertDialogListItem">@color/black</item>
         <item name="android:windowTitleStyle">@style/Theme.VocabyAndroid.AlertDialog.Title</item>
         <item name="android:textAppearanceMedium">@style/Theme.VocabyAndroid.AlertDialog.Title</item>
         <item name="buttonBarPositiveButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Positive</item>
@@ -82,10 +86,15 @@
 
     <style name="Theme.VocabyAndroid.PreferenceDialog" parent="@style/Preference.DialogPreference.Material">
         <item name="android:layout">@layout/custom_preference</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryAccent</item>
+        <item name="colorAccent">@color/colorPrimaryAccent</item>
+        <item name="android:textColor">@color/dark_gray</item>
     </style>
 
     <style name="Theme.VocabyAndroid.MaterialDialogAlert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="android:fontFamily">@font/sourcesanspro_semibold</item>
+        <item name="android:background">@color/white</item>
         <item name="materialAlertDialogTitleTextStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Title</item>
         <item name="materialAlertDialogBodyTextStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Body</item>
         <item name="buttonBarPositiveButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Positive</item>
@@ -99,6 +108,7 @@
 
     <style name="Theme.VocabyAndroid.MaterialDialogAlert.Body" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
         <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/dark_gray</item>
     </style>
 
     <style name="Theme.VocabyAndroid.MaterialDialogAlert.Positive" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
@@ -117,6 +127,9 @@
 
     <style name="ShapeAppearance.VocabyAndroid.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerSize">@dimen/radius</item>
+        <item name="backgroundColor">@color/white</item>
+        <item name="background">@color/white</item>
+        <item name="android:background">@color/white</item>
     </style>
 
     <style name="Theme.VocabyAndroid.TextHeadline" parent="Widget.AppCompat.TextView">

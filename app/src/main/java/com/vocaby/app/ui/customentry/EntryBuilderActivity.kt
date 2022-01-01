@@ -52,6 +52,10 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         val entryView = findViewById<TextView>(R.id.entry_header)
         val instruction = findViewById<LinearLayout>(R.id.card_instruction)
 
+        if (savedInstanceState != null) {
+            entryViewModel.repopulateUI()
+        }
+
         editorHeader = findViewById(R.id.editor_header)
 
         groupAlert = findViewById(R.id.group_header_alert)
