@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -20,6 +21,7 @@ class SearchResultsBodyFragment : Fragment() {
     private var entryData: EntryModel? = null
     private lateinit var header: TextView
     private lateinit var pronunciation: TextView
+    private lateinit var pronunciationScroll: HorizontalScrollView
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +41,7 @@ class SearchResultsBodyFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_search_results_body, container, false)
         header = view.findViewById(R.id.entry_header)
         pronunciation = view.findViewById(R.id.pronunciation)
+        pronunciationScroll = view.findViewById(R.id.pronunciation_scroll)
         recyclerView = view.findViewById(R.id.definitions_recycler_container)
 
         entryData?.let { data ->
@@ -64,14 +67,14 @@ class SearchResultsBodyFragment : Fragment() {
     private fun populateView(entryData: EntryModel) {
         header.text = entryData.entry
         if (!entryData.pronunciation.isNullOrEmpty()) {
-            pronunciation.visibility = View.VISIBLE
+            pronunciationScroll.visibility = View.VISIBLE
             pronunciation.text = entryData.pronunciation
         }
     }
 
     private fun populateNoDefinition() {
         header.text = resources.getString(R.string.no_definition_found)
-        pronunciation.visibility = View.GONE
+        pronunciationScroll.visibility = View.GONE
         recyclerView.visibility = View.GONE
     }
 

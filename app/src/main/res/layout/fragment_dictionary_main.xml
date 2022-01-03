@@ -87,7 +87,7 @@
                         android:layout_marginEnd="@dimen/card_content_margin"
                         android:hyphenationFrequency="full"
                         android:textColor="@color/colorPrimaryAccent"
-                        android:textSize="24sp" />
+                        android:textSize="27sp" />
                 </LinearLayout>
 
                 <LinearLayout

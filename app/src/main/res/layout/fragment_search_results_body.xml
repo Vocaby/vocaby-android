@@ -11,11 +11,11 @@
     <LinearLayout
         android:id="@+id/word_box"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="86dp"
         android:gravity="center"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
-        android:paddingBottom="@dimen/container_gap_margin"
+        android:paddingBottom="12dp"
         android:orientation="vertical"
         android:background="@drawable/box_bottom_stroke_gray"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,17 +33,22 @@
             app:autoSizeStepGranularity="2sp"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimaryAccent" />
-        <TextView
-            android:id="@+id/pronunciation"
-            android:layout_width="wrap_content"
+        <HorizontalScrollView
+            android:id="@+id/pronunciation_scroll"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:fontFamily="@font/sourcesanspro_black"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            android:visibility="gone" />
+            android:scrollbars="none"
+            android:visibility="gone"
+            android:fillViewport="true">
+            <TextView
+                android:id="@+id/pronunciation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sourcesanspro_black"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </HorizontalScrollView>
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/definitions_recycler_container"
