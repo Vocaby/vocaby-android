@@ -8,5 +8,5 @@
     <item
         android:top="-100dp"
         android:gravity="center"
-        android:drawable="@drawable/ic_splash_image" />
+        android:drawable="@drawable/ic_vocaby_logo" />
 </layer-list>

@@ -1,16 +1,14 @@
-package com.vocaby.app.ui;
+package com.vocaby.app.ui
 
-import android.content.Intent;
-import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.content.Intent
 
 // TODO: setup required resources here (shared prefs, etc)
-public class SplashScreenActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+class SplashScreenActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
