@@ -133,7 +133,7 @@ class DictionaryFragment : Fragment() {
     private val searchFocusListener: FloatingSearchView.OnFocusChangeListener =
         object: FloatingSearchView.OnFocusChangeListener {
             override fun onFocus() {
-                dictionaryViewModel.getSearchSuggestions("", searchView.query)
+                dictionaryViewModel.getSearchSuggestions(searchView.query)
             }
 
             override fun onFocusCleared() {
@@ -142,10 +142,7 @@ class DictionaryFragment : Fragment() {
         }
 
     private val queryChangeListener =
-        FloatingSearchView.OnQueryChangeListener { oldQuery: String, newQuery: String ->
-            dictionaryViewModel.getSearchSuggestions(
-                oldQuery,
-                newQuery
-            )
+        FloatingSearchView.OnQueryChangeListener { _: String, newQuery: String ->
+            dictionaryViewModel.getSearchSuggestions(newQuery)
         }
 }

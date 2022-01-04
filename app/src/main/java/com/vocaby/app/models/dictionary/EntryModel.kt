@@ -73,7 +73,7 @@ class EntryModel : Parcelable {
     }
 
     val firstGroup: DefinitionGroupModel
-        get() =definitionGroups[0]
+        get() = definitionGroups[0]
 
     fun getDefinitionGroup(index: Int): DefinitionGroupModel {
         return definitionGroups[index]

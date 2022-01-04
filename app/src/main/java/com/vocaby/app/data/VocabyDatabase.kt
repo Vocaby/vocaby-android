@@ -29,7 +29,7 @@ abstract class VocabyDatabase : RoomDatabase() {
                     context.applicationContext,
                     VocabyDatabase::class.java,
                     "database"
-                ).createFromAsset("databases/database.db").addCallback(Callback(scope)).build()
+                ).createFromAsset("databases/vdatabase.db").addCallback(Callback(scope)).build()
 
                 INSTANCE = instance
                 instance

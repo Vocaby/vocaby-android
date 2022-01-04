@@ -17,7 +17,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
     var searchSuggestionThreshold: Int = 4
 
     private val _searchedEntry: SingleLiveEvent<String> = SingleLiveEvent()
-    private val _dailyPick: MutableLiveData<DailyPick> = MutableLiveData()
+    private val _dailyPick: SingleLiveEvent<DailyPick> = SingleLiveEvent()
     private val _searchHistory: SingleLiveEvent<List<SimpleEntryModel>?> = SingleLiveEvent()
     private val _searchSuggestions: SingleLiveEvent<GenericState<List<SearchSuggestionItem>>> = SingleLiveEvent()
     private val searchStack: ArrayDeque<String> = ArrayDeque()
@@ -59,7 +59,7 @@ class DictionaryViewModel(private val repository: VocabyRepository) : ViewModel(
         }
     }
 
-    fun getSearchSuggestions(oldQuery: String, newQuery:String) {
+    fun getSearchSuggestions(newQuery:String) {
         val query = newQuery.lowercase()
         if (query.isEmpty()) {
             _searchSuggestions.postValue(GenericState.Success(ArrayList()))
