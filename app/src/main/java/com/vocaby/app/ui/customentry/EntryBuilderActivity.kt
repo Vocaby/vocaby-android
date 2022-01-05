@@ -3,7 +3,10 @@ package com.vocaby.app.ui.customentry
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
@@ -19,7 +22,7 @@ import com.vocaby.app.adapters.CustomGroupAdapter
 import com.vocaby.app.adapters.DragStartListener
 import com.vocaby.app.adapters.ItemTouchCallback
 import com.vocaby.app.adapters.TypeAdapter
-import com.vocaby.app.states.ItemIntPayload
+import com.vocaby.app.payloads.ItemIntPayload
 import com.vocaby.app.states.ItemState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.viewmodels.EntryViewModel
@@ -36,13 +39,14 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     private lateinit var groupAlert: TextView
     private lateinit var pronunciationInput: EditText
     private lateinit var groupBuilder: BottomSheetDialog
+    private lateinit var helpDialogBuilder: BottomSheetDialog
     private lateinit var createGroupButton: Button
     private lateinit var typeCreatorAlert: TextView
 
     private val entryViewModel: EntryViewModel by viewModels {
         EntryViewModelFactory(
             (application as VocabyApplication).repository,
-            intent.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
+            intent.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)!!
         )
     }
 
@@ -50,7 +54,6 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.custom_entry_builder)
         val entryView = findViewById<TextView>(R.id.entry_header)
-        val instruction = findViewById<LinearLayout>(R.id.card_instruction)
 
         if (savedInstanceState != null) {
             entryViewModel.repopulateUI()
@@ -78,7 +81,6 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         }
 
         entryViewModel.definitionGroups.observeOnce(this) { list ->
-            if (list.isEmpty()) instruction.visibility = View.VISIBLE
             customGroupAdapter.setList(list)
         }
 
@@ -101,10 +103,6 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                 ItemState.UPDATE -> {
                     customGroupAdapter.editItem(groupPayload.payload)
                 }
-            }
-
-            if (instruction.visibility == View.VISIBLE) {
-                instruction.visibility = View.GONE
             }
         }
 
@@ -179,9 +177,17 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         addGroupButton.setOnClickListener { groupBuilder.show() }
         createGroupButton = groupBuilder.findViewById(R.id.create_group_button)!!
         typeCreatorAlert = groupBuilder.findViewById(R.id.type_creator_alert)!!
+
+        val helpButton = findViewById<TextView>(R.id.help_button)
+        helpButton.setOnClickListener {
+            helpDialogBuilder.show()
+        }
     }
 
     private fun setUpGroupBuilder() {
+        helpDialogBuilder = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        helpDialogBuilder.setContentView(R.layout.card_instruction)
+
         groupBuilder = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
         groupBuilder.setContentView(R.layout.custom_entry_group_builder_dialog)
         groupBuilder.setOnShowListener { groupAlert.visibility = View.INVISIBLE }

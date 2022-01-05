@@ -143,7 +143,7 @@ public class CustomGroupAdapter extends RecyclerView.Adapter<CustomGroupAdapter.
 
         @Override
         public void onItemDragged() {
-            ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.colorSecondary));
+            ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.colorPrimary));
         }
 
         @Override

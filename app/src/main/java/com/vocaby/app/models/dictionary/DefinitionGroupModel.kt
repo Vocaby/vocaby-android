@@ -73,6 +73,19 @@ class DefinitionGroupModel : Parcelable, Comparable<DefinitionGroupModel> {
         return false
     }
 
+    fun hasDefinitionExclusive(definition: String, index: Int): Boolean {
+        val cleanDefinition = definition.trim { it <= ' ' }
+        for ((i, def) in definitionData.withIndex()) {
+            if (i == index) continue
+
+            if (def.definition == cleanDefinition) {
+                return true
+            }
+        }
+
+        return false
+    }
+
     // TODO: Override list remove
     fun removeDefinition(position: Int): DefinitionModel {
         val definitionToRemove = definitionData[position]

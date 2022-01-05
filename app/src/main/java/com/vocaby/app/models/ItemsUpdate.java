@@ -63,6 +63,8 @@ public abstract class ItemsUpdate<T> implements Parcelable {
         return itemsAdded.put(key, item);
     }
 
+    public T replaceItemAdded(String key, T item) { return itemsAdded.replace(key, item); }
+
     public T removeItemAdded(String key) {
         return itemsAdded.remove(key);
     }

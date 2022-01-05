@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiManager {
-    val apiService by lazy {
+    val apiService: ApiService by lazy {
         val gsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(EntryModel::class.java, EntryDeserializer())
         val vocabyGson = gsonBuilder.create()

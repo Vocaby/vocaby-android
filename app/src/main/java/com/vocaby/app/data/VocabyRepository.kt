@@ -207,7 +207,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         entry: String,
         pronunciation: String,
         groupChanges: GroupChanges,
-        definitionChangesMap: MutableMap<String, DefinitionChanges>
+        definitionChangesMap: MutableMap<String, DefinitionChanges>,
+        saveTime: Long
     ): Int {
         val entryId: Int = if (groupChanges.entryId == -1) {
             vocabyDao.insertCustomEntry(
@@ -215,7 +216,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                     userId,
                     entry,
                     pronunciation,
-                    OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+                    saveTime
                 )
             ).toInt()
         } else {
@@ -225,7 +226,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                     userId,
                     entry,
                     pronunciation,
-                    OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+                    saveTime
                 )
             )
 

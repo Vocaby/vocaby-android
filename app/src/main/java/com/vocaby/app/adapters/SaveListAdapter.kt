@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.app.R
 
-class SaveListAdapter(private val activity: Activity, private val interaction: Interaction) :
+class SaveListAdapter(activity: Activity, private val interaction: Interaction) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val diffCallback = object : DiffUtil.ItemCallback<String>() {
         override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
@@ -25,6 +25,7 @@ class SaveListAdapter(private val activity: Activity, private val interaction: I
     }
 
     private val differ = AsyncListDiffer(this, diffCallback)
+    private val materialAlertDialogBuilder = MaterialAlertDialogBuilder(activity)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return SavesAdapterViewHolder(
@@ -34,7 +35,7 @@ class SaveListAdapter(private val activity: Activity, private val interaction: I
                 false
             ),
             interaction,
-            MaterialAlertDialogBuilder(activity)
+            materialAlertDialogBuilder
         )
     }
 

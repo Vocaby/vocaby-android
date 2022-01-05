@@ -34,12 +34,14 @@
     <string name="definition_add_alert">You must add a definition</string>
     <string name="definition_empty_alert">You must enter a definition</string>
     <string name="definition_exists_alert">The definition already exists</string>
+    <string name="no_changes">No changes were made</string>
     <string name="example_header">Example</string>
     <string name="type_header_alert">Please select a type</string>
     <string name="definition_header_singular">Definition</string>
     <string name="definition_header_plural">Definitions</string>
     <string name="nav_close">Close</string>
     <string name="add_definition_button">Add Definition</string>
+    <string name="update_definition_button">Update Definition</string>
     <string name="nav_save">Save</string>
     <string name="custom_definition_group_header">Definition Groups</string>
     <string name="custom_group_add_button">Add a group</string>
@@ -103,7 +105,8 @@
     <string name="group_header">Group Type</string>
     <string name="create_a_new_entry">Add a new entry</string>
     <string name="create_a_new_group">Add a new group</string>
-    <string name="create_a_new_definition">Add a new definition</string>
+    <string name="create_a_definition">Add a new definition</string>
+    <string name="update_a_definition">Update a definition</string>
     <string name="chart_header">Your favorite entry</string>
     <string name="chart_placeholder_alert">Need more data</string>
     <string name="chart_placeholder_fetching">Fetching your data…</string>
@@ -112,4 +115,8 @@
     <string name="entry_character_limit">/ 100</string>
     <string name="enter_a_definition">Enter a definition</string>
     <string name="enter_an_example_sentence">Enter an example sentence</string>
+    <string name="last_updated">Last Updated</string>
+    <string name="help">Help</string>
+    <string name="card_instructions">Card Instructions</string>
+    <string name="touch_to_edit">touch to edit</string>
 </resources>

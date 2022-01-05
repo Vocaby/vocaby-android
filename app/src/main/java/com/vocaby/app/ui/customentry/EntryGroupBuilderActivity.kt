@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,8 @@ import com.vocaby.app.R
 import com.vocaby.app.adapters.CustomDefAdapter
 import com.vocaby.app.adapters.DragStartListener
 import com.vocaby.app.adapters.ItemTouchCallback
+import com.vocaby.app.states.ItemState
+import com.vocaby.app.states.UserInputState
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.utils.StringFormatter
 import com.vocaby.app.viewmodels.EntryGroupViewModel
@@ -30,6 +33,10 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
     private lateinit var recyclerView: RecyclerView
     private lateinit var customDefAdapter: CustomDefAdapter
     private lateinit var saveAlert: TextView
+    private lateinit var dialogDefinitionInput: EditText
+    private lateinit var dialogExampleInput: EditText
+    private lateinit var dialogHeader: TextView
+    private lateinit var dialogSaveButton: AppCompatButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +48,10 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         setupRecyclerView()
 
         entryGroupViewModel.handleIntent(intent)
-        entryGroupViewModel.definitions.observe(this) { list -> customDefAdapter.setList(list) }
+
+        entryGroupViewModel.definitions.observeOnce(this) { list ->
+            customDefAdapter.setList(list)
+        }
 
         entryGroupViewModel.type.observeOnce(this) { type ->
             val header = StringFormatter.firstLetterUpperOnly(type) + " Group"
@@ -52,16 +62,37 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
             typeHeader.text = type
         }
 
-        entryGroupViewModel.definitionAlert.observe(this) { alertState ->
-            definitionAlertView.text = getString(alertState.text)
-            definitionAlertView.visibility = alertState.visibility
+        entryGroupViewModel.inputState.observe(this) { input ->
+            when (input) {
+                is UserInputState.EmptyInput -> {
+                    definitionAlertView.text = getString(R.string.definition_empty_alert)
+                }
+                is UserInputState.InvalidInput -> {
+                    definitionAlertView.text = getString(R.string.definition_exists_alert)
+                }
+                is UserInputState.SameInput -> {
+                    definitionAlertView.text = getString(R.string.no_changes)
+                }
+                is UserInputState.Valid -> {
+                    definitionAlertView.text = input.data
+                }
+                else -> {
+                    definitionAlertView.text = ""
+                }
+            }
         }
 
-        entryGroupViewModel.definitionAddStatus.observe(this) { added ->
-            if (added) {
+        entryGroupViewModel.definitionState.observe(this) { payload ->
+            if (payload.state == ItemState.ADD) {
                 customDefAdapter.addItem()
-                definitionBuilder.dismiss()
+            } else if (payload.state == ItemState.UPDATE) {
+                customDefAdapter.updateItem(payload.payload)
+            } else if (payload.state == ItemState.DELETE) {
+                entryGroupViewModel.removeDefinition(payload.payload)
+                customDefAdapter.notifyItemRemoved(payload.payload)
             }
+
+            definitionBuilder.dismiss()
         }
     }
 
@@ -69,24 +100,19 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         definitionBuilder = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
         definitionBuilder.setContentView(R.layout.custom_entry_definition_builder_dialog)
 
-        val definitionView = definitionBuilder.findViewById<EditText>(R.id.definition_edit)!!
-        val exampleView = definitionBuilder.findViewById<EditText>(R.id.example_edit)!!
+        dialogDefinitionInput = definitionBuilder.findViewById(R.id.definition_edit)!!
+        dialogExampleInput = definitionBuilder.findViewById(R.id.example_edit)!!
         definitionAlertView = definitionBuilder.findViewById(R.id.definition_header_alert)!!
+        dialogHeader = definitionBuilder.findViewById(R.id.definition_dialog_header)!!
 
         definitionBuilder.setOnShowListener {
-            definitionView.text.clear()
-            definitionView.clearFocus()
-            exampleView.text.clear()
-            exampleView.clearFocus()
+            definitionAlertView.text = ""
+            dialogDefinitionInput.clearFocus()
+            dialogExampleInput.clearFocus()
         }
 
         // Add New Definition
-        val addDefinitionButton = definitionBuilder.findViewById<Button>(R.id.create_definition_button)!!
-        addDefinitionButton.setOnClickListener {
-            val definition = definitionView.text.toString()
-            val example = exampleView.text.toString()
-            entryGroupViewModel.addDefinition(definition, example)
-        }
+        dialogSaveButton = definitionBuilder.findViewById(R.id.save_definition_button)!!
     }
 
     private fun setupButtons() {
@@ -98,7 +124,20 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
 
         // Add Definition Button
         val addDefinitionButton = findViewById<Button>(R.id.add_definition_button)
-        addDefinitionButton.setOnClickListener { definitionBuilder.show() }
+        addDefinitionButton.setOnClickListener {
+            dialogDefinitionInput.text.clear()
+            dialogExampleInput.text.clear()
+            dialogHeader.setText(R.string.create_a_definition)
+            dialogSaveButton.setText(R.string.add_definition_button)
+
+            dialogSaveButton.setOnClickListener {
+                val definition = dialogDefinitionInput.text.toString()
+                val example = dialogExampleInput.text.toString()
+                entryGroupViewModel.addDefinition(definition, example)
+            }
+
+            definitionBuilder.show()
+        }
 
         // Save Button
         val saveButton = findViewById<Button>(R.id.save_button)
@@ -145,5 +184,20 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         // Alternatively, I could remove the view from the layout manager
         // by simply doing recyclerView.removeViewAt(position)
         // but this would not make use of recycling.
+    }
+
+    override fun onItemTouched(position: Int, definition: String, example: String) {
+        dialogHeader.setText(R.string.update_a_definition)
+        dialogSaveButton.setText(R.string.update_definition_button)
+        dialogDefinitionInput.setText(definition)
+        dialogExampleInput.setText(example)
+
+        dialogSaveButton.setOnClickListener {
+            val newDefinition = dialogDefinitionInput.text.toString()
+            val newExample = dialogExampleInput.text.toString()
+            entryGroupViewModel.updateDefinition(position, definition, example, newDefinition, newExample)
+        }
+
+        definitionBuilder.show()
     }
 }

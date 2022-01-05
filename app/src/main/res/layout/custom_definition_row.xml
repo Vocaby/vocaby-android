@@ -10,6 +10,7 @@
     app:strokeColor="@color/light_gray"
     app:strokeWidth="1dp">
     <LinearLayout
+        android:id="@+id/card_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:minHeight="@dimen/custom_entry_card_height"
@@ -26,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_drag_indicator"
+                android:src="@drawable/ic_drag_handle"
                 android:contentDescription="@string/drag_icon" />
         </FrameLayout>
         <LinearLayout
@@ -40,7 +41,7 @@
                 android:id="@+id/definition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimaryAccent"
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/sourcesanspro_regular" />

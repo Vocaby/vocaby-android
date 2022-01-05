@@ -5,4 +5,5 @@ sealed class UserInputState {
     object EmptyInput: UserInputState()
     object LongInput: UserInputState()
     object InvalidInput: UserInputState()
+    object SameInput: UserInputState()
 }

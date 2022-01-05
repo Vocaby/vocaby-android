@@ -57,6 +57,7 @@
         <ProgressBar
             android:id="@+id/save_progress_bar"
             style="?android:attr/progressBarStyle"
+            android:layout_marginEnd="8dp"
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:visibility="invisible" />
@@ -205,45 +206,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-    </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
+        <TextView
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:id="@+id/help_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:text="@string/help"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center"
+            android:drawablePadding="6dp"
+            app:drawableStartCompat="@drawable/ic_help"
+            app:drawableTint="@color/colorPrimary" />
+    </LinearLayout>
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/add_def_group_button"
+        style="@style/Theme.VocabyAndroid.Button"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/container_gap_margin"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
-        android:background="@drawable/rounded_background"
-        android:fontFamily="@font/sourcesanspro_semibold"
         android:text="@string/custom_group_add_button"
-        android:textAllCaps="false"
-        android:textColor="@color/dark_gray"
-        android:textSize="12sp"
-        app:backgroundTint="@color/white"
-        app:icon="@drawable/ic_add"
-        app:iconGravity="textStart"
-        app:iconTint="@color/dark_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
-
-    <include
-        android:id="@+id/card_instruction"
-        layout="@layout/card_instruction"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/container_side_margin"
-        android:layout_marginEnd="@dimen/container_side_margin"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="-2dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_def_group_button"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout6"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/custom_entry_group_container"

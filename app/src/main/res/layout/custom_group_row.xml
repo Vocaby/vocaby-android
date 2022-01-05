@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_drag_indicator"
+                android:src="@drawable/ic_drag_handle"
                 android:contentDescription="@string/drag_icon" />
         </FrameLayout>
         <TextView
@@ -37,7 +37,7 @@
             android:textAllCaps="true"
             android:textSize="20sp"
             android:fontFamily="@font/playfairdisplay_bold"
-            android:textColor="@color/colorPrimaryAccent"/>
+            android:textColor="@color/black"/>
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"

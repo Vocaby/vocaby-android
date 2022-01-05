@@ -16,14 +16,17 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.CustomEntryAdapter
+import com.vocaby.app.adapters.ItemTouchCallback
 import com.vocaby.app.states.ItemState
 import com.vocaby.app.states.UserInputState
+import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.utils.StringFormatter
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
@@ -35,6 +38,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var ctx: Context
     private lateinit var entryCountView: TextView
     private lateinit var customEntryAdapter: CustomEntryAdapter
+    private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var emptyCard: LinearLayout
     private lateinit var entryEditDialog: BottomSheetDialog
     private lateinit var entryEdit: EditText
@@ -62,20 +66,21 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
         setupButtons(view)
         setupEntryBuilderDialog()
+        setupRecyclerView(view)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView(view)
 
         // On config change
         if (savedInstanceState != null) {
             entryViewModel.reinitializeEntries()
         }
 
-        entryViewModel.entries.observe(viewLifecycleOwner, {
-                customEntries -> customEntryAdapter.submitList(customEntries)
+        entryViewModel.entries.observeOnce(viewLifecycleOwner, { customEntries ->
+            customEntryAdapter.submitList(customEntries)
+            updateEmptyCardVisibility()
         })
 
         entryViewModel.customEntryCount.observe(viewLifecycleOwner, { count ->
@@ -86,12 +91,10 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             when (itemPayload.state) {
                 ItemState.DELETE -> customEntryAdapter.deleteEntry(itemPayload.payload)
                 ItemState.ADD -> customEntryAdapter.addEntry()
-                else -> {}
+                ItemState.UPDATE -> customEntryAdapter.updateEntry(itemPayload.payload)
             }
 
-            if (customEntryAdapter.itemCount > 0 ) emptyCard.visibility = View.INVISIBLE
-            else emptyCard.visibility = View.VISIBLE
-
+            updateEmptyCardVisibility()
             dictionaryViewModel.resetSearchSuggestion()
         }
 
@@ -124,8 +127,14 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
                     entryBuilderActivity.launch(startEntryBuilderIntent)
                 }
+                else -> {}
             }
         }
+    }
+
+    private fun updateEmptyCardVisibility() {
+        if (customEntryAdapter.itemCount > 0 ) emptyCard.visibility = View.INVISIBLE
+        else emptyCard.visibility = View.VISIBLE
     }
 
     private fun setupRecyclerView(view: View) {
@@ -133,6 +142,11 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         customEntryAdapter = CustomEntryAdapter(requireActivity(), this)
         recyclerView.adapter = customEntryAdapter
         recyclerView.layoutManager = LinearLayoutManager(ctx)
+
+        val callback: ItemTouchHelper.Callback = ItemTouchCallback(customEntryAdapter)
+        itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
     }
 
     private fun setupButtons(view: View) {
@@ -156,6 +170,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
         // Clear content on show
         entryEditDialog.setOnShowListener {
+            entryEdit.clearFocus()
             entryEdit.text?.clear()
             entryAlert.visibility = View.INVISIBLE
         }

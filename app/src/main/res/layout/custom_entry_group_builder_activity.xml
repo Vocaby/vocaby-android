@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/rounded_background"
     android:clickable="true"
     android:focusable="true"
@@ -115,22 +113,15 @@
             android:visibility="invisible"
             android:textSize="12sp" />
     </LinearLayout>
-    <com.google.android.material.button.MaterialButton
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/add_definition_button"
+        style="@style/Theme.VocabyAndroid.Button"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
-        android:background="@drawable/rounded_background"
-        android:text="@string/custom_definition_add_button"
-        android:textSize="12sp"
-        android:textColor="@color/dark_gray"
-        android:textAllCaps="false"
-        android:fontFamily="@font/sourcesanspro_semibold"
-        app:backgroundTint="@color/white"
-        app:icon="@drawable/ic_add"
-        app:iconGravity="textStart"
-        app:iconTint="@color/dark_gray"/>
+        android:text="@string/custom_definition_add_button" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/custom_entry_definition_container"

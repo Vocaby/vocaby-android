@@ -6,9 +6,11 @@ import androidx.activity.result.ActivityResult
 import androidx.lifecycle.*
 import com.vocaby.app.Constants
 import com.vocaby.app.data.VocabyRepository
-import com.vocaby.app.states.ItemIntPayload
+import com.vocaby.app.models.customentry.UserEntry
+import com.vocaby.app.payloads.ItemEntryPayload
+import com.vocaby.app.payloads.ItemIntPayload
+import com.vocaby.app.payloads.ItemStringPayload
 import com.vocaby.app.states.ItemState
-import com.vocaby.app.states.ItemStringPayload
 import com.vocaby.app.states.UserInputState
 import com.vocaby.app.utils.SingleLiveEvent
 import com.vocaby.app.utils.StringFormatter
@@ -17,14 +19,14 @@ import java.util.*
 
 class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private val _entryCount: MutableLiveData<Int> = MutableLiveData(0)
-    private val _entries: SingleLiveEvent<List<String>> = SingleLiveEvent()
+    private val _entries: SingleLiveEvent<List<UserEntry>> = SingleLiveEvent()
     private val _entryState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
     private val _userInput: SingleLiveEvent<UserInputState> = SingleLiveEvent()
 
     private var selectedPosition: Int = -1
-    private var customEntries: MutableList<String> = ArrayList()
+    private var customEntries: MutableList<UserEntry> = ArrayList()
 
-    val entries: LiveData<List<String>>
+    val entries: LiveData<List<UserEntry>>
         get() = _entries
     val customEntryCount: LiveData<Int>
         get() = _entryCount
@@ -49,8 +51,16 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
 
     fun addEntryDataToIntent(intent: Intent, entry: String, position: Int): Intent {
         val itemPayload = ItemStringPayload(entry, ItemState.ADD)
+
         selectedPosition = if (position == -1) {
-            customEntries.indexOf(entry)
+            var pos = -1
+            for ((index, userEntry) in customEntries.withIndex()) {
+                if (userEntry.entry == entry) {
+                    pos = index
+                }
+            }
+
+            pos
         } else {
             position
         }
@@ -65,18 +75,19 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
 
     fun handleResult(result: ActivityResult) {
         if (result.data != null && result.resultCode == Activity.RESULT_OK) {
-            val receivedPayload: ItemStringPayload? =
+            val receivedPayload: ItemEntryPayload? =
                 result.data!!.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
 
             receivedPayload?.let {
                 if (receivedPayload.state == ItemState.ADD) {
                     customEntries.add(0, receivedPayload.payload)
-                    _entryState.value = ItemIntPayload(0, ItemState.ADD)
                 } else if (receivedPayload.state == ItemState.DELETE && selectedPosition != -1) {
                     customEntries.removeAt(selectedPosition)
-                    _entryState.value = ItemIntPayload(selectedPosition, ItemState.DELETE)
+                } else if (receivedPayload.state == ItemState.UPDATE) {
+                    customEntries.set(selectedPosition, receivedPayload.payload)
                 }
 
+                _entryState.value = ItemIntPayload(selectedPosition, receivedPayload.state)
                 _entryCount.value = customEntries.size
             }
         }
@@ -108,7 +119,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
 
     fun initializeEntries() {
         viewModelScope.launch {
-            customEntries = repository.getUserEntries() as MutableList<String>
+            customEntries = repository.getUserEntries() as MutableList<UserEntry>
             _entries.postValue(customEntries)
             _entryCount.postValue(customEntries.size)
         }

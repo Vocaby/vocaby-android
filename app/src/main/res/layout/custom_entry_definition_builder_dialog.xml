@@ -12,10 +12,11 @@
         android:background="@drawable/nav_header"
         android:padding="16dp">
         <TextView
+            android:id="@+id/definition_dialog_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="@string/create_a_new_definition"
+            android:text="@string/create_a_definition"
             android:textColor="@color/black"
             android:textSize="14sp" />
     </LinearLayout>
@@ -46,9 +47,7 @@
                 android:fontFamily="@font/sourcesanspro_semibold"
                 android:textColor="@color/colorHeadline"
                 android:textSize="12sp"
-                android:layout_marginStart="12dp"
-                android:visibility="invisible"
-                android:text="@string/definition_empty_alert" />
+                android:layout_marginStart="12dp" />
         </LinearLayout>
 
         <EditText
@@ -87,7 +86,7 @@
             android:inputType="text" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/create_definition_button"
+            android:id="@+id/save_definition_button"
             style="@style/Theme.VocabyAndroid.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

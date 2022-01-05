@@ -1,6 +1,9 @@
 package com.vocaby.app.viewmodels
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.SearchSuggestionItem
 import com.vocaby.app.models.dictionary.DailyPick

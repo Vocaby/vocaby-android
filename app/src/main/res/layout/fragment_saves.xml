@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@drawable/box_bottom_stroke_gray"
+        android:backgroundTint="@color/colorPrimaryAccent"
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -30,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/nav_saves"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/white"
             android:textSize="16sp" />
 
         <Space
@@ -44,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/white"
             android:textSize="14sp" />
 
         <TextView
@@ -53,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/container_side_margin"
             android:text="@string/saved_entries"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -86,9 +87,6 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:orientation="vertical"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingTop="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -1,137 +1,129 @@
-package com.vocaby.app.adapters;
+package com.vocaby.app.adapters
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
+import com.vocaby.app.R
+import com.vocaby.app.adapters.CustomDefAdapter.CustomDefViewHolder
+import com.vocaby.app.models.dictionary.DefinitionModel
+import java.util.*
+import kotlin.collections.ArrayList
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class CustomDefAdapter(
+    private var ctx: Context,
+    private var dragStartListener: DragStartListener,
+    private var itemInteractionListener: ItemInteractionListener
+) : RecyclerView.Adapter<CustomDefViewHolder>(), ItemTouchHelperAdapter {
+    var definitions: List<DefinitionModel> = ArrayList()
 
-import com.google.android.material.card.MaterialCardView;
-import com.vocaby.app.R;
-import com.vocaby.app.models.dictionary.DefinitionModel;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-public class CustomDefAdapter extends RecyclerView.Adapter<CustomDefAdapter.CustomDefViewHolder>
-        implements ItemTouchHelperAdapter {
-    List<DefinitionModel> definitions;
-    DragStartListener dragStartListener;
-    ItemInteractionListener itemInteractionListener;
-    Context ctx;
-
-    public interface ItemInteractionListener {
-        void onItemRemoved(int position);
+    interface ItemInteractionListener {
+        fun onItemRemoved(position: Int)
+        fun onItemTouched(position: Int, definition: String, example: String)
     }
 
-    public CustomDefAdapter(Context ctx, DragStartListener dragStartListener,
-                            ItemInteractionListener itemInteractionListener) {
-        this.ctx = ctx;
-        this.dragStartListener = dragStartListener;
-        this.itemInteractionListener = itemInteractionListener;
-        definitions = new ArrayList<>();
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomDefViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.custom_definition_row, parent, false)
+        return CustomDefViewHolder(view, dragStartListener, itemInteractionListener, ctx)
     }
 
-    @NonNull
-    @Override
-    public CustomDefViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_definition_row, parent, false);
-        return new CustomDefViewHolder(view, ctx);
+    override fun onBindViewHolder(holder: CustomDefViewHolder, position: Int) {
+        val example = definitions[position].example ?: ""
+        holder.bind(definitions[position].definition, example)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public void onBindViewHolder(@NonNull CustomDefViewHolder holder, int position) {
-        holder.definitionView.setText(definitions.get(position).getDefinition());
-        String example = definitions.get(position).getExample();
-        if (example.isEmpty()) {
-            holder.exampleView.setVisibility(View.GONE);
-        } else {
-            holder.exampleView.setVisibility(View.VISIBLE);
-            holder.exampleView.setText(example);
-        }
-
-        holder.dragHandle.setOnTouchListener((v, motionEvent) -> {
-            if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                dragStartListener.onDragStart(holder);
-            }
-
-            return false;
-        });
+    override fun getItemCount(): Int {
+        return definitions.size
     }
 
-    @Override
-    public int getItemCount() {
-        return definitions.size();
-    }
-
-    public void setList(List<DefinitionModel> newList) {
+    fun setList(newList: List<DefinitionModel>) {
         // soft copy
-        definitions = newList;
+        definitions = newList
     }
 
-    @Override
-    public boolean onItemMove(int fromPosition, int toPosition) {
+    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
         if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                definitions.get(i).setOrder(i+1);
-                definitions.get(i+1).setOrder(i);
-                Collections.swap(definitions, i, i+1);
+            for (i in fromPosition until toPosition) {
+                definitions[i].order = i + 1
+                definitions[i + 1].order = i
+                Collections.swap(definitions, i, i + 1)
             }
         } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                definitions.get(i).setOrder(i-1);
-                definitions.get(i-1).setOrder(i);
-                Collections.swap(definitions, i, i-1);
+            for (i in fromPosition downTo toPosition + 1) {
+                definitions[i].order = i - 1
+                definitions[i - 1].order = i
+                Collections.swap(definitions, i, i - 1)
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition)
+        return true
+    }
+
+    override fun onItemDismiss(position: Int) {
+        itemInteractionListener.onItemRemoved(position)
+    }
+
+    fun addItem() {
+        notifyItemInserted(itemCount - 1)
+    }
+
+    fun updateItem(position: Int) {
+        notifyItemChanged(position)
+    }
+
+    class CustomDefViewHolder
+    constructor(
+        itemView: View,
+        private val dragStartListener: DragStartListener,
+        private val itemInteractionListener: ItemInteractionListener,
+        private val ctx: Context
+    ) : RecyclerView.ViewHolder(itemView),
+        ItemTouchHelperViewHolder {
+        private var definitionView: TextView = itemView.findViewById(R.id.definition)
+        private var exampleView: TextView = itemView.findViewById(R.id.example)
+        private var dragHandle: FrameLayout = itemView.findViewById(R.id.drag_handle)
+        private var container: LinearLayout = itemView.findViewById(R.id.card_container)
+
+        @SuppressLint("ClickableViewAccessibility")
+        fun bind(definition: String, example: String) {
+            definitionView.text = definition
+            if (example.isEmpty()) {
+                exampleView.visibility = View.GONE
+            } else {
+                exampleView.visibility = View.VISIBLE
+                exampleView.text = example
+            }
+
+            dragHandle.setOnTouchListener { _, motionEvent: MotionEvent ->
+                if (motionEvent.actionMasked == MotionEvent.ACTION_DOWN) {
+                    dragStartListener.onDragStart(this)
+                }
+                false
+            }
+
+            container.setOnClickListener {
+                itemInteractionListener.onItemTouched(adapterPosition, definition, example)
             }
         }
 
-        notifyItemMoved(fromPosition, toPosition);
-        return true;
-    }
-
-    @Override
-    public void onItemDismiss(int position) {
-        itemInteractionListener.onItemRemoved(position);
-    }
-
-    public void addItem() {
-        notifyItemInserted(getItemCount()-1);
-    }
-
-    public static class CustomDefViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
-        TextView definitionView;
-        TextView exampleView;
-        FrameLayout dragHandle;
-        Context ctx;
-        public CustomDefViewHolder(@NonNull View itemView, Context ctx) {
-            super(itemView);
-            definitionView = itemView.findViewById(R.id.definition);
-            exampleView = itemView.findViewById(R.id.example);
-            dragHandle = itemView.findViewById(R.id.drag_handle);
-            this.ctx = ctx;
+        override fun onItemDragged() {
+            (itemView as MaterialCardView).strokeColor = ctx.getColor(R.color.colorPrimary)
         }
 
-        @Override
-        public void onItemDragged() {
-            ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.colorSecondary));
+        override fun onItemSwiped() {
+            (itemView as MaterialCardView).strokeColor = ctx.getColor(R.color.colorHeadline)
         }
 
-        @Override
-        public void onItemSwiped() {
-            ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.colorHeadline));
-        }
-
-        @Override
-        public void onItemDone() {
-            ((MaterialCardView) itemView).setStrokeColor(ctx.getColor(R.color.light_gray));
+        override fun onItemDone() {
+            (itemView as MaterialCardView).strokeColor = ctx.getColor(R.color.light_gray)
         }
     }
 }

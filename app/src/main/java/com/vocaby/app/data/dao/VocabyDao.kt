@@ -2,6 +2,7 @@ package com.vocaby.app.data.dao
 
 import androidx.room.*
 import com.vocaby.app.data.entity.*
+import com.vocaby.app.models.customentry.UserEntry
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -63,8 +64,8 @@ interface VocabyDao {
     @Query("DELETE FROM custom_user_entry WHERE custom_entry_id = :entryId")
     suspend fun deleteUserEntry(entryId: Int)
 
-    @Query("SELECT entry FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
-    suspend fun getUserEntries(id: Int): List<String>
+    @Query("SELECT entry, last_updated FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
+    suspend fun getUserEntries(id: Int): List<UserEntry>
 
     @Query("DELETE FROM custom_user_entry WHERE user_id = :id")
     suspend fun clearUserEntries(id: Int)

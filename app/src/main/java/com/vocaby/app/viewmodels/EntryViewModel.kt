@@ -12,11 +12,13 @@ import com.vocaby.app.Constants
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
+import com.vocaby.app.models.customentry.UserEntry
 import com.vocaby.app.models.dictionary.DefinitionGroupModel
 import com.vocaby.app.models.dictionary.EntryModel
-import com.vocaby.app.states.ItemIntPayload
+import com.vocaby.app.payloads.ItemEntryPayload
+import com.vocaby.app.payloads.ItemIntPayload
+import com.vocaby.app.payloads.ItemStringPayload
 import com.vocaby.app.states.ItemState
-import com.vocaby.app.states.ItemStringPayload
 import com.vocaby.app.utils.SingleLiveEvent
 import com.vocaby.app.utils.StringFormatter
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +27,7 @@ import java.util.*
 
 class EntryViewModel(
     private val repository: VocabyRepository,
-    private val payload: ItemStringPayload?
+    private val payload: ItemStringPayload
 ) : ViewModel() {
     companion object {
         const val GROUP_KEY = "GK"
@@ -38,6 +40,7 @@ class EntryViewModel(
     private val initialGroups: HashMap<String, DefinitionGroupModel> = HashMap()
     private val groupChanges: GroupChanges = GroupChanges(-1)
     private val definitionChangesMap: MutableMap<String, DefinitionChanges> = HashMap()
+    private var saveTime: Long = Date().time
 
     private val _entry: SingleLiveEvent<String> = SingleLiveEvent()
     private val _pronunciation: SingleLiveEvent<String> = SingleLiveEvent()
@@ -63,33 +66,31 @@ class EntryViewModel(
         viewModelScope.launch(Dispatchers.Default) {
             val types = repository.getTypes() as MutableList<String>
 
-            payload?.let { p ->
-                val data = repository.getUserEntryData(p.payload)
-                entryData = data ?: EntryModel(p.payload)
+            val data = repository.getUserEntryData(payload.payload)
+            entryData = data ?: EntryModel(payload.payload)
 
-                _entry.postValue(entryData.entry)
-                _definitionGroups.postValue(entryData.definitionGroups)
-                _pronunciation.postValue(entryData.pronunciation)
-                groupChanges.entryId = entryData.id
+            _entry.postValue(entryData.entry)
+            _definitionGroups.postValue(entryData.definitionGroups)
+            _pronunciation.postValue(entryData.pronunciation)
+            groupChanges.entryId = entryData.id
 
-                for (group in entryData.definitionGroups) {
-                    val clone = DefinitionGroupModel(group)
-                    initialGroups[clone.type] = clone
-                    definitionChangesMap[clone.type] = DefinitionChanges(clone.groupId)
-                    types.remove(clone.type)
-                }
-
-                _types.postValue(types)
-
-                if (p.state == ItemState.ADD) {
-                    _editorState.postValue(ItemState.ADD)
-                } else if (p.state == ItemState.UPDATE) {
-                    _editorState.postValue(ItemState.UPDATE)
-                }
-
-                // In case user attempts to create a new entry but the entry already exists
-                if (!entryData.isEmpty) p.state = ItemState.UPDATE
+            for (group in entryData.definitionGroups) {
+                val clone = DefinitionGroupModel(group)
+                initialGroups[clone.type] = clone
+                definitionChangesMap[clone.type] = DefinitionChanges(clone.groupId)
+                types.remove(clone.type)
             }
+
+            _types.postValue(types)
+
+            if (payload.state == ItemState.ADD) {
+                _editorState.postValue(ItemState.ADD)
+            } else if (payload.state == ItemState.UPDATE) {
+                _editorState.postValue(ItemState.UPDATE)
+            }
+
+            // In case user attempts to create a new entry but the entry already exists
+            if (!entryData.isEmpty) payload.state = ItemState.UPDATE
         }
 
         _selectedType.value = ""
@@ -183,43 +184,58 @@ class EntryViewModel(
     // User saved the entry
     fun addEntryResultDataToIntent(): Intent {
         val intent = Intent()
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, payload)
+        val userEntry = UserEntry(payload.payload, saveTime)
+        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemEntryPayload(userEntry, payload.state))
         return intent
     }
 
     // USER CLICKS SAVE
     fun saveUserEntry(pronunciation: String) {
+        saveTime = Date().time
         val pronun = StringFormatter.cleanText(pronunciation)
         checkForUpdatedItems()
 
         if (entryData.definitionGroups.isEmpty()) {
-            if (payload?.state == ItemState.ADD) {
+            if (payload.state == ItemState.ADD) {
                 // NEW ENTRY IS EMPTY SO CANCEL
                 _saveResult.setValue(false)
             } else {
                 // DELETE THE EXISTING ENTRY BECAUSE THE USER DELETED ALL GROUPS
                 viewModelScope.launch {
                     repository.removeCustomEntry(entryData.id)
-                    payload?.state = ItemState.DELETE
+                    payload.state = ItemState.DELETE
                     _saveResult.postValue(true)
                 }
             }
         } else {
-            viewModelScope.launch {
-                entryData.id = repository.insertOrUpdateEntry(
-                    entryData.entry,
-                    pronun,
-                    groupChanges,
-                    definitionChangesMap
-                )
+            var definitionHasChanges = false
+            for (definitionChanges in definitionChangesMap.values) {
+                if (definitionChanges.hasChanges()) {
+                    definitionHasChanges = true
+                    break
+                }
+            }
 
-                _saveResult.postValue(true)
+            if (!groupChanges.hasChanges() && !definitionHasChanges) {
+                _saveResult.setValue(false)
+            } else {
+                viewModelScope.launch {
+                    entryData.id = repository.insertOrUpdateEntry(
+                        entryData.entry,
+                        pronun,
+                        groupChanges,
+                        definitionChangesMap,
+                        saveTime
+                    )
+
+                    _saveResult.postValue(true)
+                }
             }
         }
     }
 
     private fun checkForUpdatedItems() {
-        if (entryData.definitionGroups.isNotEmpty() && payload?.state == ItemState.UPDATE) {
+        if (entryData.definitionGroups.isNotEmpty() && payload.state == ItemState.UPDATE) {
             for (i in entryData.definitionGroups.indices) {
                 val currentGroup = entryData.definitionGroups[i]
                 val originalGroup = initialGroups[currentGroup.type]
@@ -242,7 +258,7 @@ class EntryViewModel(
 
 class EntryViewModelFactory(
     private val repository: VocabyRepository,
-    private val payload: ItemStringPayload?
+    private val payload: ItemStringPayload
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(EntryViewModel::class.java)) {

@@ -82,12 +82,16 @@
                         android:id="@+id/entry_header"
                         style="@style/Theme.VocabyAndroid.TextHeader"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="38dp"
+                        android:maxLines="2"
+                        android:ellipsize="end"
                         android:layout_marginStart="@dimen/card_content_margin"
                         android:layout_marginEnd="@dimen/card_content_margin"
                         android:hyphenationFrequency="full"
                         android:textColor="@color/colorPrimaryAccent"
-                        android:textSize="27sp" />
+                        app:autoSizeMinTextSize="18sp"
+                        app:autoSizeStepGranularity="2sp"
+                        app:autoSizeTextType="uniform"/>
                 </LinearLayout>
 
                 <LinearLayout
