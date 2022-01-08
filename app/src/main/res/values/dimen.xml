@@ -4,6 +4,6 @@
     <dimen name="container_gap_margin">12dp</dimen>
     <dimen name="container_side_margin">24dp</dimen>
     <dimen name="custom_entry_card_height">60dp</dimen>
-    <dimen name="card_content_margin">14dp</dimen>
+    <dimen name="card_content_margin">12dp</dimen>
     <dimen name="card_elevation">6dp</dimen>
 </resources>

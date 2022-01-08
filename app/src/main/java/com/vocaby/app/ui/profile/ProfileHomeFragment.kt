@@ -1,7 +1,6 @@
 package com.vocaby.app.ui.profile
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,11 +21,10 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.vocaby.app.Constants.VOCABY_WEB_BASE_URL
+import com.google.android.material.button.MaterialButton
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.states.GenericState
-import com.vocaby.app.ui.WebActivity
 import com.vocaby.app.utils.AxisValueFormatter
 import com.vocaby.app.viewmodels.ProfileViewModel
 import com.vocaby.app.viewmodels.ProfileViewModelFactory
@@ -39,6 +37,7 @@ class ProfileHomeFragment : Fragment() {
     private lateinit var chartAlert: TextView
     private lateinit var indicator: View
     private lateinit var favoriteEntry: TextView
+    private lateinit var chartToggleButton: MaterialButton
 
     private val profileViewModel: ProfileViewModel by activityViewModels {
         ProfileViewModelFactory((requireActivity().application as VocabyApplication).repository)
@@ -56,6 +55,7 @@ class ProfileHomeFragment : Fragment() {
         chartAlert = view.findViewById(R.id.chart_placeholder_alert)
         indicator = view.findViewById(R.id.indicator)
         favoriteEntry = view.findViewById(R.id.favorite_entry)
+        chartToggleButton = view.findViewById(R.id.chart_toggle_button)
 
         barChart.apply {
             setTouchEnabled(false)
@@ -95,32 +95,20 @@ class ProfileHomeFragment : Fragment() {
         profileViewModel.values.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is GenericState.Success -> {
-                    val colorsList: ArrayList<Int> = ArrayList()
+                    val (chartData, colorsList) = state.data
                     chartContainer.visibility = View.VISIBLE
                     placeholder.visibility = View.GONE
 
-                    if (state.data.isUserData) {
+                    if (chartData.isUserData) {
                         indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
                         chartAlert.text = getString(R.string.chart_placeholder_alert)
                         chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
-
-                        colorsList.add(Color.parseColor("#C1C1C1"))
-                        colorsList.add(Color.parseColor("#C8C8C8"))
-                        colorsList.add(Color.parseColor("#CFCFCF"))
-                        colorsList.add(Color.parseColor("#D6D6D6"))
-                        colorsList.add(Color.parseColor("#DCDCDC"))
                     } else {
-                        indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorPrimary))
+                        indicator.background.setTint(ContextCompat.getColor(ctx, R.color.white))
                         chartAlert.text = ""
-
-                        colorsList.add(Color.parseColor("#7BB38D"))
-                        colorsList.add(Color.parseColor("#89BB99"))
-                        colorsList.add(Color.parseColor("#A6CCB0"))
-                        colorsList.add(Color.parseColor("#C3DDC7"))
-                        colorsList.add(Color.parseColor("#D1E5D3"))
                     }
 
-                    val dataSet: BarDataSet = BarDataSet(state.data.entries, "").apply {
+                    val dataSet: BarDataSet = BarDataSet(chartData.entries, "").apply {
                         setDrawValues(true)
                         valueTextColor = ContextCompat.getColor(ctx, R.color.colorPrimaryAccent)
                         colors = colorsList
@@ -139,11 +127,11 @@ class ProfileHomeFragment : Fragment() {
 
                     barChart.apply {
                         animateXY(600, 1000, Easing.EaseInOutQuad)
-                        xAxis.labelCount = state.data.values.size
+                        xAxis.labelCount = chartData.values.size
                     }
 
                     barChart.data = data
-                    barChart.xAxis.valueFormatter = AxisValueFormatter(state.data.values, 12)
+                    barChart.xAxis.valueFormatter = AxisValueFormatter(chartData.values, 12)
                     barChart.invalidate()
                 }
 
@@ -165,18 +153,29 @@ class ProfileHomeFragment : Fragment() {
             }
         }
 
+        profileViewModel.chartMode.observe(viewLifecycleOwner) { displayAll ->
+            chartToggleButton.isChecked = displayAll
+            chartToggleButton.text = if (displayAll)
+                getString(R.string.chart_toggle_all) else getString(R.string.chart_toggle_monthly)
+            profileViewModel.updateChart()
+        }
+
         profileViewModel.favoriteEntry.observe(viewLifecycleOwner) { entry ->
             favoriteEntry.text = entry
         }
 
-        profileViewModel.updateChart()
-
         chartContainer.setOnClickListener {
             profileViewModel.updateChart()
         }
+
+        profileViewModel.initializeChart()
     }
 
     private fun setupButtons(view: View) {
+        chartToggleButton.addOnCheckedChangeListener { _: MaterialButton, checked: Boolean ->
+            profileViewModel.changeChartMode(checked)
+        }
+
         // NOTIFICATION
         val notificationButton = view.findViewById<Button>(R.id.notification_button)
         notificationButton.setOnClickListener {
@@ -207,9 +206,15 @@ class ProfileHomeFragment : Fragment() {
 
         val supportButton = view.findViewById<Button>(R.id.support_button)
         supportButton.setOnClickListener {
-            val intent = Intent(requireActivity().applicationContext, WebActivity::class.java)
-            intent.putExtra("URL", VOCABY_WEB_BASE_URL + "app/support")
-            startActivity(intent)
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_right_to_left,
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_left_to_right
+                ).add(R.id.profile_fragment_container, SupportFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         // DANGER ZONE

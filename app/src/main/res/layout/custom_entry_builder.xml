@@ -150,7 +150,7 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/pronunciation_input"
+        android:id="@+id/feedback_input"
         android:background="@drawable/text_input_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -180,7 +180,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pronunciation_input">
+        app:layout_constraintTop_toBottomOf="@+id/feedback_input">
 
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"

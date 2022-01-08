@@ -18,6 +18,7 @@ import com.vocaby.app.models.EntryImportData
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.dictionary.*
+import com.vocaby.app.models.profile.FaqModel
 import com.vocaby.app.utils.StringFormatter
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -99,7 +100,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         val exists = vocabyDao.checkUser(userId)
         if (!exists) {
             val id = vocabyDao.createUser(User())
-            userSharedPreference.edit().putInt(Constants.CURRENT_USER_ID_KEY, id.toInt()).apply()
+            userId = id.toInt()
+            userSharedPreference.edit().putInt(Constants.CURRENT_USER_ID_KEY, userId).apply()
         }
     }
 
@@ -606,9 +608,65 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         vocabyDao.recordCustomVisit(CustomDictionaryViewCount(0, userId, entryId, formatter.format(Date())))
     }
 
-    suspend fun getWeeklyData(size: Int): List<VisitData> = vocabyDao.getSearchData(size)
+    fun updateChartMode(displayAll: Boolean) {
+        userSharedPreference.edit().putBoolean(Constants.CHART_MODE_ID, displayAll).apply()
+    }
+
+    fun getChartMode(): Boolean = userSharedPreference.getBoolean(Constants.CHART_MODE_ID, false)
+
+    suspend fun getChartData(size: Int): List<VisitData> {
+        val displayAll = userSharedPreference.getBoolean(Constants.CHART_MODE_ID, false)
+        if (displayAll) {
+            return vocabyDao.getAllSearchData(size)
+        } else {
+            return vocabyDao.getMonthlySearchData(size)
+        }
+    }
     suspend fun eraseVisitData() {
         vocabyDao.deleteVisit(userId)
         vocabyDao.deleteCustomVisit(userId)
+    }
+
+    /** --------------------- DATA -------------------- **/
+    fun getFaq(): List<FaqModel> {
+        return listOf<FaqModel>(
+            FaqModel(
+                "Q1. Why is Vocaby only available on Android?",
+                "We decided on Android as Vocaby's first platform because our developers " +
+                        "are more acquainted in this area. We intend to increase Vocaby's " +
+                        "availability across platforms further down the road, but we want " +
+                        "to make sure that Vocaby matures on Android first."
+            ),
+            FaqModel(
+                "Q2. Why are some definitions outdated?",
+                "Vocaby is powered by Princeton's Wordnet. " +
+                        "At Vocaby, we are maintaining and updating definitions so that " +
+                        "you are provided with the most up-to-date definition."
+            ),
+            FaqModel(
+                "Q3. Will definitions automatically update on my app?",
+                "Yup! Once we make updates to our dictionary, your will retrieve the " +
+                        "most up to date definitions on your app. This does require an " +
+                        "internet connection though."
+            ),
+            FaqModel(
+                "Q4. Does Vocaby collect data from me?",
+                "We do not collect any data from you. The app does keep track of your " +
+                        "search activity to provide you with statistics " +
+                        "but any data that is collected by the app is only available locally " +
+                        "on your phone."
+            ),
+            FaqModel(
+                "Q5. Is Vocaby free?",
+                "Yup! Vocaby is completely free and has no hidden fees."
+            ),
+            FaqModel(
+                "Q6. Why does my import keep failing?",
+                "Please make sure that your exported backup json " +
+                        "file was indeed created by the app and was not tampered with. " +
+                        "If you continue to experience this issue, please feel " +
+                        "free to reach out to us!"
+            )
+        )
     }
 }

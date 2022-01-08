@@ -62,7 +62,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         editorHeader = findViewById(R.id.editor_header)
 
         groupAlert = findViewById(R.id.group_header_alert)
-        pronunciationInput = findViewById(R.id.pronunciation_input)
+        pronunciationInput = findViewById(R.id.feedback_input)
         setUpGroupBuilder()
         setupRecyclerView()
         setupButtons()

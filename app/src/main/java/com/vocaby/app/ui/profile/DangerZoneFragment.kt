@@ -34,16 +34,15 @@ class DangerZoneFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         builder = MaterialAlertDialogBuilder(requireActivity())
-
         val view = inflater.inflate(R.layout.fragment_profile_danger_zone, container, false)
         val backButton = view.findViewById<Button>(R.id.back_button)
         backButton.setOnClickListener { requireActivity().onBackPressed() }
 
         val eraseHistoryButton = view.findViewById<Button>(R.id.erase_history_button)
         eraseHistoryButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to clear your search history?")
+            builder.setTitle("Are you sure you wish to erase your search history?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("CLEAR") { _, _ -> dictionaryViewModel.clearHistory() }
+                .setPositiveButton("ERASE") { _, _ -> dictionaryViewModel.clearHistory() }
                 .setNegativeButton("CANCEL", null)
             val alert = builder.create()
             alert.show()
@@ -51,31 +50,31 @@ class DangerZoneFragment : Fragment() {
 
         val eraseSavesButton = view.findViewById<Button>(R.id.erase_saves_button)
         eraseSavesButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to clear your saves?")
+            builder.setTitle("Are you sure you wish to erase your saves?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("CLEAR") { _, _ -> userViewModel.clearSaves()}
+                .setPositiveButton("ERASE") { _, _ -> userViewModel.clearSaves()}
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
         val eraseEntriesButton = view.findViewById<Button>(R.id.erase_custom_entries_button)
         eraseEntriesButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to clear your entries?")
+            builder.setTitle("Are you sure you wish to erase your entries?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("CLEAR") { _, _ -> myEntryViewModel.clearEntries() }
+                .setPositiveButton("ERASE") { _, _ -> myEntryViewModel.clearEntries() }
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
         val eraseChartDataButton = view.findViewById<Button>(R.id.erase_chart_button)
         eraseChartDataButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to clear your entries?")
+            builder.setTitle("Are you sure you wish to erase your chart data?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("CLEAR") { _, _ -> profileViewModel.eraseChartData() }
+                .setPositiveButton("ERASE") { _, _ -> profileViewModel.eraseChartData() }
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
         val eraseDataButton = view.findViewById<Button>(R.id.erase_data_button)
         eraseDataButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to erase your data?")
+            builder.setTitle("Are you sure you wish to erase all of your data?")
                 .setMessage("All of your data will be deleted. This action is irreversible.")
                 .setPositiveButton("ERASE") { _, _ ->
                     userViewModel.clearSaves()

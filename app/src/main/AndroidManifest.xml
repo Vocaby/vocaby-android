@@ -12,9 +12,6 @@
         android:screenOrientation="sensorPortrait"
         android:theme="@style/Theme.VocabyAndroid">
         <activity
-            android:name=".ui.WebActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.profile.DataTransferActivity"
             android:exported="false" />
         <activity

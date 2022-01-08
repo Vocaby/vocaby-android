@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.profile.ProfileHomeFragment">
-
     <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
@@ -53,7 +52,6 @@
         android:id="@+id/profile_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

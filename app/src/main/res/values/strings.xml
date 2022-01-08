@@ -94,7 +94,7 @@
     <string name="danger_zone">Danger Zone</string>
     <string name="data_export">Export Data</string>
     <string name="data_import">Import Data</string>
-    <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be deleted.</string>
+    <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be replaced.</string>
     <string name="background">background</string>
     <string name="history">YOUR SEARCH HISTORY</string>
     <string name="wod_error_header">Oh no!</string>
@@ -119,4 +119,15 @@
     <string name="help">Help</string>
     <string name="card_instructions">Card Instructions</string>
     <string name="touch_to_edit">touch to edit</string>
+    <string name="chart_toggle_monthly">Monthly</string>
+    <string name="chart_toggle_all">all</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="support_faq">Frequently Asked Questions</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="contact_us_body">If you couldn’t find the answer you were looking for or just want send us some feedback, feel free to contact us! Although we are a small group of people, we will try our best to get back to you.</string>
+    <string name="vocaby_email">talkwith@vocaby.app</string>
+    <string name="support_vocaby">Help us improve Vocaby</string>
+    <string name="support_vocaby_body">We are constantly trying to improve Vocaby. If you would like us to update an entry or add a feature, submit this form!</string>
+    <string name="submit">submit</string>
+    <string name="enter_your_feedback">Enter your feedback</string>
 </resources>
