@@ -88,7 +88,7 @@
                     style="@style/Theme.VocabyAndroid.TextHeadline"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/container_gap_margin"
+
                     android:paddingBottom="@dimen/header_gap"
                     android:text="@string/contact_us" />
                 <TextView

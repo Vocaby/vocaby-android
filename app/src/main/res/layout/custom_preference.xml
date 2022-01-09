@@ -28,7 +28,7 @@
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceListItem"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:textSize="14dp"
+            android:textSize="12sp"
             android:textColor="@color/colorPrimaryAccent"
             android:ellipsize="marquee"/>
 
@@ -40,6 +40,7 @@
             android:layout_alignStart="@android:id/title"
             android:layout_marginTop="4dp"
             android:layout_gravity="start"
+            android:textSize="12sp"
             android:textAlignment="viewStart"
             android:fontFamily="@font/sourcesanspro_regular"
             android:textColor="@color/preference_secondary_color"

@@ -8,7 +8,7 @@
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             android:key="@string/pref_notification_key"
-            android:title="Enable Saves Notification"
+            android:title="Get Saves Notification"
             android:summary="Get notified of the words that you saved for review"
             android:defaultValue="false" />
         <ListPreference

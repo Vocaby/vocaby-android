@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/container_side_margin"
                 android:paddingEnd="@dimen/container_side_margin"
-                android:paddingBottom="@dimen/header_gap"
+                android:paddingBottom="4dp"
                 android:text="@string/data_export" />
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/export_save_button"
@@ -92,6 +92,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="12sp"
                 android:paddingTop="@dimen/header_gap"
                 android:paddingBottom="@dimen/header_gap"
                 android:paddingStart="@dimen/container_side_margin"
@@ -122,6 +123,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="12sp"
                 android:paddingTop="@dimen/header_gap"
                 android:paddingBottom="@dimen/header_gap"
                 android:paddingStart="@dimen/container_side_margin"
@@ -143,7 +145,7 @@
                         android:fontFamily="@font/sourcesanspro_semibold"
                         android:text="@string/data_privacy_header"
                         android:textColor="@color/colorPrimaryAccent"
-                        android:textSize="14sp"/>
+                        android:textSize="12sp"/>
                     <TextView
                         android:layout_width="280dp"
                         android:layout_height="wrap_content"
@@ -151,7 +153,7 @@
                         android:scrollbars="none"
                         android:text="@string/data_privacy_content"
                         android:textColor="@color/black"
-                        android:textSize="14sp"/>
+                        android:textSize="12sp"/>
                 </LinearLayout>
 
                 <Switch

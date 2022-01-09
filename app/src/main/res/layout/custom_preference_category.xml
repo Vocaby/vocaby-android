@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
     android:baselineAligned="false"
+    android:paddingTop="8dp"
     android:gravity="center_vertical">
 
     <RelativeLayout
@@ -20,7 +21,7 @@
             android:layout_gravity="start"
             android:textAlignment="viewStart"
             android:fontFamily="@font/sourcesanspro_black"
-            android:textSize="14sp"/>
+            android:textSize="12sp"/>
 
         <TextView
             android:id="@android:id/summary"
@@ -34,7 +35,7 @@
             android:textAlignment="viewStart"
             android:textColor="?android:attr/textColorSecondary"
             android:maxLines="10"
-            android:textSize="14sp"
+            android:textSize="12sp"
             style="@style/PreferenceSummaryTextStyle"/>
     </RelativeLayout>
 </LinearLayout>
