@@ -131,4 +131,6 @@
     <string name="submit">submit</string>
     <string name="enter_your_feedback">Enter your feedback</string>
     <string name="data_privacy">Data Privacy</string>
+    <string name="edit_entry">Edit Entry</string>
+    <string name="delete_entry">Delete Entry</string>
 </resources>

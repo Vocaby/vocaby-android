@@ -42,6 +42,7 @@
             android:layout_height="wrap_content"
             android:scrollIndicators="none"
             android:scrollbars="none"
+            android:scrollbarThumbVertical="@null"
             android:visibility="gone"
             android:fillViewport="true">
             <TextView

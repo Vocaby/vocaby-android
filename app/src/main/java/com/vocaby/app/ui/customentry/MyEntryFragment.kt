@@ -16,14 +16,12 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.CustomEntryAdapter
-import com.vocaby.app.adapters.ItemTouchCallback
 import com.vocaby.app.states.ItemState
 import com.vocaby.app.states.UserInputState
 import com.vocaby.app.utils.Formatter
@@ -38,7 +36,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var ctx: Context
     private lateinit var entryCountView: TextView
     private lateinit var customEntryAdapter: CustomEntryAdapter
-    private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var emptyCard: LinearLayout
     private lateinit var entryEditDialog: BottomSheetDialog
     private lateinit var entryEdit: EditText
@@ -142,11 +139,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         customEntryAdapter = CustomEntryAdapter(requireActivity(), this)
         recyclerView.adapter = customEntryAdapter
         recyclerView.layoutManager = LinearLayoutManager(ctx)
-
-        val callback: ItemTouchHelper.Callback = ItemTouchCallback(customEntryAdapter)
-        itemTouchHelper = ItemTouchHelper(callback)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-
     }
 
     private fun setupButtons(view: View) {

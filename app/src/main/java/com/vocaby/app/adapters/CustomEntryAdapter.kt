@@ -2,21 +2,26 @@ package com.vocaby.app.adapters
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.graphics.Color
+import android.view.*
+import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.widget.ListPopupWindow
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.app.R
 import com.vocaby.app.models.customentry.UserEntry
 import com.vocaby.app.utils.Formatter
 
-class CustomEntryAdapter(activity: Activity, private val interaction: Interaction) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
+class CustomEntryAdapter(
+    private val activity: Activity,
+    private val interaction: Interaction
+): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     private var customEntries: List<UserEntry> = ArrayList()
-    private val alertDialogBuilder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(activity)
+    private val alertDialogBuilder = MaterialAlertDialogBuilder(activity)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return CustomEntryViewHolder(
@@ -26,7 +31,8 @@ class CustomEntryAdapter(activity: Activity, private val interaction: Interactio
                 false
             ),
             interaction,
-            alertDialogBuilder
+            alertDialogBuilder,
+            activity
         )
     }
 
@@ -62,11 +68,37 @@ class CustomEntryAdapter(activity: Activity, private val interaction: Interactio
     constructor(
         itemView: View,
         private val interaction: Interaction,
-        private val alertDialogBuilder: MaterialAlertDialogBuilder
+        private val alertDialogBuilder: MaterialAlertDialogBuilder,
+        private val activity: Activity
     ): RecyclerView.ViewHolder(itemView) {
         private val header: TextView = itemView.findViewById(R.id.custom_entry_item_header)
         private val lastUpdated: TextView = itemView.findViewById(R.id.custom_entry_item_updated)
-        private val deleteButton: ImageButton = itemView.findViewById(R.id.delete_button)
+        private val moreButton: ImageButton = itemView.findViewById(R.id.more_button)
+        @SuppressLint("RestrictedApi")
+        val listPopupWindow = ListPopupWindow(
+            activity
+        ).apply {
+            setOverlapAnchor(true)
+            width = 300
+            anchorView = moreButton
+            setDropDownGravity(Gravity.END)
+            val items = listOf("Edit Entry", "Delete Entry")
+            val adapter: ArrayAdapter<String> = object: ArrayAdapter<String>(activity.applicationContext, R.layout.list_popup_window_item, items) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent) as TextView
+                    if (position == 1 ) {
+                        view.setTextColor(activity.getColor(R.color.colorHeadline))
+                    } else {
+                        view.setTextColor(activity.getColor(R.color.colorPrimary))
+                    }
+
+                    return view
+                }
+            }
+
+            setAdapter(adapter)
+            setBackgroundDrawable(ResourcesCompat.getDrawable(activity.resources, R.drawable.box_white, null))
+        }
 
         fun bind(userEntry: UserEntry) {
             header.text = userEntry.entry
@@ -76,13 +108,28 @@ class CustomEntryAdapter(activity: Activity, private val interaction: Interactio
                 interaction.onItemTouch(userEntry.entry, adapterPosition)
             }
 
-            deleteButton.setOnClickListener {
-                alertDialogBuilder
-                    .setTitle("Are you sure you want to delete?")
-                    .setMessage(userEntry.entry)
-                    .setPositiveButton("DELETE") { _, _ ->
-                        interaction.onItemDelete(userEntry.entry, adapterPosition)
-                    }.setNegativeButton("CANCEL", null).create().show()
+            moreButton.setOnClickListener {
+                listPopupWindow.show()
+            }
+
+            listPopupWindow.setOnItemClickListener { _, _, position: Int, _: Long ->
+                // Respond to list popup window item click.
+                when(position) {
+                    0 -> {
+                        interaction.onItemTouch(userEntry.entry, adapterPosition)
+                    }
+                    1 -> {
+                        alertDialogBuilder
+                            .setTitle("Are you sure you want to delete?")
+                            .setMessage(userEntry.entry)
+                            .setPositiveButton("DELETE") { _, _ ->
+                                interaction.onItemDelete(userEntry.entry, adapterPosition)
+                            }.setNegativeButton("CANCEL", null).create().show()
+                    }
+                }
+
+                // Dismiss popup.
+                listPopupWindow.dismiss()
             }
         }
     }
@@ -90,18 +137,5 @@ class CustomEntryAdapter(activity: Activity, private val interaction: Interactio
     interface Interaction {
         fun onItemTouch(entry: String, position: Int)
         fun onItemDelete(entry: String, position: Int)
-    }
-
-    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        return false
-    }
-
-    override fun onItemDismiss(position: Int) {
-        alertDialogBuilder
-            .setTitle("Are you sure you want to delete?")
-            .setMessage(customEntries[position].entry)
-            .setPositiveButton("DELETE") { _, _ ->
-                interaction.onItemDelete(customEntries[position].entry, position)
-            }.setNegativeButton("CANCEL") { _, _ -> notifyItemChanged(position) }.create().show()
     }
 }
