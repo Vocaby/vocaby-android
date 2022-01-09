@@ -2,13 +2,14 @@ package com.vocaby.app.adapters
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.graphics.Color
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.widget.ListPopupWindow
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -89,7 +90,7 @@ class CustomEntryAdapter(
                     if (position == 1 ) {
                         view.setTextColor(activity.getColor(R.color.colorHeadline))
                     } else {
-                        view.setTextColor(activity.getColor(R.color.colorPrimary))
+                        view.setTextColor(activity.getColor(R.color.black))
                     }
 
                     return view

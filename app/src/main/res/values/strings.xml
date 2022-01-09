@@ -129,12 +129,17 @@
     <string name="support_vocaby">Help us improve Vocaby</string>
     <string name="support_vocaby_body">We are constantly trying to improve Vocaby. If you would like us to update an entry or add a feature, submit this form!</string>
     <string name="submit">submit</string>
-    <string name="enter_your_feedback">Enter your feedback</string>
+    <string name="enter_your_feedback">Select a feedback type</string>
+    <string name="enter_your_feedback_message">Enter your feedback message here</string>
     <string name="data_privacy">Data Privacy</string>
-    <string name="edit_entry">Edit Entry</string>
-    <string name="delete_entry">Delete Entry</string>
     <string name="data_privacy_header">Share Crash Analytics</string>
     <string name="data_privacy_content">When enabled, you are opting in to share error related data with Vocaby. </string>
     <string name="data_privacy_warning">Warning: You must restart the app for the change to take effect</string>
     <string name="notification_settings">Notification Settings</string>
+    <string name="feedback_input_alert_type">You must select a type</string>
+    <string name="feedback_input_alert_email">Please enter a valid email</string>
+    <string name="feedback_input_alert_thankyou">Thank you!</string>
+    <string name="feedback_input_alert_oops">Something went wrong…</string>
+    <string name="feedback_input_alert_message">Please enter a feedback</string>
+    <string name="feedback_input_email">Your Email (optional)</string>
 </resources>

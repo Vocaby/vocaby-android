@@ -107,6 +107,7 @@
                         android:visibility="gone"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
+                        android:indeterminateTint="@color/colorPrimary"
                         android:layout_gravity="center"
                         android:layout_marginTop="8dp" />
 

@@ -36,6 +36,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:indeterminate="true"
+        android:indeterminateTint="@color/colorPrimary"
         android:layout_gravity="center" />
 
     <LinearLayout

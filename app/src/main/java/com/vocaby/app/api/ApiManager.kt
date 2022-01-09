@@ -8,18 +8,23 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
+
 object ApiManager {
     val apiService: ApiService by lazy {
         val gsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(EntryModel::class.java, EntryDeserializer())
         val vocabyGson = gsonBuilder.create()
+//        val httpLoggingInterceptor = HttpLoggingInterceptor()
+//        httpLoggingInterceptor.apply {
+//            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+//        }
 
         val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(1, TimeUnit.SECONDS)
-            .readTimeout(1, TimeUnit.SECONDS)
-            .writeTimeout(1, TimeUnit.SECONDS)
+//            .addInterceptor(httpLoggingInterceptor)
+            .connectTimeout(3, TimeUnit.SECONDS)
+            .readTimeout(3, TimeUnit.SECONDS)
+            .writeTimeout(3, TimeUnit.SECONDS)
             .build()
-
 
         Retrofit.Builder()
             .baseUrl(VOCABY_API_BASE_URL)

@@ -52,4 +52,8 @@ object Formatter {
     fun cleanNumber(num: Int): String {
         return NumberFormat.getNumberInstance(Locale.US).format(num.toLong())
     }
+
+    fun validateEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
 }

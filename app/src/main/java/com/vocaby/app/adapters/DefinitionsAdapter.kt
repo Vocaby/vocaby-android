@@ -1,18 +1,18 @@
 package com.vocaby.app.adapters
 
-import androidx.recyclerview.widget.RecyclerView
-import com.vocaby.app.adapters.DefinitionsAdapter.DefinitionsViewHolder
-import com.vocaby.app.models.dictionary.EntryModel
-import android.view.ViewGroup
-import android.view.LayoutInflater
-import com.vocaby.app.R
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
-import com.vocaby.app.models.dictionary.DefinitionModel
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.FrameLayout
+import androidx.recyclerview.widget.RecyclerView
+import com.vocaby.app.R
+import com.vocaby.app.adapters.DefinitionsAdapter.DefinitionsViewHolder
+import com.vocaby.app.models.dictionary.DefinitionModel
+import com.vocaby.app.models.dictionary.EntryModel
 
 class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<DefinitionsViewHolder>() {
     private var entryData: EntryModel = EntryModel("Vocaby")

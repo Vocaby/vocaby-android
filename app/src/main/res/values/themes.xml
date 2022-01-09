@@ -33,6 +33,18 @@
         <item name="alertDialogTheme">@style/AlertDialogStyle</item>
     </style>
 
+    <style name="Theme.VocabyAndroid.TextInputEditText" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <!-- left and right padding -->
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+
+        <!-- top and bottom padding -->
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
     <style name="AlertDialogStyle" parent="ThemeOverlay.AppCompat.Dialog.Alert">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryAccent</item>
@@ -75,16 +87,6 @@
 
     <style name="Theme.VocabyAndroid.PreferenceDialog" parent="@style/Preference.DialogPreference.Material">
         <item name="android:layout">@layout/custom_preference</item>
-    </style>
-
-    <style name="Theme.VocabyAndroid.MaterialDialogAlertEntry" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="android:fontFamily">@font/sourcesanspro_semibold</item>
-        <item name="android:background">@color/white</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Title</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Body</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Positive</item>
-        <item name="buttonBarNegativeButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Negative</item>
-        <item name="shapeAppearance">@style/ShapeAppearance.VocabyAndroid.SmallComponent</item>
     </style>
 
     <style name="Theme.VocabyAndroid.MaterialDialogAlert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">

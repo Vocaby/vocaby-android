@@ -1,15 +1,15 @@
 package com.vocaby.app.adapters
 
-import androidx.recyclerview.widget.RecyclerView
-import com.vocaby.app.adapters.TypeAdapter.TypeViewHolder
 import android.annotation.SuppressLint
-import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
-import com.vocaby.app.R
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import java.util.ArrayList
+import androidx.recyclerview.widget.RecyclerView
+import com.vocaby.app.R
+import com.vocaby.app.adapters.TypeAdapter.TypeViewHolder
+import java.util.*
 
 class TypeAdapter(private val itemInteractionListener: ItemInteractionListener) :
     RecyclerView.Adapter<TypeViewHolder>() {

@@ -19,7 +19,6 @@ import com.vocaby.app.adapters.SearchHistoryAdapter
 import com.vocaby.app.utils.Formatter.formatDateToString
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
-import java.lang.IllegalArgumentException
 import java.util.*
 
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener {

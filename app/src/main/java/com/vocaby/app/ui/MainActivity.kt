@@ -13,8 +13,6 @@ import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bugsnag.android.Bugsnag
-import com.bugsnag.android.Configuration
-import com.bugsnag.android.OnErrorCallback
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
@@ -24,7 +22,6 @@ import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
 import com.vocaby.app.viewmodels.UserViewModel
 import com.vocaby.app.viewmodels.UserViewModelFactory
-import java.lang.IllegalArgumentException
 
 open class MainActivity : AppCompatActivity() {
     private lateinit var alarmManager: AlarmManager

@@ -15,6 +15,7 @@ import com.vocaby.app.data.entity.*
 import com.vocaby.app.exceptions.IllegalFileException
 import com.vocaby.app.models.BasicExportModel
 import com.vocaby.app.models.EntryImportData
+import com.vocaby.app.models.FeedbackModel
 import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.dictionary.*
@@ -634,6 +635,16 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     fun setDataShareSettings(enabled: Boolean) {
         userSharedPreference.edit().putBoolean(Constants.DATA_SHARE_ID, enabled).apply()
+    }
+
+    /** --------------------- FEEDBACK -------------------- **/
+    suspend fun submitFeedback(feedbackModel: FeedbackModel): Boolean {
+        return try {
+            apiService.submitFeedback("application/json", feedbackModel)
+            true
+        } catch (throwable: Throwable) {
+            false
+        }
     }
 
     /** --------------------- DATA -------------------- **/

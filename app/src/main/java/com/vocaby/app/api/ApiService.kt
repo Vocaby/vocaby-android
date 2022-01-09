@@ -1,9 +1,9 @@
 package com.vocaby.app.api
 
+import com.vocaby.app.models.FeedbackModel
 import com.vocaby.app.models.dictionary.EntryModel
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiService {
     @GET("dictionary/{entry}")
@@ -14,4 +14,7 @@ interface ApiService {
 
     @GET("wod/get/{date}/")
     suspend fun getWoD(@Path("date") date: String): Response<EntryModel>
+
+    @POST("feedback/")
+    suspend fun submitFeedback(@Header("Content-Type") contentType: String, @Body feedback: FeedbackModel): Response<EntryModel>
 }
