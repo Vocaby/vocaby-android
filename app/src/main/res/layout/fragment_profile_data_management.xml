@@ -13,7 +13,6 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="@dimen/container_side_margin"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
         android:background="@drawable/box_bottom_stroke_gray">
@@ -44,80 +43,126 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/container_side_margin"
+            android:paddingBottom="@dimen/container_side_margin"
+            android:orientation="vertical">
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
+                android:paddingBottom="@dimen/header_gap"
+                android:text="@string/data_export" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/export_save_button"
+                style="@style/Theme.VocabyAndroid.ProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/data_management_export_save_txt"
+                android:drawableStart="@drawable/ic_boxed_export"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/export_save_backup_button"
+                style="@style/Theme.VocabyAndroid.ProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/data_management_export_save_backup"
+                android:drawableStart="@drawable/ic_boxed_export"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/export_entries_button"
+                style="@style/Theme.VocabyAndroid.ProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/data_management_export_entry"
+                android:drawableStart="@drawable/ic_boxed_export"/>
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/container_side_margin"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
+                android:text="@string/data_import" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/header_gap"
+                android:paddingBottom="@dimen/header_gap"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
+                android:text="@string/data_management_import_warning" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/import_saves_button"
+                style="@style/Theme.VocabyAndroid.ProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/data_management_import_save"
+                android:drawableStart="@drawable/ic_boxed_import"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/import_entries_button"
+                style="@style/Theme.VocabyAndroid.ProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/data_management_import_entry"
+                android:drawableStart="@drawable/ic_boxed_import"/>
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/container_side_margin"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
+                android:text="@string/data_privacy" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/header_gap"
+                android:paddingBottom="@dimen/header_gap"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
+                android:text="@string/data_privacy_warning" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/container_side_margin"
+                android:layout_marginEnd="@dimen/container_side_margin"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sourcesanspro_semibold"
+                        android:text="@string/data_privacy_header"
+                        android:textColor="@color/colorPrimaryAccent"
+                        android:textSize="14sp"/>
+                    <TextView
+                        android:layout_width="280dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:scrollbars="none"
+                        android:text="@string/data_privacy_content"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"/>
+                </LinearLayout>
 
-    <TextView
-        style="@style/Theme.VocabyAndroid.TextHeadline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
-        android:paddingBottom="@dimen/header_gap"
-        android:text="@string/data_export" />
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/export_save_button"
-        style="@style/Theme.VocabyAndroid.ProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/data_management_export_save_txt"
-        android:drawableStart="@drawable/ic_boxed_export"/>
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/export_save_backup_button"
-        style="@style/Theme.VocabyAndroid.ProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/data_management_export_save_backup"
-        android:drawableStart="@drawable/ic_boxed_export"/>
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/export_entries_button"
-        style="@style/Theme.VocabyAndroid.ProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/data_management_export_entry"
-        android:drawableStart="@drawable/ic_boxed_export"/>
-    <TextView
-        style="@style/Theme.VocabyAndroid.TextHeadline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/container_side_margin"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
-        android:text="@string/data_import" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/header_gap"
-        android:paddingBottom="@dimen/header_gap"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
-        android:text="@string/data_management_import_warning" />
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/import_saves_button"
-        style="@style/Theme.VocabyAndroid.ProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/data_management_import_save"
-        android:drawableStart="@drawable/ic_boxed_import"/>
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/import_entries_button"
-        style="@style/Theme.VocabyAndroid.ProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/data_management_import_entry"
-        android:drawableStart="@drawable/ic_boxed_import"/>
-    <TextView
-        style="@style/Theme.VocabyAndroid.TextHeadline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/container_side_margin"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
-        android:text="@string/data_privacy" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/header_gap"
-        android:paddingBottom="@dimen/header_gap"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
-        android:text="@string/data_management_import_warning" />
+                <Switch
+                    android:id="@+id/data_share_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:checked="true"
+                    android:layout_weight="1"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>

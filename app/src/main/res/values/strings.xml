@@ -133,4 +133,8 @@
     <string name="data_privacy">Data Privacy</string>
     <string name="edit_entry">Edit Entry</string>
     <string name="delete_entry">Delete Entry</string>
+    <string name="data_privacy_header">Share Crash Analytics</string>
+    <string name="data_privacy_content">When enabled, you are opting in to share error related data with Vocaby. </string>
+    <string name="data_privacy_warning">Warning: You must restart the app for the change to take effect</string>
+    <string name="notification_settings">Notification Settings</string>
 </resources>

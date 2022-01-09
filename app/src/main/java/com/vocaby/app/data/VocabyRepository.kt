@@ -624,9 +624,16 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
             vocabyDao.getMonthlySearchData(size)
         }
     }
+
     suspend fun eraseVisitData() {
         vocabyDao.deleteVisit(userId)
         vocabyDao.deleteCustomVisit(userId)
+    }
+
+    fun isDataShareEnabled() = userSharedPreference.getBoolean(Constants.DATA_SHARE_ID, true)
+
+    fun setDataShareSettings(enabled: Boolean) {
+        userSharedPreference.edit().putBoolean(Constants.DATA_SHARE_ID, enabled).apply()
     }
 
     /** --------------------- DATA -------------------- **/
@@ -653,6 +660,11 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                 "Does Vocaby collect data from me?",
                 "We only collect error related data to improve the app and better your experience with Vocaby. " +
                         "If you don't feel comfortable sharing this data, you can opt out in the Data Management page."
+            ),
+            FaqModel(
+                "If I do share my data, can it be traced back to me?",
+                "No, the data does not contain any personally identifiable information that can trace back to you. " +
+                        "The data does contain some information about your device but anything shared with us is securely encrypted."
             ),
             FaqModel(
                 "Why does my import keep failing?",

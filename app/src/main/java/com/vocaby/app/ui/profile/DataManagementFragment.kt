@@ -1,5 +1,6 @@
 package com.vocaby.app.ui.profile
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -7,17 +8,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Switch
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
-import com.vocaby.app.viewmodels.DataTransferViewModel
-import com.vocaby.app.viewmodels.MyEntryViewModel
-import com.vocaby.app.viewmodels.MyEntryViewModelFactory
+import com.vocaby.app.viewmodels.*
 
 class DataManagementFragment : Fragment() {
+    private val userViewModel: UserViewModel by activityViewModels {
+        UserViewModelFactory((requireActivity().application as VocabyApplication).repository)
+    }
+
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,6 +61,11 @@ class DataManagementFragment : Fragment() {
         importEntries.setOnClickListener {
             startDataTransferActivity.putExtra("TYPE", DataTransferViewModel.IMPORT_ENTRY)
             dataTransferActivity.launch(startDataTransferActivity)
+        }
+
+        val dataShareSwitch = view.findViewById<Switch>(R.id.data_share_switch)
+        dataShareSwitch.setOnCheckedChangeListener { _, enabled ->
+            userViewModel.setDataShareSettings(enabled)
         }
 
         return view

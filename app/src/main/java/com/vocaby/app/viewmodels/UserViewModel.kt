@@ -32,6 +32,9 @@ class UserViewModel(private val repository: VocabyRepository) : ViewModel() {
     fun clearSaves() = viewModelScope.launch {
         repository.clearSaves()
     }
+
+    fun isDataShareEnabled() = repository.isDataShareEnabled()
+    fun setDataShareSettings(enabled: Boolean) = repository.setDataShareSettings(enabled)
 }
 
 class UserViewModelFactory(private val repository: VocabyRepository) : ViewModelProvider.Factory {
