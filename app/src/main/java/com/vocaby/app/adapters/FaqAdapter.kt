@@ -11,7 +11,7 @@ import com.vocaby.app.R
 import com.vocaby.app.models.profile.FaqModel
 import java.util.*
 
-class FaqAdapter() : RecyclerView.Adapter<FaqAdapter.FaqViewHolder>() {
+class FaqAdapter: RecyclerView.Adapter<FaqAdapter.FaqViewHolder>() {
     private var faqList: List<FaqModel> = ArrayList()
 
     @SuppressLint("NotifyDataSetChanged")
@@ -37,7 +37,8 @@ class FaqAdapter() : RecyclerView.Adapter<FaqAdapter.FaqViewHolder>() {
         private val header = itemView.findViewById<TextView>(R.id.faq_header)
         private val content = itemView.findViewById<TextView>(R.id.faq_content)
         fun bind(faq: FaqModel) {
-            header.text = faq.header
+            val headerText = "Q${adapterPosition+1}. ${faq.header}"
+            header.text = headerText
             content.text = faq.content
         }
     }

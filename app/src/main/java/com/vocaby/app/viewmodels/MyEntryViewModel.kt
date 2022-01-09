@@ -12,8 +12,8 @@ import com.vocaby.app.payloads.ItemIntPayload
 import com.vocaby.app.payloads.ItemStringPayload
 import com.vocaby.app.states.ItemState
 import com.vocaby.app.states.UserInputState
+import com.vocaby.app.utils.Formatter
 import com.vocaby.app.utils.SingleLiveEvent
-import com.vocaby.app.utils.StringFormatter
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -105,10 +105,10 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     fun createCustomEntry(entry:String) {
         if (entry.isEmpty()) {
             _userInput.value = UserInputState.EmptyInput
-        } else if (StringFormatter.containsSpecialCharacter(entry)) {
+        } else if (Formatter.containsSpecialCharacter(entry)) {
             _userInput.value = UserInputState.InvalidInput
         } else {
-            val sanitizedEntry = StringFormatter.cleanText(entry)
+            val sanitizedEntry = Formatter.cleanText(entry)
             if (sanitizedEntry.length > Constants.ENTRY_MAX_LENGTH) {
                 _userInput.value = UserInputState.LongInput
             } else {

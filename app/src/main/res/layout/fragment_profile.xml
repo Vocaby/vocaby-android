@@ -7,47 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.profile.ProfileHomeFragment">
-    <LinearLayout
-        android:id="@+id/vocaby_header"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:contentDescription="@string/app_logo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_vocaby_logo"
-            tools:ignore="ImageContrastCheck" />
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/profile"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            android:text="@string/hi_vocabler"
-            android:textAllCaps="false"
-            android:textColor="@color/colorPrimaryAccent"
-            android:textSize="15sp" />
-    </LinearLayout>
     <FrameLayout
         android:id="@+id/profile_fragment_container"
         android:layout_width="match_parent"

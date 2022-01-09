@@ -107,7 +107,7 @@ class SearchResultsFragment : Fragment() {
                         saveButton.text = getString(R.string.save_button_unsaved)
                     }
 
-                    saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+                    saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
                     saveButton.setOnClickListener {
                         if (saveState.saved) {
                             userViewModel.removeSaveItem(searchedWord)

@@ -19,8 +19,8 @@ import com.vocaby.app.payloads.ItemEntryPayload
 import com.vocaby.app.payloads.ItemIntPayload
 import com.vocaby.app.payloads.ItemStringPayload
 import com.vocaby.app.states.ItemState
+import com.vocaby.app.utils.Formatter
 import com.vocaby.app.utils.SingleLiveEvent
-import com.vocaby.app.utils.StringFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
@@ -40,7 +40,7 @@ class EntryViewModel(
     private val initialGroups: HashMap<String, DefinitionGroupModel> = HashMap()
     private val groupChanges: GroupChanges = GroupChanges(-1)
     private val definitionChangesMap: MutableMap<String, DefinitionChanges> = HashMap()
-    private var saveTime: Long = Date().time
+    private var saveTime: String = Formatter.formatDateToString(Date().time)
 
     private val _entry: SingleLiveEvent<String> = SingleLiveEvent()
     private val _pronunciation: SingleLiveEvent<String> = SingleLiveEvent()
@@ -48,7 +48,7 @@ class EntryViewModel(
     private val _typeChange: SingleLiveEvent<ItemStringPayload> = SingleLiveEvent()
     private val _definitionGroups: SingleLiveEvent<List<DefinitionGroupModel>> = SingleLiveEvent()
     private val _saveResult: SingleLiveEvent<Boolean> = SingleLiveEvent()
-    private val _types: SingleLiveEvent<List<String>> = SingleLiveEvent()
+    private val _types: SingleLiveEvent<MutableList<String>> = SingleLiveEvent()
     private val _selectedType: SingleLiveEvent<String> = SingleLiveEvent()
     private val _editorState: SingleLiveEvent<ItemState> = SingleLiveEvent()
 
@@ -58,7 +58,7 @@ class EntryViewModel(
     val groupChange: LiveData<ItemIntPayload> get() = _groupChange
     val typeChange: LiveData<ItemStringPayload> get() = _typeChange
     val saveResult: LiveData<Boolean> get() = _saveResult
-    val types: LiveData<List<String>?> get() = _types
+    val types: LiveData<MutableList<String>> get() = _types
     val selectedType: LiveData<String> get() = _selectedType
     val editorState: LiveData<ItemState> get() = _editorState
 
@@ -145,6 +145,7 @@ class EntryViewModel(
         groupChanges.putItemAdded(newGroup.type, newGroup)
         _groupChange.value = ItemIntPayload(selectedGroup, ItemState.ADD)
         _typeChange.value = ItemStringPayload(newGroup.type, ItemState.DELETE)
+        _selectedType.value = ""
     }
 
     fun handleGroupCreationResult(result: ActivityResult) {
@@ -191,8 +192,7 @@ class EntryViewModel(
 
     // USER CLICKS SAVE
     fun saveUserEntry(pronunciation: String) {
-        saveTime = Date().time
-        val pronun = StringFormatter.cleanText(pronunciation)
+        val pronun = Formatter.cleanText(pronunciation)
         checkForUpdatedItems()
 
         if (entryData.definitionGroups.isEmpty()) {
@@ -220,6 +220,8 @@ class EntryViewModel(
                 _saveResult.setValue(false)
             } else {
                 viewModelScope.launch {
+                    saveTime = Formatter.formatDateToString(Date().time)
+
                     entryData.id = repository.insertOrUpdateEntry(
                         entryData.entry,
                         pronun,

@@ -1,7 +1,6 @@
 package com.vocaby.app.data.entity
 
 import androidx.room.*
-import com.vocaby.app.data.entity.CustomEntry
 
 @Entity(
     tableName = "custom_entry_group",

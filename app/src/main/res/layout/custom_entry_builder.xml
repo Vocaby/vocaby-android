@@ -24,17 +24,10 @@
         app:layout_constraintTop_toTopOf="parent">
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/back_button"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/Theme.VocabyAndroid.NavButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sourcesanspro_black"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:background="@color/white"
-            android:text="@string/nav_close"
-            android:textAllCaps="true"
-            android:textColor="@color/black"
-            android:textSize="12sp" />
+            android:text="@string/nav_close" />
 
         <Space
             android:layout_width="0dp"
@@ -60,21 +53,16 @@
             android:layout_marginEnd="8dp"
             android:layout_width="18dp"
             android:layout_height="18dp"
+            android:indeterminateTint="@color/colorPrimary"
             android:visibility="invisible" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_button"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/Theme.VocabyAndroid.NavButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sourcesanspro_black"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:background="@color/white"
             android:text="@string/nav_save"
-            android:textAllCaps="true"
-            android:textColor="@color/colorPrimary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorPrimary"/>
     </LinearLayout>
 
     <LinearLayout
@@ -95,8 +83,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/entry_header"
-            android:textSize="12sp"
-            android:textColor="@color/gray"/>
+            android:textColor="@color/dark_gray"
+            android:textSize="12sp"/>
 
         <Space
             android:layout_width="0dp"
@@ -141,8 +129,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pronunciation"
-            android:textSize="12sp"
-            android:textColor="@color/gray"/>
+            android:textColor="@color/dark_gray"
+            android:textSize="12sp"/>
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -187,8 +175,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/custom_definition_group_header"
-            android:textSize="12sp"
-            android:textColor="@color/gray"/>
+            android:textColor="@color/dark_gray"
+            android:textSize="12sp"/>
 
         <TextView
             android:id="@+id/group_header_alert"

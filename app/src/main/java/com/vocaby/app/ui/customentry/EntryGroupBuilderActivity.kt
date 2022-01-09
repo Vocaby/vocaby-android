@@ -19,8 +19,8 @@ import com.vocaby.app.adapters.DragStartListener
 import com.vocaby.app.adapters.ItemTouchCallback
 import com.vocaby.app.states.ItemState
 import com.vocaby.app.states.UserInputState
+import com.vocaby.app.utils.Formatter
 import com.vocaby.app.utils.LiveDataUtil.observeOnce
-import com.vocaby.app.utils.StringFormatter
 import com.vocaby.app.viewmodels.EntryGroupViewModel
 
 class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
@@ -54,7 +54,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         }
 
         entryGroupViewModel.type.observeOnce(this) { type ->
-            val header = StringFormatter.firstLetterUpperOnly(type) + " Group"
+            val header = Formatter.firstLetterUpperOnly(type) + " Group"
             val activityHeader = findViewById<TextView>(R.id.custom_group_activity_header)
             val typeHeader = findViewById<TextView>(R.id.type_header)
 

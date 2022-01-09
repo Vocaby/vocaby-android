@@ -5,10 +5,11 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginEnd="@dimen/container_gap_margin"
+    app:cardElevation="@dimen/card_elevation"
     app:cardCornerRadius="@dimen/radius">
     <LinearLayout
         android:layout_width="250dp"
-        android:layout_height="170dp"
+        android:layout_height="140dp"
         android:orientation="vertical"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"

@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.app.R
 import com.vocaby.app.VocabyApplication
 import com.vocaby.app.adapters.SearchHistoryAdapter
+import com.vocaby.app.utils.Formatter.formatDateToString
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
-import java.text.SimpleDateFormat
 import java.util.*
 
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener {
@@ -49,8 +49,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         val view = inflater.inflate(R.layout.fragment_dictionary_main, container, false)
 
         val dateView = view.findViewById<TextView>(R.id.date)
-        val formatter = SimpleDateFormat("EEE MM.dd.yyyy", Locale.getDefault())
-        dateView.text = formatter.format(Date())
+        dateView.text = formatDateToString(Date().time, true)
 
         // Random Word of the Day
         wordView = view.findViewById(R.id.entry_header)

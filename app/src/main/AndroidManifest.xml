@@ -2,7 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.vocaby.app">
-
+    <uses-permission android:name="android.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:name=".VocabyApplication"
         android:allowBackup="false"
@@ -11,6 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="sensorPortrait"
         android:theme="@style/Theme.VocabyAndroid">
+        <meta-data android:name="com.bugsnag.android.API_KEY"
+            android:value="c50224dde34b12f79fe666d9b1b80910"/>
         <activity
             android:name=".ui.profile.DataTransferActivity"
             android:exported="false" />
@@ -63,13 +71,4 @@
             </intent-filter>
         </receiver>
     </application>
-    <uses-permission android:name="android.permission.SET_ALARM" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 </manifest>

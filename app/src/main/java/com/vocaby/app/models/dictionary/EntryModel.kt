@@ -1,40 +1,18 @@
 package com.vocaby.app.models.dictionary
 
-import android.os.Parcel
 import android.os.Parcelable
-import android.os.Parcelable.Creator
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
-class EntryModel : Parcelable {
-    var id: Int
-    val entry: String
-    var pronunciation: String?
-    var definitionGroups: MutableList<DefinitionGroupModel>
-    var lastUpdated: String = ""
-
-    constructor(id: Int, entry: String, pronunciation: String) {
-        this.id = id
-        this.entry = entry
-        this.pronunciation = pronunciation
-        definitionGroups = ArrayList()
-    }
-
-    constructor(entry: String) {
-        id = -1
-        this.entry = entry
-        pronunciation = ""
-        definitionGroups = ArrayList()
-    }
-
-    private constructor(`in`: Parcel) {
-        definitionGroups = ArrayList()
-        id = `in`.readInt()
-        entry = `in`.readString().toString()
-        pronunciation = `in`.readString()
-
-        `in`.readTypedList(definitionGroups, DefinitionGroupModel)
-    }
-
+@Parcelize
+class EntryModel(
+    var id: Int,
+    val entry: String,
+    var pronunciation: String?,
+    var lastUpdated: String = "",
+    var definitionGroups: MutableList<DefinitionGroupModel> = ArrayList(),
+) : Parcelable {
+    constructor(entry: String) : this(-1, entry, null)
     val isEmpty: Boolean
         get() = definitionGroups.isEmpty()
 
@@ -84,27 +62,6 @@ class EntryModel : Parcelable {
             if (definitionGroups[i].type == type) return i
         }
         return -1
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(parcel: Parcel, i: Int) {
-        parcel.writeInt(id)
-        parcel.writeString(entry)
-        parcel.writeString(pronunciation)
-        parcel.writeTypedList(definitionGroups)
-    }
-
-    companion object CREATOR : Creator<EntryModel> {
-        override fun createFromParcel(parcel: Parcel): EntryModel {
-            return EntryModel(parcel)
-        }
-
-        override fun newArray(size: Int): Array<EntryModel?> {
-            return arrayOfNulls(size)
-        }
     }
 
     override fun toString(): String {

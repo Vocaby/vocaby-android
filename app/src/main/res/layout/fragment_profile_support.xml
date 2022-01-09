@@ -1,129 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:layout_height="wrap_content"
+    android:background="@color/very_light_gray"
+    android:orientation="vertical"
+    android:clickable="true"
     tools:context=".ui.profile.SupportFragment">
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/very_light_gray"
-        android:orientation="vertical"
-        android:clickable="true">
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:background="@drawable/box_bottom_stroke_gray">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/back_button"
+            style="@style/Theme.VocabyAndroid.NavButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/container_side_margin"
-            android:background="@color/white"
-            android:orientation="vertical">
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/back_button"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="@dimen/container_gap_margin"
-                android:drawableStart="@drawable/ic_arrow_left_tail"
-                android:drawablePadding="12dp"
-                android:drawableTint="@color/dark_gray"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:text="@string/back"
-                android:textColor="@color/dark_gray" />
-
-            <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/container_side_margin"
-                android:paddingEnd="@dimen/container_side_margin"
-                android:layout_marginTop="@dimen/container_gap_margin"
-                android:paddingBottom="8dp"
-                android:text="@string/support_faq" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/faq_recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingStart="@dimen/container_side_margin"
-                android:paddingEnd="@dimen/container_side_margin" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/container_side_margin"
-            android:paddingStart="@dimen/container_side_margin"
-            android:paddingEnd="@dimen/container_side_margin"
-            android:paddingBottom="@dimen/container_side_margin"
-            android:orientation="vertical"
+            android:drawableStart="@drawable/ic_chevron_left"
+            android:text="@string/back"
+            android:layout_marginStart="-8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/faq_recyclerview"
-            app:layout_constraintVertical_bias="1.0">
-            <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/container_gap_margin"
-                android:paddingBottom="8dp"
-                android:text="@string/contact_us" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:fontFamily="@font/sourcesanspro_regular"
-                android:textSize="12sp"
-                android:text="@string/contact_us_body"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/container_side_margin"
-                android:layout_marginBottom="@dimen/container_side_margin"
-                android:fontFamily="@font/sourcesanspro_black"
-                android:textSize="14sp"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
-                android:text="@string/vocaby_email" />
-            <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:text="@string/support_vocaby" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:fontFamily="@font/sourcesanspro_regular"
-                android:textSize="12sp"
-                android:text="@string/support_vocaby_body"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/feedback_input"
-                android:background="@drawable/text_input_box"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:text="@string/nav_support"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:imeOptions="actionDone"
-                android:hint="@string/enter_your_feedback"
-                android:padding="12dp"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                android:fontFamily="@font/sourcesanspro_regular"
-                android:layout_marginTop="@dimen/container_gap_margin"
-                android:autofillHints="Enter a pronunciation" />
+                android:paddingTop="@dimen/container_side_margin"
+                android:background="@color/white"
+                android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatButton
-                style="@style/Theme.VocabyAndroid.Button"
-                android:layout_width="wrap_content"
+                <TextView
+                    style="@style/Theme.VocabyAndroid.TextHeadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/container_side_margin"
+                    android:paddingEnd="@dimen/container_side_margin"
+                    android:text="@string/support_faq" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/faq_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/header_gap"
+                    android:paddingBottom="@dimen/container_side_margin"
+                    android:paddingStart="@dimen/container_side_margin"
+                    android:paddingEnd="@dimen/container_side_margin" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/container_gap_margin"
-                android:text="@string/submit" />
+                android:paddingTop="@dimen/container_side_margin"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
+                android:paddingBottom="@dimen/container_side_margin"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/Theme.VocabyAndroid.TextHeadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/container_gap_margin"
+                    android:paddingBottom="@dimen/header_gap"
+                    android:text="@string/contact_us" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/sourcesanspro_regular"
+                    android:textSize="12sp"
+                    android:text="@string/contact_us_body"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/container_side_margin"
+                    android:layout_marginBottom="@dimen/container_side_margin"
+                    android:fontFamily="@font/sourcesanspro_black"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimary"
+                    android:text="@string/vocaby_email" />
+                <TextView
+                    style="@style/Theme.VocabyAndroid.TextHeadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/header_gap"
+                    android:text="@string/support_vocaby" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/sourcesanspro_regular"
+                    android:textSize="12sp"
+                    android:text="@string/support_vocaby_body"/>
+
+                <EditText
+                    android:id="@+id/feedback_input"
+                    android:background="@drawable/text_input_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:hint="@string/enter_your_feedback"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/sourcesanspro_regular"
+                    android:layout_marginTop="@dimen/container_gap_margin"
+                    android:autofillHints="Enter a pronunciation" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/Theme.VocabyAndroid.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/container_gap_margin"
+                    android:text="@string/submit" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

@@ -11,14 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.app.R
 import com.vocaby.app.models.customentry.UserEntry
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import com.vocaby.app.utils.Formatter
 
-class CustomEntryAdapter(private val activity: Activity, private val interaction: Interaction) :
+class CustomEntryAdapter(activity: Activity, private val interaction: Interaction) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
     private var customEntries: List<UserEntry> = ArrayList()
-    private val dateFormatter = SimpleDateFormat("MM.dd.yyyy", Locale.getDefault())
     private val alertDialogBuilder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(activity)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -29,7 +26,6 @@ class CustomEntryAdapter(private val activity: Activity, private val interaction
                 false
             ),
             interaction,
-            dateFormatter,
             alertDialogBuilder
         )
     }
@@ -66,7 +62,6 @@ class CustomEntryAdapter(private val activity: Activity, private val interaction
     constructor(
         itemView: View,
         private val interaction: Interaction,
-        private val dateFormatter: SimpleDateFormat,
         private val alertDialogBuilder: MaterialAlertDialogBuilder
     ): RecyclerView.ViewHolder(itemView) {
         private val header: TextView = itemView.findViewById(R.id.custom_entry_item_header)
@@ -75,7 +70,7 @@ class CustomEntryAdapter(private val activity: Activity, private val interaction
 
         fun bind(userEntry: UserEntry) {
             header.text = userEntry.entry
-            lastUpdated.text = dateFormatter.format(userEntry.lastUpdated)
+            lastUpdated.text = Formatter.formatDateStringForDisplay(userEntry.lastUpdated)
 
             itemView.setOnClickListener {
                 interaction.onItemTouch(userEntry.entry, adapterPosition)

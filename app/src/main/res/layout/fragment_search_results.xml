@@ -2,20 +2,17 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/white"
+    android:background="@drawable/box_white_bottom_straight"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
+        android:layout_height="46dp"
         android:orientation="horizontal"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
-        android:paddingTop="12dp"
-        android:clipToPadding="false"
         android:background="@drawable/box_white_bottom_straight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,26 +20,19 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/back_button"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/Theme.VocabyAndroid.NavButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_close"
-            android:drawablePadding="10dp"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="8dp"
-            android:background="@null"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             android:text="@string/close"
-            android:textColor="@color/colorPrimaryAccent"
-            android:textSize="12sp"
+            android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/dictionary_selector"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"
-            tools:ignore="SmallSp" />
+            app:layout_constraintVertical_bias="0.8" />
 
         <RadioGroup
             android:id="@+id/dictionary_selector"
@@ -55,7 +45,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
 
             <RadioButton
                 android:id="@+id/selection_custom"
@@ -93,8 +84,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/dictionary_selector"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.8">
 
             <ProgressBar
                 android:id="@+id/save_progress"
@@ -102,25 +93,21 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/container_gap_margin"
                 android:layout_weight="0"
+                android:indeterminateTint="@color/colorPrimary"
                 tools:ignore="InefficientWeight" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/save_button"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="66dp"
+                style="@style/Theme.VocabyAndroid.NavButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_save"
-                android:background="@null"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
+                android:drawableEnd="@drawable/ic_save"
+                android:drawablePadding="6dp"
                 android:enabled="false"
-                android:padding="4dp"
                 android:text="@string/save_button_unsaved"
-                android:textColor="@color/button_colors"
-                android:textSize="12sp"
-                tools:ignore="SmallSp" />
+                android:textColor="@color/button_colors" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -130,7 +117,7 @@
         android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:indeterminateTint="@color/colorPrimaryAccent"
+        android:indeterminateTint="@color/colorPrimary"
         android:scaleY="1.2"
         app:layout_constraintVertical_bias="0.3"
         app:layout_constraintBottom_toBottomOf="parent"

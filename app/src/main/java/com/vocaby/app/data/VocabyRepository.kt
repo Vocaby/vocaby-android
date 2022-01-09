@@ -19,15 +19,12 @@ import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.dictionary.*
 import com.vocaby.app.models.profile.FaqModel
-import com.vocaby.app.utils.StringFormatter
+import com.vocaby.app.utils.Formatter
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import java.util.*
 
 class VocabyRepository(private val vocabyDao: VocabyDao, val application: Application) {
@@ -145,9 +142,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         val dailyPick: DailyPick
 
         if (today != lastTimeStarted) {
-            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             dailyPick = try {
-                val response = apiService.getWoD(formatter.format(Date()))
+                val response = apiService.getWoD(Formatter.formatDateToString(Date().time))
                 if (response.isSuccessful && response.code() == 200) {
                     DailyPick(response.body(), false)
                 } else {
@@ -210,7 +206,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         pronunciation: String,
         groupChanges: GroupChanges,
         definitionChangesMap: MutableMap<String, DefinitionChanges>,
-        saveTime: Long
+        saveTime: String
     ): Int {
         val entryId: Int = if (groupChanges.entryId == -1) {
             vocabyDao.insertCustomEntry(
@@ -224,11 +220,11 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         } else {
             vocabyDao.updateCustomEntry(
                 CustomEntry(
-                    groupChanges.entryId,
                     userId,
                     entry,
                     pronunciation,
-                    saveTime
+                    saveTime,
+                    groupChanges.entryId
                 )
             )
 
@@ -361,13 +357,11 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     private fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? {
         data?.let {
-            val pronunciation =
-                data.customEntry.pronunciation?.let { data.customEntry.pronunciation } ?: ""
-
             val entryData = EntryModel(
                 data.customEntry.entryId,
                 data.customEntry.entry,
-                pronunciation
+                data.customEntry.pronunciation,
+                data.customEntry.lastUpdated
             )
 
             val groups: MutableList<DefinitionGroupModel> = ArrayList()
@@ -422,7 +416,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     private fun checkEntryValidity(entry: String) {
         if (entry.length > Constants.ENTRY_MAX_LENGTH
             || entry.isEmpty()
-            || StringFormatter.containsSpecialCharacter(entry)
+            || Formatter.containsSpecialCharacter(entry)
         ) {
             throw IllegalFileException(
                 IllegalFileException.INVALID_FILE
@@ -484,18 +478,28 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                 ) {
                     for (i in jsonObject.getAsJsonArray("data")) {
                         val item = i.asJsonObject
-                        val entryModel = EntryModel(item.getAsJsonPrimitive("entry").asString)
-                        entryModel.pronunciation = item.getAsJsonPrimitive("pronunciation").asString
-                        checkEntryValidity(entryModel.entry)
+                        val entry = item.getAsJsonPrimitive("entry").asString
+                        val pronunciation = item.getAsJsonPrimitive("pronunciation").asString
+                        val lastUpdated = item.getAsJsonPrimitive("lastUpdated").asString
+
+                        // Validations
+                        checkEntryValidity(entry)
+                        if (!Formatter.dateIsValid(lastUpdated)) {
+                            throw IllegalFileException(
+                                IllegalFileException.INVALID_FORMAT
+                            )
+                        }
+
                         entries.add(
                             CustomEntry(
                                 userId,
-                                entryModel.entry,
-                                entryModel.pronunciation,
-                                OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
+                                entry,
+                                pronunciation,
+                                lastUpdated
                             )
                         )
 
+                        val entryModel = EntryModel(userId, entry, null)
                         for (g in item.getAsJsonArray("definitionGroups")) {
                             val group = g.asJsonObject
                             val type = group.getAsJsonPrimitive("type").asString
@@ -599,13 +603,11 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     /** --------------------- DATA -------------------- **/
     suspend fun recordVisit(entryId: Int) {
-        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        vocabyDao.recordVisit(DictionaryViewCount(0, userId, entryId, formatter.format(Date())))
+        vocabyDao.recordVisit(DictionaryViewCount(0, userId, entryId, Formatter.formatDateToString(Date().time)))
     }
 
     suspend fun recordCustomVisit(entryId: Int) {
-        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        vocabyDao.recordCustomVisit(CustomDictionaryViewCount(0, userId, entryId, formatter.format(Date())))
+        vocabyDao.recordCustomVisit(CustomDictionaryViewCount(0, userId, entryId, Formatter.formatDateToString(Date().time)))
     }
 
     fun updateChartMode(displayAll: Boolean) {
@@ -616,10 +618,10 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     suspend fun getChartData(size: Int): List<VisitData> {
         val displayAll = userSharedPreference.getBoolean(Constants.CHART_MODE_ID, false)
-        if (displayAll) {
-            return vocabyDao.getAllSearchData(size)
+        return if (displayAll) {
+            vocabyDao.getAllSearchData(size)
         } else {
-            return vocabyDao.getMonthlySearchData(size)
+            vocabyDao.getMonthlySearchData(size)
         }
     }
     suspend fun eraseVisitData() {
@@ -629,43 +631,41 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
     /** --------------------- DATA -------------------- **/
     fun getFaq(): List<FaqModel> {
-        return listOf<FaqModel>(
+        return listOf(
             FaqModel(
-                "Q1. Why is Vocaby only available on Android?",
-                "We decided on Android as Vocaby's first platform because our developers " +
-                        "are more acquainted in this area. We intend to increase Vocaby's " +
-                        "availability across platforms further down the road, but we want " +
-                        "to make sure that Vocaby matures on Android first."
+                "Is Vocaby free?",
+                "Yup! Vocaby is completely free and has no hidden fees or advertisements."
             ),
             FaqModel(
-                "Q2. Why are some definitions outdated?",
+                "Why are some definitions outdated?",
                 "Vocaby is powered by Princeton's Wordnet. " +
                         "At Vocaby, we are maintaining and updating definitions so that " +
-                        "you are provided with the most up-to-date definition."
+                        "you are provided with the most up-to-date definition. " +
+                        "If you would like to help improve the dictionary, please submit the form below."
             ),
             FaqModel(
-                "Q3. Will definitions automatically update on my app?",
+                "Will definitions automatically update on my app?",
                 "Yup! Once we make updates to our dictionary, your will retrieve the " +
                         "most up to date definitions on your app. This does require an " +
                         "internet connection though."
             ),
             FaqModel(
-                "Q4. Does Vocaby collect data from me?",
-                "We do not collect any data from you. The app does keep track of your " +
-                        "search activity to provide you with statistics " +
-                        "but any data that is collected by the app is only available locally " +
-                        "on your phone."
+                "Does Vocaby collect data from me?",
+                "We only collect error related data to improve the app and better your experience with Vocaby. " +
+                        "If you don't feel comfortable sharing this data, you can opt out in the Data Management page."
             ),
             FaqModel(
-                "Q5. Is Vocaby free?",
-                "Yup! Vocaby is completely free and has no hidden fees."
-            ),
-            FaqModel(
-                "Q6. Why does my import keep failing?",
+                "Why does my import keep failing?",
                 "Please make sure that your exported backup json " +
                         "file was indeed created by the app and was not tampered with. " +
                         "If you continue to experience this issue, please feel " +
                         "free to reach out to us!"
+            ),
+            FaqModel(
+                "Will Vocaby be available on other platforms?",
+                "We intend to increase Vocaby's " +
+                        "availability across platforms further down the road, but we want " +
+                        "to make sure that Vocaby matures on Android first."
             )
         )
     }

@@ -1,96 +1,74 @@
-package com.vocaby.app.adapters;
+package com.vocaby.app.adapters
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import androidx.recyclerview.widget.RecyclerView
+import com.vocaby.app.adapters.DefinitionsAdapter.DefinitionsViewHolder
+import com.vocaby.app.models.dictionary.EntryModel
+import android.view.ViewGroup
+import android.view.LayoutInflater
+import com.vocaby.app.R
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.View
+import com.vocaby.app.models.dictionary.DefinitionModel
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.FrameLayout
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.vocaby.app.R;
-import com.vocaby.app.models.dictionary.DefinitionGroupModel;
-import com.vocaby.app.models.dictionary.DefinitionModel;
-import com.vocaby.app.models.dictionary.EntryModel;
-
-import java.util.List;
-
-public class DefinitionsAdapter extends RecyclerView.Adapter<DefinitionsAdapter.DefinitionsViewHolder> {
-    private EntryModel entryData;
-    private final Context ctx;
-
-    public DefinitionsAdapter(Context ctx) {
-        this.ctx = ctx;
-    }
-
-    @NonNull
-    @Override
-    public DefinitionsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(ctx);
-        View view = inflater.inflate(R.layout.section_row, parent, false);
-        return new DefinitionsViewHolder(view);
+class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<DefinitionsViewHolder>() {
+    private var entryData: EntryModel = EntryModel("Vocaby")
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefinitionsViewHolder {
+        val inflater = LayoutInflater.from(ctx)
+        val view = inflater.inflate(R.layout.section_row, parent, false)
+        return DefinitionsViewHolder(view)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setWordData(EntryModel entryData) {
-        this.entryData = entryData;
-        this.notifyDataSetChanged();
+    fun setWordData(entryData: EntryModel) {
+        this.entryData = entryData
+        notifyDataSetChanged()
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull DefinitionsAdapter.DefinitionsViewHolder holder, int position) {
-        if(entryData != null) {
-            DefinitionGroupModel group = entryData.getDefinitionGroups().get(position);
-            List<DefinitionModel> definitions = group.getDefinitionData();
-            holder.pos.setText(group.getType());
+    override fun onBindViewHolder(holder: DefinitionsViewHolder, position: Int) {
+        val group = entryData.definitionGroups[position]
+        val definitions: List<DefinitionModel> = group.definitionData
+        holder.pos.text = group.type
+        val inflater = LayoutInflater.from(ctx)
 
-            LayoutInflater inflater = LayoutInflater.from(ctx);
-            for(int i = 0; i < definitions.size(); i++) {
-                String def = definitions.get(i).getDefinition();
-                String sen = definitions.get(i).getExample();
-                LinearLayout card = (LinearLayout) inflater.inflate(R.layout.definition_row, null);
-                TextView definition = card.findViewById(R.id.definition);
-                TextView sentence = card.findViewById(R.id.sentence);
-                TextView counter = card.findViewById(R.id.definition_counter);
-                TextView exampleHeader = card.findViewById(R.id.example_header);
+        for (i in definitions.indices) {
+            val def = definitions[i].definition
+            val sen = definitions[i].example
+            val card = inflater.inflate(R.layout.definition_row, null) as LinearLayout
+            val definition = card.findViewById<TextView>(R.id.definition)
+            val sentence = card.findViewById<TextView>(R.id.sentence)
+            val counter = card.findViewById<TextView>(R.id.definition_counter)
+            val exampleHeader = card.findViewById<TextView>(R.id.example_header)
+            val layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT
+            )
 
-                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-                layoutParams.setMargins(12, 8, 12, 8);
-                card.setLayoutParams(layoutParams);
+            layoutParams.setMargins(12, 8, 12, 8)
+            card.layoutParams = layoutParams
 
-                if(sen.length() > 0) {
-                    sentence.setText(sen);
-                } else {
-                    sentence.setVisibility(View.GONE);
-                    exampleHeader.setVisibility(View.GONE);
-                }
-
-                String numbering = i+1 + ". ";
-                counter.setText(numbering);
-                definition.setText(def);
-                holder.definitionContainer.addView(card);
+            if (!sen.isNullOrEmpty()) {
+                sentence.text = sen
+            } else {
+                sentence.visibility = View.GONE
+                exampleHeader.visibility = View.GONE
             }
+
+            val numbering = "${i + 1}. "
+            counter.text = numbering
+            definition.text = def
+            holder.definitionContainer.addView(card)
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return entryData == null ? 0 : entryData.getDefinitionGroups().size();
+    override fun getItemCount(): Int {
+        return entryData.definitionGroups.size
     }
 
-    public static class DefinitionsViewHolder extends RecyclerView.ViewHolder {
-        TextView pos;
-        LinearLayout definitionContainer;
-
-        public DefinitionsViewHolder(@NonNull View itemView) {
-            super(itemView);
-            pos = itemView.findViewById(R.id.part_of_speech);
-            definitionContainer = itemView.findViewById(R.id.definitions_card_container);
-        }
+    class DefinitionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var pos: TextView = itemView.findViewById(R.id.part_of_speech)
+        var definitionContainer: LinearLayout = itemView.findViewById(R.id.definitions_card_container)
     }
 }

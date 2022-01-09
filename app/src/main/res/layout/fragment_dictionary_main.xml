@@ -209,7 +209,7 @@
         android:id="@+id/search_history_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/header_gap"
         android:clipToPadding="false"
         android:orientation="horizontal"
         android:paddingStart="@dimen/container_side_margin"

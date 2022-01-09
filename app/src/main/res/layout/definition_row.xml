@@ -29,8 +29,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/definition_header_singular"
-            android:textColor="@color/gray"
             android:textSize="10sp"
+            android:textColor="@color/dark_gray"
             tools:ignore="SmallSp" />
         <TextView
             android:id="@+id/definition"
@@ -46,8 +46,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="@string/example_header"
-            android:textColor="@color/gray"
             android:textSize="10sp"
+            android:textColor="@color/dark_gray"
             tools:ignore="SmallSp" />
         <TextView
             android:id="@+id/sentence"

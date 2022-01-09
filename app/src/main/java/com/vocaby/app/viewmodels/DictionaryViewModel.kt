@@ -10,8 +10,8 @@ import com.vocaby.app.models.dictionary.DailyPick
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.models.dictionary.SimpleEntryModel
 import com.vocaby.app.states.GenericState
+import com.vocaby.app.utils.Formatter.cleanText
 import com.vocaby.app.utils.SingleLiveEvent
-import com.vocaby.app.utils.StringFormatter.cleanText
 import com.vocaby.app.utils.VocabyAlgo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

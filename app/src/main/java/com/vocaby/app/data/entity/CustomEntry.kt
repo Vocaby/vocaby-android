@@ -6,20 +6,14 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "custom_user_entry", indices = [Index("entry")])
-class CustomEntry constructor (
+data class CustomEntry(
     @ColumnInfo(name = "user_id")
     var userId: Int,
     var entry: String,
     var pronunciation: String?,
     @ColumnInfo(name = "last_updated")
-    var lastUpdated: Long
-) {
+    var lastUpdated: String,
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "custom_entry_id")
-    var entryId: Int = 0
-
-    constructor(entryId:Int, userId: Int, entry: String, pronunciation: String, lastUpdated: Long)
-            : this(userId, entry, pronunciation, lastUpdated) {
-        this.entryId = entryId
-    }
-}
+    var entryId: Int = 0,
+)

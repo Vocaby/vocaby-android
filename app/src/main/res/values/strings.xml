@@ -130,4 +130,5 @@
     <string name="support_vocaby_body">We are constantly trying to improve Vocaby. If you would like us to update an entry or add a feature, submit this form!</string>
     <string name="submit">submit</string>
     <string name="enter_your_feedback">Enter your feedback</string>
+    <string name="data_privacy">Data Privacy</string>
 </resources>
