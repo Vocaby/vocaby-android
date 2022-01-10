@@ -64,6 +64,7 @@ class DataManagementFragment : Fragment() {
         }
 
         val dataShareSwitch = view.findViewById<Switch>(R.id.data_share_switch)
+        dataShareSwitch.isChecked = userViewModel.isDataShareEnabled()
         dataShareSwitch.setOnCheckedChangeListener { _, enabled ->
             userViewModel.setDataShareSettings(enabled)
         }

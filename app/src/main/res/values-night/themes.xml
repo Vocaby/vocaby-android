@@ -19,7 +19,7 @@
 
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/colorPrimaryAccent</item>
-
+        <item name="colorControlActivated">@color/colorPrimary</item>
         <item name="preferenceTheme">@style/Theme.VocabyAndroid.PreferenceThemeOverlay</item>
 
         <item name="colorAccent">@color/colorPrimaryAccent</item>
@@ -31,17 +31,18 @@
         <item name="bottomSheetDialogTheme">@style/Theme.VocabyAndroid.BottomSheetDialog</item>
 
         <item name="alertDialogTheme">@style/AlertDialogStyle</item>
-
-        <item name="bottomNavigationStyle">@style/Theme.VocabyAndroid.BottomNavigation</item>
     </style>
 
-    <style name="Theme.VocabyAndroid.BottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.VocabyAndroid.BottomNavigation</item>
-    </style>
+    <style name="Theme.VocabyAndroid.TextInputEditText" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <!-- left and right padding -->
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
 
-    <style name="ThemeOverlay.VocabyAndroid.BottomNavigation" parent="">
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorOnPrimary">@color/colorPrimaryAccent</item>
+        <!-- top and bottom padding -->
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
     <style name="AlertDialogStyle" parent="ThemeOverlay.AppCompat.Dialog.Alert">
@@ -54,7 +55,7 @@
         <item name="android:windowTitleStyle">@style/Theme.VocabyAndroid.AlertDialog.Title</item>
         <item name="android:textAppearanceMedium">@style/Theme.VocabyAndroid.AlertDialog.Title</item>
         <item name="buttonBarPositiveButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Positive</item>
-        <item name="buttonBarNegativeButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Negative</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Neutral</item>
     </style>
 
     <style name="Theme.VocabyAndroid.AlertDialog.Title" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
@@ -86,10 +87,6 @@
 
     <style name="Theme.VocabyAndroid.PreferenceDialog" parent="@style/Preference.DialogPreference.Material">
         <item name="android:layout">@layout/custom_preference</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryAccent</item>
-        <item name="colorAccent">@color/colorPrimaryAccent</item>
-        <item name="android:textColor">@color/dark_gray</item>
     </style>
 
     <style name="Theme.VocabyAndroid.MaterialDialogAlert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
@@ -97,8 +94,8 @@
         <item name="android:background">@color/white</item>
         <item name="materialAlertDialogTitleTextStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Title</item>
         <item name="materialAlertDialogBodyTextStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Body</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Positive</item>
-        <item name="buttonBarNegativeButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Negative</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Negative</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Theme.VocabyAndroid.MaterialDialogAlert.Neutral</item>
         <item name="shapeAppearance">@style/ShapeAppearance.VocabyAndroid.SmallComponent</item>
     </style>
 
@@ -112,6 +109,14 @@
     </style>
 
     <style name="Theme.VocabyAndroid.MaterialDialogAlert.Positive" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/sourcesanspro_black</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.VocabyAndroid.SmallComponent</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.MaterialDialogAlert.Negative" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/colorHeadline</item>
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
@@ -119,7 +124,7 @@
         <item name="shapeAppearance">@style/ShapeAppearance.VocabyAndroid.SmallComponent</item>
     </style>
 
-    <style name="Theme.VocabyAndroid.MaterialDialogAlert.Negative" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="Theme.VocabyAndroid.MaterialDialogAlert.Neutral" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textColor">@color/black</item>
@@ -127,15 +132,13 @@
 
     <style name="ShapeAppearance.VocabyAndroid.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerSize">@dimen/radius</item>
-        <item name="backgroundColor">@color/white</item>
-        <item name="background">@color/white</item>
-        <item name="android:background">@color/white</item>
     </style>
 
     <style name="Theme.VocabyAndroid.TextHeadline" parent="Widget.AppCompat.TextView">
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="Theme.VocabyAndroid.TextHeader" parent="Widget.AppCompat.TextView">
@@ -150,6 +153,31 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:padding">12dp</item>
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.NavButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@color/white</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/sourcesanspro_black</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.MaterialToggleButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:fontFamily">@font/sourcesanspro_black</item>
+        <item name="android:textSize">8sp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:minWidth">14dp</item>
+        <item name="android:minHeight">14dp</item>
+        <item name="android:colorAccent">@color/colorPrimary</item>
     </style>
 
     <style name="Theme.VocabyAndroid.ProfileButton" parent="Widget.AppCompat.Button.Borderless">

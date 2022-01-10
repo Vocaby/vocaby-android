@@ -128,7 +128,7 @@
     <string name="vocaby_email">talkwith@vocaby.app</string>
     <string name="support_vocaby">Help us improve Vocaby</string>
     <string name="support_vocaby_body">We are constantly trying to improve Vocaby. If you would like us to update an entry or add a feature, submit this form!</string>
-    <string name="submit">submit</string>
+    <string name="submit_feedback">Send Feedback</string>
     <string name="enter_your_feedback">Select a feedback type</string>
     <string name="enter_your_feedback_message">Enter your feedback message here</string>
     <string name="data_privacy">Data Privacy</string>

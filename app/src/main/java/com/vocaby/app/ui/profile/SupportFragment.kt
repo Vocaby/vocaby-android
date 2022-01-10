@@ -42,14 +42,14 @@ class SupportFragment : Fragment() {
         submitProgress = view.findViewById(R.id.submit_progress_bar)
         feedbackMessage = view.findViewById(R.id.feedback_input_content)
         feedbackEmail = view.findViewById(R.id.feedback_input_email)
+        recyclerView = view.findViewById(R.id.faq_recyclerview)
 
         setupButtons(view)
-        recyclerView = view.findViewById(R.id.faq_recyclerview)
         setupRecyclerView()
         return view
     }
 
-    fun setupButtons(view: View) {
+    private fun setupButtons(view: View) {
         val backButton = view.findViewById<Button>(R.id.back_button)
         backButton.setOnClickListener { requireActivity().onBackPressed() }
 
@@ -107,12 +107,12 @@ class SupportFragment : Fragment() {
                     submitProgress.visibility = View.VISIBLE
                 }
                 is GenericState.Success -> {
-                    submitProgress.visibility = View.INVISIBLE
+                    submitProgress.visibility = View.GONE
                     feedbackAlert.setText(R.string.feedback_input_alert_thankyou)
                     feedbackAlert.setTextColor(requireActivity().applicationContext.getColor(R.color.colorPrimary))
                 }
                 is GenericState.Error -> {
-                    submitProgress.visibility = View.INVISIBLE
+                    submitProgress.visibility = View.GONE
                     feedbackAlert.setText(R.string.feedback_input_alert_oops)
                     textInputLayout.isEnabled = true
                     submitFeedbackButton.isEnabled = true

@@ -14,7 +14,6 @@
         android:orientation="horizontal"
         android:background="@drawable/box_bottom_stroke_gray"
         android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
         android:paddingTop="@dimen/container_side_margin"
         android:paddingBottom="@dimen/container_side_margin">
         <LinearLayout
@@ -63,8 +62,11 @@
             android:id="@+id/more_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_more"
-            android:backgroundTint="@color/dark_gray"
+            android:src="@drawable/ic_more"
+            android:background="@null"
+            android:paddingTop="0dp"
+            android:paddingEnd="16dp"
+            android:backgroundTint="@color/white"
             android:contentDescription="@string/unsave_button_desc" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

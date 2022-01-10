@@ -136,18 +136,19 @@
                 android:layout_marginEnd="@dimen/container_side_margin"
                 android:orientation="horizontal">
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_weight="1">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sourcesanspro_semibold"
                         android:text="@string/data_privacy_header"
                         android:textColor="@color/colorPrimaryAccent"
-                        android:textSize="12sp"/>
+                        android:textSize="14sp"/>
                     <TextView
-                        android:layout_width="280dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:scrollbars="none"
@@ -155,13 +156,11 @@
                         android:textColor="@color/black"
                         android:textSize="12sp"/>
                 </LinearLayout>
-
                 <Switch
                     android:id="@+id/data_share_switch"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:checked="true"
-                    android:layout_weight="1"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
         </LinearLayout>

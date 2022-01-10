@@ -130,6 +130,15 @@
                         android:fontFamily="@font/sourcesanspro_semibold"
                         android:textSize="12sp"
                         android:text="" />
+
+                    <ProgressBar
+                        android:id="@+id/submit_progress_bar"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginStart="@dimen/container_gap_margin"
+                        android:indeterminateTint="@color/colorPrimary"
+                        android:visibility="gone" />
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -200,28 +209,13 @@
                     android:layout_marginTop="@dimen/container_gap_margin"
                     android:autofillHints="Enter a pronunciation" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/feedback_input_submit"
+                    style="@style/Theme.VocabyAndroid.Button"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:layout_marginTop="@dimen/container_gap_margin"
-                    android:orientation="horizontal">
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/feedback_input_submit"
-                        style="@style/Theme.VocabyAndroid.Button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/submit" />
-                    <ProgressBar
-                        android:id="@+id/submit_progress_bar"
-                        style="?android:attr/progressBarStyle"
-                        android:layout_marginEnd="8dp"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_marginStart="@dimen/container_gap_margin"
-                        android:indeterminateTint="@color/colorPrimary"
-                        android:visibility="invisible" />
-                </LinearLayout>
+                    android:text="@string/submit_feedback" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

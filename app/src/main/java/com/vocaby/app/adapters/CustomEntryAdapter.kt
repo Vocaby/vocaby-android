@@ -83,12 +83,14 @@ class CustomEntryAdapter(
             width = 300
             anchorView = moreButton
             setDropDownGravity(Gravity.END)
+            horizontalOffset = -50
             val items = listOf("Edit Entry", "Delete Entry")
             val adapter: ArrayAdapter<String> = object: ArrayAdapter<String>(activity.applicationContext, R.layout.list_popup_window_item, items) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
                     if (position == 1 ) {
                         view.setTextColor(activity.getColor(R.color.colorHeadline))
+                        view.setBackgroundResource(R.drawable.box_top_stroke_white)
                     } else {
                         view.setTextColor(activity.getColor(R.color.black))
                     }

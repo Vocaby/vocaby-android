@@ -137,7 +137,7 @@
     <style name="Theme.VocabyAndroid.TextHeadline" parent="Widget.AppCompat.TextView">
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
 
