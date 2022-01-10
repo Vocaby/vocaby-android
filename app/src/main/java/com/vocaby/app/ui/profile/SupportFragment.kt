@@ -104,6 +104,7 @@ class SupportFragment : Fragment() {
         supportViewModel.feedbackState.observe(viewLifecycleOwner) { feedbackState ->
             when(feedbackState) {
                 is GenericState.InProgress -> {
+                    feedbackAlert.text = ""
                     submitProgress.visibility = View.VISIBLE
                 }
                 is GenericState.Success -> {
