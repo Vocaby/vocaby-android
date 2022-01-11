@@ -60,7 +60,6 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     fun handleReceived(received: Intent): Intent {
         actionType = received.getIntExtra("TYPE", -1)
         val intent: Intent
-
         when (actionType) {
             EXPORT_SAVE -> {
                 intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {

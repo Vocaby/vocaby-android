@@ -21,6 +21,9 @@ class DataManagementFragment : Fragment() {
     private val userViewModel: UserViewModel by activityViewModels {
         UserViewModelFactory((requireActivity().application as VocabyApplication).repository)
     }
+    private val entryViewModel: MyEntryViewModel by activityViewModels {
+        MyEntryViewModelFactory((requireActivity().application as VocabyApplication).repository)
+    }
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreateView(
@@ -79,13 +82,9 @@ class DataManagementFragment : Fragment() {
     }
 
     private val dataTransferActivity  = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+        if (result.resultCode == Activity.RESULT_OK) {
             when (result.data!!.getIntExtra("TYPE", -1)) {
                 DataTransferViewModel.IMPORT_ENTRY -> {
-                    val entryViewModel: MyEntryViewModel by activityViewModels {
-                        MyEntryViewModelFactory((requireActivity().application as VocabyApplication).repository)
-                    }
-
                     entryViewModel.initializeEntries()
                 }
             }

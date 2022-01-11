@@ -1,5 +1,6 @@
 package com.vocaby.app.ui.profile
 
+import android.app.Activity
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.Button
@@ -19,15 +20,16 @@ class DataTransferActivity : AppCompatActivity() {
     private val dataTransferViewModel: DataTransferViewModel by viewModels {
         DataTransferViewModelFactory((application as VocabyApplication).repository)
     }
+    private lateinit var closeButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_data_transfer)
 
-        val cancelButton = findViewById<Button>(R.id.cancel_button)
-        cancelButton.setOnClickListener {
+        closeButton = findViewById(R.id.close_button)
+        closeButton.setOnClickListener {
             dataTransferViewModel.cancelJob()
-            setResult(RESULT_OK, dataTransferViewModel.addResult())
+            setResult(Activity.RESULT_CANCELED, dataTransferViewModel.addResult())
             finish()
         }
 
@@ -40,17 +42,26 @@ class DataTransferActivity : AppCompatActivity() {
             progressText.setText(text)
         }
 
-        dataTransferViewModel.transferStatus.observe(this) { successful: Boolean? ->
+        dataTransferViewModel.transferStatus.observe(this) { successful: Boolean ->
             progressBar.isIndeterminate = false
             progressBar.max = 1
             progressBar.incrementProgressBy(1)
-            if (!successful!!) progressBar.progressTintList =
+            if (!successful) progressBar.progressTintList =
                 ColorStateList.valueOf(getColor(R.color.colorHeadline))
+            if (successful) {
+                closeButton.setOnClickListener {
+                    setResult(Activity.RESULT_OK, dataTransferViewModel.addResult())
+                    finish()
+                }
+            }
         }
     }
 
     private val directorySelector = registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == RESULT_OK) dataTransferViewModel.handleResult(result.data)
+        if (result.resultCode == RESULT_OK) {
+            setResult(Activity.RESULT_OK, dataTransferViewModel.addResult())
+            dataTransferViewModel.handleResult(result.data)
+        }
         else finish()
     }
 }

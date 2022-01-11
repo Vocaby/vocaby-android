@@ -25,7 +25,6 @@ import com.vocaby.app.adapters.CustomEntryAdapter
 import com.vocaby.app.states.ItemState
 import com.vocaby.app.states.UserInputState
 import com.vocaby.app.utils.Formatter
-import com.vocaby.app.utils.LiveDataUtil.observeOnce
 import com.vocaby.app.viewmodels.DictionaryViewModel
 import com.vocaby.app.viewmodels.DictionaryViewModelFactory
 import com.vocaby.app.viewmodels.MyEntryViewModel
@@ -75,7 +74,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             entryViewModel.reinitializeEntries()
         }
 
-        entryViewModel.entries.observeOnce(viewLifecycleOwner, { customEntries ->
+        entryViewModel.entries.observe(viewLifecycleOwner, { customEntries ->
             customEntryAdapter.submitList(customEntries)
             updateEmptyCardVisibility()
         })
