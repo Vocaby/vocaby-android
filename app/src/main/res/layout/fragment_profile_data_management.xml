@@ -119,6 +119,49 @@
                 android:layout_marginTop="@dimen/container_side_margin"
                 android:paddingStart="@dimen/container_side_margin"
                 android:paddingEnd="@dimen/container_side_margin"
+                android:text="@string/connections" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/container_side_margin"
+                android:layout_marginEnd="@dimen/container_side_margin"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/header_gap"
+                    android:layout_weight="1">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sourcesanspro_semibold"
+                        android:text="@string/connections_switch_header"
+                        android:textColor="@color/colorPrimaryAccent"
+                        android:textSize="14sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:scrollbars="none"
+                        android:text="@string/connections_switch_body"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+                <Switch
+                    android:id="@+id/connections_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="true"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+            </LinearLayout>
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/container_side_margin"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
                 android:text="@string/data_privacy" />
             <TextView
                 android:layout_width="match_parent"

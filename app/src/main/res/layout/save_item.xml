@@ -8,6 +8,7 @@
     android:backgroundTint="@color/white"
     app:cardCornerRadius="0dp"
     app:cardElevation="0dp">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,11 +19,13 @@
         android:paddingTop="@dimen/container_gap_margin"
         android:paddingBottom="@dimen/container_gap_margin"
         android:gravity="center">
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
@@ -31,6 +34,7 @@
                 android:textColor="@color/gray"
                 android:textSize="10sp"
                 autofit:ignore="SmallSp" />
+
             <TextView
                 android:id="@+id/save_item"
                 style="@style/Theme.VocabyAndroid.TextHeader"

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <TextView
         android:id="@+id/part_of_speech"
         style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -14,6 +14,7 @@
         android:layout_marginStart="4dp"
         android:textColor="@color/colorHeadline"
         android:textSize="16sp" />
+
     <LinearLayout
         android:id="@+id/definitions_card_container"
         android:layout_width="match_parent"

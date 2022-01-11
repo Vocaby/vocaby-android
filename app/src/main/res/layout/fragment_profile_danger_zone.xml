@@ -89,6 +89,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/danger_erase_all_data"
+        android:layout_marginBottom="8dp"
         android:drawableStart="@drawable/ic_boxed_danger_zone"
         android:textColor="@color/colorHeadline"/>
 </LinearLayout>

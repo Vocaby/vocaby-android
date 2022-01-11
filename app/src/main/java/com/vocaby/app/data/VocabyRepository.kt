@@ -21,11 +21,11 @@ import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.dictionary.*
 import com.vocaby.app.models.profile.FaqModel
 import com.vocaby.app.utils.Formatter
+import com.vocaby.app.utils.Logger
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.time.LocalDate
 import java.util.*
 
 class VocabyRepository(private val vocabyDao: VocabyDao, val application: Application) {
@@ -67,7 +67,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         }
     }
 
-    suspend fun getUpdatedDateFromApi(entry: String): LocalDate? {
+    suspend fun getUpdatedDateFromApi(entry: String): Date? {
         return try {
             val response = apiService.checkEntryUpdate(entry)
             if (response.isSuccessful && response.code() == 200) {
@@ -75,7 +75,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                 val newSet = oldSet.toMutableSet()
                 newSet.add(entry)
                 dictionaryCacheSharedPreferences.edit().putStringSet(Constants.SEARCH_CACHE, newSet).apply()
-                LocalDate.parse(response.body())
+                Formatter.formatStringToDate(response.body()!!)
             } else {
                 null
             }
@@ -631,6 +631,12 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         vocabyDao.deleteCustomVisit(userId)
     }
 
+    fun isUseConnectionEnabled() = userSharedPreference.getBoolean(Constants.CONNECTION_ID, true)
+
+    fun setConnectionSettings(enabled: Boolean) {
+        userSharedPreference.edit().putBoolean(Constants.CONNECTION_ID, enabled).apply()
+    }
+
     fun isDataShareEnabled() = userSharedPreference.getBoolean(Constants.DATA_SHARE_ID, true)
 
     fun setDataShareSettings(enabled: Boolean) {
@@ -640,8 +646,8 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     /** --------------------- FEEDBACK -------------------- **/
     suspend fun submitFeedback(feedbackModel: FeedbackModel): Boolean {
         return try {
-            apiService.submitFeedback("application/json", feedbackModel)
-            true
+            val response = apiService.submitFeedback("application/json", feedbackModel)
+            response.isSuccessful
         } catch (throwable: Throwable) {
             false
         }

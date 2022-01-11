@@ -5,12 +5,14 @@
     android:background="@drawable/rounded_background"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:background="@drawable/nav_header"
         android:padding="16dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,6 +31,7 @@
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
         android:orientation="vertical">
+
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
@@ -39,6 +42,7 @@
             android:textColor="@color/gray"
             app:drawableStartCompat="@drawable/ic_arrow_up"
             app:drawableTint="@color/colorSecondary" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -48,6 +52,7 @@
             android:baselineAligned="false"
             android:gravity="center_vertical"
             android:background="@drawable/box_white_stroked_gray">
+
             <ImageView
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
@@ -66,20 +71,24 @@
                 android:textColor="@color/gray" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/drag_to_rearrange"
                 app:srcCompat="@drawable/ic_arrow_down"
                 app:tint="@color/colorSecondary" />
+
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
+
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
@@ -90,7 +99,7 @@
                 android:drawablePadding="@dimen/card_content_margin"
                 app:drawableStartCompat="@drawable/ic_arrow_left"
                 app:drawableEndCompat="@drawable/ic_arrow_right"
-                app:drawableTint="@color/colorSecondary"/>
+                app:drawableTint="@color/colorSecondary" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

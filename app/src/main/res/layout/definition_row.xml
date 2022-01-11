@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <LinearLayout
         android:layout_width="20dp"
         android:layout_height="match_parent"
         android:layout_marginEnd="6dp"
         android:orientation="horizontal">
+
         <TextView
             android:id="@+id/definition_counter"
             android:fontFamily="@font/sourcesanspro_semibold"
@@ -18,12 +19,14 @@
             android:textColor="@color/black"
             android:textSize="14sp" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="6dp"
         android:orientation="vertical">
+
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
@@ -32,6 +35,7 @@
             android:textSize="10sp"
             android:textColor="@color/dark_gray"
             tools:ignore="SmallSp" />
+
         <TextView
             android:id="@+id/definition"
             android:layout_width="match_parent"
@@ -39,6 +43,7 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             android:fontFamily="@font/sourcesanspro_regular" />
+
         <TextView
             android:id="@+id/example_header"
             style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -49,6 +54,7 @@
             android:textSize="10sp"
             android:textColor="@color/dark_gray"
             tools:ignore="SmallSp" />
+
         <TextView
             android:id="@+id/sentence"
             android:layout_width="match_parent"

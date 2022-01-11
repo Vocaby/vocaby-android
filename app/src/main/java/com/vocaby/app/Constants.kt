@@ -11,6 +11,7 @@ object Constants {
     const val DICTIONARY_PICK_RANDOM = "DICT_RANDOM_ID"
     const val CHART_MODE_ID = "CHART_MODE"
     const val DATA_SHARE_ID = "DATA_MODE"
+    const val CONNECTION_ID = "CONNECTION_MODE"
     const val LAST_APP_STARTED = "APP_STARTED"
     const val SEARCH_CACHE = "DICT_CACHE_ID"
     const val EXPORT_FILE_TYPE_FIELD = "vocabyExportType"

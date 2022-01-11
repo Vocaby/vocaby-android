@@ -63,6 +63,12 @@ class DataManagementFragment : Fragment() {
             dataTransferActivity.launch(startDataTransferActivity)
         }
 
+        val connectionSwitch = view.findViewById<Switch>(R.id.connections_switch)
+        connectionSwitch.isChecked = userViewModel.isUseConnectionEnabled()
+        connectionSwitch.setOnCheckedChangeListener { _, enabled ->
+            userViewModel.setConnectionSettings(enabled)
+        }
+
         val dataShareSwitch = view.findViewById<Switch>(R.id.data_share_switch)
         dataShareSwitch.isChecked = userViewModel.isDataShareEnabled()
         dataShareSwitch.setOnCheckedChangeListener { _, enabled ->

@@ -33,6 +33,10 @@
         <item name="alertDialogTheme">@style/AlertDialogStyle</item>
     </style>
 
+    <style name="Theme.VocabyAndroid.TextInputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/nav_colors</item>
+    </style>
+
     <style name="Theme.VocabyAndroid.TextInputEditText" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <!-- left and right padding -->
         <item name="android:paddingStart">12dp</item>

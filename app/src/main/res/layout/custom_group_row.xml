@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,6 +7,7 @@
     app:cardCornerRadius="@dimen/radius"
     app:strokeColor="@color/light_gray"
     app:strokeWidth="1dp">
+
     <LinearLayout
         android:id="@+id/card_container"
         android:layout_width="match_parent"
@@ -15,11 +15,13 @@
         android:background="@color/white"
         android:orientation="horizontal"
         android:baselineAligned="false">
+
         <FrameLayout
             android:id="@+id/drag_handle"
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:background="@color/very_light_gray">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -27,6 +29,7 @@
                 android:src="@drawable/ic_drag_handle"
                 android:contentDescription="@string/drag_icon" />
         </FrameLayout>
+
         <TextView
             android:id="@+id/group_card_header"
             android:layout_width="wrap_content"
@@ -37,11 +40,13 @@
             android:textAllCaps="true"
             android:textSize="20sp"
             android:fontFamily="@font/playfairdisplay_bold"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
+
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
+
         <TextView
             android:id="@+id/group_card_def_counter"
             android:layout_width="wrap_content"
@@ -49,7 +54,8 @@
             android:layout_gravity="center_vertical"
             android:textSize="14sp"
             android:fontFamily="@font/sourcesanspro_regular"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
+
         <TextView
             android:id="@+id/group_card_def_counter_header"
             android:layout_width="wrap_content"
@@ -60,6 +66,6 @@
             android:layout_gravity="center_vertical"
             android:textSize="14sp"
             android:fontFamily="@font/sourcesanspro_regular"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

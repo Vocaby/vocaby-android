@@ -33,6 +33,9 @@ class UserViewModel(private val repository: VocabyRepository) : ViewModel() {
         repository.clearSaves()
     }
 
+    fun isUseConnectionEnabled() = repository.isUseConnectionEnabled()
+    fun setConnectionSettings(enabled: Boolean) = repository.setConnectionSettings(enabled)
+
     fun isDataShareEnabled() = repository.isDataShareEnabled()
     fun setDataShareSettings(enabled: Boolean) = repository.setDataShareSettings(enabled)
 }

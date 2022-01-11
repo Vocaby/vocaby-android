@@ -5,11 +5,11 @@ import com.vocaby.app.R
 import com.vocaby.app.data.VocabyRepository
 import com.vocaby.app.models.dictionary.EntryModel
 import com.vocaby.app.states.SaveState
+import com.vocaby.app.utils.Formatter
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class SearchResultsViewModel(
     private val entry: String,
@@ -34,36 +34,32 @@ class SearchResultsViewModel(
         }
 
         viewModelScope.launch(Dispatchers.Default) {
-            var originalData = repository.getEntryDataFromDatabase(entry)
+            val originalData = repository.getEntryDataFromDatabase(entry)
+            val customData = repository.getUserEntryData(entry)
 
             originalData?.let { og ->
                 val isCached = repository.checkApiCache(entry)
-                if (!isCached) {
+                val connectionEnabled = repository.isUseConnectionEnabled()
+                if (!isCached && connectionEnabled) {
                     val remoteDate = repository.getUpdatedDateFromApi(entry)
-                    val localDate = LocalDate.parse(og.lastUpdated)
-                    remoteDate?.let {
-                        if (localDate.isBefore(remoteDate)) {
+                    val localDate = Formatter.formatStringToDate(og.lastUpdated)
+                    if (remoteDate != null && localDate != null) {
+                        if (localDate.before(remoteDate)) {
                             // Replace og data with updated definitions
                             val retrievedEntry = repository.getEntryDataFromApi(entry)
                             retrievedEntry?.let {
-                                retrievedEntry.id = repository.replaceEntry(og, retrievedEntry)
+                                repository.replaceEntry(og, retrievedEntry)
                             }
-
-                            originalData = retrievedEntry
                         }
                     }
                 }
-
-                repository.recordVisit(originalData!!.id)
             }
-
-
-            val customData = repository.getUserEntryData(entry)
 
             val data = ArrayList<EntryModel?>()
             if (customData != null && originalData != null) {
                 data.add(customData)
                 data.add(originalData)
+                repository.recordVisit(originalData.id)
             } else if (customData != null) {
                 // Only Custom Available
                 repository.recordCustomVisit(customData.id)
@@ -74,6 +70,8 @@ class SearchResultsViewModel(
                 if (originalData == null) {
                     scope.cancel()
                     _saveState.postValue(SaveState.Remove)
+                } else {
+                    repository.recordVisit(originalData.id)
                 }
 
                 data.add(originalData)

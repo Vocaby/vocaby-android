@@ -16,5 +16,5 @@ interface ApiService {
     suspend fun getWoD(@Path("date") date: String): Response<EntryModel>
 
     @POST("feedback/")
-    suspend fun submitFeedback(@Header("Content-Type") contentType: String, @Body feedback: FeedbackModel): Response<FeedbackModel>
+    suspend fun submitFeedback(@Header("Content-Type") contentType: String, @Body feedback: FeedbackModel): Response<Void>
 }

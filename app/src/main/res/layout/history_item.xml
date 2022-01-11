@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
     app:cardCornerRadius="@dimen/radius">
+
     <LinearLayout
         android:layout_width="200dp"
         android:layout_height="54dp"
@@ -26,7 +26,8 @@
             android:textAllCaps="true"
             android:textSize="12sp"
             android:maxLines="1"
-            android:ellipsize="end"/>
+            android:ellipsize="end" />
+
         <TextView
             android:id="@+id/history_definition"
             android:layout_width="wrap_content"

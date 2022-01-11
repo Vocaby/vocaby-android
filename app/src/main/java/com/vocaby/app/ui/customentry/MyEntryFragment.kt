@@ -190,7 +190,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         entryViewModel.removeCustomEntry(entry, position)
     }
 
-    override fun onItemTouch(entry: String, position: Int) {
+    override fun onItemEdit(entry: String, position: Int) {
         var startEntryBuilderIntent = Intent(requireActivity(), EntryBuilderActivity::class.java)
         startEntryBuilderIntent =
             entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, position)

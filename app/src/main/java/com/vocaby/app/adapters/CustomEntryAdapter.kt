@@ -107,10 +107,6 @@ class CustomEntryAdapter(
             header.text = userEntry.entry
             lastUpdated.text = Formatter.formatDateStringForDisplay(userEntry.lastUpdated)
 
-            itemView.setOnClickListener {
-                interaction.onItemTouch(userEntry.entry, adapterPosition)
-            }
-
             moreButton.setOnClickListener {
                 listPopupWindow.show()
             }
@@ -119,7 +115,7 @@ class CustomEntryAdapter(
                 // Respond to list popup window item click.
                 when(position) {
                     0 -> {
-                        interaction.onItemTouch(userEntry.entry, adapterPosition)
+                        interaction.onItemEdit(userEntry.entry, adapterPosition)
                     }
                     1 -> {
                         alertDialogBuilder
@@ -138,7 +134,7 @@ class CustomEntryAdapter(
     }
 
     interface Interaction {
-        fun onItemTouch(entry: String, position: Int)
+        fun onItemEdit(entry: String, position: Int)
         fun onItemDelete(entry: String, position: Int)
     }
 }

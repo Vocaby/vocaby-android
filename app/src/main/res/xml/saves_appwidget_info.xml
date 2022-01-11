@@ -5,5 +5,4 @@
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/saves_widget"
     android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen">
-</appwidget-provider>
+    android:widgetCategory="home_screen" />

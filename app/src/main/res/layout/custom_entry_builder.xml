@@ -22,6 +22,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/back_button"
             style="@style/Theme.VocabyAndroid.NavButton"
@@ -62,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/nav_save"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimary" />
     </LinearLayout>
 
     <LinearLayout
@@ -84,7 +85,7 @@
             android:layout_height="wrap_content"
             android:text="@string/entry_header"
             android:textColor="@color/dark_gray"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
 
         <Space
             android:layout_width="0dp"
@@ -92,8 +93,7 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <me.grantland.widget.AutofitTextView
-        xmlns:autofit="http://schemas.android.com/apk/res-auto"
+    <me.grantland.widget.AutofitTextView xmlns:autofit="http://schemas.android.com/apk/res-auto"
         style="@style/Theme.VocabyAndroid.TextHeader"
         android:id="@+id/entry_header"
         android:layout_width="match_parent"
@@ -130,7 +130,8 @@
             android:layout_height="wrap_content"
             android:text="@string/pronunciation"
             android:textColor="@color/dark_gray"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
+
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -176,7 +177,7 @@
             android:layout_height="wrap_content"
             android:text="@string/custom_definition_group_header"
             android:textColor="@color/dark_gray"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/group_header_alert"
@@ -208,6 +209,7 @@
             app:drawableStartCompat="@drawable/ic_help"
             app:drawableTint="@color/colorPrimary" />
     </LinearLayout>
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/add_def_group_button"
         style="@style/Theme.VocabyAndroid.Button"
@@ -219,7 +221,7 @@
         android:text="@string/custom_group_add_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout6"/>
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/custom_entry_group_container"

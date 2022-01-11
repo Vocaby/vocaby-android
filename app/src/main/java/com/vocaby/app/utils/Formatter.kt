@@ -23,6 +23,10 @@ object Formatter {
 
     }
 
+    fun formatStringToDate(date: String): Date? {
+        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
+    }
+
     fun formatDateStringForDisplay(date: String, showDay:Boolean = false): String {
         val formatted = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
 
