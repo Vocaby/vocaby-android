@@ -34,7 +34,7 @@ class SearchResultsViewModel(
         }
 
         viewModelScope.launch(Dispatchers.Default) {
-            val originalData = repository.getEntryDataFromDatabase(entry)
+            var originalData = repository.getEntryDataFromDatabase(entry)
             val customData = repository.getUserEntryData(entry)
 
             originalData?.let { og ->
@@ -47,19 +47,21 @@ class SearchResultsViewModel(
                         if (localDate.before(remoteDate)) {
                             // Replace og data with updated definitions
                             val retrievedEntry = repository.getEntryDataFromApi(entry)
-                            retrievedEntry?.let {
-                                repository.replaceEntry(og, retrievedEntry)
+                            retrievedEntry?.let { newEntry ->
+                                newEntry.id = repository.replaceEntry(og, retrievedEntry)
+                                originalData = newEntry
                             }
                         }
                     }
                 }
+
+                repository.recordVisit(originalData!!.id)
             }
 
             val data = ArrayList<EntryModel?>()
             if (customData != null && originalData != null) {
                 data.add(customData)
                 data.add(originalData)
-                repository.recordVisit(originalData.id)
             } else if (customData != null) {
                 // Only Custom Available
                 repository.recordCustomVisit(customData.id)
@@ -70,8 +72,6 @@ class SearchResultsViewModel(
                 if (originalData == null) {
                     scope.cancel()
                     _saveState.postValue(SaveState.Remove)
-                } else {
-                    repository.recordVisit(originalData.id)
                 }
 
                 data.add(originalData)

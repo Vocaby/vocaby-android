@@ -20,12 +20,14 @@ import com.vocaby.app.models.customentry.DefinitionChanges
 import com.vocaby.app.models.customentry.GroupChanges
 import com.vocaby.app.models.dictionary.*
 import com.vocaby.app.models.profile.FaqModel
+import com.vocaby.app.states.ValidState
 import com.vocaby.app.utils.Formatter
 import com.vocaby.app.utils.Logger
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import java.net.UnknownHostException
 import java.util.*
 
 class VocabyRepository(private val vocabyDao: VocabyDao, val application: Application) {
@@ -644,12 +646,19 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     }
 
     /** --------------------- FEEDBACK -------------------- **/
-    suspend fun submitFeedback(feedbackModel: FeedbackModel): Boolean {
+    suspend fun submitFeedback(feedbackModel: FeedbackModel): ValidState {
         return try {
             val response = apiService.submitFeedback("application/json", feedbackModel)
-            response.isSuccessful
-        } catch (throwable: Throwable) {
-            false
+            if (response.isSuccessful) {
+                ValidState.Valid
+            } else {
+                ValidState.Error("Vocaby's server is down :(")
+            }
+        } catch (e: UnknownHostException) {
+            ValidState.Error("No internet connection")
+        } catch (e: Throwable) {
+            if (isDataShareEnabled()) Logger.reportErrorToBugsnag(e)
+            ValidState.Error("Something went wrong...")
         }
     }
 

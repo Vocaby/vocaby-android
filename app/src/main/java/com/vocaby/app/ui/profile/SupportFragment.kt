@@ -114,7 +114,7 @@ class SupportFragment : Fragment() {
                 }
                 is GenericState.Error -> {
                     submitProgress.visibility = View.GONE
-                    feedbackAlert.setText(R.string.feedback_input_alert_oops)
+                    feedbackAlert.text = feedbackState.exception.message
                     textInputLayout.isEnabled = true
                     submitFeedbackButton.isEnabled = true
                     autoCompleteTextView.isFocusable = true

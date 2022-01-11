@@ -8,6 +8,7 @@ import com.vocaby.app.models.FeedbackModel
 import com.vocaby.app.models.profile.FaqModel
 import com.vocaby.app.states.GenericState
 import com.vocaby.app.states.UserInputState
+import com.vocaby.app.states.ValidState
 import com.vocaby.app.utils.Formatter
 import com.vocaby.app.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
@@ -47,11 +48,9 @@ class SupportViewModel(val repository: VocabyRepository): ViewModel() {
                 }
 
                 viewModelScope.launch {
-                    val success = repository.submitFeedback(FeedbackModel(type, message, email))
-                    if (success) {
-                        _feedbackState.postValue(GenericState.Success(""))
-                    } else {
-                        _feedbackState.postValue(GenericState.Error(Exception()))
+                    when (val state = repository.submitFeedback(FeedbackModel(type, message, email))) {
+                        is ValidState.Valid -> _feedbackState.postValue(GenericState.Success(""))
+                        is ValidState.Error -> _feedbackState.postValue(GenericState.Error(Exception(state.data)))
                     }
                 }
             }
