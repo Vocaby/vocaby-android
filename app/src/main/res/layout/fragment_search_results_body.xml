@@ -51,6 +51,9 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/sourcesanspro_black"
                 android:gravity="center"
+                android:scrollIndicators="none"
+                android:scrollbars="none"
+                android:scrollbarThumbVertical="@null"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
         </HorizontalScrollView>

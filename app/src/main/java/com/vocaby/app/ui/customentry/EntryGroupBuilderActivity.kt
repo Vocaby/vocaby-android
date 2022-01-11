@@ -141,8 +141,9 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
 
         // Save Button
         val saveButton = findViewById<Button>(R.id.save_button)
-        saveButton.setOnClickListener {
+        saveButton.setOnClickListener { button ->
             saveAlert.visibility = View.INVISIBLE
+            button.isEnabled = false
             var saveIntent = Intent()
             saveIntent = entryGroupViewModel.addSaveDataToIntent(saveIntent)
             setResult(RESULT_OK, saveIntent)

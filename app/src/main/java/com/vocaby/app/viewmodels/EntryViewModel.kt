@@ -216,7 +216,7 @@ class EntryViewModel(
                 }
             }
 
-            if (!groupChanges.hasChanges() && !definitionHasChanges) {
+            if (!groupChanges.hasChanges() && !definitionHasChanges && entryData.pronunciation == pronun) {
                 _saveResult.setValue(false)
             } else {
                 viewModelScope.launch {

@@ -167,8 +167,9 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         // Save Custom Entry Button
         val saveButton = findViewById<Button>(R.id.save_button)
         saveProgressBar = findViewById(R.id.save_progress_bar)
-        saveButton.setOnClickListener {
+        saveButton.setOnClickListener { button ->
             saveProgressBar.visibility = View.VISIBLE
+            button.isEnabled = false
             entryViewModel.saveUserEntry(pronunciationInput.text.toString())
         }
 
