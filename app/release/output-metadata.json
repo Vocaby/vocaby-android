@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.vocaby.app",
+  "applicationId": "com.vocaby.application",
   "variantName": "release",
   "elements": [
     {
