@@ -6,11 +6,8 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
-    @GET("dictionary/{entry}")
-    suspend fun getDefinitions(@Path("entry") entry: String): Response<EntryModel>
-
-    @GET("dictionary/update-check/{entry}")
-    suspend fun checkEntryUpdate(@Path("entry") entry: String): Response<String>
+    @GET("dictionary/get/{entry}/{date}/")
+    suspend fun checkAndGetDefinitions(@Path("entry") entry: String, @Path("date") date: String): Response<EntryModel>
 
     @GET("wod/get/{date}/")
     suspend fun getWoD(@Path("date") date: String): Response<EntryModel>

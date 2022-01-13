@@ -60,27 +60,16 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         return id
     }
 
-    suspend fun getEntryDataFromApi(entry: String): EntryModel? {
+    suspend fun checkAndGetEntryDataFromApi(entry: String, date: String): EntryModel? {
         return try {
-            val response = apiService.getDefinitions(entry)
-            response.body()
-        } catch (throwable: Throwable) {
-            null
-        }
-    }
+            val response = apiService.checkAndGetDefinitions(entry, date)
 
-    suspend fun getUpdatedDateFromApi(entry: String): Date? {
-        return try {
-            val response = apiService.checkEntryUpdate(entry)
-            if (response.isSuccessful && response.code() == 200) {
-                val oldSet = dictionaryCacheSharedPreferences.getStringSet(Constants.SEARCH_CACHE, mutableSetOf<String>())!!
-                val newSet = oldSet.toMutableSet()
-                newSet.add(entry)
-                dictionaryCacheSharedPreferences.edit().putStringSet(Constants.SEARCH_CACHE, newSet).apply()
-                Formatter.formatStringToDate(response.body()!!)
-            } else {
-                null
-            }
+            val oldSet = dictionaryCacheSharedPreferences.getStringSet(Constants.SEARCH_CACHE, mutableSetOf<String>())!!
+            val newSet = oldSet.toMutableSet()
+            newSet.add(entry)
+            dictionaryCacheSharedPreferences.edit().putStringSet(Constants.SEARCH_CACHE, newSet).apply()
+
+            response.body()
         } catch (throwable: Throwable) {
             null
         }

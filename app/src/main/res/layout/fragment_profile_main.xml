@@ -73,8 +73,8 @@
             style="@style/Theme.VocabyAndroid.MaterialToggleButton"
             android:layout_width="74dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:checkable="true"
+            android:gravity="center"
             android:text="@string/chart_toggle_monthly"
             android:textColor="@color/colorPrimary"
             app:backgroundTint="@color/white"
@@ -84,7 +84,8 @@
             app:iconSize="12dp"
             app:iconTint="@color/colorPrimary"
             app:rippleColor="@color/colorSecondary"
-            app:strokeColor="@color/colorPrimary" />
+            app:strokeColor="@color/colorPrimary"
+            tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
     <include layout="@layout/chart_placeholder" />
     <LinearLayout
@@ -183,6 +184,7 @@
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="@string/nav_danger_zone"
         android:drawableStart="@drawable/ic_boxed_danger_zone"
         android:drawableEnd="@drawable/ic_chevron_right"/>
