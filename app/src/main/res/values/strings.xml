@@ -28,6 +28,7 @@
     <string name="nav_custom_entries">My Entries</string>
     <string name="custom_entry_header_empty">Please enter a word or phrase</string>
     <string name="custom_entry_header_long">This entry is too long</string>
+    <string name="custom_entry_exists">The entry already exists</string>
     <string name="custom_entry_header_invalid">An entry cannot contain special characters</string>
     <string name="add_dictionary_entry">New Entry</string>
     <string name="update_dictionary_entry">Update Entry</string>
@@ -68,12 +69,14 @@
     <string name="enter_a_pronunciation">Enter a pronunciation</string>
     <string name="type">Type</string>
     <string name="back">Back</string>
-    <string name="data_management_export_save_txt">Export my save data as txt</string>
-    <string name="data_management_export_save_backup">Export my save data as json</string>
-    <string name="data_management_export_entry">Export my entry data as json</string>
-    <string name="data_management_import_save">Import save data from json</string>
-    <string name="data_management_import_entry">Import entry data from json</string>
+    <string name="data_management_export_save_json">Export my save data as json</string>
+    <string name="data_management_export_entry_json">Export my entry data as json</string>
+    <string name="data_management_export_save_backup">Back up my save data</string>
+    <string name="data_management_export_entry">Back up my entry data</string>
+    <string name="data_management_import_save">Import save backup data</string>
+    <string name="data_management_import_entry">Import entry backup data</string>
     <string name="data_transfer_importing">Importing your backup data…</string>
+    <string name="data_transfer_finalizing">Finalizing…</string>
     <string name="data_transfer_export_complete">Successfully exported your data!</string>
     <string name="data_transfer_import_complete">Successfully imported your data!</string>
     <string name="data_transfer_fetching_data">Fetching your data…</string>
@@ -86,6 +89,7 @@
     <string name="data_transfer_import_error_generic">Failed to import…</string>
     <string name="data_transfer_import_error_invalid_format">Failed to import: file is corrupted…</string>
     <string name="data_transfer_import_error_invalid_file">Failed to import: file is invalid…</string>
+    <string name="data_transfer_import_error_wrong_file">Failed to import: wrong backup file…</string>
     <string name="danger_clear_chart">Erase Chart Data</string>
     <string name="danger_clear_search_history">Erase Search History</string>
     <string name="danger_clear_saves">Erase Saves</string>
@@ -93,7 +97,7 @@
     <string name="danger_erase_all_data">Erase All Data</string>
     <string name="danger_zone">Danger Zone</string>
     <string name="data_export">Export Data</string>
-    <string name="data_import">Import Data</string>
+    <string name="data_import">Import Backup Data</string>
     <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be replaced.</string>
     <string name="background">background</string>
     <string name="history">YOUR SEARCH HISTORY</string>
@@ -139,11 +143,10 @@
     <string name="feedback_input_alert_type">You must select a type</string>
     <string name="feedback_input_alert_email">Please enter a valid email</string>
     <string name="feedback_input_alert_thankyou">Thank you!</string>
-    <string name="feedback_input_alert_oops">Something went wrong…</string>
     <string name="feedback_input_alert_message">Please enter a feedback</string>
     <string name="feedback_input_email">Your Email (optional)</string>
-    <string name="data_usage">Data Usage</string>
     <string name="connections_switch_header">Automatically Update Definitions</string>
     <string name="connections_switch_body">When enabled, Vocaby will check and update entries that you search.</string>
     <string name="connections">Connections</string>
+    <string name="search_custom_entry_hint">Search for your entry…</string>
 </resources>

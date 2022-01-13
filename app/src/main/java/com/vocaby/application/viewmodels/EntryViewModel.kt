@@ -107,9 +107,9 @@ class EntryViewModel(
 
     fun addExistingGroupDataToIntent(intent: Intent, position: Int): Intent {
         val type = entryData.getDefinitionGroup(position).type
-        intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position))
+        intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position) as Parcelable)
         intent.putExtra(DEFINITION_CHANGES, definitionChangesMap[type])
-        intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups[type])
+        intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups[type] as Parcelable)
         intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.UPDATE as Parcelable)
         return intent
     }
@@ -117,9 +117,9 @@ class EntryViewModel(
     fun addNewGroupDataToIntent(intent: Intent, type: String): Intent {
         val newGroup = DefinitionGroupModel(type)
         initialGroups[type] = newGroup
-        intent.putExtra(GROUP_KEY, newGroup)
+        intent.putExtra(GROUP_KEY, newGroup as Parcelable)
         intent.putExtra(DEFINITION_CHANGES, DefinitionChanges())
-        intent.putExtra(INITIAL_DEFINITIONS_KEY, newGroup)
+        intent.putExtra(INITIAL_DEFINITIONS_KEY, newGroup as Parcelable)
         intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.ADD as Parcelable)
         return intent
     }

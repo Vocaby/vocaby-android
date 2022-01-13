@@ -3,9 +3,12 @@ package com.vocaby.application.models.dictionary
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
+import java.io.Serializable
 
-class DefinitionModel : Parcelable, Comparable<DefinitionModel> {
+class DefinitionModel : Parcelable, Serializable, Comparable<DefinitionModel> {
+    @Transient
     var id: Int
+    @Transient
     var type: String
     var definition: String
     var example: String?

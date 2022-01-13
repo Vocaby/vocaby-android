@@ -2,16 +2,18 @@ package com.vocaby.application.models.dictionary
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.io.Serializable
 import java.util.*
 
 @Parcelize
 class EntryModel(
+    @Transient
     var id: Int,
     val entry: String,
     var pronunciation: String?,
     var lastUpdated: String = "",
     var definitionGroups: MutableList<DefinitionGroupModel> = ArrayList(),
-) : Parcelable {
+) : Parcelable, Serializable {
     constructor(entry: String) : this(-1, entry, null)
     val isEmpty: Boolean
         get() = definitionGroups.isEmpty()

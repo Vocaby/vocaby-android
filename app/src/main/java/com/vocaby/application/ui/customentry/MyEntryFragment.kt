@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arlib.floatingsearchview.FloatingSearchView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.VocabyApplication
@@ -39,6 +40,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var entryEditDialog: BottomSheetDialog
     private lateinit var entryEdit: EditText
     private lateinit var entryAlert: TextView
+    private lateinit var searchView: FloatingSearchView
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
@@ -59,6 +61,11 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         val view = inflater.inflate(R.layout.fragment_my_entry, container, false)
         entryCountView = view.findViewById(R.id.entry_count)
         emptyCard = view.findViewById(R.id.empty_card)
+
+        searchView = view.findViewById(R.id.vocaby_search)
+        searchView.apply {
+            setOnQueryChangeListener(queryChangeListener)
+        }
 
         setupButtons(view)
         setupEntryBuilderDialog()
@@ -108,6 +115,10 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                     entryAlert.text = getString(R.string.custom_entry_header_long)
                     entryAlert.visibility = View.VISIBLE
                 }
+                is UserInputState.SameInput -> {
+                    entryAlert.text = getString(R.string.custom_entry_exists)
+                    entryAlert.visibility = View.VISIBLE
+                }
                 is UserInputState.Valid -> {
                     entryEdit.text.clear()
                     entryAlert.visibility = View.INVISIBLE
@@ -117,8 +128,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                         Intent(requireActivity(), EntryBuilderActivity::class.java)
                     startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(
                         startEntryBuilderIntent,
-                        input.data,
-                        -1
+                        input.data
                     )
 
                     entryBuilderActivity.launch(startEntryBuilderIntent)
@@ -157,6 +167,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         createButton?.setText(R.string.create)
         createButton?.setOnClickListener {
             entryViewModel.createCustomEntry(entryEdit.text.toString())
+            entryViewModel.resetSelections()
         }
 
         // Clear content on show
@@ -184,6 +195,11 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             result: ActivityResult? ->
         entryViewModel.handleResult(result!!)
     }
+
+    private val queryChangeListener =
+        FloatingSearchView.OnQueryChangeListener { _: String, newQuery: String ->
+            entryViewModel.filterEntries(newQuery)
+        }
 
     override fun onItemDelete(entry: String, position: Int) {
         entryViewModel.removeCustomEntry(entry, position)

@@ -3,9 +3,11 @@ package com.vocaby.application.models.dictionary
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
+import java.io.Serializable
 import java.util.*
 
-class DefinitionGroupModel : Parcelable, Comparable<DefinitionGroupModel> {
+class DefinitionGroupModel : Parcelable, Serializable, Comparable<DefinitionGroupModel> {
+    @Transient
     var groupId: Int
     var type: String
     var definitionData: MutableList<DefinitionModel>

@@ -13,9 +13,10 @@ import com.vocaby.application.payloads.ItemStringPayload
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
 import com.vocaby.application.utils.Formatter
+import com.vocaby.application.utils.Logger
 import com.vocaby.application.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
-import java.util.*
+import kotlin.collections.ArrayList
 
 class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private val _entryCount: MutableLiveData<Int> = MutableLiveData(0)
@@ -23,8 +24,11 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private val _entryState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
     private val _userInput: SingleLiveEvent<UserInputState> = SingleLiveEvent()
 
-    private var selectedPosition: Int = -1
+    private var realPosition: Int = -1
+    private var filteredPosition: Int = -1
     private var customEntries: MutableList<UserEntry> = ArrayList()
+    private var filteredEntries: MutableList<UserEntry> = ArrayList()
+    private var filtered: Boolean = false
 
     val entries: LiveData<List<UserEntry>>
         get() = _entries
@@ -49,28 +53,57 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
         }
     }
 
-    fun addEntryDataToIntent(intent: Intent, entry: String, position: Int): Intent {
-        val itemPayload = ItemStringPayload(entry, ItemState.ADD)
-
-        selectedPosition = if (position == -1) {
-            var pos = -1
-            for ((index, userEntry) in customEntries.withIndex()) {
-                if (userEntry.entry == entry) {
-                    pos = index
+    fun filterEntries(newQuery: String) {
+        if (newQuery.isEmpty()) {
+            customEntries.sortByDescending { it.lastUpdated }
+            filtered = false
+            _entries.value = customEntries
+        } else {
+            filtered = true
+            filteredEntries = mutableListOf()
+            val query = newQuery.lowercase()
+            for (entry in customEntries) {
+                if (entry.entry.startsWith(query)) {
+                    filteredEntries.add(entry)
                 }
             }
 
-            pos
-        } else {
-            position
+            _entries.value = filteredEntries
         }
+    }
 
-        if (selectedPosition != -1) {
+    // When it's -1, then a new entry is being created
+    // when it's not -1, then an entry is being updated
+    fun addEntryDataToIntent(intent: Intent, entry: String, position: Int = -1): Intent {
+        val itemPayload = ItemStringPayload(entry, ItemState.ADD)
+
+        if (position != -1) {
             itemPayload.state = ItemState.UPDATE
+            if (filtered) {
+                setRealPosition(entry)
+                filteredPosition = position
+            } else {
+                realPosition = position
+            }
         }
 
         intent.putExtra(Constants.ITEM_PAYLOAD_KEY, itemPayload)
         return intent
+    }
+
+    fun resetSelections() {
+        realPosition = -1
+        filteredPosition = -1
+    }
+
+    private fun setRealPosition(entry: String) {
+        if (realPosition == -1) {
+            for ((index, userEntry) in customEntries.withIndex()) {
+                if (userEntry.entry == entry) {
+                    realPosition = index
+                }
+            }
+        }
     }
 
     fun handleResult(result: ActivityResult) {
@@ -80,23 +113,40 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
 
             receivedPayload?.let {
                 if (receivedPayload.state == ItemState.ADD) {
+                    if (filtered) filteredEntries.add(0, receivedPayload.payload)
                     customEntries.add(0, receivedPayload.payload)
-                } else if (receivedPayload.state == ItemState.DELETE && selectedPosition != -1) {
-                    customEntries.removeAt(selectedPosition)
+                } else if (receivedPayload.state == ItemState.DELETE && realPosition != -1) {
+                    if (filtered) filteredEntries.removeAt(filteredPosition)
+                    customEntries.removeAt(realPosition)
                 } else if (receivedPayload.state == ItemState.UPDATE) {
-                    customEntries.set(selectedPosition, receivedPayload.payload)
+                    if (filtered) filteredEntries[filteredPosition] = receivedPayload.payload
+                    customEntries[realPosition] = receivedPayload.payload
                 }
 
-                _entryState.value = ItemIntPayload(selectedPosition, receivedPayload.state)
+                if (filtered) {
+                    _entryState.value = ItemIntPayload(filteredPosition, receivedPayload.state)
+                } else {
+                    _entryState.value = ItemIntPayload(realPosition, receivedPayload.state)
+                }
                 _entryCount.value = customEntries.size
             }
+        } else {
+            resetSelections()
         }
     }
 
     fun removeCustomEntry(entry: String, position: Int) {
         viewModelScope.launch {
             repository.removeCustomEntry(entry)
-            customEntries.removeAt(position)
+            if (filtered) {
+                setRealPosition(entry)
+
+                filteredEntries.removeAt(position)
+                customEntries.removeAt(realPosition)
+            } else {
+                customEntries.removeAt(position)
+            }
+
             _entryCount.postValue(customEntries.size)
             _entryState.value = ItemIntPayload(position, ItemState.DELETE)
         }
@@ -112,7 +162,12 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
             if (sanitizedEntry.length > Constants.ENTRY_MAX_LENGTH) {
                 _userInput.value = UserInputState.LongInput
             } else {
-                _userInput.value = UserInputState.Valid(sanitizedEntry)
+                setRealPosition(sanitizedEntry)
+                if (realPosition != -1) {
+                    _userInput.value = UserInputState.SameInput
+                } else {
+                    _userInput.value = UserInputState.Valid(sanitizedEntry)
+                }
             }
         }
     }

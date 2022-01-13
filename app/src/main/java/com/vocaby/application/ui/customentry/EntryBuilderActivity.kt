@@ -162,7 +162,10 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     private fun setupButtons() {
         // Close Entry Builder Button
         val closeButton = findViewById<Button>(R.id.back_button)
-        closeButton.setOnClickListener { finish() }
+        closeButton.setOnClickListener {
+            setResult(RESULT_CANCELED)
+            finish()
+        }
 
         // Save Custom Entry Button
         val saveButton = findViewById<Button>(R.id.save_button)

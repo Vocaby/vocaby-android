@@ -70,10 +70,10 @@ interface VocabyDao {
     @Query("DELETE FROM custom_user_entry WHERE user_id = :id")
     suspend fun clearUserEntries(id: Int)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCustomEntry(customEntry: CustomEntry): Long
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCustomEntries(customEntries: List<CustomEntry>): List<Long>
 
     @Update

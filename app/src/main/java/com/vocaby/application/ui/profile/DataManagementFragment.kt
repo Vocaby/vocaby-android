@@ -42,6 +42,12 @@ class DataManagementFragment : Fragment() {
             dataTransferActivity.launch(startDataTransferActivity)
         }
 
+        val exportEntry = view.findViewById<Button>(R.id.export_entry_json_button)
+        exportEntry.setOnClickListener {
+            startDataTransferActivity.putExtra("TYPE", DataTransferViewModel.EXPORT_ENTRY)
+            dataTransferActivity.launch(startDataTransferActivity)
+        }
+
         val exportSaveForBackup = view.findViewById<Button>(R.id.export_save_backup_button)
         exportSaveForBackup.setOnClickListener {
             startDataTransferActivity.putExtra("TYPE", DataTransferViewModel.EXPORT_SAVE_BACKUP)

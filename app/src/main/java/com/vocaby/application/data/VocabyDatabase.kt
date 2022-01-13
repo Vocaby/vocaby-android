@@ -1,6 +1,7 @@
 package com.vocaby.application.data
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -13,7 +14,13 @@ import kotlinx.coroutines.launch
 
 @Database(entities = [User::class, UserSave::class,
     Type::class, Word::class, Definition::class, CustomEntry::class, CustomDefinition::class,
-    CustomEntryGroup::class, DictionaryViewCount::class, CustomDictionaryViewCount::class], version = 1, exportSchema = false)
+    CustomEntryGroup::class, DictionaryViewCount::class, CustomDictionaryViewCount::class],
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration (from = 1, to = 2)
+    ]
+)
 abstract class VocabyDatabase : RoomDatabase() {
     abstract fun vocabyDao() : VocabyDao
 

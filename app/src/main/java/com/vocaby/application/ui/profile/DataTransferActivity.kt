@@ -35,11 +35,22 @@ class DataTransferActivity : AppCompatActivity() {
 
         val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
         val progressText = findViewById<TextView>(R.id.progress_text)
+        val progressCounter = findViewById<TextView>(R.id.progress_counter)
 
         val directoryPickerIntent = dataTransferViewModel.handleReceived(intent)
         directorySelector.launch(directoryPickerIntent)
-        dataTransferViewModel.progressText.observeOnce(this) { text ->
+        dataTransferViewModel.progressText.observe(this) { text ->
             progressText.setText(text)
+        }
+
+        dataTransferViewModel.progressCounter.observe(this) { count ->
+            val text = if (count < 2) {
+                "$count entry"
+            } else {
+                "$count entries"
+            }
+
+            progressCounter.text = text
         }
 
         dataTransferViewModel.transferStatus.observe(this) { successful: Boolean ->

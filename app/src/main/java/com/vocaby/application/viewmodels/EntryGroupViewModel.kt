@@ -117,7 +117,7 @@ class EntryGroupViewModel : ViewModel() {
         checkForUpdatedItems()
         fixOrdering()
         intent.putExtra(EntryViewModel.DEFINITION_CHANGES, definitionChanges)
-        intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup)
+        intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup as Parcelable)
         intent.putExtra(Constants.ITEM_PAYLOAD_KEY, resultState as Parcelable)
         return intent
     }

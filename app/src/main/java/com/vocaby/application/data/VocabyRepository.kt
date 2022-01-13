@@ -6,15 +6,11 @@ import android.content.SharedPreferences
 import android.net.Uri
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonSyntaxException
 import com.vocaby.application.Constants
 import com.vocaby.application.api.ApiManager
 import com.vocaby.application.data.dao.VocabyDao
 import com.vocaby.application.data.entity.*
 import com.vocaby.application.exceptions.IllegalFileException
-import com.vocaby.application.models.BasicExportModel
-import com.vocaby.application.models.EntryImportData
 import com.vocaby.application.models.FeedbackModel
 import com.vocaby.application.models.customentry.DefinitionChanges
 import com.vocaby.application.models.customentry.GroupChanges
@@ -23,10 +19,7 @@ import com.vocaby.application.models.profile.FaqModel
 import com.vocaby.application.states.ValidState
 import com.vocaby.application.utils.Formatter
 import com.vocaby.application.utils.Logger
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.*
 import java.net.UnknownHostException
 import java.util.*
 
@@ -314,23 +307,37 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         return entryId
     }
 
-    suspend fun insertNewEntries(data: EntryImportData) {
-        val entryIds = vocabyDao.insertCustomEntries(data.entries)
-        for (i in entryIds.indices) {
-            val addedGroups = mutableListOf<CustomEntryGroup>()
-            for (group in data.entryModels[i].definitionGroups)
+    suspend fun insertNewEntries(data: List<EntryModel>) {
+        val customEntries = mutableListOf<CustomEntry>()
+        for (entryData in data) {
+            customEntries.add(CustomEntry(
+                userId,
+                entryData.entry,
+                entryData.pronunciation,
+                entryData.lastUpdated
+            ))
+        }
+
+        val entryIds = vocabyDao.insertCustomEntries(customEntries)
+        val addedGroups = mutableListOf<CustomEntryGroup>()
+        for ((i, entryId) in entryIds.withIndex()) {
+            for (group in data[i].definitionGroups) {
                 addedGroups.add(
                     CustomEntryGroup(
-                        entryIds[i].toInt(),
+                        entryId.toInt(),
                         group.type,
                         group.order
                     )
                 )
+            }
+        }
 
-            val groupIds = vocabyDao.insertCustomEntryGroups(addedGroups)
-            for (j in groupIds.indices) {
-                val addedDefinitions = mutableListOf<CustomDefinition>()
-                val definitionModels = data.entryModels[i].definitionGroups[j].definitionData
+        val groupIds = vocabyDao.insertCustomEntryGroups(addedGroups)
+        val addedDefinitions = mutableListOf<CustomDefinition>()
+        var j = 0
+        for (entryModel in data) {
+            for (group in entryModel.definitionGroups) {
+                val definitionModels = group.definitionData
                 for (definitionModel in definitionModels) {
                     addedDefinitions.add(
                         CustomDefinition(
@@ -341,10 +348,11 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
                         )
                     )
                 }
-
-                vocabyDao.insertCustomDefinitions(addedDefinitions)
+                j++
             }
         }
+
+        vocabyDao.insertCustomDefinitions(addedDefinitions)
     }
 
     private fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? {
@@ -405,141 +413,19 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     suspend fun clearSaves() = vocabyDao.clearSaves(userId)
 
     /** --------------------- IMPORT / EXPORT -------------------- **/
-    private fun checkEntryValidity(entry: String) {
-        if (entry.length > Constants.ENTRY_MAX_LENGTH
-            || entry.isEmpty()
-            || Formatter.containsSpecialCharacter(entry)
-        ) {
-            throw IllegalFileException(
-                IllegalFileException.INVALID_FILE
-            )
-        }
-    }
-
     fun importSavesFromExternalStorage(uri: Uri): List<UserSave> {
         val inputStream = application.contentResolver.openInputStream(uri)
-        val reader = BufferedReader(InputStreamReader(inputStream))
-
+        val reader = ObjectInputStream(inputStream)
         try {
-            val gson = Gson()
-            val jsonObject = gson.fromJson(reader, JsonObject::class.java)
-            val saves: MutableList<UserSave> = ArrayList()
-            if (jsonObject.has(Constants.EXPORT_FILE_TYPE_FIELD)) {
-                if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_FILE_TYPE_FIELD)
-                        .asString == "saves"
-                ) {
-                    for (item in jsonObject.getAsJsonArray("data")) {
-                        val save = item.asString
-                        checkEntryValidity(save)
-                        saves.add(UserSave(userId, save))
-                    }
-
-                    return saves
-                } else {
-                    throw IllegalFileException(
-                        IllegalFileException.INVALID_FILE
-                    )
-                }
-            } else {
-                throw IllegalFileException(
-                    IllegalFileException.INVALID_FORMAT
-                )
+            val saves = reader.readObject() as List<String>
+            val userSaves = mutableListOf<UserSave>()
+            for (save in saves) {
+                userSaves.add(UserSave(userId, save))
             }
-        } catch (error: JsonSyntaxException) {
-            throw IllegalFileException(
-                IllegalFileException.INVALID_FILE
-            )
-        } finally {
-            inputStream?.close()
-            reader.close()
-        }
-    }
 
-    fun importEntriesFromExternalStorage(uri: Uri): EntryImportData {
-        val inputStream = application.contentResolver.openInputStream(uri)
-        val reader = BufferedReader(InputStreamReader(inputStream))
-
-        try {
-            val gson = Gson()
-            val jsonObject = gson.fromJson(reader, JsonObject::class.java)
-            val entries: MutableList<CustomEntry> = ArrayList()
-            val entryModels: MutableList<EntryModel> = ArrayList()
-            if (jsonObject.has(Constants.EXPORT_FILE_TYPE_FIELD)) {
-                if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_FILE_TYPE_FIELD)
-                        .asString == "entries"
-                ) {
-                    for (i in jsonObject.getAsJsonArray("data")) {
-                        val item = i.asJsonObject
-                        val entry = item.getAsJsonPrimitive("entry").asString
-                        val pronunciation = item.getAsJsonPrimitive("pronunciation").asString
-                        val lastUpdated = item.getAsJsonPrimitive("lastUpdated").asString
-
-                        // Validations
-                        checkEntryValidity(entry)
-                        if (!Formatter.dateIsValid(lastUpdated)) {
-                            throw IllegalFileException(
-                                IllegalFileException.INVALID_FORMAT
-                            )
-                        }
-
-                        entries.add(
-                            CustomEntry(
-                                userId,
-                                entry,
-                                pronunciation,
-                                lastUpdated
-                            )
-                        )
-
-                        val entryModel = EntryModel(userId, entry, null)
-                        for (g in item.getAsJsonArray("definitionGroups")) {
-                            val group = g.asJsonObject
-                            val type = group.getAsJsonPrimitive("type").asString
-                            val order = group.getAsJsonPrimitive("order").asInt
-                            val groupModel = DefinitionGroupModel(type, order)
-
-                            for (d in group.getAsJsonArray("definitionData")) {
-                                val definitionData = d.asJsonObject
-                                val definition =
-                                    definitionData.getAsJsonPrimitive("definition").asString
-                                val example = definitionData.getAsJsonPrimitive("example").asString
-                                val definitionOrder =
-                                    definitionData.getAsJsonPrimitive("order").asInt
-
-                                if (definition.length >= Constants.DEFINITION_MAX_LENGTH) {
-                                    throw IllegalFileException(
-                                        IllegalFileException.INVALID_FILE
-                                    )
-                                }
-
-                                groupModel.addNewDefinition(
-                                    DefinitionModel(
-                                        type,
-                                        definition,
-                                        example,
-                                        definitionOrder
-                                    )
-                                )
-                            }
-
-                            entryModel.addDefinitionGroup(groupModel)
-                        }
-
-                        entryModels.add(entryModel)
-                    }
-
-                    return EntryImportData(entries, entryModels)
-                } else {
-                    throw IllegalFileException(
-                        IllegalFileException.INVALID_FILE
-                    )
-                }
-            } else {
-                throw IllegalFileException(
-                    IllegalFileException.INVALID_FORMAT
-                )
-            }
-        } catch (error: JsonSyntaxException) {
+            return userSaves
+        } catch (error: Throwable) {
+            Logger.reportErrorToDebug(error)
             throw IllegalFileException(
                 IllegalFileException.INVALID_FORMAT
             )
@@ -549,35 +435,48 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         }
     }
 
-    fun writeEntriesToExternalStorage(entries: List<EntryModel>, uri: Uri) {
-        application.contentResolver.openOutputStream(uri).use { outputStream ->
-            val bw = BufferedWriter(OutputStreamWriter(outputStream))
-            val gson = Gson()
-            gson.toJson(BasicExportModel("entries", entries), bw)
-            bw.flush()
-            bw.close()
+    fun importEntriesBackupFromExternalStorage(uri: Uri): List<EntryModel> {
+        val inputStream = application.contentResolver.openInputStream(uri)
+        inputStream.use { ins ->
+            ObjectInputStream(ins).use {
+                return it.readObject() as List<EntryModel>
+            }
         }
     }
 
-    fun writeSavesJsonToExternalStorage(saves: List<String>, uri: Uri) {
+    fun writeEntriesBackupToExternalStorage(entries: List<EntryModel>, uri: Uri) {
         application.contentResolver.openOutputStream(uri).use { outputStream ->
-            val bw = BufferedWriter(OutputStreamWriter(outputStream))
-            val gson = Gson()
-            gson.toJson(BasicExportModel("saves", saves), bw)
-            bw.flush()
-            bw.close()
+            val os = ObjectOutputStream(outputStream)
+            os.writeObject(entries)
+            os.flush()
+            os.close()
+        }
+    }
+
+    fun writeSavesBackupToExternalStorage(saves: List<String>, uri: Uri) {
+        application.contentResolver.openOutputStream(uri).use { outputStream ->
+            val os = ObjectOutputStream(outputStream)
+            os.writeObject(saves)
+            os.flush()
+            os.close()
         }
     }
 
     fun writeSavesToExternalStorage(saves: List<String>, uri: Uri) {
         application.contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
+            val gson = Gson()
+            gson.toJson(saves, bw)
+            bw.flush()
+            bw.close()
+        }
+    }
 
-            for (entry in saves) {
-                bw.write(entry)
-                bw.newLine()
-            }
-
+    fun writeEntriesToExternalStorage(entries: List<EntryModel>, uri: Uri) {
+        application.contentResolver.openOutputStream(uri).use { outputStream ->
+            val bw = BufferedWriter(OutputStreamWriter(outputStream))
+            val gson = Gson()
+            gson.toJson(entries, bw)
             bw.flush()
             bw.close()
         }

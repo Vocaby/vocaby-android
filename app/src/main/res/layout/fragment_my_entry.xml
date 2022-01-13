@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,10 +13,9 @@
     <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@drawable/box_bottom_stroke_gray"
-        android:backgroundTint="@color/colorPrimaryAccent"
-        android:gravity="center_vertical"
+        android:layout_height="104dp"
+        android:paddingTop="12dp"
+        android:background="@color/colorPrimaryAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -129,4 +129,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/empty_card"
         app:layout_constraintVertical_bias="1.0" />
+
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/vocaby_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:floatingSearch_dismissOnOutsideTouch="true"
+        app:floatingSearch_hintTextColor="@color/dark_gray"
+        app:floatingSearch_close_search_on_keyboard_dismiss="false"
+        app:floatingSearch_dimBackground="false"
+        app:floatingSearch_leftActionMode="showSearch"
+        app:floatingSearch_searchBarMarginLeft="@dimen/container_side_margin"
+        app:floatingSearch_searchBarMarginRight="@dimen/container_side_margin"
+        app:floatingSearch_searchBarMarginTop="38dp"
+        app:floatingSearch_searchHint="@string/search_custom_entry_hint"
+        app:floatingSearch_suggestionsListAnimDuration="200"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
