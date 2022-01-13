@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn com.github.mikephil.**
+-keep public class com.github.mikephil.** {
+     public protected *;
+}
