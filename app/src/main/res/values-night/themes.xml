@@ -33,6 +33,10 @@
         <item name="alertDialogTheme">@style/AlertDialogStyle</item>
     </style>
 
+    <style name="Theme.VocabyAndroid.TextInputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/nav_colors</item>
+    </style>
+
     <style name="Theme.VocabyAndroid.TextInputEditText" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <!-- left and right padding -->
         <item name="android:paddingStart">12dp</item>
@@ -137,7 +141,7 @@
     <style name="Theme.VocabyAndroid.TextHeadline" parent="Widget.AppCompat.TextView">
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
 
@@ -169,7 +173,6 @@
         <item name="iconPadding">0dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
-        <item name="android:textSize">8sp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>

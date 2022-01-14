@@ -41,6 +41,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var entryEdit: EditText
     private lateinit var entryAlert: TextView
     private lateinit var searchView: FloatingSearchView
+    private lateinit var recyclerView: RecyclerView
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
@@ -93,8 +94,15 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         entryViewModel.entryResult.observe(viewLifecycleOwner) { itemPayload ->
             when (itemPayload.state) {
                 ItemState.DELETE -> customEntryAdapter.deleteEntry(itemPayload.payload)
-                ItemState.ADD -> customEntryAdapter.addEntry()
-                ItemState.UPDATE -> customEntryAdapter.updateEntry(itemPayload.payload)
+                ItemState.ADD -> {
+                    customEntryAdapter.addEntry()
+                    recyclerView.smoothScrollToPosition(0)
+                }
+                ItemState.UPDATE -> {
+                    customEntryAdapter.deleteEntry(itemPayload.payload)
+                    customEntryAdapter.addEntry()
+                    recyclerView.smoothScrollToPosition(0)
+                }
             }
 
             updateEmptyCardVisibility()
@@ -144,7 +152,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     }
 
     private fun setupRecyclerView(view: View) {
-        val recyclerView: RecyclerView = view.findViewById(R.id.custom_entry_container)
+        recyclerView = view.findViewById(R.id.custom_entry_container)
         customEntryAdapter = CustomEntryAdapter(requireActivity(), this)
         recyclerView.adapter = customEntryAdapter
         recyclerView.layoutManager = LinearLayoutManager(ctx)
@@ -198,6 +206,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     private val queryChangeListener =
         FloatingSearchView.OnQueryChangeListener { _: String, newQuery: String ->
+            recyclerView.smoothScrollToPosition(0)
             entryViewModel.filterEntries(newQuery)
         }
 

@@ -49,7 +49,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         val view = inflater.inflate(R.layout.fragment_dictionary_main, container, false)
 
         val dateView = view.findViewById<TextView>(R.id.date)
-        dateView.text = formatDateToString(Date().time, true)
+        dateView.text = formatDateToString(Date().time, true, showDay = true)
 
         // Random Word of the Day
         wordView = view.findViewById(R.id.entry_header)

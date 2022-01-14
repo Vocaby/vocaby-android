@@ -12,7 +12,6 @@ import com.vocaby.application.utils.Logger
 import com.vocaby.application.utils.SingleLiveEvent
 import kotlinx.coroutines.*
 import java.io.StreamCorruptedException
-import java.lang.ClassCastException
 
 class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
     companion object {
@@ -49,7 +48,6 @@ class DataTransferViewModel(val repository: VocabyRepository) : ViewModel() {
                         _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
                     }
                     else -> {
-                        Logger.reportErrorToDebug(throwable)
                         _progressText.postValue(R.string.data_transfer_import_error_generic)
                     }
                 }

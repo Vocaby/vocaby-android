@@ -13,24 +13,23 @@ import com.vocaby.application.payloads.ItemStringPayload
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
 import com.vocaby.application.utils.Formatter
-import com.vocaby.application.utils.Logger
 import com.vocaby.application.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
-import kotlin.collections.ArrayList
+import java.util.*
 
 class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private val _entryCount: MutableLiveData<Int> = MutableLiveData(0)
-    private val _entries: SingleLiveEvent<List<UserEntry>> = SingleLiveEvent()
+    private val _entries: SingleLiveEvent<LinkedList<UserEntry>> = SingleLiveEvent()
     private val _entryState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
     private val _userInput: SingleLiveEvent<UserInputState> = SingleLiveEvent()
 
     private var realPosition: Int = -1
     private var filteredPosition: Int = -1
-    private var customEntries: MutableList<UserEntry> = ArrayList()
-    private var filteredEntries: MutableList<UserEntry> = ArrayList()
+    private var customEntries: LinkedList<UserEntry> = LinkedList()
+    private var filteredEntries: LinkedList<UserEntry> = LinkedList()
     private var filtered: Boolean = false
 
-    val entries: LiveData<List<UserEntry>>
+    val entries: LiveData<LinkedList<UserEntry>>
         get() = _entries
     val customEntryCount: LiveData<Int>
         get() = _entryCount
@@ -47,7 +46,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     fun clearEntries() {
         viewModelScope.launch {
             repository.clearUserEntries()
-            customEntries = ArrayList()
+            customEntries = LinkedList()
             _entries.postValue(customEntries)
             _entryCount.postValue(0)
         }
@@ -55,12 +54,11 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
 
     fun filterEntries(newQuery: String) {
         if (newQuery.isEmpty()) {
-            customEntries.sortByDescending { it.lastUpdated }
             filtered = false
             _entries.value = customEntries
         } else {
             filtered = true
-            filteredEntries = mutableListOf()
+            filteredEntries = LinkedList()
             val query = newQuery.lowercase()
             for (entry in customEntries) {
                 if (entry.entry.startsWith(query)) {
@@ -119,8 +117,12 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
                     if (filtered) filteredEntries.removeAt(filteredPosition)
                     customEntries.removeAt(realPosition)
                 } else if (receivedPayload.state == ItemState.UPDATE) {
-                    if (filtered) filteredEntries[filteredPosition] = receivedPayload.payload
-                    customEntries[realPosition] = receivedPayload.payload
+                    if (filtered) {
+                        filteredEntries.removeAt(filteredPosition)
+                        filteredEntries.add(0, receivedPayload.payload)
+                    }
+                    customEntries.removeAt(realPosition)
+                    customEntries.add(0, receivedPayload.payload)
                 }
 
                 if (filtered) {
@@ -128,11 +130,12 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
                 } else {
                     _entryState.value = ItemIntPayload(realPosition, receivedPayload.state)
                 }
+
                 _entryCount.value = customEntries.size
             }
-        } else {
-            resetSelections()
         }
+
+        resetSelections()
     }
 
     fun removeCustomEntry(entry: String, position: Int) {
@@ -174,7 +177,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
 
     fun initializeEntries() {
         viewModelScope.launch {
-            customEntries = repository.getUserEntries() as MutableList<UserEntry>
+            customEntries = repository.getUserEntries()
             _entries.postValue(customEntries)
             _entryCount.postValue(customEntries.size)
         }

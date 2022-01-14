@@ -2,10 +2,12 @@ package com.vocaby.application.ui.dictionary
 
 import android.content.Context
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.HorizontalScrollView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -23,6 +25,7 @@ class SearchResultsBodyFragment : Fragment() {
     private lateinit var pronunciation: TextView
     private lateinit var pronunciationScroll: HorizontalScrollView
     private lateinit var recyclerView: RecyclerView
+    private lateinit var entryBox: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +42,7 @@ class SearchResultsBodyFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_search_results_body, container, false)
+        entryBox = view.findViewById(R.id.entry_box)
         header = view.findViewById(R.id.entry_header)
         pronunciation = view.findViewById(R.id.pronunciation)
         pronunciationScroll = view.findViewById(R.id.pronunciation_scroll)
@@ -69,6 +73,9 @@ class SearchResultsBodyFragment : Fragment() {
         if (!entryData.pronunciation.isNullOrEmpty()) {
             pronunciationScroll.visibility = View.VISIBLE
             pronunciation.text = entryData.pronunciation
+        } else {
+            entryBox.setPadding(0, -ctx.resources.getDimensionPixelSize(R.dimen.header_gap), 0, 0)
+            entryBox.gravity = Gravity.CENTER
         }
     }
 

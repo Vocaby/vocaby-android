@@ -12,7 +12,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.vocaby.application.R
 import com.vocaby.application.VocabyApplication
-import com.vocaby.application.utils.LiveDataUtil.observeOnce
 import com.vocaby.application.viewmodels.DataTransferViewModel
 import com.vocaby.application.viewmodels.DataTransferViewModelFactory
 

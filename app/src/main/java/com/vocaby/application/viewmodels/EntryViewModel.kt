@@ -40,7 +40,7 @@ class EntryViewModel(
     private val initialGroups: HashMap<String, DefinitionGroupModel> = HashMap()
     private val groupChanges: GroupChanges = GroupChanges(-1)
     private val definitionChangesMap: MutableMap<String, DefinitionChanges> = HashMap()
-    private var saveTime: String = Formatter.formatDateToString(Date().time)
+    private var saveTime: Date = Date()
 
     private val _entry: SingleLiveEvent<String> = SingleLiveEvent()
     private val _pronunciation: SingleLiveEvent<String> = SingleLiveEvent()
@@ -220,7 +220,7 @@ class EntryViewModel(
                 _saveResult.setValue(false)
             } else {
                 viewModelScope.launch {
-                    saveTime = Formatter.formatDateToString(Date().time)
+                    saveTime = Date()
 
                     entryData.id = repository.insertOrUpdateEntry(
                         entryData.entry,

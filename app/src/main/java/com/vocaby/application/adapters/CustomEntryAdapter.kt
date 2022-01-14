@@ -16,12 +16,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.application.R
 import com.vocaby.application.models.customentry.UserEntry
 import com.vocaby.application.utils.Formatter
+import java.util.*
 
 class CustomEntryAdapter(
     private val activity: Activity,
     private val interaction: Interaction
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-    private var customEntries: List<UserEntry> = ArrayList()
+    private var customEntries: List<UserEntry> = LinkedList()
     private val alertDialogBuilder = MaterialAlertDialogBuilder(activity)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -44,7 +45,7 @@ class CustomEntryAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun submitList(list: List<UserEntry>) {
+    fun submitList(list: LinkedList<UserEntry>) {
         customEntries = list
         notifyDataSetChanged()
     }
@@ -105,7 +106,7 @@ class CustomEntryAdapter(
 
         fun bind(userEntry: UserEntry) {
             header.text = userEntry.entry
-            lastUpdated.text = Formatter.formatDateStringForDisplay(userEntry.lastUpdated)
+            lastUpdated.text = Formatter.formatDateToString(userEntry.lastUpdated.time, forDisplay = true, showDay = false)
 
             moreButton.setOnClickListener {
                 listPopupWindow.show()

@@ -50,7 +50,7 @@
     <string name="create_group">Add Group</string>
     <string name="custom_definition_add_button">Add a definition</string>
     <string name="drag_icon">drag icon</string>
-    <string name="entry_edit_hint">Enter a word or a phrase…</string>
+    <string name="entry_edit_hint">Enter your new entry…</string>
     <string name="group_header_alert">Please add a group</string>
     <string name="dictionary_header">Dictionary</string>
     <string name="original">ORIGINAL</string>
@@ -76,7 +76,6 @@
     <string name="data_management_import_save">Import save backup data</string>
     <string name="data_management_import_entry">Import entry backup data</string>
     <string name="data_transfer_importing">Importing your backup data…</string>
-    <string name="data_transfer_finalizing">Finalizing…</string>
     <string name="data_transfer_export_complete">Successfully exported your data!</string>
     <string name="data_transfer_import_complete">Successfully imported your data!</string>
     <string name="data_transfer_fetching_data">Fetching your data…</string>
@@ -89,7 +88,6 @@
     <string name="data_transfer_import_error_generic">Failed to import…</string>
     <string name="data_transfer_import_error_invalid_format">Failed to import: file is corrupted…</string>
     <string name="data_transfer_import_error_invalid_file">Failed to import: file is invalid…</string>
-    <string name="data_transfer_import_error_wrong_file">Failed to import: wrong backup file…</string>
     <string name="danger_clear_chart">Erase Chart Data</string>
     <string name="danger_clear_search_history">Erase Search History</string>
     <string name="danger_clear_saves">Erase Saves</string>

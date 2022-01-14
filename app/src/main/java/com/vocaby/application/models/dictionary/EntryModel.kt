@@ -11,10 +11,10 @@ class EntryModel(
     var id: Int,
     val entry: String,
     var pronunciation: String?,
-    var lastUpdated: String = "",
+    var lastUpdated: Date,
     var definitionGroups: MutableList<DefinitionGroupModel> = ArrayList(),
 ) : Parcelable, Serializable {
-    constructor(entry: String) : this(-1, entry, null)
+    constructor(entry: String) : this(-1, entry, null, Date())
     val isEmpty: Boolean
         get() = definitionGroups.isEmpty()
 

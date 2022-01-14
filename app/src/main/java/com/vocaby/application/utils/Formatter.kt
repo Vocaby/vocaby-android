@@ -1,39 +1,33 @@
 package com.vocaby.application.utils
 
 import java.text.NumberFormat
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object Formatter {
-    fun dateIsValid(date: String): Boolean {
-        return try {
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
-            true
-        } catch (e: Throwable) {
-            false
-        }
-    }
-
-    fun formatDateToString(milli: Long, forDisplay:Boolean = false): String {
+    fun formatDateToString(milli: Long, forDisplay:Boolean = false, showDay:Boolean = false, precise: Boolean = true): String {
         if (forDisplay) {
-            return SimpleDateFormat("EEE MM.dd.yyyy", Locale.getDefault()).format(milli)
+            if (showDay) {
+                return SimpleDateFormat("EEE MM.dd.yyyy", Locale.getDefault()).format(milli)
+            } else {
+                return SimpleDateFormat("MM.dd.yyyy", Locale.getDefault()).format(milli)
+            }
         } else {
-            return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(milli)
+            if (precise) {
+                return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(milli)
+            } else {
+                return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(milli)
+            }
         }
 
     }
 
-    fun formatStringToDate(date: String): Date? {
-        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
-    }
-
-    fun formatDateStringForDisplay(date: String, showDay:Boolean = false): String {
-        val formatted = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
-
-        return if (showDay) {
-            SimpleDateFormat("EEE MM.dd.yyyy", Locale.getDefault()).format(formatted!!)
-        } else {
-            SimpleDateFormat("MM.dd.yyyy", Locale.getDefault()).format(formatted!!)
+    fun formatStringToDate(date: String): Date {
+        try {
+            return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(date)!!
+        } catch (e: ParseException) {
+            return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)!!
         }
     }
 

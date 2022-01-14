@@ -14,12 +14,16 @@ import com.vocaby.application.exceptions.IllegalFileException
 import com.vocaby.application.models.FeedbackModel
 import com.vocaby.application.models.customentry.DefinitionChanges
 import com.vocaby.application.models.customentry.GroupChanges
+import com.vocaby.application.models.customentry.UserEntry
 import com.vocaby.application.models.dictionary.*
 import com.vocaby.application.models.profile.FaqModel
 import com.vocaby.application.states.ValidState
 import com.vocaby.application.utils.Formatter
 import com.vocaby.application.utils.Logger
-import java.io.*
+import java.io.BufferedWriter
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import java.io.OutputStreamWriter
 import java.net.UnknownHostException
 import java.util.*
 
@@ -100,10 +104,9 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
             val wordData = EntryModel(
                 wordDefinitions.wordData.id,
                 wordDefinitions.wordData.word,
-                pronunciation
+                pronunciation,
+                wordDefinitions.wordData.lastUpdated
             )
-
-            wordData.lastUpdated = wordDefinitions.wordData.lastUpdated
 
             for (data in wordDefinitions.definitions) {
                 wordData.addDefinition(data.pos, data.definition, data.sentence)
@@ -166,7 +169,10 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
     }
 
     /** --------------------- CUSTOM ENTRY -------------------- **/
-    suspend fun getUserEntries() = vocabyDao.getUserEntries(userId)
+    suspend fun getUserEntries(): LinkedList<UserEntry> {
+        val list = vocabyDao.getUserEntries(userId)
+        return LinkedList(list)
+    }
     suspend fun getUserEntryData(entry: String): EntryModel? =
         convertCustomToEntryModel(vocabyDao.getUserEntryData(userId, entry))
 
@@ -191,7 +197,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
         pronunciation: String,
         groupChanges: GroupChanges,
         definitionChangesMap: MutableMap<String, DefinitionChanges>,
-        saveTime: String
+        saveTime: Date
     ): Int {
         val entryId: Int = if (groupChanges.entryId == -1) {
             vocabyDao.insertCustomEntry(
@@ -425,7 +431,6 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
             return userSaves
         } catch (error: Throwable) {
-            Logger.reportErrorToDebug(error)
             throw IllegalFileException(
                 IllegalFileException.INVALID_FORMAT
             )

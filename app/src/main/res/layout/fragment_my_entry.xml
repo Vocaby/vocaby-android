@@ -10,7 +10,7 @@
     android:background="@color/very_light_gray">
 
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
         android:layout_height="104dp"
@@ -19,63 +19,66 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:contentDescription="@string/app_logo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_vocaby_logo" />
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/nav_custom_entries"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyle"
-            android:visibility="gone"
-            android:indeterminateTint="@color/colorPrimary"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_weight="1" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/entry_count"
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="@string/zero"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:gravity="center"
             android:layout_marginEnd="@dimen/container_side_margin"
-            android:text="@string/custom_entries"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
-    </LinearLayout>
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/app_logo"
+                app:srcCompat="@drawable/ic_vocaby_logo" />
+
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/nav_custom_entries"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="?android:attr/progressBarStyle"
+                android:visibility="gone"
+                android:indeterminateTint="@color/colorPrimary"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_weight="1" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/entry_count"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/zero"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/custom_entries"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </FrameLayout>
 
 
     <LinearLayout

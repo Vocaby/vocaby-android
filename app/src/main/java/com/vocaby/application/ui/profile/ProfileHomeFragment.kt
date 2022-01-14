@@ -60,12 +60,10 @@ class ProfileHomeFragment : Fragment() {
         barChart.apply {
             setTouchEnabled(false)
             setScaleEnabled(false)
-            setViewPortOffsets(0f, 40f, 0f, 50f)
-            minOffset = 0f
             axisRight.isEnabled = false
             axisLeft.isEnabled = true
             axisLeft.axisLineColor = Color.WHITE
-            axisLeft.axisMinimum = 0f
+            axisLeft.setDrawLabels(false)
             legend.isEnabled = false
         }
 

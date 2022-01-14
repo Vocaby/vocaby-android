@@ -5,6 +5,7 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.vocaby.application.models.dictionary.EntryModel
+import com.vocaby.application.utils.Formatter
 import java.lang.reflect.Type
 
 
@@ -17,7 +18,7 @@ class EntryDeserializer: JsonDeserializer<EntryModel> {
         val jsonObject = json.asJsonObject
         val word: String = jsonObject.get("word").asString
         val entryData = EntryModel(word)
-        entryData.lastUpdated = jsonObject.get("last_updated").asString
+        entryData.lastUpdated = Formatter.formatStringToDate(jsonObject.get("last_updated").asString)
         entryData.pronunciation = jsonObject.get("pronunciation").asString
         val data: JsonObject = jsonObject.get("definitions").asJsonObject
 

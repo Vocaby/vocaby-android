@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,19 +10,15 @@
     android:background="@color/white"
     tools:context=".ui.dictionary.SearchResultsBodyFragment">
     <LinearLayout
-        android:id="@+id/word_box"
+        android:id="@+id/entry_box"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
-        android:gravity="center"
+        android:layout_height="90dp"
+        android:gravity="center_horizontal"
+        android:clipToPadding="false"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
-        android:paddingBottom="12dp"
         android:orientation="vertical"
-        android:background="@drawable/box_bottom_stroke_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
+        android:background="@drawable/box_bottom_stroke_gray">
         <TextView
             android:id="@+id/entry_header"
             style="@style/Theme.VocabyAndroid.TextHeader"
@@ -32,8 +28,8 @@
             android:maxLines="3"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimaryAccent"
-            app:autoSizeMinTextSize="14sp"
-            app:autoSizeStepGranularity="2sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
             app:autoSizeTextType="uniform" />
 
         <HorizontalScrollView
@@ -49,7 +45,7 @@
                 android:id="@+id/pronunciation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_black"
+                android:fontFamily="@font/sourcesanspro_semibold"
                 android:gravity="center"
                 android:scrollIndicators="none"
                 android:scrollbars="none"
@@ -62,6 +58,7 @@
         android:id="@+id/definitions_recycler_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:clipToPadding="false"
         android:background="@color/white"
         android:paddingStart="@dimen/container_side_margin"
@@ -70,4 +67,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/word_box" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

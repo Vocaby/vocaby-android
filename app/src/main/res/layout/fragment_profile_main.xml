@@ -19,10 +19,7 @@
             android:layout_height="20dp"
             android:layout_marginStart="@dimen/container_side_margin"
             android:contentDescription="@string/app_logo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_vocaby_logo"
-            tools:ignore="ImageContrastCheck" />
+            app:srcCompat="@drawable/ic_vocaby_logo" />
 
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -31,7 +28,7 @@
             android:layout_marginStart="8dp"
             android:text="@string/profile"
             android:textColor="@color/colorPrimary"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <Space
             android:layout_width="0dp"
@@ -71,11 +68,13 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/chart_toggle_button"
             style="@style/Theme.VocabyAndroid.MaterialToggleButton"
-            android:layout_width="74dp"
+            android:layout_width="wrap_content"
+            android:minWidth="74dp"
             android:layout_height="wrap_content"
             android:checkable="true"
             android:gravity="center"
             android:text="@string/chart_toggle_monthly"
+            android:textSize="8sp"
             android:textColor="@color/colorPrimary"
             app:backgroundTint="@color/white"
             app:cornerRadius="@dimen/radius"
@@ -98,7 +97,7 @@
             android:id="@+id/favorite_entry"
             style="@style/Theme.VocabyAndroid.TextHeader"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
+            android:layout_height="28dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:layout_marginStart="@dimen/container_side_margin"
@@ -111,6 +110,8 @@
             android:layout_width="match_parent"
             android:layout_height="130dp"
             android:layout_gravity="center"
+            android:clipToPadding="false"
+            android:clipChildren="false"
             android:layout_marginStart="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin" />
     </LinearLayout>
@@ -118,6 +119,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="@dimen/container_gap_margin"
         android:layout_marginBottom="6dp"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin">
@@ -145,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textSize="10sp"
+            android:textSize="8sp"
             android:fontFamily="@font/sourcesanspro_regular"
             android:textColor="@color/black"
             android:text="@string/chart_guide"
