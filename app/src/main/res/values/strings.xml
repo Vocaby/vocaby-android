@@ -146,5 +146,5 @@
     <string name="connections_switch_header">Automatically Update Definitions</string>
     <string name="connections_switch_body">When enabled, Vocaby will check and update entries that you search.</string>
     <string name="connections">Connections</string>
-    <string name="search_custom_entry_hint">Search for your entry…</string>
+    <string name="search_custom_entry_hint">Filter entries…</string>
 </resources>

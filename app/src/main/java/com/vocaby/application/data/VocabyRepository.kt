@@ -10,6 +10,7 @@ import com.vocaby.application.Constants
 import com.vocaby.application.api.ApiManager
 import com.vocaby.application.data.dao.VocabyDao
 import com.vocaby.application.data.entity.*
+import com.vocaby.application.exceptions.ApiException
 import com.vocaby.application.exceptions.IllegalFileException
 import com.vocaby.application.models.FeedbackModel
 import com.vocaby.application.models.customentry.DefinitionChanges
@@ -131,7 +132,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
 
         if (today != lastTimeStarted) {
             dailyPick = try {
-                val response = apiService.getWoD(Formatter.formatDateToString(Date().time))
+                val response = apiService.getWoD(Formatter.formatDateToString(Date().time, precise=false))
                 if (response.isSuccessful && response.code() == 200) {
                     DailyPick(response.body(), false)
                 } else {
@@ -545,6 +546,7 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
             if (response.isSuccessful) {
                 ValidState.Valid
             } else {
+                Logger.reportErrorToBugsnag(ApiException("${response.code()}: ${response.body().toString()}"))
                 ValidState.Error("Vocaby's server is down :(")
             }
         } catch (e: UnknownHostException) {

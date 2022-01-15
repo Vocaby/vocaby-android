@@ -10,6 +10,7 @@ import com.vocaby.application.models.customentry.UserEntry
 import com.vocaby.application.payloads.ItemEntryPayload
 import com.vocaby.application.payloads.ItemIntPayload
 import com.vocaby.application.payloads.ItemStringPayload
+import com.vocaby.application.states.GenericState
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
 import com.vocaby.application.utils.Formatter
@@ -19,7 +20,7 @@ import java.util.*
 
 class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private val _entryCount: MutableLiveData<Int> = MutableLiveData(0)
-    private val _entries: SingleLiveEvent<LinkedList<UserEntry>> = SingleLiveEvent()
+    private val _entries: SingleLiveEvent<GenericState<LinkedList<UserEntry>>> = SingleLiveEvent()
     private val _entryState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
     private val _userInput: SingleLiveEvent<UserInputState> = SingleLiveEvent()
 
@@ -29,7 +30,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     private var filteredEntries: LinkedList<UserEntry> = LinkedList()
     private var filtered: Boolean = false
 
-    val entries: LiveData<LinkedList<UserEntry>>
+    val entries: LiveData<GenericState<LinkedList<UserEntry>>>
         get() = _entries
     val customEntryCount: LiveData<Int>
         get() = _entryCount
@@ -47,7 +48,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
         viewModelScope.launch {
             repository.clearUserEntries()
             customEntries = LinkedList()
-            _entries.postValue(customEntries)
+            _entries.postValue(GenericState.Success(customEntries))
             _entryCount.postValue(0)
         }
     }
@@ -55,7 +56,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     fun filterEntries(newQuery: String) {
         if (newQuery.isEmpty()) {
             filtered = false
-            _entries.value = customEntries
+            _entries.value = GenericState.Success(customEntries)
         } else {
             filtered = true
             filteredEntries = LinkedList()
@@ -66,7 +67,7 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
                 }
             }
 
-            _entries.value = filteredEntries
+            _entries.value = GenericState.Success(filteredEntries)
         }
     }
 
@@ -176,15 +177,16 @@ class MyEntryViewModel(private val repository: VocabyRepository): ViewModel() {
     }
 
     fun initializeEntries() {
+        _entries.value = GenericState.InProgress
         viewModelScope.launch {
             customEntries = repository.getUserEntries()
-            _entries.postValue(customEntries)
+            _entries.postValue(GenericState.Success(customEntries))
             _entryCount.postValue(customEntries.size)
         }
     }
 
     fun reinitializeEntries() {
-        _entries.postValue(customEntries)
+        _entries.postValue(GenericState.Success(customEntries))
         _entryCount.postValue(customEntries.size)
     }
 }

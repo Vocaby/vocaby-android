@@ -8,10 +8,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
@@ -23,6 +20,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.VocabyApplication
 import com.vocaby.application.adapters.CustomEntryAdapter
+import com.vocaby.application.states.GenericState
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
 import com.vocaby.application.utils.Formatter
@@ -42,6 +40,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var entryAlert: TextView
     private lateinit var searchView: FloatingSearchView
     private lateinit var recyclerView: RecyclerView
+    private lateinit var fetchProgress: ProgressBar
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels{
         DictionaryViewModelFactory((requireActivity().application as VocabyApplication).repository)
@@ -62,6 +61,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         val view = inflater.inflate(R.layout.fragment_my_entry, container, false)
         entryCountView = view.findViewById(R.id.entry_count)
         emptyCard = view.findViewById(R.id.empty_card)
+        fetchProgress = view.findViewById(R.id.fetch_progress)
 
         searchView = view.findViewById(R.id.vocaby_search)
         searchView.apply {
@@ -82,9 +82,22 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             entryViewModel.reinitializeEntries()
         }
 
-        entryViewModel.entries.observe(viewLifecycleOwner, { customEntries ->
-            customEntryAdapter.submitList(customEntries)
-            updateEmptyCardVisibility()
+        entryViewModel.entries.observe(viewLifecycleOwner, { fetchState ->
+            when (fetchState) {
+                is GenericState.Success -> {
+                    fetchProgress.visibility = View.GONE
+                    customEntryAdapter.submitList(fetchState.data)
+                    updateEmptyCardVisibility()
+                }
+
+                is GenericState.InProgress -> {
+                    fetchProgress.visibility = View.VISIBLE
+                }
+
+                is GenericState.Error -> {
+                    fetchProgress.visibility = View.GONE
+                }
+            }
         })
 
         entryViewModel.customEntryCount.observe(viewLifecycleOwner, { count ->

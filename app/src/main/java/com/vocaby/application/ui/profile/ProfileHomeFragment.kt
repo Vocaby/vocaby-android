@@ -60,6 +60,7 @@ class ProfileHomeFragment : Fragment() {
         barChart.apply {
             setTouchEnabled(false)
             setScaleEnabled(false)
+            extraBottomOffset = 15f
             axisRight.isEnabled = false
             axisLeft.isEnabled = true
             axisLeft.axisLineColor = Color.WHITE
