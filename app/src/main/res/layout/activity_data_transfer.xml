@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.profile.DataTransferActivity">
+    tools:context=".feature_user.presentation.ui.DataTransferActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -10,7 +10,7 @@
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
-        android:name="com.vocaby.application.VocabyApplication"
+        android:name="com.vocaby.application.core.VocabyApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,23 +20,23 @@
         <meta-data android:name="com.bugsnag.android.API_KEY"
             android:value="c50224dde34b12f79fe666d9b1b80910"/>
         <activity
-            android:name="com.vocaby.application.ui.profile.DataTransferActivity"
+            android:name="com.vocaby.application.feature_user.presentation.ui.DataTransferActivity"
             android:exported="false" />
         <activity
-            android:name="com.vocaby.application.ui.customentry.EntryGroupBuilderActivity"
+            android:name="com.vocaby.application.feature_customdictionary.presentation.ui.EntryGroupBuilderActivity"
             android:exported="true" />
         <activity
-            android:name="com.vocaby.application.ui.customentry.EntryBuilderActivity"
+            android:name="com.vocaby.application.feature_customdictionary.presentation.ui.EntryBuilderActivity"
             android:exported="true" />
         <activity
-            android:name="com.vocaby.application.ui.MainActivity"
+            android:name="com.vocaby.application.core.presentation.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name="com.vocaby.application.ui.SplashScreenActivity"
+            android:name="com.vocaby.application.core.presentation.SplashScreenActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.VocabyAndroid.Splash"
@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name="com.vocaby.application.widget.SavesAppWidgetProvider"
+            android:name="com.vocaby.application.feature_save.widget.SavesAppWidgetProvider"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -60,10 +60,10 @@
                 android:resource="@xml/saves_appwidget_info" />
         </receiver>
         <receiver
-            android:name="com.vocaby.application.receivers.NotificationReceiver"
+            android:name="com.vocaby.application.feature_user.receivers.NotificationReceiver"
             android:enabled="true" />
         <receiver
-            android:name="com.vocaby.application.receivers.BootReceiver"
+            android:name="com.vocaby.application.feature_user.receivers.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

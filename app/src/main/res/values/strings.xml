@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Vocaby</string>
-    <string name="app_logo">Vocaby Logo</string>
     <string name="search_hint">Look up an entry&#8230;</string>
     <string name="nav_search">Dictionary</string>
     <string name="nav_saves">Saves</string>
@@ -20,7 +19,6 @@
     <string name="close">close</string>
     <!-- Strings used for fragments for navigation -->
 
-    <string name="profile">Profile</string>
     <string name="notifications">Notifications</string>
     <string name="saved_entries">Saved Entries</string>
     <string name="zero">0</string>
@@ -88,6 +86,7 @@
     <string name="data_transfer_import_error_generic">Failed to import…</string>
     <string name="data_transfer_import_error_invalid_format">Failed to import: file is corrupted…</string>
     <string name="data_transfer_import_error_invalid_file">Failed to import: file is invalid…</string>
+    <string name="data_transfer_import_error_wrong_backup_file">Failed to import: backup file is invalid…</string>
     <string name="danger_clear_chart">Erase Chart Data</string>
     <string name="danger_clear_search_history">Erase Search History</string>
     <string name="danger_clear_saves">Erase Saves</string>
