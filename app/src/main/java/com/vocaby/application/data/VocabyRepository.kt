@@ -546,8 +546,11 @@ class VocabyRepository(private val vocabyDao: VocabyDao, val application: Applic
             if (response.isSuccessful) {
                 ValidState.Valid
             } else {
-                Logger.reportErrorToBugsnag(ApiException("${response.code()}: ${response.body().toString()}"))
-                ValidState.Error("Vocaby's server is down :(")
+                if (response.code() >= 500) {
+                    ValidState.Error("Vocaby's server is down :(")
+                } else {
+                    ValidState.Error("Failed to send feedback...")
+                }
             }
         } catch (e: UnknownHostException) {
             ValidState.Error("No internet connection")

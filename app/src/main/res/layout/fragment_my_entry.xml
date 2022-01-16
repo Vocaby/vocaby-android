@@ -8,76 +8,52 @@
     tools:context=".ui.customentry.MyEntryFragment"
     android:orientation="vertical"
     android:background="@color/very_light_gray">
-
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
         android:layout_height="104dp"
         android:paddingTop="12dp"
+        android:orientation="horizontal"
         android:background="@color/colorPrimaryAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_marginEnd="@dimen/container_side_margin"
             android:layout_marginStart="@dimen/container_side_margin"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/app_logo"
-                app:srcCompat="@drawable/ic_vocaby_logo" />
+            android:text="@string/nav_custom_entries"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:drawablePadding="8dp"
+            app:drawableStartCompat="@drawable/ic_vocaby_logo_sm" />
 
-            <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/nav_custom_entries"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+        <TextView
+            android:id="@+id/entry_count"
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/zero"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                style="?android:attr/progressBarStyle"
-                android:visibility="gone"
-                android:indeterminateTint="@color/colorPrimary"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_weight="1" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/entry_count"
-                style="@style/Theme.VocabyAndroid.TextHeadline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/zero"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
-
-            <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/custom_entries"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </FrameLayout>
+        <TextView
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/custom_entries"
+            android:textColor="@color/white"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/empty_card"

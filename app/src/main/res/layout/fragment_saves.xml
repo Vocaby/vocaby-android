@@ -17,21 +17,17 @@
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:contentDescription="@string/app_logo"
-            app:srcCompat="@drawable/ic_vocaby_logo" />
-
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/container_side_margin"
             android:text="@string/nav_saves"
             android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:drawablePadding="8dp"
+            app:drawableStartCompat="@drawable/ic_vocaby_logo_sm" />
 
         <Space
             android:layout_width="0dp"
