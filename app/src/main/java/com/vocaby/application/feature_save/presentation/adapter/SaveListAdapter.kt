@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.adapter
+package com.vocaby.application.feature_save.presentation.adapter
 
 import android.app.Activity
 import android.view.LayoutInflater
