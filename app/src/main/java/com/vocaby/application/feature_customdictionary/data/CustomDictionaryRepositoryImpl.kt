@@ -5,8 +5,7 @@ import com.vocaby.application.feature_customdictionary.data.local.entity.CustomD
 import com.vocaby.application.feature_customdictionary.data.local.entity.CustomEntry
 import com.vocaby.application.feature_customdictionary.data.local.entity.CustomEntryGroup
 import com.vocaby.application.feature_customdictionary.data.local.entity.EntryWithData
-import com.vocaby.application.feature_customdictionary.domain.model.DefinitionChanges
-import com.vocaby.application.feature_customdictionary.domain.model.GroupChanges
+import com.vocaby.application.feature_customdictionary.domain.model.ItemChangeState
 import com.vocaby.application.feature_customdictionary.domain.model.UserEntry
 import com.vocaby.application.feature_customdictionary.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
@@ -48,11 +47,11 @@ class CustomDictionaryRepositoryImpl constructor(
         userId: Int,
         entry: String,
         pronunciation: String,
-        groupChanges: GroupChanges,
-        definitionChangesMap: MutableMap<String, DefinitionChanges>,
+        groupChanges: ItemChangeState<DefinitionGroupModel>,
+        definitionChangesMap: MutableMap<String, ItemChangeState<DefinitionModel>>,
         saveTime: Date
     ): Int {
-        val entryId: Int = if (groupChanges.entryId == -1) {
+        val entryId: Int = if (groupChanges.id == -1) {
             dao.insertCustomEntry(
                 CustomEntry(
                     userId,
@@ -68,11 +67,11 @@ class CustomDictionaryRepositoryImpl constructor(
                     entry,
                     pronunciation,
                     saveTime,
-                    groupChanges.entryId
+                    groupChanges.id
                 )
             )
 
-            groupChanges.entryId
+            groupChanges.id
         }
 
         val deletedGroups = mutableListOf<CustomEntryGroup>()
@@ -109,7 +108,7 @@ class CustomDictionaryRepositoryImpl constructor(
                 deletedDefinitions.add(
                     CustomDefinition(
                         definitionModel.id,
-                        definitionChanges.groupId,
+                        definitionChanges.id,
                         definitionModel.definition,
                         definitionModel.example,
                         definitionModel.order
@@ -124,7 +123,7 @@ class CustomDictionaryRepositoryImpl constructor(
                 updatedDefinitions.add(
                     CustomDefinition(
                         definitionModel.id,
-                        definitionChanges.groupId,
+                        definitionChanges.id,
                         definitionModel.definition,
                         definitionModel.example,
                         definitionModel.order
@@ -141,7 +140,7 @@ class CustomDictionaryRepositoryImpl constructor(
         for (i in newGroups.indices) {
             val definitionChanges =
                 definitionChangesMap[newGroups[i].type]
-            if (definitionChanges != null) definitionChanges.groupId =
+            if (definitionChanges != null) definitionChanges.id =
                 ids[i].toInt()
         }
 
@@ -150,7 +149,7 @@ class CustomDictionaryRepositoryImpl constructor(
             for (definitionModel in definitionChanges.addedItems) {
                 addedDefinitions.add(
                     CustomDefinition(
-                        definitionChanges.groupId,
+                        definitionChanges.id,
                         definitionModel.definition,
                         definitionModel.example,
                         definitionModel.order

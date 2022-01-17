@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.SingleLiveEvent
-import com.vocaby.application.feature_customdictionary.domain.model.DefinitionChanges
+import com.vocaby.application.feature_customdictionary.domain.model.ItemChangeState
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.payloads.ItemIntPayload
@@ -16,8 +16,7 @@ import java.util.*
 
 class EntryGroupViewModel : ViewModel() {
     private lateinit var definitionGroup: DefinitionGroupModel
-    private var definitionChanges: DefinitionChanges =
-        DefinitionChanges()
+    private var definitionChanges: ItemChangeState<DefinitionModel> = ItemChangeState()
     private val initialDefinitions: HashMap<String, DefinitionModel> = HashMap()
     private var resultState: ItemState? = null
 

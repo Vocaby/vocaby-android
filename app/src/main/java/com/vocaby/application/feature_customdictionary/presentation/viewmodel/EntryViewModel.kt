@@ -11,11 +11,11 @@ import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.SingleLiveEvent
-import com.vocaby.application.feature_customdictionary.domain.model.DefinitionChanges
-import com.vocaby.application.feature_customdictionary.domain.model.GroupChanges
+import com.vocaby.application.feature_customdictionary.domain.model.ItemChangeState
 import com.vocaby.application.feature_customdictionary.domain.model.UserEntry
 import com.vocaby.application.feature_customdictionary.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
+import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_user.domain.repository.UserRepository
 import com.vocaby.application.payloads.ItemEntryPayload
@@ -51,11 +51,8 @@ class EntryViewModel @Inject constructor(
     private var userId: Int = 1
     private var selectedGroup = -1
     private val initialGroups: HashMap<String, DefinitionGroupModel> = HashMap()
-    private val groupChanges: GroupChanges =
-        GroupChanges(
-            -1
-        )
-    private val definitionChangesMap: MutableMap<String, DefinitionChanges> = HashMap()
+    private val groupChanges: ItemChangeState<DefinitionGroupModel> = ItemChangeState()
+    private val definitionChangesMap: MutableMap<String, ItemChangeState<DefinitionModel>> = HashMap()
     private var saveTime: Date = Date()
 
     private val _entry: SingleLiveEvent<String> = SingleLiveEvent()
@@ -89,15 +86,12 @@ class EntryViewModel @Inject constructor(
             _entry.postValue(entryData.entry)
             _definitionGroups.postValue(entryData.definitionGroups)
             _pronunciation.postValue(entryData.pronunciation)
-            groupChanges.entryId = entryData.id
+            groupChanges.id = entryData.id
 
             for (group in entryData.definitionGroups) {
                 val clone = DefinitionGroupModel(group)
                 initialGroups[clone.type] = clone
-                definitionChangesMap[clone.type] =
-                    DefinitionChanges(
-                        clone.groupId
-                    )
+                definitionChangesMap[clone.type] = ItemChangeState(clone.groupId)
                 types.remove(clone.type)
             }
 
@@ -140,7 +134,7 @@ class EntryViewModel @Inject constructor(
         intent.putExtra(GROUP_KEY, newGroup as Parcelable)
         intent.putExtra(
             DEFINITION_CHANGES,
-            DefinitionChanges()
+            ItemChangeState<DefinitionModel>()
         )
         intent.putExtra(INITIAL_DEFINITIONS_KEY, newGroup as Parcelable)
         intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.ADD as Parcelable)
@@ -193,7 +187,7 @@ class EntryViewModel @Inject constructor(
                             }
 
                             // add/overwrite the definition changes
-                            val newChanges: DefinitionChanges? = data.getParcelableExtra(
+                            val newChanges: ItemChangeState<DefinitionModel>? = data.getParcelableExtra(
                                 DEFINITION_CHANGES
                             )
 

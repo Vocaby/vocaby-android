@@ -3,35 +3,44 @@ package com.vocaby.application.feature_customdictionary.domain.model
 import android.os.Parcel
 import android.os.Parcelable
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
-abstract class ItemsUpdate<T> : Parcelable {
-    private val itemsAdded: MutableMap<String?, T>
-    private val itemsDeleted: MutableMap<String?, T>
-    private val itemsUpdated: MutableMap<String?, T>
-
-    constructor(
-        itemsAdded: MutableMap<String?, T>,
-        itemsDeleted: MutableMap<String?, T>,
-        itemsUpdated: MutableMap<String?, T>
-    ) {
-        this.itemsAdded = itemsAdded
-        this.itemsDeleted = itemsDeleted
-        this.itemsUpdated = itemsUpdated
+open class ItemChangeState<T> (
+    var id: Int = -1,
+    private var itemsAdded: LinkedHashMap<String?, T> = LinkedHashMap(),
+    private var itemsDeleted: LinkedHashMap<String?, T> = LinkedHashMap(),
+    private var itemsUpdated: LinkedHashMap<String?, T> = LinkedHashMap()
+): Parcelable {
+    override fun describeContents(): Int {
+        return 0
     }
 
     override fun writeToParcel(out: Parcel, flags: Int) {
+        out.writeInt(id)
         out.writeMap(itemsAdded)
         out.writeMap(itemsDeleted)
         out.writeMap(itemsUpdated)
     }
 
-    protected constructor(`in`: Parcel) {
-        itemsAdded = HashMap()
-        itemsDeleted = HashMap()
+    protected constructor(`in`: Parcel) : this() {
+        id = `in`.readInt()
+        itemsAdded = LinkedHashMap()
+        itemsDeleted = LinkedHashMap()
         itemsUpdated = LinkedHashMap()
         `in`.readMap(itemsAdded, javaClass.classLoader)
         `in`.readMap(itemsDeleted, javaClass.classLoader)
         `in`.readMap(itemsUpdated, javaClass.classLoader)
+    }
+
+
+    companion object CREATOR : Parcelable.Creator<ItemChangeState<Parcelable>> {
+        override fun createFromParcel(parcel: Parcel): ItemChangeState<Parcelable> {
+            return ItemChangeState(parcel)
+        }
+
+        override fun newArray(size: Int): Array<ItemChangeState<Parcelable>?> {
+            return arrayOfNulls(size)
+        }
     }
 
     val addedItems: List<T> get() = ArrayList(itemsAdded.values)

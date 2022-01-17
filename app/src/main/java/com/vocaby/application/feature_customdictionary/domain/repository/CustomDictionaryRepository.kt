@@ -1,8 +1,9 @@
 package com.vocaby.application.feature_customdictionary.domain.repository
 
-import com.vocaby.application.feature_customdictionary.domain.model.DefinitionChanges
-import com.vocaby.application.feature_customdictionary.domain.model.GroupChanges
+import com.vocaby.application.feature_customdictionary.domain.model.ItemChangeState
 import com.vocaby.application.feature_customdictionary.domain.model.UserEntry
+import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
+import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import java.util.*
 
@@ -17,8 +18,8 @@ interface CustomDictionaryRepository {
         userId: Int,
         entry: String,
         pronunciation: String,
-        groupChanges: GroupChanges,
-        definitionChangesMap: MutableMap<String, DefinitionChanges>,
+        groupChanges: ItemChangeState<DefinitionGroupModel>,
+        definitionChangesMap: MutableMap<String, ItemChangeState<DefinitionModel>>,
         saveTime: Date
     ): Int
     suspend fun insertNewEntries(userId: Int, data: List<EntryModel>)
