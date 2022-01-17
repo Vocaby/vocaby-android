@@ -8,13 +8,12 @@ import java.util.*
 @Parcelize
 class EntryModel(
     @Transient
-    var id: Int,
-    val entry: String,
-    var pronunciation: String?,
-    var lastUpdated: Date,
+    var id: Int = -1,
+    val entry: String = "",
+    var pronunciation: String? = null,
+    var lastUpdated: Date = Date(),
     var definitionGroups: MutableList<DefinitionGroupModel> = ArrayList(),
 ) : Parcelable, Serializable {
-    constructor(entry: String) : this(-1, entry, null, Date())
     val isEmpty: Boolean
         get() = definitionGroups.isEmpty()
 

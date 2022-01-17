@@ -17,7 +17,7 @@ class EntryDeserializer: JsonDeserializer<EntryModel> {
     ): EntryModel {
         val jsonObject = json.asJsonObject
         val word: String = jsonObject.get("word").asString
-        val entryData = EntryModel(word)
+        val entryData = EntryModel(entry = word)
         entryData.lastUpdated = Formatter.formatStringToDate(jsonObject.get("last_updated").asString)
         entryData.pronunciation = jsonObject.get("pronunciation").asString
         val data: JsonObject = jsonObject.get("definitions").asJsonObject

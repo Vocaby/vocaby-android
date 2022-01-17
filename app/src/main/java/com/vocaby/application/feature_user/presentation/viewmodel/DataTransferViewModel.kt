@@ -21,12 +21,10 @@ class DataTransferViewModel @Inject constructor(
     private val customDictionaryRepository: CustomDictionaryRepository
 ) : ViewModel() {
     companion object {
-        const val EXPORT_SAVE = 0
-        const val EXPORT_ENTRY = 1
-        const val EXPORT_SAVE_BACKUP = 2
-        const val EXPORT_ENTRY_BACKUP = 3
-        const val IMPORT_SAVE = 4
-        const val IMPORT_ENTRY = 5
+        const val EXPORT_SAVE_BACKUP = 1
+        const val EXPORT_ENTRY_BACKUP = 2
+        const val IMPORT_SAVE = 3
+        const val IMPORT_ENTRY = 4
     }
 
     private val transferScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -79,7 +77,7 @@ class DataTransferViewModel @Inject constructor(
         actionType = received.getIntExtra("TYPE", -1)
         val intent: Intent
         when (actionType) {
-            EXPORT_SAVE -> {
+            EXPORT_SAVE_BACKUP -> {
                 intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "application/json"
@@ -87,7 +85,7 @@ class DataTransferViewModel @Inject constructor(
                 }
             }
 
-            EXPORT_ENTRY -> {
+            EXPORT_ENTRY_BACKUP -> {
                 intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "application/json"
@@ -95,33 +93,17 @@ class DataTransferViewModel @Inject constructor(
                 }
             }
 
-            EXPORT_SAVE_BACKUP -> {
-                intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/octet-stream"
-                    putExtra(Intent.EXTRA_TITLE, "vocaby_saves.backup")
-                }
-            }
-
-            EXPORT_ENTRY_BACKUP -> {
-                intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/octet-stream"
-                    putExtra(Intent.EXTRA_TITLE, "vocaby_entries.backup")
-                }
-            }
-
             IMPORT_SAVE -> {
                 intent = Intent(Intent.ACTION_GET_CONTENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/octet-stream"
+                    type = "application/json"
                 }
             }
 
             IMPORT_ENTRY -> {
                 intent = Intent(Intent.ACTION_GET_CONTENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/octet-stream"
+                    type = "application/json"
                 }
             }
 
@@ -138,10 +120,8 @@ class DataTransferViewModel @Inject constructor(
             if (actionType != -1) {
                 val uri = result.data!!
                 when (actionType) {
-                    EXPORT_SAVE -> writeSaves(uri)
-                    EXPORT_ENTRY -> writeEntries(uri)
-                    EXPORT_SAVE_BACKUP -> writeSavesForBackup(uri)
-                    EXPORT_ENTRY_BACKUP -> writeEntriesForBackup(uri)
+                    EXPORT_SAVE_BACKUP -> writeSaves(uri)
+                    EXPORT_ENTRY_BACKUP -> writeEntries(uri)
                     IMPORT_SAVE -> importSaves(uri)
                     IMPORT_ENTRY -> importEntries(uri)
                 }
@@ -185,29 +165,6 @@ class DataTransferViewModel @Inject constructor(
 
             _transferSuccessful.postValue(true)
             _progressText.postValue(R.string.data_transfer_import_complete)
-        }
-    }
-
-    private fun writeEntriesForBackup(uri: Uri) {
-        transferScope.launch(exportExceptionHandler) {
-            val userId = userRepository.getUser()
-            _progressText.postValue(R.string.data_transfer_fetching_entries)
-            val entries = customDictionaryRepository.getAllUserEntries(userId)
-            _progressText.postValue(R.string.data_transfer_exporting_backup)
-            userRepository.writeEntriesBackupToExternalStorage(entries, uri)
-            _transferSuccessful.postValue(true)
-            _progressText.postValue(R.string.data_transfer_export_complete)
-        }
-    }
-
-    private fun writeSavesForBackup(uri: Uri) {
-        transferScope.launch(exportExceptionHandler) {
-            val userId = userRepository.getUser()
-            val saves = userRepository.getSavedWords(userId)
-            _progressText.postValue(R.string.data_transfer_exporting_backup)
-            userRepository.writeSavesBackupToExternalStorage(saves, uri)
-            _transferSuccessful.postValue(true)
-            _progressText.postValue(R.string.data_transfer_export_complete)
         }
     }
 

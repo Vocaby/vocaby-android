@@ -67,12 +67,10 @@
     <string name="enter_a_pronunciation">Enter a pronunciation</string>
     <string name="type">Type</string>
     <string name="back">Back</string>
-    <string name="data_management_export_save_json">Export my save data as json</string>
-    <string name="data_management_export_entry_json">Export my entry data as json</string>
-    <string name="data_management_export_save_backup">Back up my save data</string>
-    <string name="data_management_export_entry">Back up my entry data</string>
-    <string name="data_management_import_save">Import save backup data</string>
-    <string name="data_management_import_entry">Import entry backup data</string>
+    <string name="data_management_export_save_backup">Export my save data as json</string>
+    <string name="data_management_export_entry_backup">Export my entry data as json</string>
+    <string name="data_management_import_save">Import save backup data from json</string>
+    <string name="data_management_import_entry">Import entry backup data from json</string>
     <string name="data_transfer_importing">Importing your backup data…</string>
     <string name="data_transfer_export_complete">Successfully exported your data!</string>
     <string name="data_transfer_import_complete">Successfully imported your data!</string>

@@ -87,6 +87,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
                 is GenericState.InProgress -> {
                     fetchProgress.visibility = View.VISIBLE
+                    emptyCard.visibility = View.INVISIBLE
                 }
 
                 is GenericState.Error -> {

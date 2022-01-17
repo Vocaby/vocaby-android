@@ -28,8 +28,6 @@ interface UserRepository {
     /** --------------------- IMPORT / EXPORT -------------------- **/
     fun importSavesFromExternalStorage(uri: Uri): List<String>
     fun importEntriesBackupFromExternalStorage(uri: Uri): List<EntryModel>
-    fun writeEntriesBackupToExternalStorage(entries: List<EntryModel>, uri: Uri)
-    fun writeSavesBackupToExternalStorage(saves: List<String>, uri: Uri)
     fun writeSavesToExternalStorage(saves: List<String>, uri: Uri)
     fun writeEntriesToExternalStorage(entries: List<EntryModel>, uri: Uri)
 

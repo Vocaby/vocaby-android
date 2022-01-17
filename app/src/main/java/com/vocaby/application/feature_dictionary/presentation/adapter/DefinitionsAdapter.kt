@@ -15,7 +15,7 @@ import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.presentation.adapter.DefinitionsAdapter.DefinitionsViewHolder
 
 class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<DefinitionsViewHolder>() {
-    private var entryData: EntryModel = EntryModel("Vocaby")
+    private var entryData: EntryModel = EntryModel(entry = "Vocaby")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefinitionsViewHolder {
         val inflater = LayoutInflater.from(ctx)
         val view = inflater.inflate(R.layout.section_row, parent, false)

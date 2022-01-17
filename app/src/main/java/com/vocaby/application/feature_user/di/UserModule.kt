@@ -3,8 +3,8 @@ package com.vocaby.application.feature_user.di
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
-import com.vocaby.application.core.Constants
 import com.vocaby.application.core.data.VocabyDatabase
+import com.vocaby.application.feature_user.common.Constants
 import com.vocaby.application.feature_user.data.DataManager
 import com.vocaby.application.feature_user.data.UserRepositoryImpl
 import com.vocaby.application.feature_user.data.remote.UserApi
@@ -59,7 +59,7 @@ class UserModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl(Constants.VOCABY_API_BASE_URL)
+            .baseUrl(com.vocaby.application.core.Constants.VOCABY_API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()

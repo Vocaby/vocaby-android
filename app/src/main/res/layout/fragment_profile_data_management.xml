@@ -61,20 +61,6 @@
                 android:paddingBottom="4dp"
                 android:text="@string/data_export" />
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/export_save_button"
-                style="@style/Theme.VocabyAndroid.ProfileButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/data_management_export_save_json"
-                android:drawableStart="@drawable/ic_boxed_export"/>
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/export_entry_json_button"
-                style="@style/Theme.VocabyAndroid.ProfileButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/data_management_export_entry_json"
-                android:drawableStart="@drawable/ic_boxed_export"/>
-            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/export_save_backup_button"
                 style="@style/Theme.VocabyAndroid.ProfileButton"
                 android:layout_width="match_parent"
@@ -86,7 +72,7 @@
                 style="@style/Theme.VocabyAndroid.ProfileButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/data_management_export_entry"
+                android:text="@string/data_management_export_entry_backup"
                 android:drawableStart="@drawable/ic_boxed_export"/>
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"

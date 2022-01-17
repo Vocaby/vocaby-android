@@ -177,6 +177,7 @@ class CustomDictionaryRepositoryImpl constructor(
                 )
             )
         }
+
         clearUserEntries(userId)
         val entryIds = dao.insertCustomEntries(customEntries)
         val addedGroups = mutableListOf<CustomEntryGroup>()

@@ -27,11 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.MutableMap
-import kotlin.collections.indices
-import kotlin.collections.isNotEmpty
 import kotlin.collections.set
 
 @HiltViewModel
@@ -81,7 +76,7 @@ class EntryViewModel @Inject constructor(
             val types = customDictionaryRepository.getTypes() as MutableList<String>
 
             val data = customDictionaryRepository.getUserEntryData(userId, payload.payload)
-            entryData = data ?: EntryModel(payload.payload)
+            entryData = data ?: EntryModel(entry = payload.payload)
 
             _entry.postValue(entryData.entry)
             _definitionGroups.postValue(entryData.definitionGroups)

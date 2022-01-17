@@ -1,11 +1,26 @@
 package com.vocaby.application.core.util
 
+import com.vocaby.application.core.Constants
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object Formatter {
+    fun dateIsValid(date: String): Boolean {
+        return try {
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(date)
+            true
+        } catch (e: ParseException) {
+            return try {
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
+                true
+            } catch (e: ParseException) {
+                false
+            }
+        }
+    }
+
     fun formatDateToString(milli: Long, forDisplay:Boolean = false, showDay:Boolean = false, precise: Boolean = true): String {
         if (forDisplay) {
             if (showDay) {
@@ -32,11 +47,11 @@ object Formatter {
     }
 
     fun cleanText(text: String): String {
-        return text.trim { it <= ' ' }.replace("[^\\p{L}0-9!$*()\\[\\]`/+?=~:;'‘̇̄’̧.,_ -]".toRegex(), "").lowercase()
+        return text.trim { it <= ' ' }.replace("[\\\\{}]".toRegex(), "").lowercase()
     }
 
     fun containsSpecialCharacter(text: String): Boolean {
-        return text.contains("[^\\p{L}0-9!$*()\\[\\]`/+?=~:;'‘̇̄’̧.,_ -]".toRegex())
+        return text.contains("[\\\\{}]".toRegex())
     }
 
     fun firstLetterUpperOnly(text: String): String {
@@ -53,5 +68,9 @@ object Formatter {
 
     fun validateEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    fun validateEntry(entry: String): Boolean {
+        return !containsSpecialCharacter(entry) && entry.length <= Constants.ENTRY_MAX_LENGTH
     }
 }

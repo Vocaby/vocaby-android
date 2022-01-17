@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
-import com.vocaby.application.feature_save.presentation.viewmodel.SaveViewModel
 import com.vocaby.application.feature_save.presentation.adapter.SaveListAdapter
+import com.vocaby.application.feature_save.presentation.viewmodel.SaveViewModel
 
 class SavesFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var ctx: Context
