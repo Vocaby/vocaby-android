@@ -40,6 +40,7 @@
             android:id="@+id/definition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hyphenationFrequency="full"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:fontFamily="@font/sourcesanspro_regular" />
@@ -59,6 +60,7 @@
             android:id="@+id/sentence"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hyphenationFrequency="full"
             android:fontFamily="@font/sourcesanspro_regular"
             android:textColor="@color/black"
             android:textSize="16sp" />

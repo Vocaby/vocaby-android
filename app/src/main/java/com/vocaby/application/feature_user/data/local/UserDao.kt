@@ -59,12 +59,12 @@ interface UserDao {
 
     @Query("SELECT word as entry, COUNT(entry_id) AS count FROM dictionary_view_count " +
             "JOIN dictionary_word ON dictionary_view_count.entry_id = dictionary_word.id " +
-            "WHERE DATE(date_visited) BETWEEN DATE('now', 'start of month') AND DATE('now') " +
+            "WHERE DATE(date_visited) BETWEEN DATE('now', 'localtime', 'start of month') AND DATE('now', 'localtime') " +
             "GROUP BY entry_id " +
             "UNION " +
             "SELECT entry, COUNT(custom_dictionary_view_count.custom_entry_id) AS count FROM custom_dictionary_view_count " +
             "JOIN custom_user_entry ON custom_dictionary_view_count.custom_entry_id = custom_user_entry.custom_entry_id " +
-            "WHERE DATE(date_visited) BETWEEN DATE('now', 'start of month') AND DATE('now') " +
+            "WHERE DATE(date_visited) BETWEEN DATE('now', 'localtime', 'start of month') AND DATE('now', 'localtime') " +
             "GROUP BY custom_dictionary_view_count.custom_entry_id " +
             "ORDER BY count DESC " +
             "LIMIT :size")
