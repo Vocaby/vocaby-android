@@ -21,5 +21,6 @@ interface DictionaryRepository {
     /** --------------------- HISTORY -------------------- **/
     fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>?
     fun getHistory(): LinkedList<SimpleEntryModel>?
+    fun getHistory(position: Int): String?
     fun clearHistory(): List<SimpleEntryModel>?
 }

@@ -1,10 +1,9 @@
 package com.vocaby.application.feature_dictionary.presentation.dictionary
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.util.GenericState
-import com.vocaby.application.core.util.SingleLiveEvent
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.DailyPick
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SearchSuggestionItem
@@ -12,8 +11,7 @@ import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.domain.use_case.DictionaryUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,52 +22,58 @@ class DictionaryViewModel @Inject constructor(
     private val searchStack: ArrayDeque<String> = ArrayDeque()
     private val suggestionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-    private val _searchedEntry: SingleLiveEvent<String> = SingleLiveEvent()
-    private val _dailyPick: SingleLiveEvent<DailyPick> = SingleLiveEvent()
-    private val _searchHistory: SingleLiveEvent<List<SimpleEntryModel>?> = SingleLiveEvent()
-    private val _searchSuggestions: SingleLiveEvent<GenericState<List<SearchSuggestionItem>>> = SingleLiveEvent()
+    private val _searchedEntry = MutableSharedFlow<String>()
+    private val _dailyPick = MutableSharedFlow<DailyPick>()
+    private val _searchSuggestions = MutableSharedFlow<GenericState<List<SearchSuggestionItem>>>()
+    private val _searchHistory = MutableSharedFlow<List<SimpleEntryModel>?>(replay=1)
 
-    val searchedEntry: LiveData<String> get() = _searchedEntry
-    val searchHistory: LiveData<List<SimpleEntryModel>?> get() = _searchHistory
-    val dailyPick: LiveData<DailyPick> get() = _dailyPick
-    val searchSuggestions: LiveData<GenericState<List<SearchSuggestionItem>>> get() = _searchSuggestions
+    val searchedEntry get() = _searchedEntry.asSharedFlow()
+    val dailyPick get() = _dailyPick.asSharedFlow()
+    val searchSuggestions get() = _searchSuggestions.asSharedFlow()
+    val searchHistory get() = _searchHistory.asSharedFlow()
+
+    init {
+        getHistory()
+    }
 
     fun getHistory() {
         val historyList = dictionaryUseCases.getSearchHistoryUseCase()
-        historyList?.let {
-            _searchHistory.value = historyList
+        viewModelScope.launch {
+            _searchHistory.emit(historyList)
         }
     }
 
     // validate and notify observer of new search
     fun search(entry: String) {
         val validatedSearch = dictionaryUseCases.validateSearchUserCase(entry, searchStack)
-        validatedSearch?.let { _searchedEntry.value = it }
+        viewModelScope.launch {
+            validatedSearch?.let { _searchedEntry.emit(it) }
+        }
     }
 
     // notify observer of history selection
     fun getHistoryDefinition(position: Int) {
-        _searchHistory.value?.let { list ->
-            search(list[position].entry)
-        }
+        search(dictionaryUseCases.getSearchHistoryItemUseCase(position) ?: "")
     }
 
     fun getSearchSuggestions(newQuery:String) {
         if (newQuery.isEmpty() || entriesByCharacter.isNullOrEmpty()) {
-            dictionaryUseCases.getDictionaryEntriesByCharacter(newQuery).onEach { result ->
-                when(result) {
-                    is GenericState.InProgress -> {
-                        _searchSuggestions.postValue(GenericState.InProgress)
-                    }
-                    is GenericState.Success -> {
-                        entriesByCharacter = result.data
-                        setSearchSuggestionItems(newQuery)
-                    }
-                    is GenericState.Error -> {
-                        entriesByCharacter = ArrayList()
+            viewModelScope.launch {
+                dictionaryUseCases.getDictionaryEntriesByCharacter(newQuery).collectLatest { result ->
+                    when(result) {
+                        is GenericState.InProgress -> {
+                            _searchSuggestions.emit(GenericState.InProgress)
+                        }
+                        is GenericState.Success -> {
+                            entriesByCharacter = result.data
+                            setSearchSuggestionItems(newQuery)
+                        }
+                        is GenericState.Error -> {
+                            entriesByCharacter = ArrayList()
+                        }
                     }
                 }
-            }.launchIn(viewModelScope)
+            }
         } else {
             setSearchSuggestionItems(newQuery)
         }
@@ -77,7 +81,7 @@ class DictionaryViewModel @Inject constructor(
 
     private fun setSearchSuggestionItems(searchQuery: String) {
         dictionaryUseCases.getSearchSuggestionsUseCase(searchQuery, entriesByCharacter).onEach { searchSuggestions ->
-            _searchSuggestions.postValue(GenericState.Success(searchSuggestions))
+            _searchSuggestions.emit(GenericState.Success(searchSuggestions))
         }.launchIn(suggestionScope)
     }
 
@@ -88,16 +92,20 @@ class DictionaryViewModel @Inject constructor(
     // return to observer of random word
     fun updateDailyPick() {
         viewModelScope.launch {
-            _dailyPick.postValue(dictionaryUseCases.getDailyPick())
+            _dailyPick.emit(dictionaryUseCases.getDailyPick())
         }
     }
 
     fun clearHistory() {
-        _searchHistory.value = dictionaryUseCases.eraseSearchHistoryUserCase()
+        viewModelScope.launch {
+            _searchHistory.emit(dictionaryUseCases.eraseSearchHistoryUserCase())
+        }
     }
 
     fun writeToHistory(entry: String, entryList: List<EntryModel?>) {
-        _searchHistory.value = dictionaryUseCases.insertSearchHistoryUseCase(entry, entryList)
+        viewModelScope.launch {
+            _searchHistory.emit(dictionaryUseCases.insertSearchHistoryUseCase(entry, entryList))
+        }
     }
 
     fun popSearchStack() {

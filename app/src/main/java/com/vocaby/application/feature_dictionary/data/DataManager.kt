@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.data
+package com.vocaby.application.feature_dictionary.data
 
 import android.content.Context
 import android.util.Log
@@ -7,6 +7,7 @@ import java.io.File
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.text.FieldPosition
 import java.util.*
 
 class DataManager(context: Context) {
@@ -83,5 +84,9 @@ class DataManager(context: Context) {
         }
 
         return history
+    }
+
+    fun getHistory(position: Int): String? {
+        return history?.get(position)?.entry
     }
 }

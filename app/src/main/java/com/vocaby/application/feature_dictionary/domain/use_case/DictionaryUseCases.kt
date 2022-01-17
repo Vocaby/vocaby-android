@@ -2,6 +2,7 @@ package com.vocaby.application.feature_dictionary.domain.use_case
 
 data class DictionaryUseCases constructor(
     val getSearchHistoryUseCase: GetSearchHistoryUseCase,
+    val  getSearchHistoryItemUseCase: GetSearchHistoryItemUseCase,
     val validateSearchUserCase: ValidateSearchUserCase,
     val getDictionaryEntriesByCharacter: GetDictionaryEntriesByCharacter,
     val getSearchSuggestionsUseCase: GetSearchSuggestionsUseCase,

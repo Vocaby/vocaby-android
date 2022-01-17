@@ -14,17 +14,18 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.vocaby.application.R
-import com.vocaby.application.core.util.LiveDataUtil.observeOnce
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_save.presentation.viewmodel.SaveViewModel
 import com.vocaby.application.states.SaveState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class SearchResultsFragment : Fragment() {
@@ -84,47 +85,53 @@ class SearchResultsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        searchResultsViewModel.entryData.observeOnce(viewLifecycleOwner) { entryList ->
-            setupDictionary(entryList.size)
-            dictionaryViewModel.writeToHistory(searchedEntry, entryList)
-            viewPager.adapter = FragmentAdapter(this, entryList)
-            dictionarySelector.visibility = View.VISIBLE
-            searchProgress.visibility = GONE
+        lifecycleScope.launchWhenStarted {
+            searchResultsViewModel.entryData.collectLatest { entryList ->
+                setupDictionary(entryList.size)
+                dictionaryViewModel.writeToHistory(searchedEntry, entryList)
+                viewPager.adapter = FragmentAdapter(this@SearchResultsFragment, entryList)
+                dictionarySelector.visibility = View.VISIBLE
+                searchProgress.visibility = GONE
+            }
         }
 
-        searchResultsViewModel.missingDictionary.observeOnce(viewLifecycleOwner) { id ->
-            val button = dictionarySelector.findViewById<RadioButton>(id)
-            dictionarySelector.removeView(button)
-            dictionarySelector.check(dictionarySelector.getChildAt(0).id)
+        lifecycleScope.launchWhenStarted {
+            searchResultsViewModel.missingDictionary.collectLatest { id ->
+                val button = dictionarySelector.findViewById<RadioButton>(id)
+                dictionarySelector.removeView(button)
+                dictionarySelector.check(dictionarySelector.getChildAt(0).id)
+            }
         }
 
         // Observe changes to entry save state
-        searchResultsViewModel.saveState.observe(viewLifecycleOwner) { saveState ->
-            when (saveState) {
-                is SaveState.Fetched -> {
-                    saveButton.isEnabled = true
-                    val icon: Drawable? = if (saveState.saved) {
-                        AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved)
-                    } else {
-                        AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved)
-                    }
-
-                    saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
-                    saveButton.setOnClickListener {
-                        if (saveState.saved) {
-                            saveViewModel.removeSaveItem(searchedEntry)
+        lifecycleScope.launchWhenStarted {
+            searchResultsViewModel.saveState.collectLatest { saveState ->
+                when (saveState) {
+                    is SaveState.Fetched -> {
+                        saveButton.isEnabled = true
+                        val icon: Drawable? = if (saveState.saved) {
+                            AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved)
                         } else {
-                            saveViewModel.addSaveItem(searchedEntry)
+                            AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved)
+                        }
+
+                        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
+                        saveButton.setOnClickListener {
+                            if (saveState.saved) {
+                                saveViewModel.removeSaveItem(searchedEntry)
+                            } else {
+                                saveViewModel.addSaveItem(searchedEntry)
+                            }
                         }
                     }
-                }
 
-                is SaveState.InProgress -> {
-                    saveButton.isEnabled = false
-                }
+                    is SaveState.InProgress -> {
+                        saveButton.isEnabled = false
+                    }
 
-                is SaveState.Remove -> {
-                    saveButton.visibility = View.GONE
+                    is SaveState.Remove -> {
+                        saveButton.visibility = View.GONE
+                    }
                 }
             }
         }

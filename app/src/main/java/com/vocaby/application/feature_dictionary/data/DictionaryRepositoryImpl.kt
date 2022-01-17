@@ -12,7 +12,6 @@ import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.util.EntryConverter
-import com.vocaby.application.feature_user.data.DataManager
 import java.util.*
 
 class DictionaryRepositoryImpl(
@@ -112,6 +111,9 @@ class DictionaryRepositoryImpl(
     override fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>? = dataManager.writeHistory(entry)
 
     override fun getHistory(): LinkedList<SimpleEntryModel>? = dataManager.history
+    override fun getHistory(position: Int): String? {
+        return dataManager.getHistory(position)
+    }
 
     override fun clearHistory(): List<SimpleEntryModel>? = dataManager.clearHistory()
 }

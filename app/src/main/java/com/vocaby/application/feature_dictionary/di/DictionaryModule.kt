@@ -9,7 +9,7 @@ import com.vocaby.application.feature_dictionary.data.DictionaryRepositoryImpl
 import com.vocaby.application.feature_dictionary.data.remote.DictionaryApi
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.domain.use_case.*
-import com.vocaby.application.feature_user.data.DataManager
+import com.vocaby.application.feature_dictionary.data.DataManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,6 +55,7 @@ class DictionaryModule {
         applicationRepository: ApplicationRepository
     ): DictionaryUseCases = DictionaryUseCases(
         GetSearchHistoryUseCase(dictionaryRepository),
+        GetSearchHistoryItemUseCase(dictionaryRepository),
         ValidateSearchUserCase(),
         GetDictionaryEntriesByCharacter(dictionaryRepository),
         GetSearchSuggestionsUseCase(),

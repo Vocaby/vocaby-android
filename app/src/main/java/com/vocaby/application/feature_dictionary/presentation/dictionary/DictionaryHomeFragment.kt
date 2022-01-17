@@ -11,10 +11,13 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter.formatDateToString
+import com.vocaby.application.core.util.Logger
+import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener {
@@ -62,52 +65,54 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         emptyCard = view.findViewById(R.id.empty_card)
 
         setUpHistoryRecyclerView(view)
-        dictionaryViewModel.getHistory()
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dictionaryViewModel.searchHistory.observe(viewLifecycleOwner) { searchHistory ->
-            searchHistory?.let {
-                searchHistoryAdapter.updateSearchHistory(
-                    searchHistory
-                )
+        lifecycleScope.launchWhenStarted {
+            dictionaryViewModel.dailyPick.collectLatest { dailyPick ->
+                wordView.text = dailyPick.entryModel.entry
+                posView.text =  dailyPick.entryModel.firstGroup.type
+                definition.text = dailyPick.entryModel.firstGroup.definitionData[0].toString()
 
-                if (searchHistory.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
-                else emptyCard.visibility = View.VISIBLE
+                dailyPick.entryModel.firstGroup.definitionData[0].example?.let { example ->
+                    if (example.isNotEmpty()) {
+                        sentence.visibility = View.VISIBLE
+                        sentence.text = example
+                    }
+                }
+
+                wordBoxTag.visibility = View.VISIBLE
+                if (dailyPick.random) {
+                    wordBoxTag.text = getString(R.string.wod_random_pick)
+                    wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadlineSoft))
+                } else {
+                    wordBoxTag.text = getString(R.string.wod_our_pick)
+                    wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
+                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
+                }
+
+                wordBox.setOnClickListener { dictionaryViewModel.search(dailyPick.entryModel.entry) }
+
+                definition.visibility = View.VISIBLE
+                posView.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
             }
         }
 
-        dictionaryViewModel.dailyPick.observe(viewLifecycleOwner, { dailyPick ->
-            wordView.text = dailyPick.entryModel.entry
-            posView.text =  dailyPick.entryModel.firstGroup.type
-            definition.text = dailyPick.entryModel.firstGroup.definitionData[0].toString()
+        lifecycleScope.launchWhenStarted {
+            dictionaryViewModel.searchHistory.collectLatest { searchHistory ->
+                searchHistory?.let {
+                    Logger.reportToDebug("collected")
+                    searchHistoryAdapter.updateSearchHistory(searchHistory)
 
-            dailyPick.entryModel.firstGroup.definitionData[0].example?.let { example ->
-                if (example.isNotEmpty()) {
-                    sentence.visibility = View.VISIBLE
-                    sentence.text = example
+                    if (searchHistory.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
+                    else emptyCard.visibility = View.VISIBLE
                 }
             }
-
-            wordBoxTag.visibility = View.VISIBLE
-            if (dailyPick.random) {
-                wordBoxTag.text = getString(R.string.wod_random_pick)
-                wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadlineSoft))
-            } else {
-                wordBoxTag.text = getString(R.string.wod_our_pick)
-                wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
-                wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
-            }
-
-            wordBox.setOnClickListener { dictionaryViewModel.search(dailyPick.entryModel.entry) }
-
-            definition.visibility = View.VISIBLE
-            posView.visibility = View.VISIBLE
-            progressBar.visibility = View.GONE
-        })
+        }
     }
 
     private fun setUpHistoryRecyclerView(view: View) {

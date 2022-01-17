@@ -1,14 +1,14 @@
 package com.vocaby.application.feature_dictionary.presentation.search
 
 import androidx.lifecycle.*
-import com.vocaby.application.core.util.Logger
-import com.vocaby.application.core.util.SingleLiveEvent
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.use_case.GetAllDictionaryEntryUseCase
 import com.vocaby.application.feature_dictionary.domain.use_case.GetSaveUseCase
 import com.vocaby.application.states.SaveState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,34 +21,35 @@ class SearchResultsViewModel @Inject constructor(
 ): ViewModel() {
     private val entry: String = savedStateHandle.get(SearchResultsFragment.ENTRY)!!
 
-    private var _entryData: MutableLiveData<List<EntryModel?>> = MutableLiveData()
-    private var _saveState: SingleLiveEvent<SaveState> = SingleLiveEvent()
-    private var _missingDictionary: MutableLiveData<Int> = MutableLiveData()
+    private var _entryData = MutableSharedFlow<List<EntryModel?>>()
+    private var _saveState = MutableSharedFlow<SaveState>()
+    private var _missingDictionary = MutableSharedFlow<Int>()
     private var saved:Boolean = false
 
-    val entryData: LiveData<List<EntryModel?>> get() = _entryData
-    val saveState: LiveData<SaveState> get() = _saveState
-    val missingDictionary: LiveData<Int> get() = _missingDictionary
+    val entryData get() = _entryData.asSharedFlow()
+    val saveState get() = _saveState.asSharedFlow()
+    val missingDictionary get() = _missingDictionary.asSharedFlow()
 
     init {
         viewModelScope.launch {
-            _saveState.postValue(SaveState.InProgress)
+            _saveState.emit(SaveState.InProgress)
             getSaveUseCase(entry).collect { isSaved ->
-                Logger.reportToDebug("$isSaved")
                 saved = isSaved
-                _saveState.postValue(SaveState.Fetched(saved))
+                _saveState.emit(SaveState.Fetched(saved))
             }
         }
 
         viewModelScope.launch(Dispatchers.Default) {
             val searchState = getAllDictionaryEntryUseCase(entry)
-            searchState.missingDictionary?.let { _missingDictionary.postValue(it) }
-            _entryData.postValue(searchState.data)
-            if (searchState.removeSave) _saveState.postValue(SaveState.Remove)
+            searchState.missingDictionary?.let { _missingDictionary.emit(it) }
+            _entryData.emit(searchState.data)
+            if (searchState.removeSave) _saveState.emit(SaveState.Remove)
         }
     }
 
     fun resetSaveState() {
-        _saveState.postValue(SaveState.Fetched(saved))
+        viewModelScope.launch {
+            _saveState.emit(SaveState.Fetched(saved))
+        }
     }
 }
