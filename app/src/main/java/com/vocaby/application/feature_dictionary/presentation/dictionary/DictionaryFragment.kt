@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary.presentation.ui
+package com.vocaby.application.feature_dictionary.presentation.dictionary
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,8 +8,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
-import com.vocaby.application.feature_dictionary.presentation.viewmodel.DictionaryViewModel
-import com.vocaby.application.states.GenericState
+import com.vocaby.application.core.util.GenericState
+import com.vocaby.application.feature_dictionary.presentation.search.SearchResultsFragment
 import com.vocaby.searchview.SearchView
 import com.vocaby.searchview.suggestions.model.SearchSuggestion
 

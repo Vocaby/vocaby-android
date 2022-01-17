@@ -1,12 +1,12 @@
 package com.vocaby.application.feature_dictionary_custom.data.local
 
 import androidx.room.*
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomDefinition
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntryGroup
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.EntryWithData
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
-import com.vocaby.application.feature_dictionary.data.local.entity.Type
 
 @Dao
 interface CustomDictionaryDao {

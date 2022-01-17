@@ -15,7 +15,7 @@ import com.bugsnag.android.Bugsnag
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.adapter.FragmentAdapter
-import com.vocaby.application.feature_dictionary.presentation.viewmodel.DictionaryViewModel
+import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_user.presentation.viewmodel.UserViewModel
 import com.vocaby.application.feature_user.receivers.NotificationReceiver
 import dagger.hilt.android.AndroidEntryPoint

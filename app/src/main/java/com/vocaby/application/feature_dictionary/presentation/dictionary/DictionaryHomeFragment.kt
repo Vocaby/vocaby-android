@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary.presentation.ui
+package com.vocaby.application.feature_dictionary.presentation.dictionary
 
 import android.content.Context
 import android.os.Bundle
@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter.formatDateToString
-import com.vocaby.application.feature_dictionary.presentation.adapter.SearchHistoryAdapter
-import com.vocaby.application.feature_dictionary.presentation.viewmodel.DictionaryViewModel
 import java.util.*
 
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener {
@@ -82,34 +80,29 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         }
 
         dictionaryViewModel.dailyPick.observe(viewLifecycleOwner, { dailyPick ->
-            dailyPick.entryModel?.let { entryModel ->
-                wordView.text = entryModel.entry
-                posView.text =  entryModel.firstGroup.type
-                definition.text = entryModel.firstGroup.definitionData[0].toString()
+            wordView.text = dailyPick.entryModel.entry
+            posView.text =  dailyPick.entryModel.firstGroup.type
+            definition.text = dailyPick.entryModel.firstGroup.definitionData[0].toString()
 
-                entryModel.firstGroup.definitionData[0].example?.let { example ->
-                    if (example.isNotEmpty()) {
-                        sentence.visibility = View.VISIBLE
-                        sentence.text = example
-                    }
+            dailyPick.entryModel.firstGroup.definitionData[0].example?.let { example ->
+                if (example.isNotEmpty()) {
+                    sentence.visibility = View.VISIBLE
+                    sentence.text = example
                 }
-
-                wordBoxTag.visibility = View.VISIBLE
-                if (dailyPick.random) {
-                    wordBoxTag.text = getString(R.string.wod_random_pick)
-                    wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadlineSoft))
-                } else {
-                    wordBoxTag.text = getString(R.string.wod_our_pick)
-                    wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
-                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
-                }
-
-                wordBox.setOnClickListener { dictionaryViewModel.search(entryModel.entry) }
-            } ?: run {
-                wordView.text = getString(R.string.wod_error_header)
-                definition.text = getString(R.string.wod_error_body)
             }
+
+            wordBoxTag.visibility = View.VISIBLE
+            if (dailyPick.random) {
+                wordBoxTag.text = getString(R.string.wod_random_pick)
+                wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadlineSoft))
+            } else {
+                wordBoxTag.text = getString(R.string.wod_our_pick)
+                wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
+                wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
+            }
+
+            wordBox.setOnClickListener { dictionaryViewModel.search(dailyPick.entryModel.entry) }
 
             definition.visibility = View.VISIBLE
             posView.visibility = View.VISIBLE

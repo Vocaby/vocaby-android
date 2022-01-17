@@ -1,5 +1,8 @@
 package com.vocaby.application.feature_dictionary_custom.data
 
+import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
+import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
+import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary_custom.data.local.CustomDictionaryDao
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomDefinition
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
@@ -8,9 +11,6 @@ import com.vocaby.application.feature_dictionary_custom.data.local.entity.EntryW
 import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
-import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
-import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
-import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import java.util.*
 
 class CustomDictionaryRepositoryImpl constructor(

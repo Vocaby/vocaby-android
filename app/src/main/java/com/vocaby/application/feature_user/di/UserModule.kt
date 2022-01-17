@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.feature_user.common.Constants
-import com.vocaby.application.feature_user.data.DataManager
 import com.vocaby.application.feature_user.data.UserRepositoryImpl
 import com.vocaby.application.feature_user.data.remote.UserApi
 import com.vocaby.application.feature_user.domain.repository.UserRepository
@@ -35,7 +34,6 @@ class UserModule {
     fun provideUserRepository(
         database: VocabyDatabase,
         userApi: UserApi,
-        dataManager: DataManager,
         @Named("user")
         userSharedPref: SharedPreferences,
         contentResolver: ContentResolver
@@ -43,7 +41,6 @@ class UserModule {
         return UserRepositoryImpl(
             database.userDao,
             userApi,
-            dataManager,
             userSharedPref,
             contentResolver
         )
@@ -65,8 +62,4 @@ class UserModule {
             .build()
             .create(UserApi::class.java)
     }
-
-    @Provides
-    @Singleton
-    fun provideDataManager(@ApplicationContext context: Context): DataManager = DataManager(context)
 }

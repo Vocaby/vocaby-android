@@ -24,8 +24,8 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.button.MaterialButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.AxisValueFormatter
+import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_user.presentation.viewmodel.ProfileViewModel
-import com.vocaby.application.states.GenericState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

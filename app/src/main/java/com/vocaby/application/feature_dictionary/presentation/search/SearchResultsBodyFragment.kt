@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary.presentation.ui
+package com.vocaby.application.feature_dictionary.presentation.search
 
 import android.content.Context
 import android.os.Bundle
@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
-import com.vocaby.application.feature_dictionary.presentation.adapter.DefinitionsAdapter
+import com.vocaby.application.feature_dictionary.presentation.dictionary.DefinitionsAdapter
 
 
 class SearchResultsBodyFragment : Fragment() {

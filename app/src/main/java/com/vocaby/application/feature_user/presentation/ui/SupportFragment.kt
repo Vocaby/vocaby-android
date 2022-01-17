@@ -11,10 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import com.vocaby.application.R
+import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.core.util.LiveDataUtil.observeOnce
 import com.vocaby.application.feature_user.presentation.adapter.FaqAdapter
 import com.vocaby.application.feature_user.presentation.viewmodel.SupportViewModel
-import com.vocaby.application.states.GenericState
 import com.vocaby.application.states.UserInputState
 import dagger.hilt.android.AndroidEntryPoint
 

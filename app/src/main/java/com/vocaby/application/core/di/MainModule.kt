@@ -4,8 +4,9 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.vocaby.application.core.Constants
+import com.vocaby.application.core.data.ApplicationRepositoryImpl
 import com.vocaby.application.core.data.VocabyDatabase
+import com.vocaby.application.core.domain.repository.ApplicationRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,11 +31,16 @@ class MainModule {
 
     @Provides
     @Singleton
-    @Named("cache")
-    fun provideCacheSharedPref(@ApplicationContext context: Context): SharedPreferences
-            = context.getSharedPreferences(Constants.DICTIONARY_CACHE_ID, Context.MODE_PRIVATE)
+    fun provideContentResolver(@ApplicationContext context: Context): ContentResolver = context.contentResolver
 
     @Provides
     @Singleton
-    fun provideContentResolver(@ApplicationContext context: Context): ContentResolver = context.contentResolver
+    fun provideApplicationRepository(
+        @Named("application")
+        applicationSharedPref: SharedPreferences
+    ): ApplicationRepository {
+        return ApplicationRepositoryImpl(
+            applicationSharedPref
+        )
+    }
 }

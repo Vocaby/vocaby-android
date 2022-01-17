@@ -2,14 +2,12 @@ package com.vocaby.application.feature_user.domain.repository
 
 import android.net.Uri
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
-import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_user.data.local.entity.UserSave
 import com.vocaby.application.feature_user.data.local.entity.VisitData
 import com.vocaby.application.feature_user.domain.model.FaqModel
 import com.vocaby.application.feature_user.domain.model.FeedbackModel
 import com.vocaby.application.states.ValidState
 import kotlinx.coroutines.flow.Flow
-import java.util.*
 
 interface UserRepository {
     /** --------------------- USER -------------------- **/
@@ -30,11 +28,6 @@ interface UserRepository {
     fun importEntriesBackupFromExternalStorage(uri: Uri): List<EntryModel>
     fun writeSavesToExternalStorage(saves: List<String>, uri: Uri)
     fun writeEntriesToExternalStorage(entries: List<EntryModel>, uri: Uri)
-
-    /** --------------------- HISTORY -------------------- **/
-    fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>?
-    fun getHistory(): LinkedList<SimpleEntryModel>?
-    fun clearHistory(): List<SimpleEntryModel>?
 
     /** --------------------- DATA -------------------- **/
     suspend fun recordVisit(userId: Int, entryId: Int)

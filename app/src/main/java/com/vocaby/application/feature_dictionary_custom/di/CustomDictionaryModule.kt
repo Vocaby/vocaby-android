@@ -3,11 +3,11 @@ package com.vocaby.application.feature_dictionary_custom.di
 import com.google.gson.GsonBuilder
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.data.VocabyDatabase
-import com.vocaby.application.feature_dictionary_custom.data.CustomDictionaryRepositoryImpl
-import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_dictionary.data.remote.DictionaryApi
 import com.vocaby.application.feature_dictionary.data.remote.EntryDeserializer
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
+import com.vocaby.application.feature_dictionary_custom.data.CustomDictionaryRepositoryImpl
+import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -4,7 +4,7 @@ object Constants {
     const val DEBUG_TAG = "VOCABYDEBUG"
     const val ITEM_PAYLOAD_KEY = "CUSTOM_ENTRY"
     const val DICTIONARY_ENTRIES_KEY = "DICT_ENTS"
-    const val DICTIONARY_CACHE_ID = "DICT_CACHE_ID"
+    const val DICTIONARY_SHARED_PREF_ID = "DICT_SP_ID"
     const val DICTIONARY_PICK_ID = "DICT_PICK_ID"
     const val DICTIONARY_PICK_RANDOM = "DICT_RANDOM_ID"
     const val LAST_APP_STARTED = "APP_STARTED"

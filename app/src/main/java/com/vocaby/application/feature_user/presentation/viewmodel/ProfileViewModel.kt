@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.BarEntry
 import com.vocaby.application.core.util.Generators.generateRandomInt
+import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.core.util.SingleLiveEvent
 import com.vocaby.application.feature_user.data.local.entity.VisitData
 import com.vocaby.application.feature_user.domain.model.ChartData
 import com.vocaby.application.feature_user.domain.repository.UserRepository
-import com.vocaby.application.states.GenericState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,7 +66,8 @@ class ProfileViewModel @Inject constructor(
                     if (maxData.count <= count) maxData = VisitData(entry, count.toLong())
                 }
 
-                _values.postValue(GenericState.Success(Pair(
+                _values.postValue(
+                    GenericState.Success(Pair(
                     ChartData(values, dataEntries, true),
                     placeholderColorsList
                 )))
@@ -86,7 +87,8 @@ class ProfileViewModel @Inject constructor(
                 }
 
                 userChartPopulated = true
-                _values.postValue(GenericState.Success(Pair(
+                _values.postValue(
+                    GenericState.Success(Pair(
                     ChartData(values, dataEntries, false),
                     colors
                 )))

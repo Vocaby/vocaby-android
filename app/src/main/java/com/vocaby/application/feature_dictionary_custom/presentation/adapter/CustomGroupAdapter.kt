@@ -15,8 +15,8 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchHelperAdapter
 import com.vocaby.application.core.util.ItemTouchHelperViewHolder
-import com.vocaby.application.feature_dictionary_custom.presentation.adapter.CustomGroupAdapter.CustomGroupViewHolder
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
+import com.vocaby.application.feature_dictionary_custom.presentation.adapter.CustomGroupAdapter.CustomGroupViewHolder
 import java.util.*
 
 class CustomGroupAdapter(

@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary.presentation.adapter
+package com.vocaby.application.feature_dictionary.presentation.dictionary
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
-import com.vocaby.application.feature_dictionary.presentation.adapter.SearchHistoryAdapter.HistoryViewHolder
+import com.vocaby.application.feature_dictionary.presentation.dictionary.SearchHistoryAdapter.HistoryViewHolder
 import java.util.*
 
 class SearchHistoryAdapter(

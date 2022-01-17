@@ -13,7 +13,6 @@ import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
-import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_user.common.Constants
 import com.vocaby.application.feature_user.data.local.UserDao
 import com.vocaby.application.feature_user.data.local.entity.*
@@ -33,7 +32,6 @@ import java.util.*
 class UserRepositoryImpl constructor(
     private val dao: UserDao,
     private val userApi: UserApi,
-    private val dataManager: DataManager,
     private val userSharedPref: SharedPreferences,
     private val contentResolver: ContentResolver
 ): UserRepository {
@@ -228,12 +226,6 @@ class UserRepositoryImpl constructor(
             bw.close()
         }
     }
-
-    override fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>? = dataManager.writeHistory(entry)
-
-    override fun getHistory(): LinkedList<SimpleEntryModel>? = dataManager.history
-
-    override fun clearHistory(): List<SimpleEntryModel>? = dataManager.clearHistory()
 
     override suspend fun recordVisit(userId: Int, entryId: Int) {
         dao.recordVisit(DictionaryViewCount(0, userId, entryId, Formatter.formatDateToString(Date().time)))

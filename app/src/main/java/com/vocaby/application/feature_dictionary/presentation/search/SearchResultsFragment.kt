@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary.presentation.ui
+package com.vocaby.application.feature_dictionary.presentation.search
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -21,8 +21,7 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.vocaby.application.R
 import com.vocaby.application.core.util.LiveDataUtil.observeOnce
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
-import com.vocaby.application.feature_dictionary.presentation.viewmodel.DictionaryViewModel
-import com.vocaby.application.feature_dictionary.presentation.viewmodel.SearchResultsViewModel
+import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_save.presentation.viewmodel.SaveViewModel
 import com.vocaby.application.states.SaveState
 import dagger.hilt.android.AndroidEntryPoint

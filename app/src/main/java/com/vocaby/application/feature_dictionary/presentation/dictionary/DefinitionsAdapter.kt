@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary.presentation.adapter
+package com.vocaby.application.feature_dictionary.presentation.dictionary
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
-import com.vocaby.application.feature_dictionary.presentation.adapter.DefinitionsAdapter.DefinitionsViewHolder
+import com.vocaby.application.feature_dictionary.presentation.dictionary.DefinitionsAdapter.DefinitionsViewHolder
 
 class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<DefinitionsViewHolder>() {
     private var entryData: EntryModel = EntryModel(entry = "Vocaby")

@@ -3,11 +3,11 @@ package com.vocaby.application.feature_user.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.core.util.SingleLiveEvent
 import com.vocaby.application.feature_user.domain.model.FaqModel
 import com.vocaby.application.feature_user.domain.model.FeedbackModel
 import com.vocaby.application.feature_user.domain.repository.UserRepository
-import com.vocaby.application.states.GenericState
 import com.vocaby.application.states.UserInputState
 import com.vocaby.application.states.ValidState
 import dagger.hilt.android.lifecycle.HiltViewModel

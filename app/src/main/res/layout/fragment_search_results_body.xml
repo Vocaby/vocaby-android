@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:background="@color/white"
-    tools:context=".feature_dictionary.presentation.ui.SearchResultsBodyFragment">
+    tools:context=".feature_dictionary.presentation.search.SearchResultsBodyFragment">
     <LinearLayout
         android:id="@+id/entry_box"
         android:layout_width="match_parent"

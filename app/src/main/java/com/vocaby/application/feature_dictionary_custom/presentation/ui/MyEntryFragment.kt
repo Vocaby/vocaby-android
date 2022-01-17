@@ -18,10 +18,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.GenericState
+import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.adapter.CustomEntryAdapter
 import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.MyEntryViewModel
-import com.vocaby.application.feature_dictionary.presentation.viewmodel.DictionaryViewModel
-import com.vocaby.application.states.GenericState
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
 import com.vocaby.searchview.SearchView

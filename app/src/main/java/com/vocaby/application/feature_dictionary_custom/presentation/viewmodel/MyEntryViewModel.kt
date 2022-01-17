@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.core.util.SingleLiveEvent
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
@@ -16,7 +17,6 @@ import com.vocaby.application.feature_user.domain.repository.UserRepository
 import com.vocaby.application.payloads.ItemEntryPayload
 import com.vocaby.application.payloads.ItemIntPayload
 import com.vocaby.application.payloads.ItemStringPayload
-import com.vocaby.application.states.GenericState
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
 import dagger.hilt.android.lifecycle.HiltViewModel

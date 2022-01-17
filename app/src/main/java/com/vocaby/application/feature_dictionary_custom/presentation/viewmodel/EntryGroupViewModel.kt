@@ -6,9 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.SingleLiveEvent
-import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
+import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
 import com.vocaby.application.payloads.ItemIntPayload
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState

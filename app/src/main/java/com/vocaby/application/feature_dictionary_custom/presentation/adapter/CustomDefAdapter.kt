@@ -15,8 +15,8 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchHelperAdapter
 import com.vocaby.application.core.util.ItemTouchHelperViewHolder
-import com.vocaby.application.feature_dictionary_custom.presentation.adapter.CustomDefAdapter.CustomDefViewHolder
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
+import com.vocaby.application.feature_dictionary_custom.presentation.adapter.CustomDefAdapter.CustomDefViewHolder
 import java.util.*
 import kotlin.collections.ArrayList
 
