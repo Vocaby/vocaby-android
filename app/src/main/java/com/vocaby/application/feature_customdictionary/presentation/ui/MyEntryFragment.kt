@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arlib.floatingsearchview.FloatingSearchView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
@@ -25,6 +24,7 @@ import com.vocaby.application.feature_dictionary.presentation.viewmodel.Dictiona
 import com.vocaby.application.states.GenericState
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
+import com.vocaby.searchview.SearchView
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -37,7 +37,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var entryEditDialog: BottomSheetDialog
     private lateinit var entryEdit: EditText
     private lateinit var entryAlert: TextView
-    private lateinit var searchView: FloatingSearchView
+    private lateinit var searchView: SearchView
     private lateinit var recyclerView: RecyclerView
     private lateinit var fetchProgress: ProgressBar
 
@@ -212,11 +212,13 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         entryViewModel.handleResult(result!!)
     }
 
-    private val queryChangeListener =
-        FloatingSearchView.OnQueryChangeListener { _: String, newQuery: String ->
+    private val queryChangeListener = object: SearchView.OnQueryChangeListener {
+        override fun onSearchTextChanged(oldQuery: String, newQuery: String) {
             recyclerView.smoothScrollToPosition(0)
             entryViewModel.filterEntries(newQuery)
         }
+
+    }
 
     override fun onItemDelete(entry: String, position: Int) {
         entryViewModel.removeCustomEntry(entry, position)

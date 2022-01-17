@@ -1,2 +1,3 @@
 rootProject.name = "Vocaby Android"
 include ':app'
+include ':vocabysearchview'

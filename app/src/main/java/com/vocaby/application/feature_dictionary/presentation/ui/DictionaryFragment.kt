@@ -7,15 +7,15 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.arlib.floatingsearchview.FloatingSearchView
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.viewmodel.DictionaryViewModel
 import com.vocaby.application.states.GenericState
+import com.vocaby.searchview.SearchView
+import com.vocaby.searchview.suggestions.model.SearchSuggestion
 
 class DictionaryFragment : Fragment() {
     private lateinit var backPressedCallback: OnBackPressedCallback
-    private lateinit var searchView: FloatingSearchView
+    private lateinit var searchView: SearchView
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
 
     override fun onResume() {
@@ -110,8 +110,8 @@ class DictionaryFragment : Fragment() {
         dictionaryViewModel.search(entry)
     }
 
-    private val searchListener: FloatingSearchView.OnSearchListener = object :
-        FloatingSearchView.OnSearchListener {
+    private val searchListener: SearchView.OnSearchListener = object :
+        SearchView.OnSearchListener {
         override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
             searchView.setOnQueryChangeListener(null)
             searchView.setSearchText(searchSuggestion.body)
@@ -125,8 +125,8 @@ class DictionaryFragment : Fragment() {
         }
     }
 
-    private val searchFocusListener: FloatingSearchView.OnFocusChangeListener =
-        object: FloatingSearchView.OnFocusChangeListener {
+    private val searchFocusListener: SearchView.OnFocusChangeListener =
+        object: SearchView.OnFocusChangeListener {
             override fun onFocus() {
                 dictionaryViewModel.getSearchSuggestions(searchView.query)
             }
@@ -137,7 +137,9 @@ class DictionaryFragment : Fragment() {
         }
 
     private val queryChangeListener =
-        FloatingSearchView.OnQueryChangeListener { _: String, newQuery: String ->
-            dictionaryViewModel.getSearchSuggestions(newQuery)
+        object: SearchView.OnQueryChangeListener {
+            override fun onSearchTextChanged(oldQuery: String, newQuery: String) {
+                dictionaryViewModel.getSearchSuggestions(newQuery)
+            }
         }
 }

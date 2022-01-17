@@ -60,7 +60,7 @@
                 android:gravity="center"
                 android:text="@string/custom"
                 android:textColor="@color/dark_gray"
-                android:textSize="12sp" />
+                android:textSize="10sp" />
 
             <RadioButton
                 android:id="@+id/selection_original"
@@ -74,7 +74,7 @@
                 android:gravity="center"
                 android:text="@string/original"
                 android:textColor="@color/dark_gray"
-                android:textSize="12sp" />
+                android:textSize="10sp" />
         </RadioGroup>
 
         <LinearLayout
@@ -104,9 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableEnd="@drawable/ic_save"
-                android:drawablePadding="6dp"
                 android:enabled="false"
-                android:text="@string/save_button_unsaved"
                 android:textColor="@color/button_colors" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,7 @@ package com.vocaby.application.feature_dictionary.domain.model
 
 import android.os.Parcel
 import android.os.Parcelable.Creator
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
+import com.vocaby.searchview.suggestions.model.SearchSuggestion
 
 class SearchSuggestionItem : SearchSuggestion {
     private val entry: String
@@ -15,9 +15,8 @@ class SearchSuggestionItem : SearchSuggestion {
         entry = `in`.readString()!!
     }
 
-    override fun getBody(): String {
-        return entry
-    }
+    override val body: String
+        get() = entry
 
     override fun describeContents(): Int {
         return 0

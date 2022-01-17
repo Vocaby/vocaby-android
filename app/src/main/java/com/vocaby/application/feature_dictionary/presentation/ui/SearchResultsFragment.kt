@@ -104,13 +104,10 @@ class SearchResultsFragment : Fragment() {
             when (saveState) {
                 is SaveState.Fetched -> {
                     saveButton.isEnabled = true
-                    val icon: Drawable?
-                    if (saveState.saved) {
-                        icon = AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved)
-                        saveButton.text = getString(R.string.save_button_saved)
+                    val icon: Drawable? = if (saveState.saved) {
+                        AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved)
                     } else {
-                        icon = AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved)
-                        saveButton.text = getString(R.string.save_button_unsaved)
+                        AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved)
                     }
 
                     saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
