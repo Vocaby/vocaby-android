@@ -23,10 +23,10 @@
             android:name="com.vocaby.application.feature_user.presentation.ui.DataTransferActivity"
             android:exported="false" />
         <activity
-            android:name="com.vocaby.application.feature_customdictionary.presentation.ui.EntryGroupBuilderActivity"
+            android:name="com.vocaby.application.feature_dictionary_custom.presentation.ui.EntryGroupBuilderActivity"
             android:exported="true" />
         <activity
-            android:name="com.vocaby.application.feature_customdictionary.presentation.ui.EntryBuilderActivity"
+            android:name="com.vocaby.application.feature_dictionary_custom.presentation.ui.EntryBuilderActivity"
             android:exported="true" />
         <activity
             android:name="com.vocaby.application.core.presentation.MainActivity"

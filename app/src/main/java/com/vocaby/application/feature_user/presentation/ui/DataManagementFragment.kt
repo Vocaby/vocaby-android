@@ -14,7 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
-import com.vocaby.application.feature_customdictionary.presentation.viewmodel.MyEntryViewModel
+import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.MyEntryViewModel
 import com.vocaby.application.feature_user.presentation.viewmodel.DataTransferViewModel
 import com.vocaby.application.feature_user.presentation.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint

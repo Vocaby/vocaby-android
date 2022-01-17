@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.vocaby.application.R
 import com.vocaby.application.core.util.SingleLiveEvent
 import com.vocaby.application.core.util.exceptions.IllegalFileException
-import com.vocaby.application.feature_customdictionary.domain.repository.CustomDictionaryRepository
+import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_user.data.local.entity.UserSave
 import com.vocaby.application.feature_user.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

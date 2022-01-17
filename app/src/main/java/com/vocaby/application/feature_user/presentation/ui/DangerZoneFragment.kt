@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.application.R
-import com.vocaby.application.feature_customdictionary.presentation.viewmodel.MyEntryViewModel
+import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.MyEntryViewModel
 import com.vocaby.application.feature_dictionary.presentation.viewmodel.DictionaryViewModel
 import com.vocaby.application.feature_save.presentation.viewmodel.SaveViewModel
 import com.vocaby.application.feature_user.presentation.viewmodel.ProfileViewModel

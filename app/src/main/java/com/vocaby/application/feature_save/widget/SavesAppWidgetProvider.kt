@@ -13,7 +13,7 @@ import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.util.Generators.generateRandomInt
 import com.vocaby.application.core.util.exceptions.SaveRepetitionException
-import com.vocaby.application.feature_customdictionary.domain.repository.CustomDictionaryRepository
+import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_user.domain.repository.UserRepository

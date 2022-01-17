@@ -6,10 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.vocaby.application.feature_customdictionary.data.local.CustomDictionaryDao
-import com.vocaby.application.feature_customdictionary.data.local.entity.CustomDefinition
-import com.vocaby.application.feature_customdictionary.data.local.entity.CustomEntry
-import com.vocaby.application.feature_customdictionary.data.local.entity.CustomEntryGroup
+import com.vocaby.application.feature_dictionary_custom.data.local.CustomDictionaryDao
+import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomDefinition
+import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
+import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntryGroup
 import com.vocaby.application.feature_dictionary.data.local.DictionaryDao
 import com.vocaby.application.feature_dictionary.data.local.entity.Definition
 import com.vocaby.application.feature_dictionary.data.local.entity.Type

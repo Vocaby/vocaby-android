@@ -4,7 +4,7 @@ import androidx.lifecycle.*
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.SingleLiveEvent
-import com.vocaby.application.feature_customdictionary.domain.repository.CustomDictionaryRepository
+import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.presentation.ui.SearchResultsFragment

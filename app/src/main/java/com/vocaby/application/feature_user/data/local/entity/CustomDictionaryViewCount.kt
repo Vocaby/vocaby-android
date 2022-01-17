@@ -1,7 +1,7 @@
 package com.vocaby.application.feature_user.data.local.entity
 
 import androidx.room.*
-import com.vocaby.application.feature_customdictionary.data.local.entity.CustomEntry
+import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
 
 @Entity(
     tableName = "custom_dictionary_view_count",
