@@ -4,12 +4,14 @@ import android.content.ContentResolver
 import android.content.SharedPreferences
 import android.net.Uri
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.exceptions.IllegalFileException
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
@@ -33,7 +35,8 @@ class UserRepositoryImpl constructor(
     private val dao: UserDao,
     private val userApi: UserApi,
     private val userSharedPref: SharedPreferences,
-    private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver,
+    private val availableTypes: List<Type>
 ): UserRepository {
     override suspend fun setupUser(userId: Int): Int{
         val exists = dao.checkUser(userId)
@@ -149,36 +152,58 @@ class UserRepositoryImpl constructor(
                                 }
 
                                 val exists = entryModels.any { it.entry == entry }
-
+                                val parsedGroups = mutableListOf<String>()
                                 if (!exists) {
                                     val entryModel = EntryModel(entry = entry, pronunciation = pronunciation)
                                     for (g in item.getAsJsonArray("definitionGroups")) {
                                         val group = g.asJsonObject
-                                        val type = group.getAsJsonPrimitive("type").asString
+                                        val type = group.getAsJsonPrimitive("type").asString.lowercase()
                                         val order = group.getAsJsonPrimitive("order").asInt
                                         val groupModel = DefinitionGroupModel(type, order)
 
-                                        for (d in group.getAsJsonArray("definitionData")) {
-                                            val definitionData = d.asJsonObject
-                                            val definition =
-                                                definitionData.getAsJsonPrimitive("definition").asString
-                                            val example = definitionData.getAsJsonPrimitive("example").asString
-                                            val definitionOrder = definitionData.getAsJsonPrimitive("order").asInt
+                                        val parsedDefinitions = mutableListOf<String>()
+                                        if (type.isNotEmpty() && availableTypes.any { it.type == type } && !parsedGroups.contains(type)) {
+                                            for (d in group.getAsJsonArray("definitionData")) {
+                                                val definitionData = d.asJsonObject
+                                                val definition =
+                                                    definitionData.getAsJsonPrimitive("definition").asString
 
-                                            groupModel.addNewDefinition(
-                                                DefinitionModel(
-                                                    type,
-                                                    definition,
-                                                    example,
-                                                    definitionOrder
-                                                )
-                                            )
+                                                val exampleJsonPrimitive =
+                                                    definitionData.getAsJsonPrimitive("example")
+                                                val example: String? =
+                                                    if (exampleJsonPrimitive.isString) {
+                                                        exampleJsonPrimitive.asString
+                                                    } else null
+
+                                                val definitionOrder =
+                                                    definitionData.getAsJsonPrimitive("order").asInt
+
+                                                if (definition.isNotEmpty() && !parsedDefinitions.contains(
+                                                        definition
+                                                    )
+                                                ) {
+                                                    groupModel.addNewDefinition(
+                                                        DefinitionModel(
+                                                            type,
+                                                            definition,
+                                                            example,
+                                                            definitionOrder
+                                                        )
+                                                    )
+                                                    parsedDefinitions.add(definition)
+                                                }
+                                            }
+
+                                            if (!groupModel.isEmpty) {
+                                                parsedGroups.add(type)
+                                                entryModel.addDefinitionGroup(groupModel)
+                                            }
                                         }
-
-                                        entryModel.addDefinitionGroup(groupModel)
                                     }
 
-                                    entryModels.add(entryModel)
+                                    if (!entryModel.isEmpty) {
+                                        entryModels.add(entryModel)
+                                    }
                                 }
                             }
 
@@ -197,7 +222,7 @@ class UserRepositoryImpl constructor(
                     }
                 } catch (e: JsonSyntaxException) {
                     throw IllegalFileException(
-                        e.message,
+                        e.stackTraceToString(),
                         IllegalFileException.INVALID_FORMAT
                     )
                 }
@@ -220,7 +245,10 @@ class UserRepositoryImpl constructor(
         contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
             val exportData = ExportModel(Constants.EXPORT_ENTRY_TYPE, entries)
-            val gson = Gson()
+            val gson = GsonBuilder()
+                .setDateFormat("yyyy-MM-dd HH:mm:ss")
+                .create()
+
             gson.toJson(exportData, bw)
             bw.flush()
             bw.close()

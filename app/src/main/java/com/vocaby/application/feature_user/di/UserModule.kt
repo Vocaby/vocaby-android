@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
 import com.vocaby.application.core.data.VocabyDatabase
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_user.common.Constants
 import com.vocaby.application.feature_user.data.UserRepositoryImpl
 import com.vocaby.application.feature_user.data.remote.UserApi
@@ -36,13 +37,15 @@ class UserModule {
         userApi: UserApi,
         @Named("user")
         userSharedPref: SharedPreferences,
-        contentResolver: ContentResolver
+        contentResolver: ContentResolver,
+        availableTypes: List<Type>
     ): UserRepository {
         return UserRepositoryImpl(
             database.userDao,
             userApi,
             userSharedPref,
-            contentResolver
+            contentResolver,
+            availableTypes
         )
     }
 

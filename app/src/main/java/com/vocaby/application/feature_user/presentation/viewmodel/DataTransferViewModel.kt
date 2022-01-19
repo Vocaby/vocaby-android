@@ -62,6 +62,9 @@ class DataTransferViewModel @Inject constructor(
             is StreamCorruptedException -> {
                 _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
             }
+            is NullPointerException -> {
+                _progressText.postValue(R.string.data_transfer_import_error_wrong_backup_file)
+            }
             else -> {
                 _progressText.postValue(R.string.data_transfer_import_error_generic)
             }
@@ -96,14 +99,18 @@ class DataTransferViewModel @Inject constructor(
             IMPORT_SAVE -> {
                 intent = Intent(Intent.ACTION_GET_CONTENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/json"
+                    type = "*/*"
+                    val mimeTypes = arrayOf("application/*", "text/*")
+                    putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
                 }
             }
 
             IMPORT_ENTRY -> {
                 intent = Intent(Intent.ACTION_GET_CONTENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/json"
+                    type = "*/*"
+                    val mimeTypes = arrayOf("application/*", "text/*")
+                    putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
                 }
             }
 

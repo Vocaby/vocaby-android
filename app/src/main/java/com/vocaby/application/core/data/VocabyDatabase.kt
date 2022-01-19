@@ -36,7 +36,7 @@ abstract class VocabyDatabase : RoomDatabase() {
     abstract val userDao: UserDao
 
     companion object {
-        fun getDatabase(context: Context): VocabyDatabase {
+        fun getDatabase(context: Context, availableTypes: List<Type>): VocabyDatabase {
             return Room.databaseBuilder(
                 context,
                 VocabyDatabase::class.java,
@@ -47,21 +47,7 @@ abstract class VocabyDatabase : RoomDatabase() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     val applicationScope = CoroutineScope(SupervisorJob())
                     applicationScope.launch {
-                        val types = listOf(
-                            Type("noun"),
-                            Type("verb"),
-                            Type("adjective"),
-                            Type("adverb"),
-                            Type("idiom"),
-                            Type("proverb"),
-                            Type("phrase"),
-                            Type("preposition"),
-                            Type("interjection"),
-                            Type("conjunction"),
-                            Type("pronoun"),
-                        ).toTypedArray()
-
-                        getDatabase(context).customDictionaryDao.insertTypes(*types)
+                        getDatabase(context, availableTypes).customDictionaryDao.insertTypes(*availableTypes.toTypedArray())
                     }
                 }
             })

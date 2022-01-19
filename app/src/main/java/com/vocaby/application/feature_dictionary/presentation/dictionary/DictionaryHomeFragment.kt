@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter.formatDateToString
-import com.vocaby.application.core.util.Logger
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 
@@ -105,7 +104,6 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         lifecycleScope.launchWhenStarted {
             dictionaryViewModel.searchHistory.collectLatest { searchHistory ->
                 searchHistory?.let {
-                    Logger.reportToDebug("collected")
                     searchHistoryAdapter.updateSearchHistory(searchHistory)
 
                     if (searchHistory.isNotEmpty()) emptyCard.visibility = View.INVISIBLE

@@ -5,11 +5,11 @@ import android.content.SharedPreferences
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.core.domain.repository.ApplicationRepository
+import com.vocaby.application.feature_dictionary.data.DataManager
 import com.vocaby.application.feature_dictionary.data.DictionaryRepositoryImpl
 import com.vocaby.application.feature_dictionary.data.remote.DictionaryApi
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.domain.use_case.*
-import com.vocaby.application.feature_dictionary.data.DataManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -7,6 +7,7 @@ import androidx.preference.PreferenceManager
 import com.vocaby.application.core.data.ApplicationRepositoryImpl
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.core.domain.repository.ApplicationRepository
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,8 +21,10 @@ import javax.inject.Singleton
 class MainModule {
     @Provides
     @Singleton
-    fun provideVocabyDatabase(@ApplicationContext context: Context): VocabyDatabase
-        = VocabyDatabase.getDatabase(context)
+    fun provideVocabyDatabase(
+        @ApplicationContext context: Context,
+        availableTypes: List<Type>
+    ): VocabyDatabase = VocabyDatabase.getDatabase(context, availableTypes)
 
     @Provides
     @Singleton
@@ -41,6 +44,24 @@ class MainModule {
     ): ApplicationRepository {
         return ApplicationRepositoryImpl(
             applicationSharedPref
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAvailableTypes(): List<Type> {
+        return listOf(
+            Type("noun"),
+            Type("verb"),
+            Type("adjective"),
+            Type("adverb"),
+            Type("idiom"),
+            Type("proverb"),
+            Type("phrase"),
+            Type("preposition"),
+            Type("interjection"),
+            Type("conjunction"),
+            Type("pronoun"),
         )
     }
 }

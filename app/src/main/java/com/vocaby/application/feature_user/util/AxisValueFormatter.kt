@@ -1,4 +1,4 @@
-package com.vocaby.application.core.util
+package com.vocaby.application.feature_user.util
 
 import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlin.math.roundToInt
@@ -12,7 +12,7 @@ class AxisValueFormatter(private val values: List<String>, val maxLength: Int): 
         else {
             var selected = values[index]
             if (selected.length > maxLength) {
-                selected = selected.substring(0, maxLength) + "\u2026"
+                selected = selected.substring(0, maxLength) + ".."
             }
 
             return selected
