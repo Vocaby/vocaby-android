@@ -24,6 +24,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.button.MaterialButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.GenericState
+import com.vocaby.application.feature_user.common.Constants
 import com.vocaby.application.feature_user.presentation.viewmodel.ProfileViewModel
 import com.vocaby.application.feature_user.util.AxisValueFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,6 +64,7 @@ class ProfileHomeFragment : Fragment() {
             axisLeft.isEnabled = true
             axisLeft.axisLineColor = Color.WHITE
             axisLeft.setDrawLabels(false)
+            axisLeft.axisMinimum = 0f
             legend.isEnabled = false
         }
 
@@ -128,7 +130,7 @@ class ProfileHomeFragment : Fragment() {
                     }
 
                     barChart.data = data
-                    barChart.xAxis.valueFormatter = AxisValueFormatter(chartData.values, 10)
+                    barChart.xAxis.valueFormatter = AxisValueFormatter(chartData.values, Constants.PROFILE_CHART_LABEL_LENGTH)
                     barChart.invalidate()
                 }
 
