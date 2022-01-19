@@ -11,7 +11,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.MyEntryViewModel
-import com.vocaby.application.feature_save.presentation.viewmodel.SaveViewModel
+import com.vocaby.application.feature_save.presentation.save.SaveViewModel
 import com.vocaby.application.feature_user.presentation.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

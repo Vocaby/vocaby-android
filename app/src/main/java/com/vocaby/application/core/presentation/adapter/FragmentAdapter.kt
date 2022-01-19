@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryFragment
 import com.vocaby.application.feature_dictionary_custom.presentation.ui.MyEntryFragment
-import com.vocaby.application.feature_save.presentation.ui.SavesFragment
+import com.vocaby.application.feature_save.presentation.save.SavesFragment
 import com.vocaby.application.feature_user.presentation.ui.ProfileFragment
 
 class FragmentAdapter (
