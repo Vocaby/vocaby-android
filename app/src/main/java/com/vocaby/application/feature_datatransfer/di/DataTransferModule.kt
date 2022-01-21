@@ -6,7 +6,7 @@ import com.vocaby.application.feature_datatransfer.domain.repository.DataTransfe
 import com.vocaby.application.feature_datatransfer.domain.use_case.*
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
-import com.vocaby.application.feature_user.domain.repository.UserRepository
+import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

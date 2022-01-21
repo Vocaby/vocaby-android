@@ -19,6 +19,9 @@ interface DictionaryDao {
     @Query("SELECT EXISTS(SELECT 1 FROM dictionary_word WHERE word = :entry)")
     suspend fun checkEntryExistence(entry: String): Boolean
 
+    @Query("SELECT id FROM dictionary_word WHERE word = :entry")
+    suspend fun getEntryId(entry: String): Long?
+
     @Query(
         "SELECT word FROM dictionary_word WHERE word LIKE :firstLetter||'%' UNION " +
                 "SELECT entry FROM custom_user_entry WHERE entry LIKE :firstLetter||'%' " +

@@ -9,6 +9,7 @@ import java.util.*
 
 interface CustomDictionaryRepository {
     suspend fun getUserEntries(userId: Int): LinkedList<UserEntry>
+    suspend fun getUserEntryId(userId: Int, entry: String): Int?
     suspend fun getUserEntryData(userId: Int, entry: String): EntryModel?
     suspend fun removeCustomEntry(entryId: Int)
     suspend fun removeCustomEntry(entry: String)

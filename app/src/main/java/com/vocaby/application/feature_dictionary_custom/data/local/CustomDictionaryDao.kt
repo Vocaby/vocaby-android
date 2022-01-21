@@ -12,7 +12,10 @@ import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 interface CustomDictionaryDao {
     @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :userId AND entry = :entry")
-    suspend fun getUserEntryData(userId: Int, entry: String?): EntryWithData?
+    fun getUserEntryData(userId: Int, entry: String?): EntryWithData?
+
+    @Query("SELECT custom_entry_id FROM custom_user_entry WHERE user_id = :userId AND entry = :entry")
+    suspend fun getUserEntryId(userId: Int, entry: String?): Int?
 
     @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :userId")

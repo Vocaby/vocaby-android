@@ -14,16 +14,19 @@ import com.vocaby.application.feature_dictionary_custom.data.local.CustomDiction
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomDefinition
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntryGroup
-import com.vocaby.application.feature_user.data.local.UserDao
-import com.vocaby.application.feature_user.data.local.entity.CustomDictionaryViewCount
-import com.vocaby.application.feature_user.data.local.entity.DictionaryViewCount
-import com.vocaby.application.feature_user.data.local.entity.User
-import com.vocaby.application.feature_user.data.local.entity.UserSave
+import com.vocaby.application.feature_profile.data.local.UserDao
+import com.vocaby.application.feature_profile.data.local.entity.CustomDictionaryViewCount
+import com.vocaby.application.feature_profile.data.local.entity.DictionaryViewCount
+import com.vocaby.application.feature_profile.data.local.entity.User
+import com.vocaby.application.feature_save.data.local.SaveDao
+import com.vocaby.application.feature_save.data.local.entity.SaveCollection
+import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
+import com.vocaby.application.feature_save.data.local.entity.UserSave
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-@Database(entities = [User::class, UserSave::class,
+@Database(entities = [User::class, UserSave::class, SaveCollection::class, SaveCollectionItem::class,
     Type::class, Word::class, Definition::class, CustomEntry::class, CustomDefinition::class,
     CustomEntryGroup::class, DictionaryViewCount::class, CustomDictionaryViewCount::class],
     version = 1,
@@ -34,6 +37,7 @@ abstract class VocabyDatabase : RoomDatabase() {
     abstract val dictionaryDao: DictionaryDao
     abstract val customDictionaryDao: CustomDictionaryDao
     abstract val userDao: UserDao
+    abstract val saveDao: SaveDao
 
     companion object {
         fun getDatabase(context: Context, availableTypes: List<Type>): VocabyDatabase {

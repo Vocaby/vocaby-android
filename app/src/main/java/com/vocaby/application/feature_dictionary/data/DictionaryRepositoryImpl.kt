@@ -19,7 +19,6 @@ class DictionaryRepositoryImpl(
     private val api: DictionaryApi,
     private val dataManager: DataManager,
     private val dictionarySharedPref: SharedPreferences,
-
     ): DictionaryRepository {
     override suspend fun getEntryDataFromDatabase(entry: String): EntryModel? {
         val wordDefinitions = dao.getEntryData(entry)
@@ -29,6 +28,8 @@ class DictionaryRepositoryImpl(
 
         return null
     }
+
+    override suspend fun getEntryIdFromDatabase(entry: String): Long? = dao.getEntryId(entry)
 
     override suspend fun getRandomEntry(): EntryModel {
         return EntryConverter.convertFromEntity(dao.getRandomWord())

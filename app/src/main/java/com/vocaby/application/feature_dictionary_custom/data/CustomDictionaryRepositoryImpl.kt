@@ -21,6 +21,8 @@ class CustomDictionaryRepositoryImpl constructor(
         return LinkedList(list)
     }
 
+    override suspend fun getUserEntryId(userId: Int, entry: String): Int? = dao.getUserEntryId(userId, entry)
+
     override suspend fun getUserEntryData(userId: Int, entry: String): EntryModel? =
         convertCustomToEntryModel(dao.getUserEntryData(userId, entry))
 

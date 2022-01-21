@@ -7,7 +7,7 @@ import com.vocaby.application.feature_datatransfer.domain.repository.DataTransfe
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferState
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
-import com.vocaby.application.feature_user.domain.repository.UserRepository
+import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

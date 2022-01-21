@@ -60,10 +60,10 @@
                 android:resource="@xml/saves_appwidget_info" />
         </receiver>
         <receiver
-            android:name="com.vocaby.application.feature_user.presentation.setting.receivers.NotificationReceiver"
+            android:name="com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver"
             android:enabled="true" />
         <receiver
-            android:name="com.vocaby.application.feature_user.presentation.setting.receivers.BootReceiver"
+            android:name="com.vocaby.application.feature_profile.presentation.setting.receivers.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

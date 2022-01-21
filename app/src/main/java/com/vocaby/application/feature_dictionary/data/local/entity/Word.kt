@@ -6,7 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = "dictionary_word", indices = [Index("word")])
+@Entity(tableName = "dictionary_word", indices = [Index(value=["word", "id"])])
 data class Word constructor(@PrimaryKey(autoGenerate = true) var id: Int) {
     var word = ""
     var pronunciation:String? = null

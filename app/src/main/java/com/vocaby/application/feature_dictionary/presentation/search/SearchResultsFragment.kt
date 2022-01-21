@@ -20,10 +20,10 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.vocaby.application.R
-import com.vocaby.application.feature_dictionary.domain.model.EntryModel
+import com.vocaby.application.core.util.ResourceState
+import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_save.presentation.save.SaveState
-import com.vocaby.application.feature_save.presentation.save.SaveViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -35,7 +35,6 @@ class SearchResultsFragment : Fragment() {
     private lateinit var dictionarySelector: RadioGroup
     private lateinit var saveButton: Button
     private lateinit var searchProgress: ProgressBar
-    private val saveViewModel: SaveViewModel by activityViewModels()
     private val searchResultsViewModel: SearchResultsViewModel by viewModels()
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
 
@@ -86,20 +85,36 @@ class SearchResultsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launchWhenStarted {
-            searchResultsViewModel.entryData.collectLatest { entryList ->
-                setupDictionary(entryList.size)
-                dictionaryViewModel.writeToHistory(searchedEntry, entryList)
-                viewPager.adapter = FragmentAdapter(this@SearchResultsFragment, entryList)
-                dictionarySelector.visibility = View.VISIBLE
-                searchProgress.visibility = GONE
+            searchResultsViewModel.entryData.collectLatest { searchState ->
+                when (searchState) {
+                    is ResourceState.InProgress -> searchProgress.visibility = View.VISIBLE
+                    is ResourceState.Success -> {
+                        searchState.data?.let { dictionaryResult ->
+                            setupDictionary(dictionaryResult)
+                            dictionaryViewModel.writeToHistory(searchedEntry, dictionaryResult)
+                            viewPager.adapter = FragmentAdapter(this@SearchResultsFragment, dictionaryResult)
+                            dictionarySelector.visibility = View.VISIBLE
+                            searchProgress.visibility = GONE
+                        }
+                    }
+                    else -> {}
+                }
             }
         }
 
         lifecycleScope.launchWhenStarted {
-            searchResultsViewModel.missingDictionary.collectLatest { id ->
-                val button = dictionarySelector.findViewById<RadioButton>(id)
-                dictionarySelector.removeView(button)
-                dictionarySelector.check(dictionarySelector.getChildAt(0).id)
+            searchResultsViewModel.dictionarySelectorState.collectLatest { selectorState ->
+                val buttonToHide = dictionarySelector.findViewById<RadioButton>(selectorState.hideId)
+                val buttonToShow = dictionarySelector.findViewById<RadioButton>(selectorState.displayId)
+                if (selectorState.displayAll) {
+                    buttonToHide.visibility = View.VISIBLE
+                    buttonToShow.visibility = View.VISIBLE
+                } else {
+                    buttonToHide.visibility = View.GONE
+                    buttonToShow.visibility = View.VISIBLE
+                }
+
+                dictionarySelector.check(selectorState.displayId)
             }
         }
 
@@ -107,7 +122,7 @@ class SearchResultsFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             searchResultsViewModel.saveState.collectLatest { saveState ->
                 when (saveState) {
-                    is SaveState.Fetched -> {
+                    is SaveState.Processed -> {
                         saveButton.isEnabled = true
                         val icon: Drawable? = if (saveState.saved) {
                             AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved)
@@ -118,27 +133,32 @@ class SearchResultsFragment : Fragment() {
                         saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
                         saveButton.setOnClickListener {
                             if (saveState.saved) {
-                                saveViewModel.removeSaveItem(searchedEntry)
+                                searchResultsViewModel.unsaveEntry()
                             } else {
-                                saveViewModel.addSaveItem(searchedEntry)
+                                searchResultsViewModel.saveEntry()
                             }
                         }
                     }
 
                     is SaveState.InProgress -> {
+                        searchProgress.visibility = View.VISIBLE
                         saveButton.isEnabled = false
                     }
 
                     is SaveState.Remove -> {
                         saveButton.visibility = View.GONE
                     }
+
+                    is SaveState.Show -> {
+                        saveButton.visibility = View.VISIBLE
+                    }
                 }
             }
         }
     }
 
-    private fun setupDictionary(size: Int) {
-        if (size > 1) {
+    private fun setupDictionary(dictionarySearchResult: DictionarySearchResult) {
+        if (dictionarySearchResult.size > 1) {
             viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
@@ -163,15 +183,18 @@ class SearchResultsFragment : Fragment() {
     private val backListener = View.OnClickListener { requireActivity().onBackPressed() }
 
     // ViewPager Adapter for Different Dictionary Definitions
-    private class FragmentAdapter(fragment: Fragment, var entryData: List<EntryModel?>) :
-        FragmentStateAdapter(fragment) {
+    private class FragmentAdapter(
+        fragment: Fragment,
+        var entryData: DictionarySearchResult
+    ): FragmentStateAdapter(fragment) {
         override fun createFragment(position: Int): Fragment {
             if (entryData.size == 2) {
                 if (position == 1) {
-                    return SearchResultsBodyFragment.newInstance(entryData[1])
+                    return SearchResultsBodyFragment.newInstance(entryData.originalModel)
                 }
             }
-            return SearchResultsBodyFragment.newInstance(entryData[0])
+
+            return SearchResultsBodyFragment.newInstance(entryData.data)
         }
 
         override fun getItemCount(): Int {

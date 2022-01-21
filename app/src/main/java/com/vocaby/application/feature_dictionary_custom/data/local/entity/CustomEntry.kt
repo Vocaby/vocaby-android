@@ -6,7 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = "custom_user_entry", indices = [Index("entry", unique = true)])
+@Entity(tableName = "custom_user_entry", indices = [Index(value = ["entry", "custom_entry_id"], unique = true)])
 data class CustomEntry(
     @ColumnInfo(name = "user_id")
     var userId: Int,

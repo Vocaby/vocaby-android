@@ -2,11 +2,12 @@ package com.vocaby.application.feature_dictionary.domain.use_case
 
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.feature_dictionary.domain.model.EntryModel
+import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
+import com.vocaby.application.feature_dictionary.presentation.search.DictionarySelectorState
 import com.vocaby.application.feature_dictionary.presentation.search.SearchState
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
-import com.vocaby.application.feature_user.domain.repository.UserRepository
+import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import javax.inject.Inject
 
 class GetAllDictionaryEntryUseCase @Inject constructor(
@@ -36,27 +37,28 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
             userRepository.recordVisit(userId, originalData!!.id)
         }
 
-        val data = ArrayList<EntryModel?>()
-        var missingDictionary: Int? = null
+        val dictionarySearchResult = DictionarySearchResult()
+        val dictionarySelectorState = DictionarySelectorState(R.id.selection_custom, R.id.selection_original)
         var removeSave = false
         if (customData != null && originalData != null) {
-            data.add(customData)
-            data.add(originalData)
+            dictionarySearchResult.customModel = customData
+            dictionarySearchResult.originalModel = originalData
+            dictionarySelectorState.displayAll = true
         } else if (customData != null) {
             // Only Custom Available
             userRepository.recordCustomVisit(userId, customData.id)
-            data.add(customData)
-            missingDictionary = R.id.selection_original
+            dictionarySearchResult.customModel = customData
         } else {
             // No definition
             if (originalData == null) {
                 removeSave = true
             }
 
-            data.add(originalData)
-            missingDictionary = R.id.selection_custom
+            dictionarySearchResult.originalModel = originalData
+            dictionarySelectorState.displayId = R.id.selection_original
+            dictionarySelectorState.hideId = R.id.selection_custom
         }
 
-        return SearchState(data, missingDictionary, removeSave)
+        return SearchState(dictionarySearchResult, dictionarySelectorState, removeSave)
     }
 }

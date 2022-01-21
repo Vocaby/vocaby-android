@@ -5,8 +5,8 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferState
-import com.vocaby.application.feature_user.data.local.entity.UserSave
-import com.vocaby.application.feature_user.domain.repository.UserRepository
+import com.vocaby.application.feature_profile.domain.repository.UserRepository
+import com.vocaby.application.feature_save.data.local.entity.UserSave
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -27,10 +27,10 @@ class ImportSavesUseCase @Inject constructor(
 
         val userSaves = mutableListOf<UserSave>()
         for (save in saves) {
-            userSaves.add(UserSave(userId, save))
+//            userSaves.add(UserSave(userId, save))
         }
 
-        userRepository.clearSaves(userId)
+        // userRepository.clearSaves(userId)
         userRepository.addSaveItems(userSaves)
         emit(DataTransferState.Success(message = UiText(textResource = R.string.data_transfer_import_complete)))
     }

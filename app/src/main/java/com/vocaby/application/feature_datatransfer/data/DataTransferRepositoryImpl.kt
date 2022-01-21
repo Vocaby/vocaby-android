@@ -14,8 +14,8 @@ import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
-import com.vocaby.application.feature_user.common.Constants
-import com.vocaby.application.feature_user.domain.model.ExportModel
+import com.vocaby.application.feature_profile.common.Constants
+import com.vocaby.application.feature_profile.domain.model.ExportModel
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter

@@ -5,8 +5,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryFragment
 import com.vocaby.application.feature_dictionary_custom.presentation.ui.MyEntryFragment
-import com.vocaby.application.feature_save.presentation.save.SavesFragment
-import com.vocaby.application.feature_user.presentation.profile.ProfileFragment
+import com.vocaby.application.feature_profile.presentation.profile.ProfileFragment
+import com.vocaby.application.feature_save.presentation.SaveFragment
 
 class FragmentAdapter (
     fragmentActivity: FragmentActivity
@@ -15,7 +15,7 @@ class FragmentAdapter (
         return when (position) {
             3 -> ProfileFragment()
             2 -> MyEntryFragment()
-            1 -> SavesFragment()
+            1 -> SaveFragment()
             else -> DictionaryFragment()
         }
     }

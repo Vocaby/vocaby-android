@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "aa23c79dd839571599643b9b3cd23ee6",
+    "identityHash": "a6e223dd208b2604bb7322908a2dbc4b",
     "entities": [
       {
         "tableName": "vocaby_user",
@@ -39,12 +39,22 @@
           ],
           "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_vocaby_user_user_id",
+            "unique": false,
+            "columnNames": [
+              "user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_vocaby_user_user_id` ON `${TABLE_NAME}` (`user_id`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
         "tableName": "saves",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `entry` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `vocaby_user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `entry_id` INTEGER, `custom_entry_id` INTEGER, `save_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `vocaby_user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`entry_id`) REFERENCES `dictionary_word`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`custom_entry_id`) REFERENCES `custom_user_entry`(`custom_entry_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "userId",
@@ -53,34 +63,41 @@
             "notNull": true
           },
           {
-            "fieldPath": "entry",
-            "columnName": "entry",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "entryId",
+            "columnName": "entry_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "customEntryId",
+            "columnName": "custom_entry_id",
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "id",
-            "columnName": "id",
+            "columnName": "save_id",
             "affinity": "INTEGER",
             "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "save_id"
           ],
           "autoGenerate": true
         },
         "indices": [
           {
-            "name": "index_saves_user_id_entry",
+            "name": "index_saves_user_id_entry_id_custom_entry_id",
             "unique": true,
             "columnNames": [
               "user_id",
-              "entry"
+              "entry_id",
+              "custom_entry_id"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_saves_user_id_entry` ON `${TABLE_NAME}` (`user_id`, `entry`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_saves_user_id_entry_id_custom_entry_id` ON `${TABLE_NAME}` (`user_id`, `entry_id`, `custom_entry_id`)"
           }
         ],
         "foreignKeys": [
@@ -93,6 +110,155 @@
             ],
             "referencedColumns": [
               "user_id"
+            ]
+          },
+          {
+            "table": "dictionary_word",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "entry_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "custom_user_entry",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "custom_entry_id"
+            ],
+            "referencedColumns": [
+              "custom_entry_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "save_collection",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`collection_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_id` INTEGER NOT NULL, `collection_name` TEXT NOT NULL, `last_updated` TEXT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `vocaby_user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "collection_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collectionName",
+            "columnName": "collection_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "last_updated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "collection_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_save_collection_collection_id_user_id",
+            "unique": false,
+            "columnNames": [
+              "collection_id",
+              "user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_save_collection_collection_id_user_id` ON `${TABLE_NAME}` (`collection_id`, `user_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "vocaby_user",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "user_id"
+            ],
+            "referencedColumns": [
+              "user_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "save_collection_item",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`collection_item_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `save_id` INTEGER NOT NULL, `collection_id` INTEGER NOT NULL, FOREIGN KEY(`save_id`) REFERENCES `saves`(`save_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`collection_id`) REFERENCES `save_collection`(`collection_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "collection_item_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "saveId",
+            "columnName": "save_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collectionId",
+            "columnName": "collection_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "collection_item_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_save_collection_item_save_id_collection_id",
+            "unique": false,
+            "columnNames": [
+              "save_id",
+              "collection_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_save_collection_item_save_id_collection_id` ON `${TABLE_NAME}` (`save_id`, `collection_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "saves",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "save_id"
+            ],
+            "referencedColumns": [
+              "save_id"
+            ]
+          },
+          {
+            "table": "save_collection",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "collection_id"
+            ],
+            "referencedColumns": [
+              "collection_id"
             ]
           }
         ]
@@ -160,13 +326,14 @@
         },
         "indices": [
           {
-            "name": "index_dictionary_word_word",
+            "name": "index_dictionary_word_word_id",
             "unique": false,
             "columnNames": [
-              "word"
+              "word",
+              "id"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_dictionary_word_word` ON `${TABLE_NAME}` (`word`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_dictionary_word_word_id` ON `${TABLE_NAME}` (`word`, `id`)"
           }
         ],
         "foreignKeys": []
@@ -280,13 +447,14 @@
         },
         "indices": [
           {
-            "name": "index_custom_user_entry_entry",
+            "name": "index_custom_user_entry_entry_custom_entry_id",
             "unique": true,
             "columnNames": [
-              "entry"
+              "entry",
+              "custom_entry_id"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_custom_user_entry_entry` ON `${TABLE_NAME}` (`entry`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_custom_user_entry_entry_custom_entry_id` ON `${TABLE_NAME}` (`entry`, `custom_entry_id`)"
           }
         ],
         "foreignKeys": []
@@ -581,7 +749,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'aa23c79dd839571599643b9b3cd23ee6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a6e223dd208b2604bb7322908a2dbc4b')"
     ]
   }
 }

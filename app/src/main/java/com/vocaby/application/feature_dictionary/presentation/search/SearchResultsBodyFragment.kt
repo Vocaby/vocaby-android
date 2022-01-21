@@ -47,7 +47,6 @@ class SearchResultsBodyFragment : Fragment() {
         pronunciation = view.findViewById(R.id.pronunciation)
         pronunciationScroll = view.findViewById(R.id.pronunciation_scroll)
         recyclerView = view.findViewById(R.id.definitions_recycler_container)
-
         entryData?.let { data ->
             val definitionsAdapter = DefinitionsAdapter(ctx)
             definitionsAdapter.setWordData(data)
@@ -81,6 +80,8 @@ class SearchResultsBodyFragment : Fragment() {
 
     private fun populateNoDefinition() {
         header.text = resources.getString(R.string.no_definition_found)
+        entryBox.setPadding(0, -ctx.resources.getDimensionPixelSize(R.dimen.header_gap), 0, 0)
+        entryBox.gravity = Gravity.CENTER
         pronunciationScroll.visibility = View.GONE
         recyclerView.visibility = View.GONE
     }

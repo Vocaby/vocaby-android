@@ -16,9 +16,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.adapter.FragmentAdapter
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
-import com.vocaby.application.feature_user.presentation.profile.ProfileViewModel
-import com.vocaby.application.feature_user.presentation.setting.SettingViewModel
-import com.vocaby.application.feature_user.presentation.setting.receivers.NotificationReceiver
+import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
+import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
+import com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import javax.inject.Named

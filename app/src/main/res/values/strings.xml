@@ -18,7 +18,6 @@
     <!-- Strings used for fragments for navigation -->
 
     <string name="notifications">Notifications</string>
-    <string name="saved_entries">Saved Entries</string>
     <string name="zero">0</string>
     <string name="custom_entries">Custom Entries</string>
     <string name="nav_custom_entries">My Entries</string>
@@ -141,4 +140,7 @@
     <string name="notification_frequency_header">Notification Frequency</string>
     <string name="notification_save_collection">Save Collection</string>
     <string name="data_transfer">Data Transfer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="nav_save_collections">Save Collections</string>
+    <string name="collection_name_header">Collection Name</string>
 </resources>

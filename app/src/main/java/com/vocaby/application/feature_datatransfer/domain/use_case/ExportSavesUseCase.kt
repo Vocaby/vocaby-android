@@ -5,7 +5,7 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferState
-import com.vocaby.application.feature_user.domain.repository.UserRepository
+import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

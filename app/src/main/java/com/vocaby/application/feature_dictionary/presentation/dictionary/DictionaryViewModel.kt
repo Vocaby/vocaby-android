@@ -3,7 +3,7 @@ package com.vocaby.application.feature_dictionary.presentation.dictionary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.util.GenericState
-import com.vocaby.application.feature_dictionary.domain.model.EntryModel
+import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.model.SearchSuggestionItem
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.domain.use_case.DictionaryUseCases
@@ -100,9 +100,9 @@ class DictionaryViewModel @Inject constructor(
         }
     }
 
-    fun writeToHistory(entry: String, entryList: List<EntryModel?>) {
+    fun writeToHistory(entry: String, dictionaryResult: DictionarySearchResult) {
         viewModelScope.launch {
-            _searchHistory.emit(dictionaryUseCases.insertSearchHistoryUseCase(entry, entryList))
+            _searchHistory.emit(dictionaryUseCases.insertSearchHistoryUseCase(entry, dictionaryResult))
         }
     }
 

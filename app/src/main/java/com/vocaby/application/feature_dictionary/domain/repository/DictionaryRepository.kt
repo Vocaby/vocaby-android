@@ -7,6 +7,7 @@ import java.util.*
 
 interface DictionaryRepository {
     suspend fun getEntryDataFromDatabase(entry: String): EntryModel?
+    suspend fun getEntryIdFromDatabase(entry: String): Long?
     suspend fun getEntriesByCharacterFromDB(character: String): List<String>
     suspend fun getRandomEntry(): EntryModel
     suspend fun replaceEntry(original: EntryModel, remote: EntryModel): Int
