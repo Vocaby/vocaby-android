@@ -8,9 +8,8 @@ import com.vocaby.application.feature_support.domain.model.FeedbackModel
 import com.vocaby.application.feature_support.domain.repository.SupportRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
-class SubmitFeedbackUseCase @Inject constructor(
+class SubmitFeedbackUseCase(
     private val supportRepository: SupportRepository
 ) {
     suspend operator fun invoke (

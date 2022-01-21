@@ -1,7 +1,5 @@
 package com.vocaby.application.feature_user.domain.repository
 
-import android.net.Uri
-import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_user.data.local.entity.UserSave
 import com.vocaby.application.feature_user.data.local.entity.VisitData
 import kotlinx.coroutines.flow.Flow

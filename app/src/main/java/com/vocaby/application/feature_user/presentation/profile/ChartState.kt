@@ -1,6 +1,5 @@
 package com.vocaby.application.feature_user.presentation.profile
 
-import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_user.domain.model.ChartData
 
 sealed class ChartState {

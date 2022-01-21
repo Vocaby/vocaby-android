@@ -2,12 +2,15 @@ package com.vocaby.application.feature_dictionary.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.GsonBuilder
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.core.domain.repository.ApplicationRepository
 import com.vocaby.application.feature_dictionary.data.DataManager
 import com.vocaby.application.feature_dictionary.data.DictionaryRepositoryImpl
 import com.vocaby.application.feature_dictionary.data.remote.DictionaryApi
+import com.vocaby.application.feature_dictionary.data.remote.EntryDeserializer
+import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.domain.use_case.*
 import dagger.Module
@@ -15,6 +18,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -64,4 +71,30 @@ class DictionaryModule {
         InsertSearchHistoryUseCase(dictionaryRepository),
         ClearDictionaryCacheUseCase(dictionaryRepository)
     )
+
+    @Provides
+    @Singleton
+    fun provideDictionaryApi(): DictionaryApi {
+        val gsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(EntryModel::class.java, EntryDeserializer())
+        val vocabyGson = gsonBuilder.create()
+//        val httpLoggingInterceptor = HttpLoggingInterceptor()
+//        httpLoggingInterceptor.apply {
+//            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+//        }
+
+        val okHttpClient = OkHttpClient.Builder()
+//            .addInterceptor(httpLoggingInterceptor)
+            .connectTimeout(2, TimeUnit.SECONDS)
+            .readTimeout(2, TimeUnit.SECONDS)
+            .writeTimeout(2, TimeUnit.SECONDS)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl(Constants.VOCABY_API_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(vocabyGson))
+            .client(okHttpClient)
+            .build()
+            .create(DictionaryApi::class.java)
+    }
 }

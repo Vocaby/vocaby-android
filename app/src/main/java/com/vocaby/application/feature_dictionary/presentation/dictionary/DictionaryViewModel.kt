@@ -3,7 +3,6 @@ package com.vocaby.application.feature_dictionary.presentation.dictionary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.util.GenericState
-import com.vocaby.application.feature_dictionary.domain.model.DailyPick
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SearchSuggestionItem
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
@@ -22,7 +21,7 @@ class DictionaryViewModel @Inject constructor(
     private val suggestionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     private val _searchedEntry = MutableSharedFlow<String>()
-    private val _dailyPick = MutableSharedFlow<DailyPick>()
+    private val _dailyPick = MutableSharedFlow<DailyPickState>()
     private val _searchSuggestions = MutableSharedFlow<GenericState<List<SearchSuggestionItem>>>()
     private val _searchHistory = MutableSharedFlow<List<SimpleEntryModel>?>(replay=1)
 
@@ -35,7 +34,7 @@ class DictionaryViewModel @Inject constructor(
         getHistory()
     }
 
-    fun getHistory() {
+    private fun getHistory() {
         val historyList = dictionaryUseCases.getSearchHistoryUseCase()
         viewModelScope.launch {
             _searchHistory.emit(historyList)
@@ -91,7 +90,7 @@ class DictionaryViewModel @Inject constructor(
     // return to observer of random word
     fun updateDailyPick() {
         viewModelScope.launch {
-            _dailyPick.emit(dictionaryUseCases.getDailyPick())
+            dictionaryUseCases.getDailyPick().collectLatest { _dailyPick.emit(it) }
         }
     }
 

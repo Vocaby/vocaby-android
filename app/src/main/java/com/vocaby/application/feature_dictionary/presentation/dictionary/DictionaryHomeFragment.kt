@@ -30,6 +30,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     private lateinit var progressBar: ProgressBar
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
     private lateinit var emptyCard: LinearLayout
+    private lateinit var dateView: TextView
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
 
@@ -44,8 +45,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     ): View? {
         val view = inflater.inflate(R.layout.fragment_dictionary_main, container, false)
 
-        val dateView = view.findViewById<TextView>(R.id.date)
-        dateView.text = formatDateToString(Date().time, true, showDay = true)
+        dateView = view.findViewById(R.id.date)
 
         // Random Word of the Day
         wordView = view.findViewById(R.id.entry_header)
@@ -70,34 +70,50 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launchWhenStarted {
-            dictionaryViewModel.dailyPick.collectLatest { dailyPick ->
-                wordView.text = dailyPick.entryModel.entry
-                posView.text =  dailyPick.entryModel.firstGroup.type
-                definition.text = dailyPick.entryModel.firstGroup.definitionData[0].toString()
+            dictionaryViewModel.dailyPick.collectLatest { dailyPickState ->
+                dateView.text = formatDateToString(Date().time, true, showDay = true)
 
-                dailyPick.entryModel.firstGroup.definitionData[0].example?.let { example ->
-                    if (example.isNotEmpty()) {
-                        sentence.visibility = View.VISIBLE
-                        sentence.text = example
+                when (dailyPickState) {
+                    is DailyPickState.InProgress -> {
+                        wordView.visibility = View.INVISIBLE
+                        wordBoxTag.visibility = View.GONE
+                        definition.visibility = View.GONE
+                        posView.visibility = View.GONE
+                        sentence.visibility = View.GONE
+                        progressBar.visibility = View.VISIBLE
+                    }
+                    is DailyPickState.Picked -> {
+                        wordView.visibility = View.VISIBLE
+                        wordBoxTag.visibility = View.VISIBLE
+                        definition.visibility = View.VISIBLE
+                        posView.visibility = View.VISIBLE
+                        progressBar.visibility = View.GONE
+
+                        val dailyPick = dailyPickState.pick
+                        wordView.text = dailyPick.entryModel.entry
+                        posView.text =  dailyPick.entryModel.firstGroup.type
+                        definition.text = dailyPick.entryModel.firstGroup.definitionData[0].toString()
+
+                        dailyPick.entryModel.firstGroup.definitionData[0].example?.let { example ->
+                            if (example.isNotEmpty()) {
+                                sentence.visibility = View.VISIBLE
+                                sentence.text = example
+                            }
+                        }
+
+                        if (dailyPick.random) {
+                            wordBoxTag.text = getString(R.string.wod_random_pick)
+                            wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                            wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadlineSoft))
+                        } else {
+                            wordBoxTag.text = getString(R.string.wod_our_pick)
+                            wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
+                            wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
+                        }
+
+                        wordBox.setOnClickListener { dictionaryViewModel.search(dailyPick.entryModel.entry) }
                     }
                 }
-
-                wordBoxTag.visibility = View.VISIBLE
-                if (dailyPick.random) {
-                    wordBoxTag.text = getString(R.string.wod_random_pick)
-                    wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadlineSoft))
-                } else {
-                    wordBoxTag.text = getString(R.string.wod_our_pick)
-                    wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
-                    wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
-                }
-
-                wordBox.setOnClickListener { dictionaryViewModel.search(dailyPick.entryModel.entry) }
-
-                definition.visibility = View.VISIBLE
-                posView.visibility = View.VISIBLE
-                progressBar.visibility = View.GONE
             }
         }
 

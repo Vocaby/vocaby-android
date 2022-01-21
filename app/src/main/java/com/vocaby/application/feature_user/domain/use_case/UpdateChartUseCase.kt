@@ -2,13 +2,11 @@ package com.vocaby.application.feature_user.domain.use_case
 
 import com.github.mikephil.charting.data.BarEntry
 import com.vocaby.application.core.util.Generators
-import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_user.common.Constants
 import com.vocaby.application.feature_user.data.local.entity.VisitData
 import com.vocaby.application.feature_user.domain.model.ChartData
 import com.vocaby.application.feature_user.domain.repository.UserRepository
 import com.vocaby.application.feature_user.presentation.profile.ChartState
-import com.vocaby.application.feature_user.presentation.profile.ProfileViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

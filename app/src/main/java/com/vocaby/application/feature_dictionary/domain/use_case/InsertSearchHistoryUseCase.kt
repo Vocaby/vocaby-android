@@ -3,9 +3,8 @@ package com.vocaby.application.feature_dictionary.domain.use_case
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
-import javax.inject.Inject
 
-class InsertSearchHistoryUseCase @Inject constructor(
+class InsertSearchHistoryUseCase(
     private val dictionaryRepository: DictionaryRepository
 ) {
     operator fun invoke(entry: String, entryList: List<EntryModel?>): List<SimpleEntryModel>? {

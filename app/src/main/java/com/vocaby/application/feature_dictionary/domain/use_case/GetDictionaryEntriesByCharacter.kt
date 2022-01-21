@@ -4,9 +4,8 @@ import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
-class GetDictionaryEntriesByCharacter @Inject constructor(
+class GetDictionaryEntriesByCharacter(
     private val dictionaryRepository: DictionaryRepository
 ) {
     operator fun invoke(newQuery: String): Flow<GenericState<List<String>>> = flow {
