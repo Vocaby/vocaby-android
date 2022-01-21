@@ -1,10 +1,10 @@
 plugins {
-    id 'kotlin-android'
     id 'com.android.application'
+    id 'kotlin-android'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
-    id 'com.bugsnag.android.gradle'
     id 'dagger.hilt.android.plugin'
+    id 'com.bugsnag.android.gradle'
 }
 
 android {

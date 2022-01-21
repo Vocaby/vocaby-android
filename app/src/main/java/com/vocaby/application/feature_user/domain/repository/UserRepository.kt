@@ -20,12 +20,6 @@ interface UserRepository {
     suspend fun removeSaveItem(userId: Int, entry: String)
     suspend fun clearSaves(userId: Int)
 
-    /** --------------------- IMPORT / EXPORT -------------------- **/
-    fun importSavesFromExternalStorage(uri: Uri): List<String>
-    fun importEntriesBackupFromExternalStorage(uri: Uri): List<EntryModel>
-    fun writeSavesToExternalStorage(saves: List<String>, uri: Uri)
-    fun writeEntriesToExternalStorage(entries: List<EntryModel>, uri: Uri)
-
     /** --------------------- DATA -------------------- **/
     suspend fun recordVisit(userId: Int, entryId: Int)
     suspend fun recordCustomVisit(userId: Int, entryId: Int)

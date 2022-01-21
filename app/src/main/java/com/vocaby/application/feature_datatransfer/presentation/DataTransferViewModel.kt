@@ -2,23 +2,20 @@ package com.vocaby.application.feature_datatransfer.presentation
 
 import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.vocaby.application.R
-import com.vocaby.application.core.util.SingleLiveEvent
+import com.vocaby.application.core.util.UiText
 import com.vocaby.application.core.util.exceptions.IllegalFileException
-import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
-import com.vocaby.application.feature_user.data.local.entity.UserSave
-import com.vocaby.application.feature_user.domain.repository.UserRepository
+import com.vocaby.application.feature_datatransfer.domain.use_case.DataTransferUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import java.io.StreamCorruptedException
 import javax.inject.Inject
 
 @HiltViewModel
 class DataTransferViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    private val customDictionaryRepository: CustomDictionaryRepository
+    private val dataTransferUseCases: DataTransferUseCases
 ) : ViewModel() {
     companion object {
         const val EXPORT_SAVE_BACKUP = 1
@@ -29,52 +26,9 @@ class DataTransferViewModel @Inject constructor(
 
     private val transferScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var actionType: Int = -1
-    private val _transferSuccessful: SingleLiveEvent<Boolean> = SingleLiveEvent()
-    private val _progressText: SingleLiveEvent<Int> = SingleLiveEvent()
-    private val _progressCounter: SingleLiveEvent<Int> = SingleLiveEvent()
+    private val _transferState = MutableStateFlow<DataTransferState>(DataTransferState.InProgress())
 
-    val transferStatus: LiveData<Boolean>
-        get() = _transferSuccessful
-    val progressText: LiveData<Int>
-        get() = _progressText
-    val progressCounter: LiveData<Int>
-        get() = _progressCounter
-
-    private val importExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        _transferSuccessful.postValue(false)
-        when (throwable) {
-            is IllegalFileException -> {
-                when (throwable.code) {
-                    IllegalFileException.INVALID_FORMAT -> {
-                        _progressText.postValue(R.string.data_transfer_import_error_invalid_format)
-                    }
-                    IllegalFileException.INVALID_FILE -> {
-                        _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
-                    }
-                    else -> {
-                        _progressText.postValue(R.string.data_transfer_import_error_generic)
-                    }
-                }
-            }
-            is ClassCastException -> {
-                _progressText.postValue(R.string.data_transfer_import_error_wrong_backup_file)
-            }
-            is StreamCorruptedException -> {
-                _progressText.postValue(R.string.data_transfer_import_error_invalid_file)
-            }
-            is NullPointerException -> {
-                _progressText.postValue(R.string.data_transfer_import_error_wrong_backup_file)
-            }
-            else -> {
-                _progressText.postValue(R.string.data_transfer_import_error_generic)
-            }
-        }
-    }
-
-    private val exportExceptionHandler = CoroutineExceptionHandler { _, _ ->
-        _transferSuccessful.postValue(false)
-        _progressText.postValue(R.string.data_transfer_export_empty)
-    }
+    val transferState get() = _transferState.asSharedFlow()
 
     fun handleReceived(received: Intent): Intent {
         actionType = received.getIntExtra("TYPE", -1)
@@ -141,68 +95,75 @@ class DataTransferViewModel @Inject constructor(
     }
 
     private fun importSaves(uri: Uri) {
-        transferScope.launch(importExceptionHandler) {
-            val userId = userRepository.getUser()
-            _progressText.postValue(R.string.data_transfer_reading_import)
-            val saves = userRepository.importSavesFromExternalStorage(uri)
-            _progressText.postValue(R.string.data_transfer_importing)
-            _progressCounter.postValue(saves.size)
-
-            val userSaves = mutableListOf<UserSave>()
-            for (save in saves) {
-                userSaves.add(UserSave(userId, save))
-            }
-            userRepository.clearSaves(userId)
-            userRepository.addSaveItems(userSaves)
-            _transferSuccessful.postValue(true)
-            _progressText.postValue(R.string.data_transfer_import_complete)
+        transferScope.launch {
+            dataTransferUseCases.importSavesUseCase(uri)
+                .catch { e -> emit(catchImportExceptions(e)) }
+                .collectLatest { transferState ->
+                    _transferState.emit(transferState)
+                }
         }
     }
 
     private fun importEntries(uri: Uri) {
-        transferScope.launch(importExceptionHandler) {
-            val userId = userRepository.getUser()
-            _progressText.postValue(R.string.data_transfer_reading_import)
-            val entryImportData = userRepository.importEntriesBackupFromExternalStorage(uri)
-
-            _progressText.postValue(R.string.data_transfer_import_setup)
-            _progressText.postValue(R.string.data_transfer_importing)
-            _progressCounter.postValue(entryImportData.size)
-            customDictionaryRepository.insertNewEntries(userId, entryImportData)
-
-            _transferSuccessful.postValue(true)
-            _progressText.postValue(R.string.data_transfer_import_complete)
+        transferScope.launch {
+            dataTransferUseCases.importCustomEntriesUseCase(uri)
+                .catch { e -> emit(catchImportExceptions(e)) }
+                .collectLatest { transferState ->
+                    _transferState.emit(transferState)
+                }
         }
     }
 
     private fun writeSaves(uri: Uri) {
-        _progressText.value = R.string.data_transfer_fetching_data
-        transferScope.launch(exportExceptionHandler) {
-            val userId = userRepository.getUser()
-            val saves = userRepository.getSavedWords(userId)
-            userRepository.writeSavesToExternalStorage(saves, uri)
-            _progressText.postValue(R.string.data_transfer_exporting_saves)
-            _transferSuccessful.postValue(true)
-            _progressText.postValue(R.string.data_transfer_export_complete)
+        transferScope.launch {
+            transferScope.launch {
+                dataTransferUseCases.exportSavesUseCase(uri)
+                    .collectLatest { transferState ->
+                        _transferState.emit(transferState)
+                    }
+            }
         }
     }
 
     private fun writeEntries(uri: Uri) {
-        _progressText.value = R.string.data_transfer_fetching_data
-        transferScope.launch(exportExceptionHandler) {
-            val userId = userRepository.getUser()
-            _progressText.postValue(R.string.data_transfer_fetching_entries)
-            val entries = customDictionaryRepository.getAllUserEntries(userId)
-            _progressText.postValue(R.string.data_transfer_exporting_backup)
-            userRepository.writeEntriesToExternalStorage(entries, uri)
-            _transferSuccessful.postValue(true)
-            _progressText.postValue(R.string.data_transfer_export_complete)
+        transferScope.launch {
+            dataTransferUseCases.exportCustomEntriesUseCase(uri)
+                .collectLatest { transferState ->
+                    _transferState.emit(transferState)
+                }
         }
     }
 
     fun cancelJob() {
         if (transferScope.isActive) {
             transferScope.cancel("User cancelled the job")
+        }
+    }
+
+    private fun catchImportExceptions(e: Throwable): DataTransferState {
+        return when (e) {
+            is IllegalFileException -> {
+                when (e.code) {
+                    IllegalFileException.INVALID_FORMAT -> {
+                        DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_format))
+                    }
+                    IllegalFileException.INVALID_FILE -> {
+                        DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_file))
+                    }
+                    else -> {
+                        DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_generic))
+                    }
+                }
+            }
+            is StreamCorruptedException -> {
+                DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_file))
+            }
+            is NullPointerException -> {
+                DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_wrong_backup_file))
+            }
+            else -> {
+                DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_generic))
+            }
         }
     }
 

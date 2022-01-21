@@ -10,12 +10,15 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.vocaby.application.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class DataTransferActivity : AppCompatActivity() {
     private val dataTransferViewModel: DataTransferViewModel by viewModels()
+    private lateinit var progressBar: ProgressBar
     private lateinit var closeButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,39 +32,51 @@ class DataTransferActivity : AppCompatActivity() {
             finish()
         }
 
-        val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+        progressBar = findViewById<ProgressBar>(R.id.progress_bar)
         val progressText = findViewById<TextView>(R.id.progress_text)
         val progressCounter = findViewById<TextView>(R.id.progress_counter)
 
         val directoryPickerIntent = dataTransferViewModel.handleReceived(intent)
         directorySelector.launch(directoryPickerIntent)
-        dataTransferViewModel.progressText.observe(this) { text ->
-            progressText.setText(text)
-        }
 
-        dataTransferViewModel.progressCounter.observe(this) { count ->
-            val text = if (count < 2) {
-                "$count entry"
-            } else {
-                "$count entries"
-            }
+        lifecycleScope.launchWhenStarted {
+            dataTransferViewModel.transferState.collectLatest { transferState ->
+                when (transferState) {
+                    is DataTransferState.Success -> {
+                        setProgressBar(true)
+                        transferState.message.textResource?.let {progressText.setText(it)}
 
-            progressCounter.text = text
-        }
+                        closeButton.setOnClickListener {
+                            setResult(Activity.RESULT_OK, dataTransferViewModel.addResult())
+                            finish()
+                        }
+                    }
+                    is DataTransferState.InProgress -> {
+                        transferState.message?.textResource?.let {progressText.setText(it)}
+                        transferState.count?.let {
+                            val text = if (it < 2) {
+                                "$it entry"
+                            } else {
+                                "$it entries"
+                            }
 
-        dataTransferViewModel.transferStatus.observe(this) { successful: Boolean ->
-            progressBar.isIndeterminate = false
-            progressBar.max = 1
-            progressBar.incrementProgressBy(1)
-            if (!successful) progressBar.progressTintList =
-                ColorStateList.valueOf(getColor(R.color.colorHeadline))
-            if (successful) {
-                closeButton.setOnClickListener {
-                    setResult(Activity.RESULT_OK, dataTransferViewModel.addResult())
-                    finish()
+                            progressCounter.text = text
+                        }
+                    }
+                    is DataTransferState.Error -> {
+                        setProgressBar(false)
+                        transferState.uiText.textResource?.let { progressText.setText(it) }
+                    }
                 }
             }
         }
+    }
+
+    private fun setProgressBar(successful: Boolean) {
+        progressBar.isIndeterminate = false
+        progressBar.max = 1
+        progressBar.incrementProgressBy(1)
+        if (!successful) progressBar.progressTintList = ColorStateList.valueOf(getColor(R.color.colorHeadline))
     }
 
     private val directorySelector = registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->

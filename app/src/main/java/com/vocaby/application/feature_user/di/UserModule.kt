@@ -1,10 +1,8 @@
 package com.vocaby.application.feature_user.di
 
-import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
 import com.vocaby.application.core.data.VocabyDatabase
-import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_user.common.Constants
 import com.vocaby.application.feature_user.data.UserRepositoryImpl
 import com.vocaby.application.feature_user.domain.repository.UserRepository
@@ -30,15 +28,11 @@ class UserModule {
     fun provideUserRepository(
         database: VocabyDatabase,
         @Named("user")
-        userSharedPref: SharedPreferences,
-        contentResolver: ContentResolver,
-        availableTypes: List<Type>
+        userSharedPref: SharedPreferences
     ): UserRepository {
         return UserRepositoryImpl(
             database.userDao,
-            userSharedPref,
-            contentResolver,
-            availableTypes
+            userSharedPref
         )
     }
 }
