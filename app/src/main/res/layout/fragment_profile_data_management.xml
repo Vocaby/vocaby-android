@@ -7,7 +7,7 @@
     android:background="@color/white"
     android:orientation="vertical"
     android:clickable="true"
-    tools:context=".feature_user.presentation.ui.DataManagementFragment">
+    tools:context=".feature_user.presentation.datamanagement.DataManagementFragment">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"

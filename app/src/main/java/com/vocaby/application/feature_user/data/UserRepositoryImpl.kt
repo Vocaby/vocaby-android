@@ -9,7 +9,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
@@ -18,22 +17,16 @@ import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_user.common.Constants
 import com.vocaby.application.feature_user.data.local.UserDao
 import com.vocaby.application.feature_user.data.local.entity.*
-import com.vocaby.application.feature_user.data.remote.UserApi
 import com.vocaby.application.feature_user.domain.model.ExportModel
-import com.vocaby.application.feature_user.domain.model.FaqModel
-import com.vocaby.application.feature_user.domain.model.FeedbackModel
 import com.vocaby.application.feature_user.domain.repository.UserRepository
-import com.vocaby.application.states.ValidState
 import kotlinx.coroutines.flow.Flow
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.net.UnknownHostException
 import java.util.*
 
 class UserRepositoryImpl constructor(
     private val dao: UserDao,
-    private val userApi: UserApi,
     private val userSharedPref: SharedPreferences,
     private val contentResolver: ContentResolver,
     private val availableTypes: List<Type>
@@ -293,70 +286,5 @@ class UserRepositoryImpl constructor(
 
     override fun setDataShareSettings(enabled: Boolean) {
         userSharedPref.edit().putBoolean(Constants.DATA_SHARE_ID, enabled).apply()
-    }
-
-    override suspend fun submitFeedback(feedbackModel: FeedbackModel): ValidState {
-        return try {
-            val response = userApi.submitFeedback("application/json", feedbackModel)
-            if (response.isSuccessful) {
-                ValidState.Valid
-            } else {
-                if (response.code() >= 500) {
-                    ValidState.Error("Vocaby's server is down :(")
-                } else {
-                    ValidState.Error("Failed to send feedback...")
-                }
-            }
-        } catch (e: UnknownHostException) {
-            ValidState.Error("No internet connection")
-        } catch (e: Throwable) {
-            if (isDataShareEnabled()) Logger.reportErrorToBugsnag(e)
-            ValidState.Error("Something went wrong...")
-        }
-    }
-
-    override fun getFaq(): List<FaqModel> {
-        return listOf(
-            FaqModel(
-                "Is Vocaby free?",
-                "Yup! Vocaby is completely free and has no hidden fees or advertisements."
-            ),
-            FaqModel(
-                "Why are some definitions outdated?",
-                "Vocaby is powered by Princeton's Wordnet. " +
-                        "At Vocaby, we are maintaining and updating definitions so that " +
-                        "you are provided with the most up-to-date definition. " +
-                        "If you would like to help improve the dictionary, please submit the form below."
-            ),
-            FaqModel(
-                "Will definitions automatically update on my app?",
-                "Yup! Once we make updates to our dictionary, your will retrieve the " +
-                        "most up to date definitions on your app. This does require an " +
-                        "internet connection though."
-            ),
-            FaqModel(
-                "Does Vocaby collect data from me?",
-                "We only collect error related data to improve the app and better your experience with Vocaby. " +
-                        "If you don't feel comfortable sharing this data, you can opt out in the Data Management page."
-            ),
-            FaqModel(
-                "If I do share my data, can it be traced back to me?",
-                "No, the data does not contain any personally identifiable information that can trace back to you. " +
-                        "The data does contain some information about your device but anything shared with us is securely encrypted."
-            ),
-            FaqModel(
-                "Why does my import keep failing?",
-                "Please make sure that your exported backup json " +
-                        "file was indeed created by the app and was not tampered with. " +
-                        "If you continue to experience this issue, please feel " +
-                        "free to reach out to us!"
-            ),
-            FaqModel(
-                "Will Vocaby be available on other platforms?",
-                "We intend to increase Vocaby's " +
-                        "availability across platforms further down the road, but we want " +
-                        "to make sure that Vocaby matures on Android first."
-            )
-        )
     }
 }

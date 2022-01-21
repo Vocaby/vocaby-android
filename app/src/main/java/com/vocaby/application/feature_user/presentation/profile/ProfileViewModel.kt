@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.viewmodel
+package com.vocaby.application.feature_user.presentation.profile
 
 import android.graphics.Color
 import androidx.lifecycle.ViewModel

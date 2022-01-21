@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.viewmodel
+package com.vocaby.application.feature_user.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

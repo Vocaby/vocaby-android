@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.receivers
+package com.vocaby.application.feature_user.presentation.notification.receivers
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

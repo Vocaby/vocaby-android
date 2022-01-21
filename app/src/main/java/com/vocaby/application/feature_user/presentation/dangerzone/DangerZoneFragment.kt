@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.ui
+package com.vocaby.application.feature_user.presentation.dangerzone
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.MyEntryViewModel
 import com.vocaby.application.feature_save.presentation.save.SaveViewModel
-import com.vocaby.application.feature_user.presentation.viewmodel.ProfileViewModel
+import com.vocaby.application.feature_user.presentation.profile.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

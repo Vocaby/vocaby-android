@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.domain.model
+package com.vocaby.application.feature_support.domain.model
 
 import com.google.gson.annotations.SerializedName
 import com.vocaby.application.BuildConfig

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".feature_user.presentation.ui.ProfileHomeFragment">
+    tools:context=".feature_user.presentation.profile.ProfileHomeFragment">
 
     <FrameLayout
         android:id="@+id/profile_fragment_container"

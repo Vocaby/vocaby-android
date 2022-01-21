@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.ui
+package com.vocaby.application.feature_user.presentation.datamanagement
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -15,8 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.MyEntryViewModel
-import com.vocaby.application.feature_user.presentation.viewmodel.DataTransferViewModel
-import com.vocaby.application.feature_user.presentation.viewmodel.UserViewModel
+import com.vocaby.application.feature_user.presentation.profile.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

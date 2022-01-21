@@ -1,4 +1,4 @@
-package com.vocaby.application.states
+package com.vocaby.application.feature_save.presentation.save
 
 sealed class SaveState {
     data class Fetched(val saved: Boolean): SaveState()

@@ -23,7 +23,7 @@ import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_save.presentation.save.SaveViewModel
-import com.vocaby.application.states.SaveState
+import com.vocaby.application.feature_save.presentation.save.SaveState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 

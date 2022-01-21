@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.ui
+package com.vocaby.application.feature_user.presentation.profile
 
 import android.os.Bundle
 import android.view.LayoutInflater

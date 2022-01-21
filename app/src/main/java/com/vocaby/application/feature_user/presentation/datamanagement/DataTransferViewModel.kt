@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.viewmodel
+package com.vocaby.application.feature_user.presentation.datamanagement
 
 import android.content.Intent
 import android.net.Uri

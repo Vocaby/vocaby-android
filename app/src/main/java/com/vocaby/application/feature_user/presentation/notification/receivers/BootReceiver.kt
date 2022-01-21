@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.receivers
+package com.vocaby.application.feature_user.presentation.notification.receivers
 
 import android.app.AlarmManager
 import android.app.PendingIntent

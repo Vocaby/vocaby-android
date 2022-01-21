@@ -4,9 +4,6 @@ import android.net.Uri
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_user.data.local.entity.UserSave
 import com.vocaby.application.feature_user.data.local.entity.VisitData
-import com.vocaby.application.feature_user.domain.model.FaqModel
-import com.vocaby.application.feature_user.domain.model.FeedbackModel
-import com.vocaby.application.states.ValidState
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
@@ -40,8 +37,4 @@ interface UserRepository {
     fun setConnectionSettings(enabled: Boolean)
     fun isDataShareEnabled(): Boolean
     fun setDataShareSettings(enabled: Boolean)
-
-    /** --------------------- SUPPORT -------------------- **/
-    suspend fun submitFeedback(feedbackModel: FeedbackModel): ValidState
-    fun getFaq(): List<FaqModel>
 }

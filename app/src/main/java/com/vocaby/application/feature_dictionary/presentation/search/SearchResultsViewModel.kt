@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.use_case.GetAllDictionaryEntryUseCase
 import com.vocaby.application.feature_dictionary.domain.use_case.GetSaveUseCase
-import com.vocaby.application.states.SaveState
+import com.vocaby.application.feature_save.presentation.save.SaveState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

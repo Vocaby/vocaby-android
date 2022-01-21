@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.ui
+package com.vocaby.application.feature_support.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,16 +7,14 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import com.vocaby.application.R
-import com.vocaby.application.core.util.GenericState
-import com.vocaby.application.core.util.LiveDataUtil.observeOnce
-import com.vocaby.application.feature_user.presentation.adapter.FaqAdapter
-import com.vocaby.application.feature_user.presentation.viewmodel.SupportViewModel
-import com.vocaby.application.states.UserInputState
+import com.vocaby.application.core.util.ResourceState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class SupportFragment : Fragment() {
@@ -69,61 +67,51 @@ class SupportFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        supportViewModel.faq.observeOnce(viewLifecycleOwner) { faq ->
-            faqAdapter.setList(faq)
-        }
-
-        supportViewModel.feedbackInput.observe(viewLifecycleOwner) { userInput ->
-            when(userInput) {
-                is UserInputState.EmptyInput -> {
-                    feedbackAlert.setText(R.string.feedback_input_alert_message)
-                }
-                is UserInputState.NoInput -> {
-                    feedbackAlert.setText(R.string.feedback_input_alert_type)
-                }
-                is UserInputState.InvalidInput -> {
-                    feedbackAlert.setText(R.string.feedback_input_alert_email)
-                }
-                is UserInputState.Valid -> {
-                    textInputLayout.isEnabled = false
-                    submitFeedbackButton.isEnabled = false
-                    autoCompleteTextView.isFocusable = false
-                    autoCompleteTextView.isFocusableInTouchMode = false
-                    feedbackMessage.isFocusable = false
-                    feedbackMessage.isFocusableInTouchMode = false
-                    feedbackEmail.isFocusable = false
-                    feedbackEmail.isFocusableInTouchMode = false
-                }
-                else -> {}
+        lifecycleScope.launchWhenStarted {
+            supportViewModel.faq.collectLatest { faq ->
+                faqAdapter.setList(faq)
             }
         }
 
-        supportViewModel.feedbackState.observe(viewLifecycleOwner) { feedbackState ->
-            when(feedbackState) {
-                is GenericState.InProgress -> {
-                    feedbackAlert.text = ""
-                    submitProgress.visibility = View.VISIBLE
+        lifecycleScope.launchWhenStarted {
+            supportViewModel.feedbackState.collectLatest { state ->
+                when (state) {
+                    is ResourceState.InProgress -> {
+                        feedbackAlert.text = ""
+                        submitProgress.visibility = View.VISIBLE
+                        enableFeedbackForm(false)
+                    }
+                    is ResourceState.Error -> {
+                        if (state.uiText.text != null) {
+                            feedbackAlert.text = state.uiText.text
+                        } else if (state.uiText.textResource != null) {
+                            feedbackAlert.setText(state.uiText.textResource)
+                        }
+
+                        enableFeedbackForm(true)
+                        submitProgress.visibility = View.GONE
+
+                    }
+                    is ResourceState.Success -> {
+                        submitProgress.visibility = View.GONE
+                        feedbackAlert.setText(R.string.feedback_input_alert_thankyou)
+                        feedbackAlert.setTextColor(requireActivity().applicationContext.getColor(R.color.colorPrimary))
+                    }
                 }
-                is GenericState.Success -> {
-                    submitProgress.visibility = View.GONE
-                    feedbackAlert.setText(R.string.feedback_input_alert_thankyou)
-                    feedbackAlert.setTextColor(requireActivity().applicationContext.getColor(R.color.colorPrimary))
-                }
-                is GenericState.Error -> {
-                    submitProgress.visibility = View.GONE
-                    feedbackAlert.text = feedbackState.exception.message
-                    textInputLayout.isEnabled = true
-                    submitFeedbackButton.isEnabled = true
-                    autoCompleteTextView.isFocusable = true
-                    autoCompleteTextView.isFocusableInTouchMode = true
-                    feedbackMessage.isFocusable = true
-                    feedbackMessage.isFocusableInTouchMode = true
-                    feedbackEmail.isFocusable = true
-                    feedbackEmail.isFocusableInTouchMode = true
-                }
+
             }
         }
+    }
+
+    private fun enableFeedbackForm(enabled: Boolean) {
+        textInputLayout.isEnabled = enabled
+        submitFeedbackButton.isEnabled = enabled
+        autoCompleteTextView.isFocusable = enabled
+        autoCompleteTextView.isFocusableInTouchMode = enabled
+        feedbackMessage.isFocusable = enabled
+        feedbackMessage.isFocusableInTouchMode = enabled
+        feedbackEmail.isFocusable = enabled
+        feedbackEmail.isFocusableInTouchMode = enabled
     }
 
     private fun setupRecyclerView() {

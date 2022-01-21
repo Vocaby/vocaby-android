@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.ui
+package com.vocaby.application.feature_user.presentation.profile
 
 import android.content.Context
 import android.graphics.Color
@@ -25,7 +25,10 @@ import com.google.android.material.button.MaterialButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_user.common.Constants
-import com.vocaby.application.feature_user.presentation.viewmodel.ProfileViewModel
+import com.vocaby.application.feature_user.presentation.dangerzone.DangerZoneFragment
+import com.vocaby.application.feature_user.presentation.datamanagement.DataManagementFragment
+import com.vocaby.application.feature_user.presentation.notification.NotificationFragment
+import com.vocaby.application.feature_support.presentation.SupportFragment
 import com.vocaby.application.feature_user.util.AxisValueFormatter
 import dagger.hilt.android.AndroidEntryPoint
 

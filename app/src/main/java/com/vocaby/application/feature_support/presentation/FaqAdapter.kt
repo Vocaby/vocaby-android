@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.adapter
+package com.vocaby.application.feature_support.presentation
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 
-import com.vocaby.application.feature_user.domain.model.FaqModel
+import com.vocaby.application.feature_support.domain.model.FaqModel
 import java.util.*
 
 class FaqAdapter: RecyclerView.Adapter<FaqAdapter.FaqViewHolder>() {
