@@ -16,8 +16,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.adapter.FragmentAdapter
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
-import com.vocaby.application.feature_user.presentation.profile.UserViewModel
-import com.vocaby.application.feature_user.presentation.notification.receivers.NotificationReceiver
+import com.vocaby.application.feature_user.presentation.profile.ProfileViewModel
+import com.vocaby.application.feature_user.presentation.setting.SettingViewModel
+import com.vocaby.application.feature_user.presentation.setting.receivers.NotificationReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import javax.inject.Named
@@ -35,14 +36,15 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: BottomNavigationView
 
     private val dictionaryViewModel: DictionaryViewModel by viewModels()
-    private val userViewModel: UserViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
+    private val settingViewModel: SettingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        userViewModel.setupUser()
+        profileViewModel.setupUser()
 
-        if (userViewModel.isDataShareEnabled()) Bugsnag.start(this)
+        if (settingViewModel.isDataShareEnabled()) Bugsnag.start(this)
         dictionaryViewModel.clearCache()
 
         setupNotification()

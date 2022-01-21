@@ -20,7 +20,7 @@
         <meta-data android:name="com.bugsnag.android.API_KEY"
             android:value="c50224dde34b12f79fe666d9b1b80910"/>
         <activity
-            android:name="com.vocaby.application.feature_user.presentation.datamanagement.DataTransferActivity"
+            android:name="com.vocaby.application.feature_datatransfer.presentation.DataTransferActivity"
             android:exported="false" />
         <activity
             android:name="com.vocaby.application.feature_dictionary_custom.presentation.ui.EntryGroupBuilderActivity"
@@ -60,10 +60,10 @@
                 android:resource="@xml/saves_appwidget_info" />
         </receiver>
         <receiver
-            android:name="com.vocaby.application.feature_user.presentation.notification.receivers.NotificationReceiver"
+            android:name="com.vocaby.application.feature_user.presentation.setting.receivers.NotificationReceiver"
             android:enabled="true" />
         <receiver
-            android:name="com.vocaby.application.feature_user.presentation.notification.receivers.BootReceiver"
+            android:name="com.vocaby.application.feature_user.presentation.setting.receivers.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

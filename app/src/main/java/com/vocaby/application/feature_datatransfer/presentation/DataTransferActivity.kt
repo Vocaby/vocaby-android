@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_user.presentation.datamanagement
+package com.vocaby.application.feature_datatransfer.presentation
 
 import android.app.Activity
 import android.content.res.ColorStateList
@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.vocaby.application.R
-import com.vocaby.application.feature_user.presentation.datamanagement.DataTransferViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

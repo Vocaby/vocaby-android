@@ -26,9 +26,9 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_user.common.Constants
 import com.vocaby.application.feature_user.presentation.dangerzone.DangerZoneFragment
-import com.vocaby.application.feature_user.presentation.datamanagement.DataManagementFragment
-import com.vocaby.application.feature_user.presentation.notification.NotificationFragment
+import com.vocaby.application.feature_datatransfer.presentation.DataTransferFragment
 import com.vocaby.application.feature_support.presentation.SupportFragment
+import com.vocaby.application.feature_user.presentation.setting.SettingFragment
 import com.vocaby.application.feature_user.util.AxisValueFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -187,12 +187,12 @@ class ProfileHomeFragment : Fragment() {
                     R.anim.exit_right_to_left,
                     R.anim.enter_right_to_left,
                     R.anim.exit_left_to_right
-                ).add(R.id.profile_fragment_container, NotificationFragment())
+                ).add(R.id.profile_fragment_container, SettingFragment())
                 .addToBackStack(null)
                 .commit()
         }
 
-        // DATA MANAGEMENT
+        // DATA TRANSFER
         val dataButton = view.findViewById<Button>(R.id.data_management_button)
         dataButton.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -201,7 +201,7 @@ class ProfileHomeFragment : Fragment() {
                     R.anim.exit_right_to_left,
                     R.anim.enter_right_to_left,
                     R.anim.exit_left_to_right
-                ).add(R.id.profile_fragment_container, DataManagementFragment())
+                ).add(R.id.profile_fragment_container, DataTransferFragment())
                 .addToBackStack(null)
                 .commit()
         }

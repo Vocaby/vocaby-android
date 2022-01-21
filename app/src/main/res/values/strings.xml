@@ -4,8 +4,6 @@
     <string name="nav_search">Dictionary</string>
     <string name="nav_saves">Saves</string>
     <string name="nav_profile">Profile</string>
-    <string name="save_button_unsaved">SAVE</string>
-    <string name="save_button_saved">SAVED</string>
     <string name="pref_notification_key">pref_notification</string>
     <string name="pref_notification_frequency_key">pref_notification_frequency</string>
     <string name="unsave_button_desc">unsave</string>
@@ -58,6 +56,7 @@
     <string name="empty_history">Empty history</string>
     <string name="hi_vocabler">Hi Vocabler!</string>
     <string name="nav_data_management">Data Management</string>
+    <string name="nav_setting">Settings</string>
     <string name="nav_support">Support</string>
     <string name="nav_danger_zone">Danger Zone</string>
     <string name="empty_custom_entry">Empty Custom Entry</string>
@@ -96,8 +95,6 @@
     <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be replaced.</string>
     <string name="background">background</string>
     <string name="history">YOUR SEARCH HISTORY</string>
-    <string name="wod_error_header">Oh no!</string>
-    <string name="wod_error_body">Something went terribly wrong when picking an entry :(</string>
     <string name="wod_our_pick">Vocaby\'s Pick</string>
     <string name="wod_random_pick">Random Pick</string>
     <string name="entry_header">Entry</string>
@@ -114,7 +111,6 @@
     <string name="entry_character_limit">/ 100</string>
     <string name="enter_a_definition">Enter a definition</string>
     <string name="enter_an_example_sentence">Enter an example sentence</string>
-    <string name="last_updated">Last Updated</string>
     <string name="help">Help</string>
     <string name="card_instructions">Card Instructions</string>
     <string name="touch_to_edit">touch to edit</string>
@@ -144,4 +140,9 @@
     <string name="connections_switch_body">When enabled, Vocaby will check and update entries that you search.</string>
     <string name="connections">Connections</string>
     <string name="search_custom_entry_hint">Filter entries…</string>
+    <string name="notification_toggle_header">Get Saves Notification</string>
+    <string name="notification_toggle_body">Get notified of the words that you saved for review</string>
+    <string name="notification_frequency_header">Notification Frequency</string>
+    <string name="notification_save_collection">Save Collection</string>
+    <string name="data_transfer">Data Transfer</string>
 </resources>

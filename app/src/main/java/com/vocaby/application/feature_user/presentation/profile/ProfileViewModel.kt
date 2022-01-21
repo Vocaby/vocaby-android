@@ -49,6 +49,12 @@ class ProfileViewModel @Inject constructor(
         colorsList.add(Color.parseColor("#D1E5D3"))
     }
 
+    fun setupUser() {
+        viewModelScope.launch {
+            repository.setupUser(1)
+        }
+    }
+
     fun updateChart() {
         viewModelScope.launch(Dispatchers.Default) {
             _values.postValue(GenericState.InProgress)
