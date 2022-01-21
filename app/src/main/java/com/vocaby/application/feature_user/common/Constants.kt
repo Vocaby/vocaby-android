@@ -10,4 +10,6 @@ object Constants {
     const val EXPORT_SAVE_TYPE = "saves"
     const val EXPORT_ENTRY_TYPE = "entries"
     const val PROFILE_CHART_LABEL_LENGTH = 11
+    const val MAX_BARS = 5
+    const val MIN_BARS = 2
 }

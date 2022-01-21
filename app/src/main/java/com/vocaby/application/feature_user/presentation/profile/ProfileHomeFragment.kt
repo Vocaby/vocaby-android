@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
@@ -31,6 +32,7 @@ import com.vocaby.application.feature_support.presentation.SupportFragment
 import com.vocaby.application.feature_user.presentation.setting.SettingFragment
 import com.vocaby.application.feature_user.util.AxisValueFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class ProfileHomeFragment : Fragment() {
@@ -93,77 +95,77 @@ class ProfileHomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launchWhenStarted {
+            profileViewModel.chartState.collectLatest { state ->
+                when (state) {
+                    is ChartState.Success -> {
+                        chartContainer.visibility = View.VISIBLE
+                        placeholder.visibility = View.GONE
 
-        profileViewModel.values.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is GenericState.Success -> {
-                    val (chartData, colorsList) = state.data
-                    chartContainer.visibility = View.VISIBLE
-                    placeholder.visibility = View.GONE
+                        if (state.chartData.isUserData) {
+                            indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                            chartAlert.text = getString(R.string.chart_placeholder_alert)
+                            chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                        } else {
+                            indicator.background.setTint(ContextCompat.getColor(ctx, R.color.white))
+                            chartAlert.text = ""
+                        }
 
-                    if (chartData.isUserData) {
-                        indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                        chartAlert.text = getString(R.string.chart_placeholder_alert)
-                        chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                    } else {
-                        indicator.background.setTint(ContextCompat.getColor(ctx, R.color.white))
-                        chartAlert.text = ""
-                    }
-
-                    val dataSet: BarDataSet = BarDataSet(chartData.entries, "").apply {
-                        setDrawValues(true)
-                        valueTextColor = ContextCompat.getColor(ctx, R.color.colorPrimaryAccent)
-                        colors = colorsList
-                        valueTextSize = 10f
-                        valueTypeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_semibold)
-                        valueFormatter = object: ValueFormatter() {
-                            override fun getFormattedValue(value: Float): String {
-                                return String.format("%.0f",value)
+                        val dataSet: BarDataSet = BarDataSet(state.chartData.entries, "").apply {
+                            setDrawValues(true)
+                            valueTextColor = ContextCompat.getColor(ctx, R.color.colorPrimaryAccent)
+                            colors = state.colors
+                            valueTextSize = 10f
+                            valueTypeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_semibold)
+                            valueFormatter = object: ValueFormatter() {
+                                override fun getFormattedValue(value: Float): String {
+                                    return String.format("%.0f",value)
+                                }
                             }
                         }
+
+                        val data = BarData(dataSet).apply {
+                            barWidth = 0.85f
+                        }
+
+                        barChart.apply {
+                            animateXY(600, 1000, Easing.EaseInOutQuad)
+                            xAxis.labelCount = state.chartData.values.size
+                        }
+
+                        barChart.data = data
+                        barChart.xAxis.valueFormatter = AxisValueFormatter(state.chartData.values, Constants.PROFILE_CHART_LABEL_LENGTH)
+                        barChart.invalidate()
+
+                        favoriteEntry.text = state.favourite
                     }
 
-                    val data = BarData(dataSet).apply {
-                        barWidth = 0.85f
+                    is ChartState.InProgress -> {
+                        indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorPrimary))
+                        chartContainer.visibility = View.GONE
+                        placeholder.visibility = View.VISIBLE
+                        chartAlert.text = getString(R.string.chart_placeholder_fetching)
+                        chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimary))
                     }
 
-                    barChart.apply {
-                        animateXY(600, 1000, Easing.EaseInOutQuad)
-                        xAxis.labelCount = chartData.values.size
+                    is ChartState.Error -> {
+                        indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
+                        chartContainer.visibility = View.GONE
+                        placeholder.visibility = View.VISIBLE
+                        chartAlert.text = getString(R.string.chart_placeholder_error)
+                        chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
                     }
-
-                    barChart.data = data
-                    barChart.xAxis.valueFormatter = AxisValueFormatter(chartData.values, Constants.PROFILE_CHART_LABEL_LENGTH)
-                    barChart.invalidate()
-                }
-
-                is GenericState.InProgress -> {
-                    indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorPrimary))
-                    chartContainer.visibility = View.GONE
-                    placeholder.visibility = View.VISIBLE
-                    chartAlert.text = getString(R.string.chart_placeholder_fetching)
-                    chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimary))
-                }
-
-                else -> {
-                    indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                    chartContainer.visibility = View.GONE
-                    placeholder.visibility = View.VISIBLE
-                    chartAlert.text = getString(R.string.chart_placeholder_error)
-                    chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
                 }
             }
         }
 
-        profileViewModel.chartMode.observe(viewLifecycleOwner) { displayAll ->
-            chartToggleButton.isChecked = displayAll
-            chartToggleButton.text = if (displayAll)
-                getString(R.string.chart_toggle_all) else getString(R.string.chart_toggle_monthly)
-            profileViewModel.updateChart()
-        }
-
-        profileViewModel.favoriteEntry.observe(viewLifecycleOwner) { entry ->
-            favoriteEntry.text = entry
+        lifecycleScope.launchWhenStarted {
+            profileViewModel.chartMode.collectLatest { displayAll ->
+                chartToggleButton.isChecked = displayAll
+                chartToggleButton.text = if (displayAll)
+                    getString(R.string.chart_toggle_all) else getString(R.string.chart_toggle_monthly)
+                profileViewModel.updateChart()
+            }
         }
 
         chartContainer.setOnClickListener {
