@@ -47,8 +47,6 @@ class SearchResultsViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.Default) {
-            _entryData.value = ResourceState.InProgress
-
             val searchState = getAllDictionaryEntryUseCase(entry)
             if (searchState.removeSave) _saveState.emit(SaveState.Remove)
             else _saveState.emit(SaveState.Show)

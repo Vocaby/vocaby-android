@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".feature_save.presentation.SaveFragment">
+    tools:context=".feature_save.presentation.save.SaveFragment">
     <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/save_collection_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -1,6 +1,8 @@
 package com.vocaby.application.feature_save.data.local.entity
 
 import androidx.room.*
+import com.vocaby.application.core.util.Formatter
+import java.util.*
 
 @Entity(
     tableName = "save_collection_item",
@@ -25,4 +27,6 @@ data class SaveCollectionItem(
     val saveId: Int,
     @ColumnInfo(name = "collection_id")
     val collectionId: Int,
+    @ColumnInfo(name="last_added")
+    val lastAdded: String = Formatter.formatDateToString(Date().time)
 )

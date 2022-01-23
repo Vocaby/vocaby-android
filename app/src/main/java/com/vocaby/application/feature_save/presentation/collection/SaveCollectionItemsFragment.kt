@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_save.presentation.save
+package com.vocaby.application.feature_save.presentation.collection
 
 import android.content.Context
 import android.os.Bundle
@@ -15,23 +15,29 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
+import com.vocaby.application.feature_save.presentation.save.SaveListAdapter
+import com.vocaby.application.feature_save.presentation.save.SaveViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-class CollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
+class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var ctx: Context
     private lateinit var savesAdapter: SaveListAdapter
-    private lateinit var savesCount: TextView
+    private lateinit var collectionHeader: TextView
+    private lateinit var collectionSaveCounter: TextView
     private lateinit var emptyCard: LinearLayout
     private val saveViewModel: SaveViewModel by viewModels()
 
     companion object {
         const val COLLECTION_ALL_PARAM = "showAll"
+        const val COLLECTION_NAME_PARAM = "COLLECTION"
+
         @JvmStatic
-        fun newInstance(showAll: Boolean): CollectionItemsFragment {
-            val fragment = CollectionItemsFragment()
+        fun newInstance(name: String, showAll: Boolean): SaveCollectionItemsFragment {
+            val fragment = SaveCollectionItemsFragment()
             val args = Bundle()
+            args.putString(COLLECTION_NAME_PARAM, name)
             args.putBoolean(COLLECTION_ALL_PARAM, showAll)
             fragment.arguments = args
             return fragment
@@ -49,6 +55,9 @@ class CollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_save_collection_items, container, false)
         emptyCard = view.findViewById(R.id.empty_card)
+        collectionHeader = view.findViewById(R.id.collection_header)
+        collectionSaveCounter = view.findViewById(R.id.save_counter)
+        collectionHeader.text = arguments?.getString(COLLECTION_NAME_PARAM)
 
         val closeButton: Button = view.findViewById(R.id.back_button)
         closeButton.setOnClickListener { requireActivity().onBackPressed() }

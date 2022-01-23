@@ -6,5 +6,6 @@
     <dimen name="custom_entry_card_height">60dp</dimen>
     <dimen name="card_content_margin">12dp</dimen>
     <dimen name="card_elevation">6dp</dimen>
+    <dimen name="fob_spacing">60dp</dimen>
     <dimen name="header_gap">12dp</dimen>
 </resources>

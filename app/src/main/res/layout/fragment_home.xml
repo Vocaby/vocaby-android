@@ -29,7 +29,7 @@
             app:drawableStartCompat="@drawable/ic_vocaby_logo_sm" />
     </FrameLayout>
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/dictionary_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"

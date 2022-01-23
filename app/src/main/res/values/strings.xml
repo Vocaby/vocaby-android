@@ -143,4 +143,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="nav_save_collections">Save Collections</string>
     <string name="collection_name_header">Collection Name</string>
+    <string name="saved">Saved</string>
+    <string name="collection_default_count">0 Saved</string>
+    <string name="add_save_collection">NEW COLLECTION</string>
+    <string name="empty_collection">Empty Collection</string>
+    <string name="add_a_save_collection">Add a save collection</string>
+    <string name="new_collection_hint">Enter your collection name...</string>
+    <string name="collection_character_limit">/ 25</string>
 </resources>

@@ -25,6 +25,9 @@ interface SaveDao {
     @Query("SELECT d.word FROM saves s INNER JOIN dictionary_word d ON d.id = s.entry_id AND s.user_id = :userId UNION SELECT c.entry FROM saves s INNER JOIN custom_user_entry c ON c.custom_entry_id = s.custom_entry_id AND s.user_id = :userId")
     fun getSavesFlow(userId: Int): Flow<List<String>>
 
+    @Query("SELECT * FROM save_collection s INNER JOIN save_collection_item si ON s.user_id = :userId AND s.collection_name = :collectionName INNER JOIN saves sa ON si.save_id = sa.save_id LEFT JOIN dictionary_word d ON sa.entry_id = d.id LEFT JOIN custom_user_entry c ON sa.custom_entry_id = c.custom_entry_id")
+    fun getCollectionSavesFlow(userId: Int, collectionName: String): Flow<List<String>>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSave(userSave: UserSave): Long
 

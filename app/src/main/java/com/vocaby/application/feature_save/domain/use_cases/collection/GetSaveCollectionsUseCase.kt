@@ -12,6 +12,8 @@ class GetSaveCollectionsUseCase(
     suspend operator fun invoke(): List<SaveCollectionModel> {
         val userId = userRepository.getUser()
         val collections = saveRepository.getSaveCollections(userId).toMutableList()
+        collections.sortBy { it.lastUpdated }
+
         val allSavesCount = saveRepository.getAllSavesCount(userId)
         val calendar = Calendar.getInstance().apply {
             set(Calendar.YEAR, 2000)

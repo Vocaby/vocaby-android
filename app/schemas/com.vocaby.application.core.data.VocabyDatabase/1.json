@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a6e223dd208b2604bb7322908a2dbc4b",
+    "identityHash": "4656a20c62de044719beb42a02635fab",
     "entities": [
       {
         "tableName": "vocaby_user",
@@ -54,7 +54,7 @@
       },
       {
         "tableName": "saves",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `entry_id` INTEGER, `custom_entry_id` INTEGER, `save_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `vocaby_user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`entry_id`) REFERENCES `dictionary_word`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`custom_entry_id`) REFERENCES `custom_user_entry`(`custom_entry_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `entry_id` INTEGER, `custom_entry_id` INTEGER, `save_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `last_saved` TEXT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `vocaby_user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`entry_id`) REFERENCES `dictionary_word`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`custom_entry_id`) REFERENCES `custom_user_entry`(`custom_entry_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "userId",
@@ -79,6 +79,12 @@
             "columnName": "save_id",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "lastSaved",
+            "columnName": "last_saved",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -89,15 +95,31 @@
         },
         "indices": [
           {
-            "name": "index_saves_user_id_entry_id_custom_entry_id",
-            "unique": true,
+            "name": "index_saves_user_id",
+            "unique": false,
             "columnNames": [
-              "user_id",
-              "entry_id",
+              "user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_saves_user_id` ON `${TABLE_NAME}` (`user_id`)"
+          },
+          {
+            "name": "index_saves_entry_id",
+            "unique": false,
+            "columnNames": [
+              "entry_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_saves_entry_id` ON `${TABLE_NAME}` (`entry_id`)"
+          },
+          {
+            "name": "index_saves_custom_entry_id",
+            "unique": false,
+            "columnNames": [
               "custom_entry_id"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_saves_user_id_entry_id_custom_entry_id` ON `${TABLE_NAME}` (`user_id`, `entry_id`, `custom_entry_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_saves_custom_entry_id` ON `${TABLE_NAME}` (`custom_entry_id`)"
           }
         ],
         "foreignKeys": [
@@ -199,7 +221,7 @@
       },
       {
         "tableName": "save_collection_item",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`collection_item_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `save_id` INTEGER NOT NULL, `collection_id` INTEGER NOT NULL, FOREIGN KEY(`save_id`) REFERENCES `saves`(`save_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`collection_id`) REFERENCES `save_collection`(`collection_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`collection_item_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `save_id` INTEGER NOT NULL, `collection_id` INTEGER NOT NULL, `last_added` TEXT NOT NULL, FOREIGN KEY(`save_id`) REFERENCES `saves`(`save_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`collection_id`) REFERENCES `save_collection`(`collection_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -217,6 +239,12 @@
             "fieldPath": "collectionId",
             "columnName": "collection_id",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastAdded",
+            "columnName": "last_added",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -749,7 +777,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a6e223dd208b2604bb7322908a2dbc4b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4656a20c62de044719beb42a02635fab')"
     ]
   }
 }

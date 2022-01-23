@@ -34,7 +34,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var entryCountView: TextView
     private lateinit var customEntryAdapter: CustomEntryAdapter
     private lateinit var emptyCard: LinearLayout
-    private lateinit var entryEditDialog: BottomSheetDialog
+    private lateinit var entryCreateDialog: BottomSheetDialog
     private lateinit var entryEdit: EditText
     private lateinit var entryAlert: TextView
     private lateinit var searchView: SearchView
@@ -139,7 +139,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                 is UserInputState.Valid -> {
                     entryEdit.text.clear()
                     entryAlert.visibility = View.INVISIBLE
-                    entryEditDialog.dismiss()
+                    entryCreateDialog.dismiss()
 
                     var startEntryBuilderIntent =
                         Intent(requireActivity(), EntryBuilderActivity::class.java)
@@ -169,17 +169,17 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     private fun setupButtons(view: View) {
         val addButton = view.findViewById<Button>(R.id.add_entry_button)
-        addButton.setOnClickListener { entryEditDialog.show() }
+        addButton.setOnClickListener { entryCreateDialog.show() }
     }
 
     private fun setupEntryBuilderDialog() {
-        entryEditDialog =
+        entryCreateDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        entryEditDialog.setContentView(R.layout.custom_entry_header_dialog)
-        entryEdit = entryEditDialog.findViewById(R.id.entry_edit)!!
-        entryAlert = entryEditDialog.findViewById(R.id.entry_header_alert)!!
+        entryCreateDialog.setContentView(R.layout.custom_entry_create_dialog)
+        entryEdit = entryCreateDialog.findViewById(R.id.entry_edit)!!
+        entryAlert = entryCreateDialog.findViewById(R.id.entry_header_alert)!!
 
-        val createButton = entryEditDialog.findViewById<Button>(R.id.dialog_entry_create_button)
+        val createButton = entryCreateDialog.findViewById<Button>(R.id.dialog_entry_create_button)
 
         createButton?.setText(R.string.create)
         createButton?.setOnClickListener {
@@ -188,18 +188,19 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         }
 
         // Clear content on show
-        entryEditDialog.setOnShowListener {
+        entryCreateDialog.setOnShowListener {
             entryEdit.clearFocus()
             entryEdit.text?.clear()
             entryAlert.visibility = View.INVISIBLE
         }
 
-        val counter = entryEditDialog.findViewById<TextView>(R.id.character_counter)
+        val counter = entryCreateDialog.findViewById<TextView>(R.id.character_counter)!!
         val textWatcher: TextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                counter!!.text = s.length.toString()
+                counter.text = count.toString()
             }
 
             override fun afterTextChanged(s: Editable) {}

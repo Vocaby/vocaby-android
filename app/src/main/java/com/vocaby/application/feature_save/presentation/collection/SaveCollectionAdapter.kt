@@ -74,12 +74,12 @@ class SaveCollectionAdapter(private val interaction: Interaction) :
             collectionCounter.text = countText
 
             cardView.setOnClickListener {
-                interaction.onItemTouch(adapterPosition == 0)
+                interaction.onItemTouch(collectionModel.name, adapterPosition == 0)
             }
         }
     }
 
     interface Interaction {
-        fun onItemTouch(allSaves: Boolean)
+        fun onItemTouch(name: String, allSaves: Boolean)
     }
 }

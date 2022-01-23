@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".feature_profile.presentation.profile.ProfileHomeFragment">
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/profile_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

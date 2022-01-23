@@ -5,7 +5,7 @@ import com.vocaby.application.feature_save.domain.repository.SaveRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetUserSavesUseCase @Inject constructor(
+class GetCollectionSavesUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val saveRepository: SaveRepository
 ) {
@@ -13,5 +13,4 @@ class GetUserSavesUseCase @Inject constructor(
         val userId = userRepository.getUser()
         return saveRepository.getAllSavedWordsFlow(userId)
     }
-
 }
