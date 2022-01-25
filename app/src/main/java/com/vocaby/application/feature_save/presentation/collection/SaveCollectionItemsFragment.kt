@@ -10,15 +10,17 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.feature_save.presentation.save.SaveListAdapter
-import com.vocaby.application.feature_save.presentation.save.SaveViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
@@ -27,18 +29,21 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var collectionHeader: TextView
     private lateinit var collectionSaveCounter: TextView
     private lateinit var emptyCard: LinearLayout
-    private val saveViewModel: SaveViewModel by viewModels()
+    private val collectionItemsViewModel: SaveCollectionItemsViewModel by viewModels()
 
     companion object {
         const val COLLECTION_ALL_PARAM = "showAll"
         const val COLLECTION_NAME_PARAM = "COLLECTION"
+        const val COLLECTION_ID_PARAM = "COLLECTION_ID"
+
 
         @JvmStatic
-        fun newInstance(name: String, showAll: Boolean): SaveCollectionItemsFragment {
+        fun newInstance(name: String, allSaves: Boolean, id: Int): SaveCollectionItemsFragment {
             val fragment = SaveCollectionItemsFragment()
             val args = Bundle()
             args.putString(COLLECTION_NAME_PARAM, name)
-            args.putBoolean(COLLECTION_ALL_PARAM, showAll)
+            args.putBoolean(COLLECTION_ALL_PARAM, allSaves)
+            args.putInt(COLLECTION_ID_PARAM, id)
             fragment.arguments = args
             return fragment
         }
@@ -68,20 +73,24 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(view)
-        lifecycleScope.launchWhenStarted {
-            saveViewModel.savedWords.collectLatest { saves ->
-                if (saves.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
-                else emptyCard.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                collectionItemsViewModel.savedWords.collectLatest { saves ->
+                    if (saves.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
+                    else emptyCard.visibility = View.VISIBLE
 
-                savesAdapter.submitList(saves)
+                    savesAdapter.submitList(saves)
+                }
             }
         }
 
-//        lifecycleScope.launchWhenStarted {
-//            saveViewModel.savesCount.collectLatest { count ->
-//                savesCount.text = count.toString()
-//            }
-//        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                collectionItemsViewModel.saveCount.collectLatest { count ->
+                    collectionSaveCounter.text = "$count Saved"
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView(view: View) {
@@ -92,7 +101,7 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     }
 
     override fun onItemDelete(entry: String) {
-        saveViewModel.removeSaveItem(entry)
+        collectionItemsViewModel.removeSaveItem(entry)
     }
 
     override fun onItemTouch(entry: String) {

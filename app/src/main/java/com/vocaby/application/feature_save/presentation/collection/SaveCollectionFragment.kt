@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -16,7 +17,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.states.UserInputState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -30,6 +30,9 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private lateinit var addCollectionButton: Button
     private lateinit var collectionAlert: TextView
     private lateinit var collectionCreateButton: Button
+    private lateinit var allSaveCard: CardView
+    private lateinit var allSaveHeader: TextView
+    private lateinit var allSaveCount: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +41,9 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
         val view = inflater.inflate(R.layout.fragment_save_collection, container, false)
         recyclerView = view.findViewById(R.id.save_collection_container)
         addCollectionButton = view.findViewById(R.id.add_collection_button)
+        allSaveCard = view.findViewById(R.id.all_saves)
+        allSaveHeader = view.findViewById(R.id.collection_header)
+        allSaveCount = view.findViewById(R.id.collection_counter)
 
         setupButtons()
         setupRecyclerView()
@@ -47,6 +53,12 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launchWhenStarted {
+            saveCollectionViewModel.allSaveCollectionState.collectLatest {
+                allSaveHeader.text = it.name
+                allSaveCount.text = "${it.count} Saved Entries"
+            }
+        }
 
         lifecycleScope.launchWhenStarted {
             saveCollectionViewModel.saveCollectionState.collectLatest {
@@ -83,11 +95,24 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
 
     private fun setupButtons() {
         addCollectionButton.setOnClickListener { collectionCreateDialog.show() }
+
+        allSaveCard.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    R.anim.enter_bottom_to_top,
+                    R.anim.exit_top_to_bottom,
+                    R.anim.enter_bottom_to_top,
+                    R.anim.exit_top_to_bottom
+                ).add(R.id.save_collection_fragment_container, SaveCollectionItemsFragment.newInstance("All Saves", true, id))
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = GridLayoutManager(requireActivity().applicationContext, 2)
-        saveCollectionAdapter = SaveCollectionAdapter(requireContext().applicationContext, this)
+        recyclerView.setHasFixedSize(true)
+        saveCollectionAdapter = SaveCollectionAdapter(this)
         recyclerView.adapter = saveCollectionAdapter
     }
 
@@ -125,14 +150,14 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
         collectionEdit.addTextChangedListener(textWatcher)
     }
 
-    override fun onItemTouch(name: String, allSaves: Boolean) {
+    override fun onItemTouch(name: String, id: Int) {
         parentFragmentManager.beginTransaction()
             .setCustomAnimations(
                 R.anim.enter_bottom_to_top,
                 R.anim.exit_top_to_bottom,
                 R.anim.enter_bottom_to_top,
                 R.anim.exit_top_to_bottom
-            ).add(R.id.save_collection_fragment_container, SaveCollectionItemsFragment.newInstance(name, allSaves))
+            ).add(R.id.save_collection_fragment_container, SaveCollectionItemsFragment.newInstance(name, false, id))
             .addToBackStack(null)
             .commit()
     }

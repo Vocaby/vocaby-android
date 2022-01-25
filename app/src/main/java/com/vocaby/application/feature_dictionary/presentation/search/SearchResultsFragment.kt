@@ -6,10 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,16 +14,20 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.vocaby.application.R
 import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.core.util.config
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
+import com.vocaby.application.feature_save.presentation.collection.SaveCollectionViewModel
 import com.vocaby.application.feature_save.presentation.save.SaveState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -41,8 +42,14 @@ class SearchResultsFragment : Fragment() {
     private lateinit var dictionarySelector: RadioGroup
     private lateinit var saveButton: Button
     private lateinit var searchProgress: ProgressBar
+    private lateinit var saveToCollectionDialog: BottomSheetDialog
+    private lateinit var collectionAlert: TextView
+    private lateinit var saveCollectionButton: Button
+    private lateinit var collectionAdapter: CollectionAdapter
+
     private val searchResultsViewModel: SearchResultsViewModel by viewModels()
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
+    private val collectionViewModel: SaveCollectionViewModel by activityViewModels()
 
     companion object {
         const val ENTRY = "PASSED_ENTRY_KEY"
@@ -85,6 +92,8 @@ class SearchResultsFragment : Fragment() {
             searchResultsViewModel.resetSaveState()
         }
 
+        setupCollectionCreateDialog()
+
         return view
     }
 
@@ -97,6 +106,8 @@ class SearchResultsFragment : Fragment() {
                 searchResultsViewModel.uiEvent.collect { event ->
                     when(event) {
                         is SearchUiEvent.ShowSnackBar -> {
+                            if (saveToCollectionDialog.isShowing) saveToCollectionDialog.dismiss()
+
                             val snackbar = Snackbar.make(
                                 contextView,
                                 event.message,
@@ -104,11 +115,14 @@ class SearchResultsFragment : Fragment() {
                             )
 
                             if (event.showAction) snackbar.setAction(R.string.snackbar_collection_action) {
-
+                                saveToCollectionDialog.show()
                             }
 
-                            snackbar.config(requireContext(), R.drawable.snackbar_background)
+                            snackbar.config(ctx, R.drawable.snackbar_background)
                             snackbar.show()
+                        }
+                        is SearchUiEvent.ShowCollectionDialog -> {
+                            saveToCollectionDialog.show()
                         }
                         else -> {}
                     }
@@ -151,6 +165,32 @@ class SearchResultsFragment : Fragment() {
                     }
 
                     dictionarySelector.check(selectorState.displayId)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                searchResultsViewModel.dictionarySelectorState.collectLatest { selectorState ->
+                    val buttonToHide = dictionarySelector.findViewById<RadioButton>(selectorState.hideId)
+                    val buttonToShow = dictionarySelector.findViewById<RadioButton>(selectorState.displayId)
+                    if (selectorState.displayAll) {
+                        buttonToHide.visibility = View.VISIBLE
+                        buttonToShow.visibility = View.VISIBLE
+                    } else {
+                        buttonToHide.visibility = View.GONE
+                        buttonToShow.visibility = View.VISIBLE
+                    }
+
+                    dictionarySelector.check(selectorState.displayId)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                searchResultsViewModel.saveCollections.collectLatest { collections ->
+                    collectionAdapter.setList(collections)
                 }
             }
         }
@@ -216,6 +256,33 @@ class SearchResultsFragment : Fragment() {
                     viewPager.currentItem = 0
                 }
             }
+        }
+    }
+
+    private fun setupCollectionCreateDialog() {
+        saveToCollectionDialog =
+            BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        saveToCollectionDialog.setContentView(R.layout.add_to_collection_dialog)
+        collectionAlert = saveToCollectionDialog.findViewById(R.id.collection_header_alert)!!
+        saveCollectionButton = saveToCollectionDialog.findViewById(R.id.save_button)!!
+
+        val builderRecyclerView = saveToCollectionDialog.findViewById<RecyclerView>(R.id.collection_container)!!
+        builderRecyclerView.setHasFixedSize(true)
+        builderRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext().applicationContext, LinearLayoutManager.HORIZONTAL, false)
+        collectionAdapter = CollectionAdapter()
+        builderRecyclerView.adapter = collectionAdapter
+
+        saveCollectionButton.setOnClickListener {
+            saveCollectionButton.isEnabled = false
+            searchResultsViewModel.addEntryToCollections()
+        }
+
+        // Clear content on show
+        saveToCollectionDialog.setOnShowListener {
+            searchResultsViewModel.updateCollections()
+            collectionAlert.visibility = View.INVISIBLE
+            saveCollectionButton.isEnabled = true
         }
     }
 

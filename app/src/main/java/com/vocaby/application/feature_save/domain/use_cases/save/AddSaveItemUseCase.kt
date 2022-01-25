@@ -9,13 +9,13 @@ class AddSaveItemUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val saveRepository: SaveRepository
 ) {
-    suspend operator fun invoke(entry: String) {
+    suspend operator fun invoke(entry: String): Int {
         val userId = userRepository.getUser()
         val userSave = UserSave(
             userId,
             entry
         )
 
-        saveRepository.addSaveItem(userSave)
+        return saveRepository.addSaveItem(userSave).toInt()
     }
 }

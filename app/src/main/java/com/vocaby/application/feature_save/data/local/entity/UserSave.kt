@@ -2,8 +2,6 @@ package com.vocaby.application.feature_save.data.local.entity
 
 import androidx.room.*
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.feature_dictionary.data.local.entity.Word
-import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
 import com.vocaby.application.feature_profile.data.local.entity.User
 import java.util.*
 

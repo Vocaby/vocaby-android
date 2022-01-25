@@ -2,9 +2,9 @@ package com.vocaby.application.feature_save.domain.model
 
 import java.util.*
 
-data class SaveCollectionModel(
-    val id: Int,
+data class AddCollectionModel(
+    val collectionId: Int,
     val name: String,
     val lastUpdated: Date,
-    val count: Int
+    var saved: Boolean = false
 )

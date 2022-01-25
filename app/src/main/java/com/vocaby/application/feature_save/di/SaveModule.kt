@@ -4,9 +4,7 @@ import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import com.vocaby.application.feature_save.data.SaveRepositoryImpl
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
-import com.vocaby.application.feature_save.domain.use_cases.collection.AddSaveCollectionUseCase
-import com.vocaby.application.feature_save.domain.use_cases.collection.GetSaveCollectionsUseCase
-import com.vocaby.application.feature_save.domain.use_cases.collection.SaveCollectionUseCases
+import com.vocaby.application.feature_save.domain.use_cases.collection.*
 import com.vocaby.application.feature_save.domain.use_cases.save.ClearUserSavesUseCase
 import com.vocaby.application.feature_save.domain.use_cases.save.GetUserSavesUseCase
 import com.vocaby.application.feature_save.domain.use_cases.save.RemoveSaveItemUseCase
@@ -36,7 +34,9 @@ class SaveModule {
     ): SaveUseCases = SaveUseCases(
         GetUserSavesUseCase(userRepository, saveRepository),
         RemoveSaveItemUseCase(userRepository,saveRepository),
-        ClearUserSavesUseCase(userRepository, saveRepository)
+        ClearUserSavesUseCase(userRepository, saveRepository),
+        GetSaveCollectionItemsUseCase(userRepository, saveRepository),
+        RemoveCollectionItemUseCase(userRepository, saveRepository)
     )
 
     @Provides

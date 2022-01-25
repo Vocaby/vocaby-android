@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_background"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/nav_header"
+        android:padding="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:text="@string/save_to_your_collections"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/box_top_stroke_white"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:orientation="horizontal">
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:id="@+id/entry_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/dark_gray"
+                android:labelFor="@+id/definition_edit"
+                android:text="@string/save_collections"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/collection_header_alert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:text="@string/type_header_alert"
+                android:textColor="@color/colorHeadline"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/collection_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/container_side_margin"
+            android:paddingEnd="@dimen/container_side_margin" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/save_button"
+            style="@style/Theme.VocabyAndroid.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/container_side_margin"
+            android:layout_marginBottom="@dimen/container_side_margin"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:text="@string/nav_save" />
+    </LinearLayout>
+</LinearLayout>

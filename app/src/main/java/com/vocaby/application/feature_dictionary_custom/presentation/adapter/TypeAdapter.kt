@@ -58,6 +58,7 @@ class TypeAdapter(private val itemInteractionListener: ItemInteractionListener) 
             itemInteractionListener.onTypeClicked(types[lastCheckedPosition])
             notifyDataSetChanged()
         }
+
         holder.cardView.isSelected = position == lastCheckedPosition
     }
 

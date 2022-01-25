@@ -1,6 +1,9 @@
 package com.vocaby.application.feature_save.data.local.entity
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.vocaby.application.core.util.Formatter
 import java.util.*
 
@@ -19,13 +22,13 @@ import java.util.*
     )],
 )
 data class SaveCollectionItem(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "collection_item_id", index = true)
-    val id: Int,
     @ColumnInfo(name = "save_id", index = true)
     val saveId: Int,
     @ColumnInfo(name = "collection_id", index = true)
     val collectionId: Int,
     @ColumnInfo(name="last_added")
-    val lastAdded: String = Formatter.formatDateToString(Date().time)
+    val lastAdded: String = Formatter.formatDateToString(Date().time),
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "collection_item_id", index = true)
+    val id: Int = 0,
 )

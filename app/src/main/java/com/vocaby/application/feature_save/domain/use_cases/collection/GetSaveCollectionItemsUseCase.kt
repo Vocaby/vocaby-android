@@ -1,15 +1,16 @@
-package com.vocaby.application.feature_save.domain.use_cases.save
+package com.vocaby.application.feature_save.domain.use_cases.collection
 
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class RemoveSaveItemUseCase @Inject constructor(
+class GetSaveCollectionItemsUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val saveRepository: SaveRepository
 ) {
-    suspend operator fun invoke(entry: String) {
+    suspend operator fun invoke(collectionName: String): Flow<List<String>> {
         val userId = userRepository.getUser()
-        saveRepository.removeSaveItem(userId, entry)
+        return saveRepository.getCollectionItems(userId, collectionName)
     }
 }

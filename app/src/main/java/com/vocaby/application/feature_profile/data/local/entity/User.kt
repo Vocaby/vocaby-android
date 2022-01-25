@@ -1,6 +1,9 @@
 package com.vocaby.application.feature_profile.data.local.entity
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "vocaby_user"

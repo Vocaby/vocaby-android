@@ -1,7 +1,5 @@
 package com.vocaby.application.feature_save.presentation.collection
 
-import android.content.Context
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +13,6 @@ import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 
 class SaveCollectionAdapter(
-    private val context: Context,
     private val interaction: Interaction
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val diffCallback = object : DiffUtil.ItemCallback<SaveCollectionModel>() {
@@ -23,14 +20,14 @@ class SaveCollectionAdapter(
             oldItem: SaveCollectionModel,
             newItem: SaveCollectionModel
         ): Boolean {
-            return oldItem.name == newItem.name && oldItem.count == newItem.count
+            return oldItem == newItem
         }
 
         override fun areContentsTheSame(
             oldItem: SaveCollectionModel,
             newItem: SaveCollectionModel
         ): Boolean {
-            return oldItem.name == newItem.name && oldItem.count == newItem.count
+            return oldItem == newItem
         }
     }
 
@@ -51,13 +48,6 @@ class SaveCollectionAdapter(
         when (holder) {
             is SaveCollectionAdapterViewHolder -> {
                 holder.bind(differ.currentList[position])
-
-                if (position % 2 ==0) {
-                    val params = holder.cardView.layoutParams as ViewGroup.MarginLayoutParams
-                    params.rightMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, context.resources.displayMetrics).toInt()
-                    params.bottomMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, context.resources.displayMetrics).toInt()
-                    holder.cardView.layoutParams = params
-                }
             }
         }
     }
@@ -68,6 +58,7 @@ class SaveCollectionAdapter(
 
     fun submitList(list: List<SaveCollectionModel>) {
         differ.submitList(list)
+        notifyDataSetChanged()
     }
 
     class SaveCollectionAdapterViewHolder
@@ -85,12 +76,12 @@ class SaveCollectionAdapter(
             collectionCounter.text = countText
 
             cardView.setOnClickListener {
-                interaction.onItemTouch(collectionModel.name, adapterPosition == 0)
+                interaction.onItemTouch(collectionModel.name, collectionModel.id)
             }
         }
     }
 
     interface Interaction {
-        fun onItemTouch(name: String, allSaves: Boolean)
+        fun onItemTouch(name: String, id: Int)
     }
 }

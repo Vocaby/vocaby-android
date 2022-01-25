@@ -18,7 +18,7 @@ class SaveFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        saveCollectionViewModel.updateSaveCollections()
+        saveCollectionViewModel.updateAllSavesCollection()
         onBackPressedCallback.isEnabled = true
     }
 
