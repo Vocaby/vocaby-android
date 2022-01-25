@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
+import com.vocaby.application.core.util.Logger
+import com.vocaby.application.states.UserInputState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -26,6 +28,8 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private lateinit var saveCollectionAdapter: SaveCollectionAdapter
     private lateinit var collectionCreateDialog: BottomSheetDialog
     private lateinit var addCollectionButton: Button
+    private lateinit var collectionAlert: TextView
+    private lateinit var collectionCreateButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +53,32 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
                 saveCollectionAdapter.submitList(it)
             }
         }
+
+        lifecycleScope.launchWhenStarted {
+            saveCollectionViewModel.createCollectionState.collectLatest { state ->
+                when(state) {
+                    is UserInputState.EmptyInput -> {
+                        collectionAlert.setText(R.string.collection_name_empty)
+                        collectionAlert.visibility = View.VISIBLE
+                        collectionCreateButton.isEnabled = true
+                    }
+                    is UserInputState.LongInput -> {
+                        collectionAlert.setText(R.string.collection_name_long)
+                        collectionAlert.visibility = View.VISIBLE
+                        collectionCreateButton.isEnabled = true
+                    }
+                    is UserInputState.SameInput -> {
+                        collectionAlert.setText(R.string.collection_name_exists)
+                        collectionAlert.visibility = View.VISIBLE
+                        collectionCreateButton.isEnabled = true
+                    }
+                    else -> {
+                        collectionAlert.visibility = View.INVISIBLE
+                        collectionCreateDialog.dismiss()
+                    }
+                }
+            }
+        }
     }
 
     private fun setupButtons() {
@@ -57,7 +87,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = GridLayoutManager(requireActivity().applicationContext, 2)
-        saveCollectionAdapter = SaveCollectionAdapter(this)
+        saveCollectionAdapter = SaveCollectionAdapter(requireContext().applicationContext, this)
         recyclerView.adapter = saveCollectionAdapter
     }
 
@@ -66,12 +96,12 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
         collectionCreateDialog.setContentView(R.layout.collection_create_dialog)
         val collectionEdit: EditText = collectionCreateDialog.findViewById(R.id.collection_name_input)!!
-        val collectionAlert: TextView = collectionCreateDialog.findViewById(R.id.collection_header_alert)!!
-        val createButton = collectionCreateDialog.findViewById<Button>(R.id.dialog_collection_create_button)
+        collectionAlert = collectionCreateDialog.findViewById(R.id.collection_header_alert)!!
+        collectionCreateButton = collectionCreateDialog.findViewById(R.id.dialog_collection_create_button)!!
 
-        createButton?.setText(R.string.create)
-        createButton?.setOnClickListener {
-//            entryViewModel.createCustomEntry(entryEdit.text.toString())
+        collectionCreateButton.setOnClickListener {
+            collectionCreateButton.isEnabled = false
+            saveCollectionViewModel.addSaveCollection(collectionEdit.text.toString())
         }
 
         // Clear content on show
@@ -79,6 +109,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
             collectionEdit.clearFocus()
             collectionEdit.text?.clear()
             collectionAlert.visibility = View.INVISIBLE
+            collectionCreateButton.isEnabled = true
         }
 
         val counter = collectionCreateDialog.findViewById<TextView>(R.id.character_counter)!!
@@ -86,7 +117,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                counter.text = count.toString()
+                counter.text = s.length.toString()
             }
             override fun afterTextChanged(s: Editable) {}
         }

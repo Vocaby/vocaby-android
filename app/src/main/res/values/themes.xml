@@ -31,6 +31,24 @@
         <item name="bottomSheetDialogTheme">@style/Theme.VocabyAndroid.BottomSheetDialog</item>
 
         <item name="alertDialogTheme">@style/AlertDialogStyle</item>
+        <item name="snackbarStyle">@style/Theme.VocabyAndroid.Snackbar</item>
+        <item name="snackbarButtonStyle">@style/Theme.VocabyAndroid.SnackbarButton</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="android:layout_margin">@null</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="actionTextColorAlpha">1</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/sourcesanspro_black</item>
     </style>
 
     <style name="Theme.VocabyAndroid.TextInputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">

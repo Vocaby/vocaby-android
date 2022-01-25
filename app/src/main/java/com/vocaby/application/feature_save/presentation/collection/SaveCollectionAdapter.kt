@@ -1,5 +1,7 @@
 package com.vocaby.application.feature_save.presentation.collection
 
+import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,21 +14,23 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 
-class SaveCollectionAdapter(private val interaction: Interaction) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SaveCollectionAdapter(
+    private val context: Context,
+    private val interaction: Interaction
+): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val diffCallback = object : DiffUtil.ItemCallback<SaveCollectionModel>() {
         override fun areItemsTheSame(
             oldItem: SaveCollectionModel,
             newItem: SaveCollectionModel
         ): Boolean {
-            return oldItem.count == newItem.count
+            return oldItem.name == newItem.name && oldItem.count == newItem.count
         }
 
         override fun areContentsTheSame(
             oldItem: SaveCollectionModel,
             newItem: SaveCollectionModel
         ): Boolean {
-            return oldItem.count == newItem.count
+            return oldItem.name == newItem.name && oldItem.count == newItem.count
         }
     }
 
@@ -47,6 +51,13 @@ class SaveCollectionAdapter(private val interaction: Interaction) :
         when (holder) {
             is SaveCollectionAdapterViewHolder -> {
                 holder.bind(differ.currentList[position])
+
+                if (position % 2 ==0) {
+                    val params = holder.cardView.layoutParams as ViewGroup.MarginLayoutParams
+                    params.rightMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, context.resources.displayMetrics).toInt()
+                    params.bottomMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, context.resources.displayMetrics).toInt()
+                    holder.cardView.layoutParams = params
+                }
             }
         }
     }
@@ -66,7 +77,7 @@ class SaveCollectionAdapter(private val interaction: Interaction) :
     ) : RecyclerView.ViewHolder(itemView) {
         private val collectionHeader: TextView = itemView.findViewById(R.id.collection_header)
         private val collectionCounter: TextView = itemView.findViewById(R.id.collection_counter)
-        private val cardView: CardView = itemView.findViewById(R.id.card_container)
+        val cardView: CardView = itemView.findViewById(R.id.card_container)
 
         fun bind(collectionModel: SaveCollectionModel) {
             collectionHeader.text = collectionModel.name

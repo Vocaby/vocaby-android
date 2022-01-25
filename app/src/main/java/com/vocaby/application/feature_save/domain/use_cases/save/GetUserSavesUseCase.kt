@@ -11,7 +11,7 @@ class GetUserSavesUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Flow<List<String>> {
         val userId = userRepository.getUser()
-        return saveRepository.getAllSavedWordsFlow(userId)
+        return saveRepository.getAllSavedEntriesFlow(userId)
     }
 
 }

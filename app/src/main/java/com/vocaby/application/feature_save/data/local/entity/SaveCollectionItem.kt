@@ -17,15 +17,14 @@ import java.util.*
         parentColumns = arrayOf("collection_id"),
         childColumns = arrayOf("collection_id")
     )],
-    indices = [Index(value=["save_id", "collection_id"])]
 )
 data class SaveCollectionItem(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "collection_item_id")
+    @ColumnInfo(name = "collection_item_id", index = true)
     val id: Int,
-    @ColumnInfo(name = "save_id")
+    @ColumnInfo(name = "save_id", index = true)
     val saveId: Int,
-    @ColumnInfo(name = "collection_id")
+    @ColumnInfo(name = "collection_id", index = true)
     val collectionId: Int,
     @ColumnInfo(name="last_added")
     val lastAdded: String = Formatter.formatDateToString(Date().time)

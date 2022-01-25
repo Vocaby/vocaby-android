@@ -12,10 +12,7 @@ import com.vocaby.application.feature_save.domain.use_cases.save.RemoveSaveItemU
 import com.vocaby.application.feature_save.presentation.save.SaveState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,17 +26,18 @@ class SearchResultsViewModel @Inject constructor(
 ): ViewModel() {
     private val entry: String = savedStateHandle.get(SearchResultsFragment.ENTRY)!!
     private var _entryData = MutableStateFlow<ResourceState<DictionarySearchResult>>(ResourceState.InProgress)
-    private var _saveState = MutableSharedFlow<SaveState>()
+    private var _saveState = MutableStateFlow<SaveState>(SaveState.InProgress)
+    private var _uiEvent = MutableSharedFlow<SearchUiEvent>()
     private var _dictionarySelectorState = MutableSharedFlow<DictionarySelectorState>()
     private var saved:Boolean = false
 
-    val entryData get() = _entryData.asSharedFlow()
-    val saveState get() = _saveState.asSharedFlow()
+    val entryData get() = _entryData.asStateFlow()
+    val saveState get() = _saveState.asStateFlow()
+    val uiEvent get() = _uiEvent.asSharedFlow()
     val dictionarySelectorState get() = _dictionarySelectorState.asSharedFlow()
 
     init {
         viewModelScope.launch {
-            _saveState.emit(SaveState.InProgress)
             checkSaveUseCase(entry).collect { isSaved ->
                 saved = isSaved
                 _saveState.emit(SaveState.Processed(saved))
@@ -58,14 +56,16 @@ class SearchResultsViewModel @Inject constructor(
     fun saveEntry() {
         viewModelScope.launch {
             _saveState.emit(SaveState.InProgress)
-            addSaveItemUseCase.invoke(entry)
+            addSaveItemUseCase(entry)
+            _uiEvent.emit(SearchUiEvent.ShowSnackBar("Entry saved", true))
         }
     }
 
     fun unsaveEntry() {
         viewModelScope.launch {
             _saveState.emit(SaveState.InProgress)
-            removeSaveItemUseCase.invoke(entry)
+            removeSaveItemUseCase(entry)
+            _uiEvent.emit(SearchUiEvent.ShowSnackBar("Entry removed"))
         }
     }
 

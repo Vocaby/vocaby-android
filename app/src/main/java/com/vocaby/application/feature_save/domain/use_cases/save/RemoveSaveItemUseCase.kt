@@ -11,7 +11,6 @@ class RemoveSaveItemUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(entry: String) {
         val userId = userRepository.getUser()
-        val userSaveId = saveRepository.getSaveId(userId, entry)
-        userSaveId?.let { saveRepository.removeSaveItem(UserSave(userId, id=it)) }
+        saveRepository.removeSaveItem(userId, entry)
     }
 }

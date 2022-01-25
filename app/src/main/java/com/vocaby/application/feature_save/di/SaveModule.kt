@@ -4,6 +4,7 @@ import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import com.vocaby.application.feature_save.data.SaveRepositoryImpl
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
+import com.vocaby.application.feature_save.domain.use_cases.collection.AddSaveCollectionUseCase
 import com.vocaby.application.feature_save.domain.use_cases.collection.GetSaveCollectionsUseCase
 import com.vocaby.application.feature_save.domain.use_cases.collection.SaveCollectionUseCases
 import com.vocaby.application.feature_save.domain.use_cases.save.ClearUserSavesUseCase
@@ -44,6 +45,7 @@ class SaveModule {
         userRepository: UserRepository,
         saveRepository: SaveRepository
     ): SaveCollectionUseCases = SaveCollectionUseCases(
-        GetSaveCollectionsUseCase(userRepository, saveRepository)
+        GetSaveCollectionsUseCase(userRepository, saveRepository),
+        AddSaveCollectionUseCase(userRepository, saveRepository)
     )
 }

@@ -24,7 +24,10 @@
     <string name="custom_entry_header_empty">Please enter a word or phrase</string>
     <string name="custom_entry_header_long">This entry is too long</string>
     <string name="custom_entry_exists">The entry already exists</string>
-    <string name="custom_entry_header_invalid">An entry cannot contain special characters</string>
+    <string name="custom_entry_header_invalid">The given entry contains special characters</string>
+    <string name="collection_name_empty">Please enter a name</string>
+    <string name="collection_name_long">This name is too long</string>
+    <string name="collection_name_exists">This collection already exists</string>
     <string name="add_dictionary_entry">New Entry</string>
     <string name="update_dictionary_entry">Update Entry</string>
     <string name="definition_add_alert">You must add a definition</string>
@@ -140,7 +143,6 @@
     <string name="notification_frequency_header">Notification Frequency</string>
     <string name="notification_save_collection">Save Collection</string>
     <string name="data_transfer">Data Transfer</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="nav_save_collections">Save Collections</string>
     <string name="collection_name_header">Collection Name</string>
     <string name="saved">Saved</string>
@@ -148,6 +150,7 @@
     <string name="add_save_collection">NEW COLLECTION</string>
     <string name="empty_collection">Empty Collection</string>
     <string name="add_a_save_collection">Add a save collection</string>
-    <string name="new_collection_hint">Enter your collection name...</string>
-    <string name="collection_character_limit">/ 25</string>
+    <string name="new_collection_hint">Enter your collection name…</string>
+    <string name="collection_character_limit">/ 15</string>
+    <string name="snackbar_collection_action">Add to collection</string>
 </resources>

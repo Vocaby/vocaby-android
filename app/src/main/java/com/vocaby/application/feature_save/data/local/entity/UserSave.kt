@@ -14,30 +14,15 @@ import java.util.*
         entity = User::class,
         parentColumns = arrayOf("user_id"),
         childColumns = arrayOf("user_id")
-    ), ForeignKey(
-        onDelete = ForeignKey.CASCADE,
-        entity = Word::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("entry_id")
-    ), ForeignKey(
-        onDelete = ForeignKey.CASCADE,
-        entity = CustomEntry::class,
-        parentColumns = arrayOf("custom_entry_id"),
-        childColumns = arrayOf("custom_entry_id")
     )],
     indices = [
-        Index("user_id"),
-        Index("entry_id"),
-        Index("custom_entry_id")
+        Index(value=["user_id", "entry"], unique = true)
     ]
 )
 class UserSave(
     @ColumnInfo(name = "user_id")
     val userId: Int,
-    @ColumnInfo(name = "entry_id")
-    val entryId: Int? = null,
-    @ColumnInfo(name = "custom_entry_id")
-    val customEntryId: Int? = null,
+    val entry: String,
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "save_id")
     var id: Int = 0,

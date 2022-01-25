@@ -3,12 +3,11 @@ package com.vocaby.application.feature_profile.data.local.entity
 import androidx.room.*
 
 @Entity(
-    tableName = "vocaby_user",
-    indices = [Index(value=["user_id"])]
+    tableName = "vocaby_user"
 )
 class User {
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "user_id")
+    @ColumnInfo(name = "user_id", index = true)
     var userId = 0
     var email: String = ""
     var firstName: String = "Guest"
