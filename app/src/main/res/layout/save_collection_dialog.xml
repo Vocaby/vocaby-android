@@ -74,6 +74,6 @@
             android:layout_marginBottom="@dimen/container_side_margin"
             android:layout_marginStart="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin"
-            android:text="@string/nav_save" />
+            android:text="@string/collection_save" />
     </LinearLayout>
 </LinearLayout>

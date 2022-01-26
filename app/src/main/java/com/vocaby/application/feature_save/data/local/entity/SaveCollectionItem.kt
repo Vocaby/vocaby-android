@@ -21,9 +21,9 @@ import java.util.*
 )
 data class SaveCollectionItem(
     @ColumnInfo(name = "save_id")
-    val saveId: Int,
+    val saveId: Int = -1,
     @ColumnInfo(name = "collection_id")
-    val collectionId: Int,
+    val collectionId: Int = -1,
     @ColumnInfo(name="last_added")
     val lastAdded: String = Formatter.formatDateToString(Date().time),
     @PrimaryKey(autoGenerate = true)

@@ -9,7 +9,6 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary_custom.presentation.adapter.TypeAdapter.TypeViewHolder
-import java.util.*
 
 class TypeAdapter(private val itemInteractionListener: ItemInteractionListener) :
     RecyclerView.Adapter<TypeViewHolder>() {

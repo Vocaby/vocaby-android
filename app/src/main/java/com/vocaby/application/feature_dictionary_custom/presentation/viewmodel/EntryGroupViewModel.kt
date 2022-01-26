@@ -12,7 +12,6 @@ import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeS
 import com.vocaby.application.payloads.ItemIntPayload
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
-import java.util.*
 
 class EntryGroupViewModel : ViewModel() {
     private lateinit var definitionGroup: DefinitionGroupModel

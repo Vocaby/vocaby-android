@@ -4,6 +4,7 @@ import java.util.*
 
 data class UpdateSaveCollectionModel(
     val collectionId: Int,
+    val collectionItemId: Int,
     val name: String,
     val lastUpdated: Date,
     var saved: Boolean = false

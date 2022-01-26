@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.presentation.dictionary.SearchHistoryAdapter.HistoryViewHolder
-import java.util.*
 
 class SearchHistoryAdapter(
     private val ctx: Context,

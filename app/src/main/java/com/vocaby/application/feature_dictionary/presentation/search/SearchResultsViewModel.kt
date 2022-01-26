@@ -3,13 +3,14 @@ package com.vocaby.application.feature_dictionary.presentation.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.use_case.GetAllDictionaryEntryUseCase
+import com.vocaby.application.feature_save.domain.model.SaveModel
 import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import com.vocaby.application.feature_save.domain.use_cases.collection.AddSaveToCollectionsUseCase
 import com.vocaby.application.feature_save.domain.use_cases.collection.GetSaveCollectionsForUpdateUseCase
+import com.vocaby.application.feature_save.domain.use_cases.collection.RemoveSaveFromCollectionsUseCase
 import com.vocaby.application.feature_save.domain.use_cases.save.AddSaveItemUseCase
 import com.vocaby.application.feature_save.domain.use_cases.save.CheckSaveUseCase
 import com.vocaby.application.feature_save.domain.use_cases.save.RemoveSaveItemUseCase
@@ -29,6 +30,7 @@ class SearchResultsViewModel @Inject constructor(
     private val getAllDictionaryEntryUseCase: GetAllDictionaryEntryUseCase,
     private val getSaveCollectionsUseCase: GetSaveCollectionsForUpdateUseCase,
     private val addSaveToCollectionsUseCase: AddSaveToCollectionsUseCase,
+    private val removeSaveFromCollectionsUseCase: RemoveSaveFromCollectionsUseCase,
 ): ViewModel() {
     private val entry: String = savedStateHandle.get(SearchResultsFragment.ENTRY)!!
     private var _entryData = MutableStateFlow<ResourceState<DictionarySearchResult>>(ResourceState.InProgress)
@@ -36,8 +38,8 @@ class SearchResultsViewModel @Inject constructor(
     private var _uiEvent = MutableSharedFlow<SearchUiEvent>()
     private var _dictionarySelectorState = MutableSharedFlow<DictionarySelectorState>()
     private var _saveCollections = MutableStateFlow<List<UpdateSaveCollectionModel>>(ArrayList())
-    private var saved:Boolean = false
-    private var saveId: Int = -1
+    private var saveModel: SaveModel? = null
+    private var oldCollections: List<UpdateSaveCollectionModel>? = ArrayList()
 
     val entryData get() = _entryData.asStateFlow()
     val saveState get() = _saveState.asStateFlow()
@@ -47,9 +49,9 @@ class SearchResultsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            checkSaveUseCase(entry).collect { isSaved ->
-                saved = isSaved
-                _saveState.emit(SaveState.Processed(saved))
+            checkSaveUseCase(entry).collect {
+                saveModel = it
+                _saveState.emit(SaveState.Processed(it.saved))
             }
         }
 
@@ -64,18 +66,27 @@ class SearchResultsViewModel @Inject constructor(
         updateCollections()
     }
 
-    fun updateCollections() {
+    private fun updateCollections() {
         viewModelScope.launch {
-            val collections = getSaveCollectionsUseCase(entry)
-            Logger.reportToDebug(collections.toString())
-            _saveCollections.value = collections
+            getSaveCollectionsUseCase(entry).collectLatest { collections ->
+                _saveCollections.value = collections
+            }
+        }
+    }
+
+    fun updateItemInCollections() {
+        viewModelScope.launch {
+            removeSaveFromCollectionsUseCase(_saveCollections.value)
+            addSaveToCollectionsUseCase(saveModel, oldCollections)
+            _uiEvent.emit(SearchUiEvent.CloseCollectionDialog)
+            _uiEvent.emit(SearchUiEvent.ShowSnackBar("Save collections updated!"))
         }
     }
 
     fun saveEntry() {
         viewModelScope.launch {
             _saveState.emit(SaveState.InProgress)
-            saveId = addSaveItemUseCase(entry)
+            addSaveItemUseCase(entry)
             if (_saveCollections.value.isEmpty())_uiEvent.emit(SearchUiEvent.ShowSnackBar("Entry saved"))
             else _uiEvent.emit(SearchUiEvent.ShowSnackBar("Entry saved", true))
         }
@@ -85,31 +96,26 @@ class SearchResultsViewModel @Inject constructor(
         viewModelScope.launch {
             val hasSave = _saveCollections.value.any { it.saved }
             if (hasSave) {
-                _uiEvent.emit(SearchUiEvent.ShowCollectionDialog)
+                oldCollections = ArrayList(_saveCollections.value)
+                _uiEvent.emit(SearchUiEvent.ShowUpdateCollectionDialog)
             } else {
+                oldCollections = null
                 removeSave()
             }
         }
-
-
     }
 
     private suspend fun removeSave() {
         _saveState.emit(SaveState.InProgress)
         removeSaveItemUseCase(entry)
-        _uiEvent.emit(SearchUiEvent.ShowSnackBar("Entry removed"))
+        _uiEvent.emit(SearchUiEvent.ShowSnackBar("Entry removed from saved"))
     }
 
     fun addEntryToCollections() {
         viewModelScope.launch {
-            addSaveToCollectionsUseCase(saveId, _saveCollections.value)
+            addSaveToCollectionsUseCase(saveModel, _saveCollections.value)
+            _uiEvent.emit(SearchUiEvent.CloseCollectionDialog)
             _uiEvent.emit(SearchUiEvent.ShowSnackBar("Save collections updated!"))
-        }
-    }
-
-    fun resetSaveState() {
-        viewModelScope.launch {
-            _saveState.emit(SaveState.Processed(saved))
         }
     }
 }

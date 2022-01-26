@@ -27,7 +27,6 @@ import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.core.util.config
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
-import com.vocaby.application.feature_save.presentation.collection.SaveCollectionViewModel
 import com.vocaby.application.feature_save.presentation.save.SaveState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -49,7 +48,6 @@ class SearchResultsFragment : Fragment() {
 
     private val searchResultsViewModel: SearchResultsViewModel by viewModels()
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
-    private val collectionViewModel: SaveCollectionViewModel by activityViewModels()
 
     companion object {
         const val ENTRY = "PASSED_ENTRY_KEY"
@@ -88,10 +86,6 @@ class SearchResultsFragment : Fragment() {
         saveButton = view.findViewById(R.id.save_button)
         searchProgress = view.findViewById(R.id.search_progress)
 
-        if (savedInstanceState != null) {
-            searchResultsViewModel.resetSaveState()
-        }
-
         setupCollectionCreateDialog()
 
         return view
@@ -106,8 +100,6 @@ class SearchResultsFragment : Fragment() {
                 searchResultsViewModel.uiEvent.collect { event ->
                     when(event) {
                         is SearchUiEvent.ShowSnackBar -> {
-                            if (saveToCollectionDialog.isShowing) saveToCollectionDialog.dismiss()
-
                             val snackbar = Snackbar.make(
                                 contextView,
                                 event.message,
@@ -121,7 +113,26 @@ class SearchResultsFragment : Fragment() {
                             snackbar.config(ctx, R.drawable.snackbar_background)
                             snackbar.show()
                         }
-                        is SearchUiEvent.ShowCollectionDialog -> {
+                        is SearchUiEvent.CloseCollectionDialog -> {
+                            if (saveToCollectionDialog.isShowing) saveToCollectionDialog.dismiss()
+                        }
+                        is SearchUiEvent.ShowAddCollectionDialog -> {
+                            saveCollectionButton.setOnClickListener {
+                                saveCollectionButton.isEnabled = false
+                                searchResultsViewModel.addEntryToCollections()
+                            }
+
+                            saveCollectionButton.setText(R.string.collection_save)
+
+                            saveToCollectionDialog.show()
+                        }
+                        is SearchUiEvent.ShowUpdateCollectionDialog -> {
+                            saveCollectionButton.setOnClickListener {
+                                saveCollectionButton.isEnabled = false
+                                searchResultsViewModel.updateItemInCollections()
+                            }
+                            saveCollectionButton.setText(R.string.collection_update)
+
                             saveToCollectionDialog.show()
                         }
                         else -> {}
@@ -262,9 +273,13 @@ class SearchResultsFragment : Fragment() {
     private fun setupCollectionCreateDialog() {
         saveToCollectionDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        saveToCollectionDialog.setContentView(R.layout.add_to_collection_dialog)
+        saveToCollectionDialog.setContentView(R.layout.save_collection_dialog)
         collectionAlert = saveToCollectionDialog.findViewById(R.id.collection_header_alert)!!
         saveCollectionButton = saveToCollectionDialog.findViewById(R.id.save_button)!!
+        saveCollectionButton.setOnClickListener {
+            saveCollectionButton.isEnabled = false
+            searchResultsViewModel.addEntryToCollections()
+        }
 
         val builderRecyclerView = saveToCollectionDialog.findViewById<RecyclerView>(R.id.collection_container)!!
         builderRecyclerView.setHasFixedSize(true)
@@ -273,14 +288,8 @@ class SearchResultsFragment : Fragment() {
         collectionAdapter = CollectionAdapter()
         builderRecyclerView.adapter = collectionAdapter
 
-        saveCollectionButton.setOnClickListener {
-            saveCollectionButton.isEnabled = false
-            searchResultsViewModel.addEntryToCollections()
-        }
-
         // Clear content on show
         saveToCollectionDialog.setOnShowListener {
-            searchResultsViewModel.updateCollections()
             collectionAlert.visibility = View.INVISIBLE
             saveCollectionButton.isEnabled = true
         }

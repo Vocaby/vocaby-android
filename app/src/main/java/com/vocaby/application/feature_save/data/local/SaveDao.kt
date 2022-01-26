@@ -1,14 +1,12 @@
 package com.vocaby.application.feature_save.data.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
 import com.vocaby.application.feature_save.data.local.entity.UserSave
-import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
+import com.vocaby.application.feature_save.domain.model.SaveModel
+import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -28,8 +26,8 @@ interface SaveDao {
     @Query("DELETE FROM saves WHERE user_id = :userId AND entry = :entry")
     suspend fun removeSave(userId: Int, entry: String)
 
-    @Query("SELECT EXISTS(SELECT 1 FROM saves WHERE user_id = :userId AND entry = :entry)")
-    fun hasSave(userId: Int, entry: String): Flow<Int>
+    @Query("WITH s as (SELECT COUNT(save_id), save_id FROM saves WHERE user_id = :userId AND entry = :entry) SELECT save_id AS saveId, save_id IS NOT NULL AS saved FROM s")
+    fun hasSave(userId: Int, entry: String): Flow<SaveModel>
 
     @Query("DELETE FROM saves WHERE user_id = :userId")
     suspend fun clearSaves(userId: Int)
@@ -40,8 +38,8 @@ interface SaveDao {
             "AND col.collection_id = item.collection_id GROUP BY col.collection_id")
     fun getSaveCollectionsFlow(userId: Int): Flow<List<SaveCollectionModel>>
 
-    @Query("SELECT collectionId, name, lastUpdated, MAX(saved) as saved FROM (SELECT col.collection_id AS collectionId, collection_name AS name, col.last_updated AS lastUpdated, 1 AS saved FROM save_collection col INNER JOIN save_collection_item item ON col.user_id = :userId AND col.collection_id = item.collection_id INNER JOIN saves s ON item.save_id = s.save_id AND entry = :entry UNION ALL SELECT collection_id AS collectionId, collection_name AS name, last_updated AS lastUpdated, 0 AS saved FROM save_collection) GROUP BY collectionId, lastUpdated, name ORDER BY lastUpdated ASC")
-    suspend fun getSaveCollectionsToUpdate(userId: Int, entry: String): List<UpdateSaveCollectionModel>
+    @Query("SELECT collectionId, MAX(collectionItemId) AS collectionItemId, name, lastUpdated, MAX(saved) AS saved FROM (SELECT col.collection_id AS collectionId, collection_item_id AS collectionItemId, collection_name AS name, col.last_updated AS lastUpdated, 1 AS saved FROM save_collection col INNER JOIN save_collection_item item ON col.user_id = :userId AND col.collection_id = item.collection_id INNER JOIN saves s ON item.save_id = s.save_id AND entry = :entry UNION ALL SELECT collection_id AS collectionId, -1 AS collectionItemId, collection_name AS name, last_updated AS lastUpdated, 0 AS saved FROM save_collection) GROUP BY collectionId, lastUpdated, name ORDER BY lastUpdated ASC")
+    fun getSaveCollectionsToUpdate(userId: Int, entry: String): Flow<List<UpdateSaveCollectionModel>>
 
     @Query("SELECT entry FROM save_collection_item i INNER JOIN save_collection c ON c.collection_name = :collectionName AND i.collection_id = c.collection_id AND c.user_id = :userId INNER JOIN saves s ON i.save_id = s.save_id")
     fun getCollectionItemsFlow(userId: Int, collectionName: String): Flow<List<String>>
@@ -51,6 +49,9 @@ interface SaveDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSaveToCollections(collectionItems: List<SaveCollectionItem>)
+
+    @Delete
+    suspend fun removeSaveFromCollections(collectionItems: List<SaveCollectionItem>)
 
     @Query("DELETE FROM save_collection_item WHERE save_id = :saveId AND collection_id = :collectionId")
     suspend fun removeCollectionItem(saveId: Int, collectionId: Int)

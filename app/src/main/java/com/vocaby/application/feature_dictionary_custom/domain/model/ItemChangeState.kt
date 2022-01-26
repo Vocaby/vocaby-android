@@ -2,8 +2,6 @@ package com.vocaby.application.feature_dictionary_custom.domain.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import java.util.*
-import kotlin.collections.LinkedHashMap
 
 open class ItemChangeState<T> (
     var id: Int = -1,
