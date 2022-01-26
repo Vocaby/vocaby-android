@@ -7,9 +7,8 @@ import androidx.room.Query
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
 import com.vocaby.application.feature_save.data.local.entity.UserSave
-import com.vocaby.application.feature_save.domain.model.AddCollectionModel
+import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
-import com.vocaby.application.feature_save.domain.model.SimpleCollectionModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -41,11 +40,8 @@ interface SaveDao {
             "AND col.collection_id = item.collection_id GROUP BY col.collection_id")
     fun getSaveCollectionsFlow(userId: Int): Flow<List<SaveCollectionModel>>
 
-    @Query("SELECT collection_id, collection_name FROM save_collection col WHERE user_id = :userId ORDER BY col.last_updated DESC")
-    suspend fun getSaveCollections(userId: Int): List<SimpleCollectionModel>
-
-    @Query("SELECT col.collection_id, collection_name, col.last_updated, entry FROM save_collection col INNER JOIN save_collection_item item ON col.user_id = :userId AND col.collection_id = item.collection_id INNER JOIN saves s ON item.save_id = s.save_id AND entry = :entry ORDER BY col.last_updated DESC")
-    suspend fun getSaveCollectionsToUpdate(userId: Int, entry: String): List<AddCollectionModel>
+    @Query("SELECT collectionId, name, lastUpdated, MAX(saved) as saved FROM (SELECT col.collection_id AS collectionId, collection_name AS name, col.last_updated AS lastUpdated, 1 AS saved FROM save_collection col INNER JOIN save_collection_item item ON col.user_id = :userId AND col.collection_id = item.collection_id INNER JOIN saves s ON item.save_id = s.save_id AND entry = :entry UNION ALL SELECT collection_id AS collectionId, collection_name AS name, last_updated AS lastUpdated, 0 AS saved FROM save_collection) GROUP BY collectionId, lastUpdated, name ORDER BY lastUpdated ASC")
+    suspend fun getSaveCollectionsToUpdate(userId: Int, entry: String): List<UpdateSaveCollectionModel>
 
     @Query("SELECT entry FROM save_collection_item i INNER JOIN save_collection c ON c.collection_name = :collectionName AND i.collection_id = c.collection_id AND c.user_id = :userId INNER JOIN saves s ON i.save_id = s.save_id")
     fun getCollectionItemsFlow(userId: Int, collectionName: String): Flow<List<String>>

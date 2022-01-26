@@ -8,15 +8,15 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
-import com.vocaby.application.feature_save.domain.model.AddCollectionModel
+import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import java.util.*
 
 class CollectionAdapter() :
     RecyclerView.Adapter<CollectionAdapter.CollectionViewHolder>() {
-    private var collections: List<AddCollectionModel> = ArrayList()
+    private var collections: List<UpdateSaveCollectionModel> = ArrayList()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setList(newList: List<AddCollectionModel>) {
+    fun setList(newList: List<UpdateSaveCollectionModel>) {
         collections = newList
         notifyDataSetChanged()
     }

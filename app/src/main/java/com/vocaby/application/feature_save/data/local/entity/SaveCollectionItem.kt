@@ -1,9 +1,6 @@
 package com.vocaby.application.feature_save.data.local.entity
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.vocaby.application.core.util.Formatter
 import java.util.*
 
@@ -20,11 +17,12 @@ import java.util.*
         parentColumns = arrayOf("collection_id"),
         childColumns = arrayOf("collection_id")
     )],
+    indices = [Index(value=["save_id", "collection_id"], unique=true)]
 )
 data class SaveCollectionItem(
-    @ColumnInfo(name = "save_id", index = true)
+    @ColumnInfo(name = "save_id")
     val saveId: Int,
-    @ColumnInfo(name = "collection_id", index = true)
+    @ColumnInfo(name = "collection_id")
     val collectionId: Int,
     @ColumnInfo(name="last_added")
     val lastAdded: String = Formatter.formatDateToString(Date().time),

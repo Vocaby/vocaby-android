@@ -3,7 +3,7 @@ package com.vocaby.application.feature_save.domain.repository
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
 import com.vocaby.application.feature_save.data.local.entity.UserSave
-import com.vocaby.application.feature_save.domain.model.AddCollectionModel
+import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import kotlinx.coroutines.flow.Flow
 
@@ -18,7 +18,7 @@ interface SaveRepository {
 
     fun getSaveCollections(userId: Int): Flow<List<SaveCollectionModel>>
     fun getCollectionItems(userId: Int, collectionName: String): Flow<List<String>>
-    suspend fun getSaveCollectionsForUpdate(userId: Int, entry: String): List<AddCollectionModel>
+    suspend fun getSaveCollectionsForUpdate(userId: Int, entry: String): List<UpdateSaveCollectionModel>
     suspend fun addSaveCollection(saveCollection: SaveCollection)
     suspend fun addSaveToCollections(collectionItems: List<SaveCollectionItem>)
     suspend fun removeCollectionItem(saveId: Int, collectionId: Int)

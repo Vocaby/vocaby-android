@@ -7,7 +7,7 @@ import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.use_case.GetAllDictionaryEntryUseCase
-import com.vocaby.application.feature_save.domain.model.AddCollectionModel
+import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import com.vocaby.application.feature_save.domain.use_cases.collection.AddSaveToCollectionsUseCase
 import com.vocaby.application.feature_save.domain.use_cases.collection.GetSaveCollectionsForUpdateUseCase
 import com.vocaby.application.feature_save.domain.use_cases.save.AddSaveItemUseCase
@@ -35,7 +35,7 @@ class SearchResultsViewModel @Inject constructor(
     private var _saveState = MutableStateFlow<SaveState>(SaveState.InProgress)
     private var _uiEvent = MutableSharedFlow<SearchUiEvent>()
     private var _dictionarySelectorState = MutableSharedFlow<DictionarySelectorState>()
-    private var _saveCollections = MutableStateFlow<List<AddCollectionModel>>(ArrayList())
+    private var _saveCollections = MutableStateFlow<List<UpdateSaveCollectionModel>>(ArrayList())
     private var saved:Boolean = false
     private var saveId: Int = -1
 
