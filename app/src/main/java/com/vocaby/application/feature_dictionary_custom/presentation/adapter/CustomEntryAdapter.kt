@@ -1,29 +1,23 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.adapter
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.appcompat.widget.ListPopupWindow
-import androidx.core.content.res.ResourcesCompat
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import java.util.*
 
 class CustomEntryAdapter(
-    private val activity: Activity,
     private val interaction: Interaction
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     private var customEntries: List<UserEntry> = LinkedList()
-    private val alertDialogBuilder = MaterialAlertDialogBuilder(activity)
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return CustomEntryViewHolder(
@@ -32,9 +26,7 @@ class CustomEntryAdapter(
                 parent,
                 false
             ),
-            interaction,
-            alertDialogBuilder,
-            activity
+            interaction
         )
     }
 
@@ -70,72 +62,29 @@ class CustomEntryAdapter(
     constructor(
         itemView: View,
         private val interaction: Interaction,
-        private val alertDialogBuilder: MaterialAlertDialogBuilder,
-        private val activity: Activity
     ): RecyclerView.ViewHolder(itemView) {
+        private val card: CardView = itemView.findViewById(R.id.card_container)
         private val header: TextView = itemView.findViewById(R.id.custom_entry_item_header)
         private val lastUpdated: TextView = itemView.findViewById(R.id.custom_entry_item_updated)
         private val moreButton: ImageButton = itemView.findViewById(R.id.more_button)
-        @SuppressLint("RestrictedApi")
-        val listPopupWindow = ListPopupWindow(
-            activity
-        ).apply {
-            setOverlapAnchor(true)
-            width = 300
-            anchorView = moreButton
-            setDropDownGravity(Gravity.END)
-            horizontalOffset = -50
-            val items = listOf("Edit Entry", "Delete Entry")
-            val adapter: ArrayAdapter<String> = object: ArrayAdapter<String>(activity.applicationContext, R.layout.list_popup_window_item, items) {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view = super.getView(position, convertView, parent) as TextView
-                    if (position == 1 ) {
-                        view.setTextColor(activity.getColor(R.color.colorHeadline))
-                        view.setBackgroundResource(R.drawable.box_top_stroke_white)
-                    } else {
-                        view.setTextColor(activity.getColor(R.color.black))
-                    }
-
-                    return view
-                }
-            }
-
-            setAdapter(adapter)
-            setBackgroundDrawable(ResourcesCompat.getDrawable(activity.resources, R.drawable.box_white, null))
-        }
 
         fun bind(userEntry: UserEntry) {
             header.text = userEntry.entry
             lastUpdated.text = Formatter.formatDateToString(userEntry.lastUpdated.time, forDisplay = true, showDay = false)
 
+            card.setOnClickListener {
+                interaction.onItemTouch(userEntry.entry, adapterPosition)
+            }
+
             moreButton.setOnClickListener {
-                listPopupWindow.show()
+                interaction.onItemUpdate(userEntry.entry, adapterPosition)
             }
 
-            listPopupWindow.setOnItemClickListener { _, _, position: Int, _: Long ->
-                // Respond to list popup window item click.
-                when(position) {
-                    0 -> {
-                        interaction.onItemEdit(userEntry.entry, adapterPosition)
-                    }
-                    1 -> {
-                        alertDialogBuilder
-                            .setTitle("Are you sure you want to delete?")
-                            .setMessage(userEntry.entry)
-                            .setPositiveButton("DELETE") { _, _ ->
-                                interaction.onItemDelete(userEntry.entry, adapterPosition)
-                            }.setNegativeButton("CANCEL", null).create().show()
-                    }
-                }
-
-                // Dismiss popup.
-                listPopupWindow.dismiss()
-            }
         }
     }
 
     interface Interaction {
-        fun onItemEdit(entry: String, position: Int)
-        fun onItemDelete(entry: String, position: Int)
+        fun onItemUpdate(entry: String, position: Int)
+        fun onItemTouch(entry: String, position: Int)
     }
 }

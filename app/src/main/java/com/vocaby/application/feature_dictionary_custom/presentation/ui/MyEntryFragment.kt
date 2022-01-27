@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.GenericState
@@ -35,11 +36,15 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var customEntryAdapter: CustomEntryAdapter
     private lateinit var emptyCard: LinearLayout
     private lateinit var entryCreateDialog: BottomSheetDialog
+    private lateinit var entryUpdateDialog: BottomSheetDialog
+    private lateinit var entryEditButton: Button
+    private lateinit var entryDeleteButton: Button
     private lateinit var entryEdit: EditText
     private lateinit var entryAlert: TextView
     private lateinit var searchView: SearchView
     private lateinit var recyclerView: RecyclerView
     private lateinit var fetchProgress: ProgressBar
+    private lateinit var alertDialogBuilder: MaterialAlertDialogBuilder
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
     private val entryViewModel: MyEntryViewModel by activityViewModels()
@@ -63,8 +68,11 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             setOnQueryChangeListener(queryChangeListener)
         }
 
+        alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
+
         setupButtons(view)
         setupEntryBuilderDialog()
+        setupEntryUpdateDialog()
         setupRecyclerView(view)
         return view
     }
@@ -162,7 +170,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     private fun setupRecyclerView(view: View) {
         recyclerView = view.findViewById(R.id.custom_entry_container)
-        customEntryAdapter = CustomEntryAdapter(requireActivity(), this)
+        customEntryAdapter = CustomEntryAdapter( this)
         recyclerView.adapter = customEntryAdapter
         recyclerView.layoutManager = LinearLayoutManager(ctx)
     }
@@ -209,6 +217,20 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         entryEdit.addTextChangedListener(textWatcher)
     }
 
+    private fun setupEntryUpdateDialog() {
+        entryUpdateDialog =
+            BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        entryUpdateDialog.setContentView(R.layout.entry_item_action_dialog)
+
+        entryEditButton = entryUpdateDialog.findViewById(R.id.edit_entry_button)!!
+        entryDeleteButton = entryUpdateDialog.findViewById(R.id.delete_entry_button)!!
+
+        entryUpdateDialog.setOnDismissListener {
+            entryEditButton.setOnClickListener(null)
+            entryDeleteButton.setOnClickListener(null)
+        }
+    }
+
     private val entryBuilderActivity = registerForActivityResult(StartActivityForResult()) {
             result: ActivityResult? ->
         entryViewModel.handleResult(result!!)
@@ -219,17 +241,35 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             recyclerView.smoothScrollToPosition(0)
             entryViewModel.filterEntries(newQuery)
         }
-
     }
 
-    override fun onItemDelete(entry: String, position: Int) {
-        entryViewModel.removeCustomEntry(entry, position)
-    }
-
-    override fun onItemEdit(entry: String, position: Int) {
+    private fun openEditor(entry: String, position: Int) {
         var startEntryBuilderIntent = Intent(requireActivity(), EntryBuilderActivity::class.java)
         startEntryBuilderIntent =
             entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, position)
         entryBuilderActivity.launch(startEntryBuilderIntent)
+    }
+
+    override fun onItemUpdate(entry: String, position: Int) {
+        entryEditButton.setOnClickListener {
+            openEditor(entry, position)
+        }
+
+        entryDeleteButton.setOnClickListener {
+            entryUpdateDialog.dismiss()
+
+            alertDialogBuilder
+                .setTitle("Are you sure you want to delete?")
+                .setMessage(entry)
+                .setPositiveButton("DELETE") { _, _ ->
+                    entryViewModel.removeCustomEntry(entry, position)
+                }.setNegativeButton("CANCEL", null).create().show()
+        }
+
+        entryUpdateDialog.show()
+    }
+
+    override fun onItemTouch(entry: String, position: Int) {
+        openEditor(entry, position)
     }
 }

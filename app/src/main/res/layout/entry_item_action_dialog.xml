@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_background"
     android:orientation="vertical"
+
     xmlns:android="http://schemas.android.com/apk/res/android">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,25 +16,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="@string/save_to_your_collections"
+            android:text="@string/update_entry"
             android:textColor="@color/black"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/remove_button"
-            style="@style/Theme.VocabyAndroid.NavButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/remove"
-            android:layout_marginEnd="8dp"
-            android:textColor="@color/colorHeadline"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -43,6 +30,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/box_top_stroke_white"
         android:clipToPadding="false"
+        android:paddingBottom="@dimen/container_side_margin"
         android:orientation="vertical">
 
         <LinearLayout
@@ -54,13 +42,13 @@
             android:layout_marginStart="@dimen/container_side_margin"
             android:orientation="horizontal">
             <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:id="@+id/header"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/dark_gray"
                 android:labelFor="@+id/definition_edit"
-                android:text="@string/save_collections"
+                android:text="@string/actions"
                 android:textSize="12sp"/>
 
             <TextView
@@ -69,29 +57,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:fontFamily="@font/sourcesanspro_semibold"
-                android:text="@string/type_header_alert"
                 android:textColor="@color/colorHeadline"
                 android:visibility="invisible" />
         </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/collection_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/container_side_margin"
-            android:paddingEnd="@dimen/container_side_margin" />
-
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/save_button"
-            style="@style/Theme.VocabyAndroid.Button"
+            android:id="@+id/edit_entry_button"
+            style="@style/Theme.VocabyAndroid.ProfileButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/container_side_margin"
-            android:layout_marginBottom="@dimen/container_side_margin"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            android:text="@string/collection_save" />
+            android:text="@string/custom_entry_edit"
+            android:drawableStart="@drawable/ic_boxed_edit" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/delete_entry_button"
+            style="@style/Theme.VocabyAndroid.ProfileButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/custom_entry_delete"
+            android:drawableStart="@drawable/ic_boxed_danger_zone" />
     </LinearLayout>
 </LinearLayout>

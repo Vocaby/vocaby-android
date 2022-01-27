@@ -155,6 +155,9 @@
     <string name="snackbar_collection_action">Add to collection</string>
     <string name="save_to_your_collections">Save to…</string>
     <string name="save_collections">Save Collections</string>
-    <string name="remove_save">Remove Save</string>
     <string name="remove">REMOVE</string>
+    <string name="custom_entry_edit">Edit this custom entry</string>
+    <string name="custom_entry_delete">Delete this custom entry</string>
+    <string name="actions">Actions</string>
+    <string name="update_entry">Update Entry</string>
 </resources>

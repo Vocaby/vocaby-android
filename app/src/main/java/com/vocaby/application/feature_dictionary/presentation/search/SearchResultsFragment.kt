@@ -275,7 +275,7 @@ class SearchResultsFragment : Fragment() {
         saveToCollectionDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
         saveToCollectionDialog.setContentView(R.layout.save_collection_dialog)
-        collectionAlert = saveToCollectionDialog.findViewById(R.id.collection_header_alert)!!
+        collectionAlert = saveToCollectionDialog.findViewById(R.id.header_alert)!!
         saveCollectionButton = saveToCollectionDialog.findViewById(R.id.save_button)!!
         val alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
         removeSaveButton = saveToCollectionDialog.findViewById(R.id.remove_button)!!
