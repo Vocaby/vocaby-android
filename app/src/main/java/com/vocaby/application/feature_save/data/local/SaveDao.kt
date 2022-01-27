@@ -51,6 +51,9 @@ interface SaveDao {
     suspend fun addSaveToCollections(collectionItems: List<SaveCollectionItem>)
 
     @Delete
+    suspend fun removeSaveCollection(saveCollection: SaveCollection)
+
+    @Delete
     suspend fun removeSaveFromCollections(collectionItems: List<SaveCollectionItem>)
 
     @Query("DELETE FROM save_collection_item WHERE save_id = :saveId AND collection_id = :collectionId")

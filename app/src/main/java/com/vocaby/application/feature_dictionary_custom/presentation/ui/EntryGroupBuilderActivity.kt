@@ -40,7 +40,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.custom_entry_group_builder_activity)
+        setContentView(R.layout.activity_custom_entry_group_builder)
         saveAlert = findViewById(R.id.definition_add_alert)
 
         setupDefinitionBuilder()
@@ -98,7 +98,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
 
     private fun setupDefinitionBuilder() {
         definitionBuilder = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        definitionBuilder.setContentView(R.layout.custom_entry_definition_builder_dialog)
+        definitionBuilder.setContentView(R.layout.dialog_custom_entry_definition_builder)
 
         dialogDefinitionInput = definitionBuilder.findViewById(R.id.definition_edit)!!
         dialogExampleInput = definitionBuilder.findViewById(R.id.example_edit)!!

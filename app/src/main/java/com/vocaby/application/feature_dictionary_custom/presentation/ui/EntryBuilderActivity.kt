@@ -46,7 +46,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.custom_entry_builder)
+        setContentView(R.layout.activity_custom_entry_builder)
         val entryView = findViewById<TextView>(R.id.entry_header)
 
         if (savedInstanceState != null) {
@@ -187,7 +187,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         helpDialogBuilder.setContentView(R.layout.card_instruction)
 
         groupBuilder = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        groupBuilder.setContentView(R.layout.custom_entry_group_builder_dialog)
+        groupBuilder.setContentView(R.layout.dialog_custom_entry_group_builder)
         groupBuilder.setOnShowListener { groupAlert.visibility = View.INVISIBLE }
 
         val builderRecyclerView = groupBuilder.findViewById<RecyclerView>(R.id.type_container)!!

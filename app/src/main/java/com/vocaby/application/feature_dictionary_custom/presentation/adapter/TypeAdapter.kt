@@ -45,7 +45,7 @@ class TypeAdapter(private val itemInteractionListener: ItemInteractionListener) 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TypeViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.type_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_selectable_type, parent, false)
         return TypeViewHolder(view)
     }
 

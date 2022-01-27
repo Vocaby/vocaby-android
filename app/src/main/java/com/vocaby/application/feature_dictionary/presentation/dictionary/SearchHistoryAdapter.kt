@@ -29,7 +29,7 @@ class SearchHistoryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         return HistoryViewHolder(
-            LayoutInflater.from(ctx).inflate(R.layout.history_item, parent, false)
+            LayoutInflater.from(ctx).inflate(R.layout.item_history, parent, false)
         )
     }
 

@@ -3,6 +3,7 @@ package com.vocaby.application.feature_save.presentation.collection
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vocaby.application.feature_save.domain.use_cases.collection.SaveCollectionUseCases
 import com.vocaby.application.feature_save.domain.use_cases.save.SaveUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SaveCollectionItemsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val saveUseCases: SaveUseCases
+    private val saveUseCases: SaveUseCases,
+    private val saveCollectionUseCases: SaveCollectionUseCases
 ): ViewModel() {
     private val showAll: Boolean = savedStateHandle.get(SaveCollectionItemsFragment.COLLECTION_ALL_PARAM)!!
     private val name: String = savedStateHandle.get(SaveCollectionItemsFragment.COLLECTION_NAME_PARAM)!!
@@ -40,15 +42,17 @@ class SaveCollectionItemsViewModel @Inject constructor(
         }
     }
 
-//    fun addSaveItem(entry: String) = viewModelScope.launch {
-//        saveUseCases.addSaveItemUseCase(entry)
-//    }
+    fun removeCollection() {
+        viewModelScope.launch {
+            saveCollectionUseCases.removeSaveCollectionUseCase(id)
+        }
+    }
 
     fun removeSaveItem(entry: String) = viewModelScope.launch {
         if (showAll) {
             saveUseCases.removeSaveItemUseCase(entry)
         } else {
-            saveUseCases.removeCollectionItemUseCase(entry, id)
+            saveUseCases.removeSaveCollectionItemUseCase(entry, id)
         }
     }
 }

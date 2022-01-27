@@ -39,7 +39,7 @@ class CustomGroupAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomGroupViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.custom_group_row, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_custom_group_row, parent, false)
         return CustomGroupViewHolder(view, ctx)
     }
 

@@ -27,7 +27,7 @@ class SaveRepositoryImpl(
     override fun getSaveCollectionsForUpdate(userId: Int, entry: String): Flow<List<UpdateSaveCollectionModel>> = saveDao.getSaveCollectionsToUpdate(userId, entry)
     override suspend fun addSaveCollection(saveCollection: SaveCollection) = saveDao.addSaveCollection(saveCollection)
     override suspend fun addSaveToCollections(collectionItems: List<SaveCollectionItem>) = saveDao.addSaveToCollections(collectionItems)
+    override suspend fun removeSaveCollection(saveCollection: SaveCollection) = saveDao.removeSaveCollection(saveCollection)
     override suspend fun removeSaveFromCollections(collectionItems: List<SaveCollectionItem>) = saveDao.removeSaveFromCollections(collectionItems)
-
     override suspend fun removeCollectionItem(saveId: Int, collectionId: Int) = saveDao.removeCollectionItem(saveId, collectionId)
 }

@@ -30,7 +30,7 @@ class SaveListAdapter(activity: Activity, private val interaction: Interaction) 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return SavesAdapterViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.save_item,
+                R.layout.item_save,
                 parent,
                 false
             ),

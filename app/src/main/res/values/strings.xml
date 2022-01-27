@@ -160,4 +160,7 @@
     <string name="custom_entry_delete">Delete this custom entry</string>
     <string name="actions">Actions</string>
     <string name="update_entry">Update Entry</string>
+    <string name="update_collection">Update Collection</string>
+    <string name="collection_rename">Rename this collection</string>
+    <string name="collection_delete">Delete this collection</string>
 </resources>

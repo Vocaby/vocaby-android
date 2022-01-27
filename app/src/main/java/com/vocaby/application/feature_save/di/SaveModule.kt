@@ -36,7 +36,7 @@ class SaveModule {
         RemoveSaveItemUseCase(userRepository,saveRepository),
         ClearUserSavesUseCase(userRepository, saveRepository),
         GetSaveCollectionItemsUseCase(userRepository, saveRepository),
-        RemoveCollectionItemUseCase(userRepository, saveRepository)
+        RemoveSaveCollectionItemUseCase(userRepository, saveRepository)
     )
 
     @Provides
@@ -46,6 +46,7 @@ class SaveModule {
         saveRepository: SaveRepository
     ): SaveCollectionUseCases = SaveCollectionUseCases(
         GetSaveCollectionsUseCase(userRepository, saveRepository),
-        AddSaveCollectionUseCase(userRepository, saveRepository)
+        AddSaveCollectionUseCase(userRepository, saveRepository),
+        RemoveSaveCollectionUseCase(saveRepository)
     )
 }

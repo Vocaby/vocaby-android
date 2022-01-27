@@ -21,7 +21,7 @@ class CollectionAdapter() :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CollectionViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.add_collection_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_selectable_collection, parent, false)
         return CollectionViewHolder(view)
     }
 

@@ -18,7 +18,7 @@ class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<Defini
     private var entryData: EntryModel = EntryModel(entry = "Vocaby")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefinitionsViewHolder {
         val inflater = LayoutInflater.from(ctx)
-        val view = inflater.inflate(R.layout.section_row, parent, false)
+        val view = inflater.inflate(R.layout.item_definition_container, parent, false)
         return DefinitionsViewHolder(view)
     }
 
@@ -37,7 +37,7 @@ class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<Defini
         for (i in definitions.indices) {
             val def = definitions[i].definition
             val sen = definitions[i].example
-            val card = inflater.inflate(R.layout.definition_row, null) as LinearLayout
+            val card = inflater.inflate(R.layout.item_definition_row, null) as LinearLayout
             val definition = card.findViewById<TextView>(R.id.definition)
             val sentence = card.findViewById<TextView>(R.id.sentence)
             val counter = card.findViewById<TextView>(R.id.definition_counter)

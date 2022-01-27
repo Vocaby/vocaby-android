@@ -52,7 +52,7 @@ class SupportFragment : Fragment() {
         textInputLayout = view.findViewById(R.id.feedback_input_type)
         autoCompleteTextView = view.findViewById(R.id.autocomplete_text)
         val types = resources.getStringArray(R.array.feedback_type)
-        val arrayAdapter = ArrayAdapter(requireActivity().applicationContext, R.layout.list_popup_window_item, types)
+        val arrayAdapter = ArrayAdapter(requireActivity().applicationContext, R.layout.item_list_popup_window, types)
         autoCompleteTextView.setAdapter(arrayAdapter)
 
         submitFeedbackButton = view.findViewById(R.id.feedback_input_submit)

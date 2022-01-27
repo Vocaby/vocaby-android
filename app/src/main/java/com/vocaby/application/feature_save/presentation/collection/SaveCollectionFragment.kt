@@ -119,7 +119,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private fun setupCollectionCreateDialog() {
         collectionCreateDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        collectionCreateDialog.setContentView(R.layout.collection_create_dialog)
+        collectionCreateDialog.setContentView(R.layout.dialog_collection_create)
         val collectionEdit: EditText = collectionCreateDialog.findViewById(R.id.collection_name_input)!!
         collectionAlert = collectionCreateDialog.findViewById(R.id.collection_header_alert)!!
         collectionCreateButton = collectionCreateDialog.findViewById(R.id.dialog_collection_create_button)!!

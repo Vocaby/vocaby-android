@@ -22,7 +22,7 @@ class CustomEntryAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return CustomEntryViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.custom_entry_item,
+                R.layout.item_custom_entry,
                 parent,
                 false
             ),

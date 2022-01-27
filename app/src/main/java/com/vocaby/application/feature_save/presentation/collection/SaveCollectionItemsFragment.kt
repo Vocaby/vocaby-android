@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -15,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.feature_save.presentation.save.SaveListAdapter
@@ -28,7 +30,11 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var savesAdapter: SaveListAdapter
     private lateinit var collectionHeader: TextView
     private lateinit var collectionSaveCounter: TextView
+    private lateinit var moreButton: AppCompatImageButton
     private lateinit var emptyCard: LinearLayout
+    private lateinit var collectionUpdateDialog: BottomSheetDialog
+    private lateinit var collectionEditNameButton: Button
+    private lateinit var collectionDeleteButton: Button
     private val collectionItemsViewModel: SaveCollectionItemsViewModel by viewModels()
 
     companion object {
@@ -63,9 +69,16 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
         collectionHeader = view.findViewById(R.id.collection_header)
         collectionSaveCounter = view.findViewById(R.id.save_counter)
         collectionHeader.text = arguments?.getString(COLLECTION_NAME_PARAM)
+        moreButton = view.findViewById(R.id.more_button)
+        if (arguments?.getBoolean(COLLECTION_ALL_PARAM) == true) moreButton.visibility = View.GONE
 
         val closeButton: Button = view.findViewById(R.id.back_button)
         closeButton.setOnClickListener { requireActivity().onBackPressed() }
+
+        setupUpdateDialog()
+        moreButton.setOnClickListener {
+            collectionUpdateDialog.show()
+        }
 
         return view
     }
@@ -87,9 +100,30 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 collectionItemsViewModel.saveCount.collectLatest { count ->
-                    collectionSaveCounter.text = "$count Saved"
+                    val text= "$count Saved"
+                    collectionSaveCounter.text = text
                 }
             }
+        }
+    }
+
+    private fun setupUpdateDialog() {
+        collectionUpdateDialog =
+            BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        collectionUpdateDialog.setContentView(R.layout.dialog_collection_item_action)
+
+        collectionEditNameButton = collectionUpdateDialog.findViewById(R.id.edit_collection_name_button)!!
+        collectionDeleteButton = collectionUpdateDialog.findViewById(R.id.delete_collection_button)!!
+
+        collectionEditNameButton.setOnClickListener {
+
+        }
+
+        collectionDeleteButton.setOnClickListener {
+            collectionItemsViewModel.removeCollection()
+            collectionDeleteButton.isEnabled = false
+            collectionUpdateDialog.dismiss()
+            requireActivity().onBackPressed()
         }
     }
 

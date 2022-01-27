@@ -22,6 +22,7 @@ interface SaveRepository {
     fun getSaveCollectionsForUpdate(userId: Int, entry: String): Flow<List<UpdateSaveCollectionModel>>
     suspend fun addSaveCollection(saveCollection: SaveCollection)
     suspend fun addSaveToCollections(collectionItems: List<SaveCollectionItem>)
+    suspend fun removeSaveCollection(saveCollection: SaveCollection)
     suspend fun removeSaveFromCollections(collectionItems: List<SaveCollectionItem>)
     suspend fun removeCollectionItem(saveId: Int, collectionId: Int)
 }

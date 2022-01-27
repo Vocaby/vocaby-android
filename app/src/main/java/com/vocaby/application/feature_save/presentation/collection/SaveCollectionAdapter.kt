@@ -36,7 +36,7 @@ class SaveCollectionAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return SaveCollectionAdapterViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.save_collection,
+                R.layout.item_save_collection,
                 parent,
                 false
             ),

@@ -183,7 +183,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private fun setupEntryBuilderDialog() {
         entryCreateDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        entryCreateDialog.setContentView(R.layout.custom_entry_create_dialog)
+        entryCreateDialog.setContentView(R.layout.dialog_custom_entry_create)
         entryEdit = entryCreateDialog.findViewById(R.id.entry_edit)!!
         entryAlert = entryCreateDialog.findViewById(R.id.entry_header_alert)!!
 
@@ -220,7 +220,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private fun setupEntryUpdateDialog() {
         entryUpdateDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        entryUpdateDialog.setContentView(R.layout.entry_item_action_dialog)
+        entryUpdateDialog.setContentView(R.layout.dialog_entry_item_action)
 
         entryEditButton = entryUpdateDialog.findViewById(R.id.edit_entry_button)!!
         entryDeleteButton = entryUpdateDialog.findViewById(R.id.delete_entry_button)!!

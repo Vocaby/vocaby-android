@@ -19,7 +19,7 @@ class FaqAdapter: RecyclerView.Adapter<FaqAdapter.FaqViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FaqViewHolder {
-        return FaqViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.faq_item, parent, false))
+        return FaqViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_faq, parent, false))
     }
 
     override fun onBindViewHolder(holder: FaqViewHolder, position: Int) {

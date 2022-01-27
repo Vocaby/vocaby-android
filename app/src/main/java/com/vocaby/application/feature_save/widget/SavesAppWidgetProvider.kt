@@ -147,7 +147,7 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
             val refreshIntent = Intent(context, SavesAppWidgetProvider::class.java)
             refreshIntent.action = WIDGET_CLICK
             refreshIntent.putExtra("WIDGET_ID", id)
-            val remoteViews = RemoteViews(context.packageName, R.layout.saves_widget)
+            val remoteViews = RemoteViews(context.packageName, R.layout.widget_saves)
             refreshIntent.putExtra("REMOTE_VIEW", remoteViews)
             val refreshPendingIntent = PendingIntent.getBroadcast(
                 context, id, refreshIntent,

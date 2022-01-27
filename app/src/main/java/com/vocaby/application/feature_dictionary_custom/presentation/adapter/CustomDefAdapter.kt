@@ -33,7 +33,7 @@ class CustomDefAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomDefViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.custom_definition_row, parent, false)
+            .inflate(R.layout.item_custom_definition_row, parent, false)
         return CustomDefViewHolder(view, dragStartListener, itemInteractionListener, ctx)
     }
 
