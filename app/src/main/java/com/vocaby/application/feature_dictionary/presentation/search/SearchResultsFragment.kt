@@ -21,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.vocaby.application.R
 import com.vocaby.application.core.util.ResourceState
@@ -44,6 +45,7 @@ class SearchResultsFragment : Fragment() {
     private lateinit var saveToCollectionDialog: BottomSheetDialog
     private lateinit var collectionAlert: TextView
     private lateinit var saveCollectionButton: Button
+    private lateinit var removeSaveButton: Button
     private lateinit var collectionAdapter: CollectionAdapter
 
     private val searchResultsViewModel: SearchResultsViewModel by viewModels()
@@ -107,7 +109,7 @@ class SearchResultsFragment : Fragment() {
                             )
 
                             if (event.showAction) snackbar.setAction(R.string.snackbar_collection_action) {
-                                saveToCollectionDialog.show()
+                                searchResultsViewModel.saveToCollections()
                             }
 
                             snackbar.config(ctx, R.drawable.snackbar_background)
@@ -121,9 +123,8 @@ class SearchResultsFragment : Fragment() {
                                 saveCollectionButton.isEnabled = false
                                 searchResultsViewModel.addEntryToCollections()
                             }
-
+                            removeSaveButton.visibility = View.GONE
                             saveCollectionButton.setText(R.string.collection_save)
-
                             saveToCollectionDialog.show()
                         }
                         is SearchUiEvent.ShowUpdateCollectionDialog -> {
@@ -131,8 +132,8 @@ class SearchResultsFragment : Fragment() {
                                 saveCollectionButton.isEnabled = false
                                 searchResultsViewModel.updateItemInCollections()
                             }
+                            removeSaveButton.visibility = View.VISIBLE
                             saveCollectionButton.setText(R.string.collection_update)
-
                             saveToCollectionDialog.show()
                         }
                         else -> {}
@@ -276,9 +277,16 @@ class SearchResultsFragment : Fragment() {
         saveToCollectionDialog.setContentView(R.layout.save_collection_dialog)
         collectionAlert = saveToCollectionDialog.findViewById(R.id.collection_header_alert)!!
         saveCollectionButton = saveToCollectionDialog.findViewById(R.id.save_button)!!
-        saveCollectionButton.setOnClickListener {
-            saveCollectionButton.isEnabled = false
-            searchResultsViewModel.addEntryToCollections()
+        val alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
+        removeSaveButton = saveToCollectionDialog.findViewById(R.id.remove_button)!!
+        removeSaveButton.setOnClickListener {
+            saveToCollectionDialog.dismiss()
+            alertDialogBuilder
+                .setTitle("Remove from saved and collections?")
+                .setMessage("Removing this save will also remove it from all collections")
+                .setPositiveButton("REMOVE") { _, _ ->
+                    searchResultsViewModel.unsaveEntry(true)
+                }.setNegativeButton("CANCEL", null).create().show()
         }
 
         val builderRecyclerView = saveToCollectionDialog.findViewById<RecyclerView>(R.id.collection_container)!!

@@ -92,10 +92,16 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    fun unsaveEntry() {
+    fun saveToCollections() {
         viewModelScope.launch {
-            val hasSave = _saveCollections.value.any { it.saved }
-            if (hasSave) {
+            _uiEvent.emit(SearchUiEvent.ShowAddCollectionDialog)
+        }
+    }
+
+    fun unsaveEntry(forceRemove: Boolean = false) {
+        viewModelScope.launch {
+            val showCollections = !forceRemove && _saveCollections.value.any { it.saved }
+            if (showCollections) {
                 oldCollections = ArrayList(_saveCollections.value)
                 _uiEvent.emit(SearchUiEvent.ShowUpdateCollectionDialog)
             } else {

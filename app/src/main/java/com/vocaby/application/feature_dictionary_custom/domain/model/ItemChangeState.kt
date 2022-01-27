@@ -42,7 +42,7 @@ open class ItemChangeState<T> (
     }
 
     val addedItems: List<T> get() = ArrayList(itemsAdded.values)
-    val addedKeySet: HashSet<String> get() = HashSet(itemsAdded.keys)
+    val addedKeySet: HashSet<String?> get() = HashSet(itemsAdded.keys)
     val deletedItems: List<T> get() = ArrayList(itemsDeleted.values)
     val updatedItems: List<T> get() = ArrayList(itemsUpdated.values)
 

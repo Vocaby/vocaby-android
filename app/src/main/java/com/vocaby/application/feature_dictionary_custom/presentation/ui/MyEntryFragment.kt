@@ -77,7 +77,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             entryViewModel.reinitializeEntries()
         }
 
-        entryViewModel.entries.observe(viewLifecycleOwner, { fetchState ->
+        entryViewModel.entries.observe(viewLifecycleOwner) { fetchState ->
             when (fetchState) {
                 is GenericState.Success -> {
                     fetchProgress.visibility = View.GONE
@@ -94,11 +94,11 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                     fetchProgress.visibility = View.GONE
                 }
             }
-        })
+        }
 
-        entryViewModel.customEntryCount.observe(viewLifecycleOwner, { count ->
-                entryCountView.text = Formatter.cleanNumber(count)
-        })
+        entryViewModel.customEntryCount.observe(viewLifecycleOwner) { count ->
+            entryCountView.text = Formatter.cleanNumber(count)
+        }
 
         entryViewModel.entryResult.observe(viewLifecycleOwner) { itemPayload ->
             when (itemPayload.state) {
