@@ -1,24 +1,24 @@
 package com.vocaby.application.feature_save.domain.use_cases.collection
+
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
-import com.vocaby.application.feature_save.common.Constants
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
 import com.vocaby.application.states.UserInputState
 import javax.inject.Inject
 
-class AddSaveCollectionUseCase @Inject constructor(
+class UpdateSaveCollectionUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val saveRepository: SaveRepository
 ) {
-    suspend operator fun invoke(collectionName: String, collections: List<SaveCollectionModel>): UserInputState {
-        val sanitized = collectionName.trim()
+    suspend operator fun invoke(collectionId: Int, oldName: String, newName: String, collections: List<SaveCollectionModel>): UserInputState {
+        val sanitized = newName.trim()
         return when {
+            oldName == newName -> {
+                UserInputState.NoInput
+            }
             sanitized.isEmpty() -> {
                 UserInputState.EmptyInput
-            }
-            collectionName.length > Constants.MAX_COLLECTION_NAME_LENGTH -> {
-                UserInputState.LongInput
             }
             collections.any { it.collectionName == sanitized } -> {
                 UserInputState.SameInput
@@ -26,12 +26,12 @@ class AddSaveCollectionUseCase @Inject constructor(
             else -> {
                 val userId = userRepository.getUser()
 
-                val collection = SaveCollection(
-                    userId,
-                    sanitized
-                )
+                saveRepository.updateSaveCollection(SaveCollection(
+                    userId = userId,
+                    collectionName = newName,
+                    id = collectionId
+                ))
 
-                saveRepository.addSaveCollection(collection)
                 UserInputState.Valid(sanitized)
             }
         }

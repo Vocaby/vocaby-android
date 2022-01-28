@@ -17,13 +17,15 @@ class SaveCollectionViewModel @Inject constructor(
     private val saveCollectionUseCases: SaveCollectionUseCases,
     private val getSavesAsCollectionUseCase: GetSavesAsCollectionUseCase
 ): ViewModel() {
+    private var collectionId: Int? = null
+    private var selectedCollection: String? = null
     private val _allSaveCollectionState = MutableStateFlow(SaveCollectionModel(0, "All Saved Entries", Date(), 0))
     private val _saveCollectionState = MutableStateFlow<List<SaveCollectionModel>>(LinkedList())
-    private val _createCollectionState = MutableSharedFlow<UserInputState>()
+    private val _uiEvent = MutableSharedFlow<CollectionItemsUiEvent>()
 
     val allSaveCollectionState get() = _allSaveCollectionState.asStateFlow()
     val saveCollectionState get() = _saveCollectionState.asStateFlow()
-    val createCollectionState get() = _createCollectionState.asSharedFlow()
+    val uiEvent get() = _uiEvent.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -39,19 +41,73 @@ class SaveCollectionViewModel @Inject constructor(
         }
     }
 
-    fun updateAllSavesCollection() {
-//        viewModelScope.launch {
-//            val collection = getSavesAsCollectionUseCase()
-//            val new = _saveCollectionState.value.toMutableList()
-//            new[0] = collection
-//            _saveCollectionState.value = new
-//        }
+    fun setCollection(id: Int, collectionName: String) {
+        collectionId = id
+        selectedCollection = collectionName
+    }
+
+    fun updateCollection(newName: String) {
+        val id = collectionId
+        val name = selectedCollection
+        if (id != null && name != null) {
+            viewModelScope.launch {
+                when (saveCollectionUseCases.updateSaveCollectionUseCase(
+                    id,
+                    name,
+                    newName,
+                    _saveCollectionState.value
+                )) {
+                    is UserInputState.SameInput -> {
+                        _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("The collection already exists"))
+                    }
+                    is UserInputState.EmptyInput -> {
+                        _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Please enter a name"))
+                    }
+                    is UserInputState.Valid -> {
+                        _uiEvent.emit(CollectionItemsUiEvent.CloseCollectionDialog)
+                    }
+                    is UserInputState.NoInput -> {
+                        _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Please enter a new name"))
+                    }
+                    else -> {
+                        _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Something went wrong..."))
+                    }
+                }
+            }
+        }
+    }
+
+    fun removeCollection() {
+        collectionId?.let {
+            viewModelScope.launch {
+                saveCollectionUseCases.removeSaveCollectionUseCase(it)
+            }
+        }
+    }
+
+    fun prepareUpdateDialog() {
+        selectedCollection?.let {
+            viewModelScope.launch {
+                _uiEvent.emit(CollectionItemsUiEvent.ShowUpdateDialog(it))
+            }
+        }
     }
 
     fun addSaveCollection(collectionName: String) {
         viewModelScope.launch {
-            saveCollectionUseCases.addSaveCollectionUseCase(collectionName, _saveCollectionState.value).collectLatest {
-                _createCollectionState.emit(it)
+            when (saveCollectionUseCases.addSaveCollectionUseCase(collectionName, _saveCollectionState.value)) {
+                is UserInputState.SameInput -> {
+                    _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("The collection already exists"))
+                }
+                is UserInputState.EmptyInput -> {
+                    _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Please enter a name"))
+                }
+                is UserInputState.Valid -> {
+                    _uiEvent.emit(CollectionItemsUiEvent.CloseCollectionDialog)
+                }
+                else -> {
+                    _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Something went wrong..."))
+                }
             }
         }
     }

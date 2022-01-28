@@ -48,6 +48,19 @@
                 android:fontFamily="@font/sourcesanspro_regular"
                 android:textSize="12sp"
                 android:textColor="@color/black" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+            <ImageButton
+                android:id="@+id/more_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:backgroundTint="@color/white"
+                android:contentDescription="@string/unsave_button_desc"
+                android:paddingTop="0dp"
+                android:src="@drawable/ic_more" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

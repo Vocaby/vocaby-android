@@ -30,4 +30,6 @@ class SaveRepositoryImpl(
     override suspend fun removeSaveCollection(saveCollection: SaveCollection) = saveDao.removeSaveCollection(saveCollection)
     override suspend fun removeSaveFromCollections(collectionItems: List<SaveCollectionItem>) = saveDao.removeSaveFromCollections(collectionItems)
     override suspend fun removeCollectionItem(saveId: Int, collectionId: Int) = saveDao.removeCollectionItem(saveId, collectionId)
+    override suspend fun updateSaveCollection(saveCollection: SaveCollection) = saveDao.updateSaveCollection(saveCollection)
+    override suspend fun updateSaveCollections(saveCollections: List<SaveCollection>) = saveDao.updateSaveCollections(saveCollections)
 }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cfc317220aeab092217af7237deffde5",
+    "identityHash": "8cc9e742312721c71685e3f20c435b5d",
     "entities": [
       {
         "tableName": "vocaby_user",
@@ -228,6 +228,24 @@
             ],
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_save_collection_item_save_id_collection_id` ON `${TABLE_NAME}` (`save_id`, `collection_id`)"
+          },
+          {
+            "name": "index_save_collection_item_save_id",
+            "unique": false,
+            "columnNames": [
+              "save_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_save_collection_item_save_id` ON `${TABLE_NAME}` (`save_id`)"
+          },
+          {
+            "name": "index_save_collection_item_collection_id",
+            "unique": false,
+            "columnNames": [
+              "collection_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_save_collection_item_collection_id` ON `${TABLE_NAME}` (`collection_id`)"
           },
           {
             "name": "index_save_collection_item_collection_item_id",
@@ -750,7 +768,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cfc317220aeab092217af7237deffde5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8cc9e742312721c71685e3f20c435b5d')"
     ]
   }
 }

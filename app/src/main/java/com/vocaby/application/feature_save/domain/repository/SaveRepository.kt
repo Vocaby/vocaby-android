@@ -25,4 +25,6 @@ interface SaveRepository {
     suspend fun removeSaveCollection(saveCollection: SaveCollection)
     suspend fun removeSaveFromCollections(collectionItems: List<SaveCollectionItem>)
     suspend fun removeCollectionItem(saveId: Int, collectionId: Int)
+    suspend fun updateSaveCollection(saveCollection: SaveCollection)
+    suspend fun updateSaveCollections(saveCollections: List<SaveCollection>)
 }

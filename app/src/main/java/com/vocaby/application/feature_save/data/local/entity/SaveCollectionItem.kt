@@ -20,9 +20,9 @@ import java.util.*
     indices = [Index(value=["save_id", "collection_id"], unique=true)]
 )
 data class SaveCollectionItem(
-    @ColumnInfo(name = "save_id")
+    @ColumnInfo(name = "save_id", index = true)
     val saveId: Int = -1,
-    @ColumnInfo(name = "collection_id")
+    @ColumnInfo(name = "collection_id", index = true)
     val collectionId: Int = -1,
     @ColumnInfo(name="last_added")
     val lastAdded: String = Formatter.formatDateToString(Date().time),

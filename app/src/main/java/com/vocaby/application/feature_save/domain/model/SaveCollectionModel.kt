@@ -4,7 +4,7 @@ import java.util.*
 
 data class SaveCollectionModel(
     val id: Int,
-    val name: String,
+    val collectionName: String,
     val lastUpdated: Date,
     val count: Int
 )

@@ -163,4 +163,5 @@
     <string name="update_collection">Update Collection</string>
     <string name="collection_rename">Rename this collection</string>
     <string name="collection_delete">Delete this collection</string>
+    <string name="collection_update_name">Update collection name</string>
 </resources>

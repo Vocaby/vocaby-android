@@ -32,16 +32,16 @@ interface SaveDao {
     @Query("DELETE FROM saves WHERE user_id = :userId")
     suspend fun clearSaves(userId: Int)
 
-    @Query("SELECT col.collection_id as id, col.collection_name as name, col.last_updated as lastUpdated, " +
+    @Query("SELECT col.collection_id as id, col.collection_name as collectionName, col.last_updated as lastUpdated, " +
             "COUNT(item.collection_item_id) as count " +
             "FROM save_collection col LEFT JOIN save_collection_item item ON col.user_id = :userId " +
-            "AND col.collection_id = item.collection_id GROUP BY col.collection_id")
+            "AND col.collection_id = item.collection_id GROUP BY col.collection_id ORDER BY lastUpdated DESC")
     fun getSaveCollectionsFlow(userId: Int): Flow<List<SaveCollectionModel>>
 
-    @Query("SELECT collectionId, MAX(collectionItemId) AS collectionItemId, name, lastUpdated, MAX(saved) AS saved FROM (SELECT col.collection_id AS collectionId, collection_item_id AS collectionItemId, collection_name AS name, col.last_updated AS lastUpdated, 1 AS saved FROM save_collection col INNER JOIN save_collection_item item ON col.user_id = :userId AND col.collection_id = item.collection_id INNER JOIN saves s ON item.save_id = s.save_id AND entry = :entry UNION ALL SELECT collection_id AS collectionId, -1 AS collectionItemId, collection_name AS name, last_updated AS lastUpdated, 0 AS saved FROM save_collection) GROUP BY collectionId, lastUpdated, name ORDER BY lastUpdated ASC")
+    @Query("SELECT collectionId, MAX(collectionItemId) AS collectionItemId, name, lastUpdated, MAX(saved) AS saved FROM (SELECT col.collection_id AS collectionId, collection_item_id AS collectionItemId, collection_name AS name, col.last_updated AS lastUpdated, 1 AS saved FROM save_collection col INNER JOIN save_collection_item item ON col.user_id = :userId AND col.collection_id = item.collection_id INNER JOIN saves s ON item.save_id = s.save_id AND entry = :entry UNION ALL SELECT collection_id AS collectionId, -1 AS collectionItemId, collection_name AS name, last_updated AS lastUpdated, 0 AS saved FROM save_collection) GROUP BY collectionId, lastUpdated, name ORDER BY lastUpdated DESC")
     fun getSaveCollectionsToUpdate(userId: Int, entry: String): Flow<List<UpdateSaveCollectionModel>>
 
-    @Query("SELECT entry FROM save_collection_item i INNER JOIN save_collection c ON c.collection_name = :collectionName AND i.collection_id = c.collection_id AND c.user_id = :userId INNER JOIN saves s ON i.save_id = s.save_id")
+    @Query("SELECT entry FROM save_collection_item i INNER JOIN save_collection c ON c.collection_name = :collectionName AND i.collection_id = c.collection_id AND c.user_id = :userId INNER JOIN saves s ON i.save_id = s.save_id ORDER BY last_updated DESC")
     fun getCollectionItemsFlow(userId: Int, collectionName: String): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -52,6 +52,12 @@ interface SaveDao {
 
     @Delete
     suspend fun removeSaveCollection(saveCollection: SaveCollection)
+
+    @Update
+    suspend fun updateSaveCollection(saveCollection: SaveCollection)
+
+    @Update
+    suspend fun updateSaveCollections(saveCollections: List<SaveCollection>)
 
     @Delete
     suspend fun removeSaveFromCollections(collectionItems: List<SaveCollectionItem>)

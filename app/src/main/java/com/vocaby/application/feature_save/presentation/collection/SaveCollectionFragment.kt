@@ -12,24 +12,31 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
-import com.vocaby.application.states.UserInputState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private val saveCollectionViewModel: SaveCollectionViewModel by activityViewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var saveCollectionAdapter: SaveCollectionAdapter
-    private lateinit var collectionCreateDialog: BottomSheetDialog
+    private lateinit var collectionDialog: BottomSheetDialog
     private lateinit var addCollectionButton: Button
     private lateinit var collectionAlert: TextView
-    private lateinit var collectionCreateButton: Button
+    private lateinit var collectionEdit: EditText
+    private lateinit var dialogHeader: TextView
+    private lateinit var dialogButton: Button
+    private lateinit var collectionUpdateDialog: BottomSheetDialog
+    private lateinit var collectionEditNameButton: Button
+    private lateinit var collectionDeleteButton: Button
     private lateinit var allSaveCard: CardView
     private lateinit var allSaveHeader: TextView
     private lateinit var allSaveCount: TextView
@@ -45,56 +52,72 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
         allSaveHeader = view.findViewById(R.id.collection_header)
         allSaveCount = view.findViewById(R.id.collection_counter)
 
-        setupButtons()
+        setupCollectionDialog()
         setupRecyclerView()
-        setupCollectionCreateDialog()
+        setupUpdateDialog()
+        setupButtons()
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launchWhenStarted {
-            saveCollectionViewModel.allSaveCollectionState.collectLatest {
-                allSaveHeader.text = it.name
-                allSaveCount.text = "${it.count} Saved Entries"
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                saveCollectionViewModel.uiEvent.collectLatest { event ->
+                    when (event) {
+                        is CollectionItemsUiEvent.CloseCollectionDialog -> {
+                            collectionDialog.dismiss()
+                        }
+                        is CollectionItemsUiEvent.ShowUpdateDialog -> {
+                            collectionUpdateDialog.dismiss()
+                            dialogHeader.setText(R.string.collection_update_name)
+                            dialogButton.setText(R.string.update_collection)
+                            dialogButton.setOnClickListener {
+                                dialogButton.isEnabled = false
+                                saveCollectionViewModel.updateCollection(collectionEdit.text.toString())
+                            }
+                            collectionEdit.setText(event.collectionName)
+                            collectionDialog.show()
+                        }
+                        is CollectionItemsUiEvent.ShowCollectionAlert -> {
+                            collectionAlert.visibility = View.VISIBLE
+                            collectionAlert.text = event.message
+                            dialogButton.isEnabled = true
+                        }
+                    }
+                }
             }
         }
 
-        lifecycleScope.launchWhenStarted {
-            saveCollectionViewModel.saveCollectionState.collectLatest {
-                saveCollectionAdapter.submitList(it)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                saveCollectionViewModel.allSaveCollectionState.collectLatest {
+                    allSaveHeader.text = it.collectionName
+                    val countText = "${it.count} Saved Entries"
+                    allSaveCount.text = countText
+                }
             }
         }
 
-        lifecycleScope.launchWhenStarted {
-            saveCollectionViewModel.createCollectionState.collectLatest { state ->
-                when(state) {
-                    is UserInputState.EmptyInput -> {
-                        collectionAlert.setText(R.string.collection_name_empty)
-                        collectionAlert.visibility = View.VISIBLE
-                        collectionCreateButton.isEnabled = true
-                    }
-                    is UserInputState.LongInput -> {
-                        collectionAlert.setText(R.string.collection_name_long)
-                        collectionAlert.visibility = View.VISIBLE
-                        collectionCreateButton.isEnabled = true
-                    }
-                    is UserInputState.SameInput -> {
-                        collectionAlert.setText(R.string.collection_name_exists)
-                        collectionAlert.visibility = View.VISIBLE
-                        collectionCreateButton.isEnabled = true
-                    }
-                    else -> {
-                        collectionAlert.visibility = View.INVISIBLE
-                        collectionCreateDialog.dismiss()
-                    }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                saveCollectionViewModel.saveCollectionState.collectLatest {
+                    saveCollectionAdapter.submitList(it)
                 }
             }
         }
     }
 
     private fun setupButtons() {
-        addCollectionButton.setOnClickListener { collectionCreateDialog.show() }
+        addCollectionButton.setOnClickListener {
+            dialogHeader.setText(R.string.add_a_save_collection)
+            dialogButton.setText(R.string.create)
+            dialogButton.setOnClickListener {
+                dialogButton.isEnabled = false
+                saveCollectionViewModel.addSaveCollection(collectionEdit.text.toString())
+            }
+            collectionDialog.show()
+        }
 
         allSaveCard.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -116,28 +139,24 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
         recyclerView.adapter = saveCollectionAdapter
     }
 
-    private fun setupCollectionCreateDialog() {
-        collectionCreateDialog =
+    private fun setupCollectionDialog() {
+        collectionDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        collectionCreateDialog.setContentView(R.layout.dialog_collection_create)
-        val collectionEdit: EditText = collectionCreateDialog.findViewById(R.id.collection_name_input)!!
-        collectionAlert = collectionCreateDialog.findViewById(R.id.collection_header_alert)!!
-        collectionCreateButton = collectionCreateDialog.findViewById(R.id.dialog_collection_create_button)!!
-
-        collectionCreateButton.setOnClickListener {
-            collectionCreateButton.isEnabled = false
-            saveCollectionViewModel.addSaveCollection(collectionEdit.text.toString())
-        }
+        collectionDialog.setContentView(R.layout.dialog_collection)
+        collectionEdit = collectionDialog.findViewById(R.id.collection_name_input)!!
+        collectionAlert = collectionDialog.findViewById(R.id.collection_header_alert)!!
+        dialogHeader = collectionDialog.findViewById(R.id.dialog_header)!!
+        dialogButton = collectionDialog.findViewById(R.id.dialog_collection_create_button)!!
 
         // Clear content on show
-        collectionCreateDialog.setOnShowListener {
+        collectionDialog.setOnDismissListener {
             collectionEdit.clearFocus()
             collectionEdit.text?.clear()
             collectionAlert.visibility = View.INVISIBLE
-            collectionCreateButton.isEnabled = true
+            dialogButton.isEnabled = true
         }
 
-        val counter = collectionCreateDialog.findViewById<TextView>(R.id.character_counter)!!
+        val counter = collectionDialog.findViewById<TextView>(R.id.character_counter)!!
         val textWatcher: TextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
@@ -150,6 +169,25 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
         collectionEdit.addTextChangedListener(textWatcher)
     }
 
+    private fun setupUpdateDialog() {
+        collectionUpdateDialog =
+            BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        collectionUpdateDialog.setContentView(R.layout.dialog_collection_item_action)
+
+        collectionEditNameButton = collectionUpdateDialog.findViewById(R.id.edit_collection_name_button)!!
+        collectionDeleteButton = collectionUpdateDialog.findViewById(R.id.delete_collection_button)!!
+
+        collectionEditNameButton.setOnClickListener {
+            saveCollectionViewModel.prepareUpdateDialog()
+        }
+
+        collectionDeleteButton.setOnClickListener {
+            saveCollectionViewModel.removeCollection()
+            collectionDeleteButton.isEnabled = false
+            collectionUpdateDialog.dismiss()
+        }
+    }
+
     override fun onItemTouch(name: String, id: Int) {
         parentFragmentManager.beginTransaction()
             .setCustomAnimations(
@@ -160,5 +198,10 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
             ).add(R.id.save_collection_fragment_container, SaveCollectionItemsFragment.newInstance(name, false, id))
             .addToBackStack(null)
             .commit()
+    }
+
+    override fun onItemUpdate(collectionName: String, collectionId: Int) {
+        saveCollectionViewModel.setCollection(collectionId, collectionName)
+        collectionUpdateDialog.show()
     }
 }

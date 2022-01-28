@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -68,20 +69,26 @@ class SaveCollectionAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
         private val collectionHeader: TextView = itemView.findViewById(R.id.collection_header)
         private val collectionCounter: TextView = itemView.findViewById(R.id.collection_counter)
-        val cardView: CardView = itemView.findViewById(R.id.card_container)
+        private val cardView: CardView = itemView.findViewById(R.id.card_container)
+        private val moreButton: AppCompatImageButton = itemView.findViewById(R.id.more_button)
 
         fun bind(collectionModel: SaveCollectionModel) {
-            collectionHeader.text = collectionModel.name
+            collectionHeader.text = collectionModel.collectionName
             val countText = "${Formatter.cleanNumber(collectionModel.count)} Saved"
             collectionCounter.text = countText
 
             cardView.setOnClickListener {
-                interaction.onItemTouch(collectionModel.name, collectionModel.id)
+                interaction.onItemTouch(collectionModel.collectionName, collectionModel.id)
+            }
+
+            moreButton.setOnClickListener {
+                interaction.onItemUpdate(collectionModel.collectionName, collectionModel.id)
             }
         }
     }
 
     interface Interaction {
         fun onItemTouch(name: String, id: Int)
+        fun onItemUpdate(collectionName: String, collectionId: Int)
     }
 }

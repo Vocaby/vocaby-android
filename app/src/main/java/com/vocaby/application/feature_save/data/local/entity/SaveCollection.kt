@@ -19,9 +19,9 @@ import java.util.*
 )
 data class SaveCollection(
     @ColumnInfo(name = "user_id")
-    val userId: Int,
+    val userId: Int = 1,
     @ColumnInfo(name = "collection_name")
-    val collectionName: String,
+    val collectionName: String = "Default",
     @ColumnInfo(name="last_updated")
     val lastUpdated: String = Formatter.formatDateToString(Date().time),
     @PrimaryKey(autoGenerate = true)

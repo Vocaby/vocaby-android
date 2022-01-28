@@ -6,19 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
 import com.vocaby.application.feature_save.presentation.collection.SaveCollectionFragment
-import com.vocaby.application.feature_save.presentation.collection.SaveCollectionViewModel
-
 
 class SaveFragment : Fragment() {
     private lateinit var onBackPressedCallback: OnBackPressedCallback
-    private val saveCollectionViewModel: SaveCollectionViewModel by activityViewModels()
 
     override fun onResume() {
         super.onResume()
-        saveCollectionViewModel.updateAllSavesCollection()
         onBackPressedCallback.isEnabled = true
     }
 
