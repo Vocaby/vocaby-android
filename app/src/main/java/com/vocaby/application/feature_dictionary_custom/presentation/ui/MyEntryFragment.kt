@@ -208,7 +208,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                counter.text = count.toString()
+                counter.text = s.length.toString()
             }
 
             override fun afterTextChanged(s: Editable) {}
