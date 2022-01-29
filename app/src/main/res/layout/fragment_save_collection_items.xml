@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_height="74dp"
         android:orientation="horizontal"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
@@ -42,7 +42,7 @@
             android:fontFamily="@font/sourcesanspro_semibold"
             android:textColor="@color/black"
             android:textSize="14sp"
-            app:layout_constraintVertical_bias="0.4"
+            app:layout_constraintVertical_bias="0.36"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

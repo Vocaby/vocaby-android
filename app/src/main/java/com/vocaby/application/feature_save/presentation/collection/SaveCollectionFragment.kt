@@ -3,6 +3,7 @@ package com.vocaby.application.feature_save.presentation.collection
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +15,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
+import com.vocaby.application.core.util.GridItemDecoration
 import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -26,7 +30,8 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private lateinit var recyclerView: RecyclerView
     private lateinit var saveCollectionAdapter: SaveCollectionAdapter
     private lateinit var collectionDialog: BottomSheetDialog
-    private lateinit var addCollectionButton: Button
+    private lateinit var addCollectionButton: ExtendedFloatingActionButton
+    private lateinit var appBar: AppBarLayout
     private lateinit var collectionAlert: TextView
     private lateinit var collectionEdit: EditText
     private lateinit var dialogHeader: TextView
@@ -35,7 +40,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private lateinit var collectionEditNameButton: Button
     private lateinit var collectionDeleteButton: Button
     private lateinit var allSaveCard: CardView
-    private lateinit var allSaveHeader: TextView
+    // private lateinit var allSaveHeader: TextView
     private lateinit var allSaveCount: TextView
 
     override fun onCreateView(
@@ -44,11 +49,13 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_save_collection, container, false)
         recyclerView = view.findViewById(R.id.save_collection_container)
+        appBar = view.findViewById(R.id.all_saves_app_bar)
         addCollectionButton = view.findViewById(R.id.add_collection_button)
         allSaveCard = view.findViewById(R.id.all_saves)
-        allSaveHeader = view.findViewById(R.id.collection_header)
+        // allSaveHeader = view.findViewById(R.id.collection_header)
         allSaveCount = view.findViewById(R.id.collection_counter)
 
+        appBar.outlineProvider = null
         setupCollectionDialog()
         setupRecyclerView()
         setupUpdateDialog()
@@ -89,8 +96,12 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
 
         launchAndRepeatWithViewLifecycle {
             saveCollectionViewModel.allSaveCollectionState.collectLatest {
-                allSaveHeader.text = it.collectionName
-                val countText = "${it.count} Saved Entries"
+                // allSaveHeader.text = it.collectionName
+                val countText = if (it.count < 2) {
+                    "${it.count} Saved Entry"
+                } else {
+                    "${it.count} Saved Entries"
+                }
                 allSaveCount.text = countText
             }
         }
@@ -129,6 +140,8 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private fun setupRecyclerView() {
         recyclerView.layoutManager = GridLayoutManager(requireActivity().applicationContext, 2)
         recyclerView.setHasFixedSize(true)
+        val margin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12f, requireActivity().applicationContext.resources.displayMetrics)
+        recyclerView.addItemDecoration(GridItemDecoration(margin.toInt()))
         saveCollectionAdapter = SaveCollectionAdapter(this)
         recyclerView.adapter = saveCollectionAdapter
     }

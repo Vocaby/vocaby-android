@@ -19,12 +19,15 @@
         <meta-data android:name="com.bugsnag.android.API_KEY"
             android:value="c50224dde34b12f79fe666d9b1b80910"/>
         <activity
+            android:theme="@style/Theme.VocabyAndroid"
             android:name="com.vocaby.application.feature_datatransfer.presentation.DataTransferActivity"
             android:exported="false" />
         <activity
+            android:theme="@style/Theme.VocabyAndroid"
             android:name="com.vocaby.application.feature_dictionary_custom.presentation.ui.EntryGroupBuilderActivity"
             android:exported="true" />
         <activity
+            android:theme="@style/Theme.VocabyAndroid"
             android:name="com.vocaby.application.feature_dictionary_custom.presentation.ui.EntryBuilderActivity"
             android:exported="true" />
         <activity
