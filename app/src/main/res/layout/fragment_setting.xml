@@ -88,60 +88,31 @@
                         android:textColor="@color/black"
                         android:textSize="12sp"/>
                 </LinearLayout>
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/notification_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:checked="false"
+                    android:layout_marginStart="@dimen/container_gap_margin"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
-            <LinearLayout
+            <com.vocaby.vocabywidgets.DescriptiveButtonView
+                android:id="@+id/notification_collection_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingTop="@dimen/header_gap"
-                android:paddingBottom="@dimen/header_gap"
-                android:layout_marginStart="@dimen/container_side_margin"
-                android:layout_marginEnd="@dimen/container_side_margin">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sourcesanspro_semibold"
-                    android:text="@string/notification_save_collection"
-                    android:textColor="@color/colorPrimaryAccent"
-                    android:textSize="14sp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:scrollbars="none"
-                    android:text="All Saves"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"/>
-            </LinearLayout>
-            <LinearLayout
+                android:enabled="false"
+                app:headerText="@string/notification_save_collection"
+                app:descriptionText="All Saves"
+                app:headerColor="@color/button_header_color"
+                app:descriptionColor="@color/button_description_color" />
+            <com.vocaby.vocabywidgets.DescriptiveButtonView
+                android:id="@+id/notification_frequency_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingTop="@dimen/header_gap"
-                android:paddingBottom="@dimen/header_gap"
-                android:layout_marginStart="@dimen/container_side_margin"
-                android:layout_marginEnd="@dimen/container_side_margin">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sourcesanspro_semibold"
-                    android:text="@string/notification_frequency_header"
-                    android:textColor="@color/colorPrimaryAccent"
-                    android:textSize="14sp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:scrollbars="none"
-                    android:text="15 minutes"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"/>
-            </LinearLayout>
+                app:headerText="@string/notification_frequency_header"
+                app:descriptionText="15 minutes"
+                app:headerColor="@color/button_header_color"
+                app:descriptionColor="@color/button_description_color" />
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="match_parent"
@@ -179,9 +150,11 @@
                         android:textColor="@color/black"
                         android:textSize="12sp"/>
                 </LinearLayout>
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/connections_switch"
                     android:layout_width="wrap_content"
+                    android:layout_marginStart="@dimen/container_gap_margin"
+
                     android:layout_height="match_parent"
                     android:checked="true"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
@@ -231,10 +204,12 @@
                         android:textColor="@color/black"
                         android:textSize="12sp"/>
                 </LinearLayout>
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/data_share_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/container_gap_margin"
+
                     android:checked="true"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>

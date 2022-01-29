@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DescriptiveButtonView">
+        <attr name="android:enabled" />
+        <attr name="headerText" format="string" />
+        <attr name="descriptionText" format="string" />
+        <attr name="headerColor" format="reference" />
+        <attr name="descriptionColor" format="reference" />
+    </declare-styleable>
+</resources>

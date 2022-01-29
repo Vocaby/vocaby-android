@@ -140,7 +140,7 @@
     <string name="connections">Connections</string>
     <string name="search_custom_entry_hint">Filter entries…</string>
     <string name="notification_toggle_header">Get Saves Notification</string>
-    <string name="notification_toggle_body">Get notified of the words that you saved for review</string>
+    <string name="notification_toggle_body">Get notified of the entries that you saved for periodic review.</string>
     <string name="notification_frequency_header">Notification Frequency</string>
     <string name="notification_save_collection">Save Collection</string>
     <string name="data_transfer">Data Transfer</string>

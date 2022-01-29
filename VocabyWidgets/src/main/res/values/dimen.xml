@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="radius">4dp</dimen>
+    <dimen name="container_gap_margin">12dp</dimen>
+    <dimen name="container_side_margin">24dp</dimen>
+    <dimen name="header_gap">12dp</dimen>
+</resources>
