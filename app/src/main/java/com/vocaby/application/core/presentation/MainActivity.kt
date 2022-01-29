@@ -4,11 +4,13 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bugsnag.android.Bugsnag
@@ -19,7 +21,10 @@ import com.vocaby.application.feature_dictionary.presentation.dictionary.Diction
 import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
 import com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -40,25 +45,50 @@ open class MainActivity : AppCompatActivity() {
     private val settingViewModel: SettingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        val content: View = findViewById(android.R.id.content)
+        content.viewTreeObserver.addOnPreDrawListener(
+            object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    return if (profileViewModel.isReady) {
+                        content.viewTreeObserver.removeOnPreDrawListener(this)
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+        )
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        profileViewModel.setupUser()
 
-        if (settingViewModel.isDataShareEnabled()) Bugsnag.start(this)
         dictionaryViewModel.clearCache()
-
         setupNotification()
         setupNavigation()
+        collect()
     }
 
-    override fun onStart() {
-        super.onStart()
-        applicationSharedPref.registerOnSharedPreferenceChangeListener(mPrefsListener)
-    }
+    private fun collect() {
+        launchAndRepeatWithViewLifecycle {
+            val enabled = settingViewModel.dataSettings.first()
+            if (enabled) Bugsnag.start(this@MainActivity)
+        }
 
-    override fun onStop() {
-        super.onStop()
-        applicationSharedPref.unregisterOnSharedPreferenceChangeListener(mPrefsListener)
+        launchAndRepeatWithViewLifecycle {
+            settingViewModel.notificationSettings.collect { model ->
+                if (model.enabled) {
+                    alarmManager.setRepeating(
+                        AlarmManager.RTC_WAKEUP,
+                        System.currentTimeMillis(),
+                        1000L * 60 * model.minutes,
+                        pendingIntent
+                    )
+                } else {
+                    alarmManager.cancel(pendingIntent)
+                }
+            }
+        }
     }
 
     private fun setupNotification() {
@@ -96,41 +126,6 @@ open class MainActivity : AppCompatActivity() {
                 navigationView.menu.getItem(position).isChecked = true
             }
         })
-    }
-
-    private val mPrefsListener = OnSharedPreferenceChangeListener {
-        sharedPreferences: SharedPreferences, key: String ->
-        when (key) {
-            getString(R.string.pref_notification_key) -> updateNotificationStatus(sharedPreferences, key)
-            getString(R.string.pref_notification_frequency_key) ->
-                updateNotificationFrequency(sharedPreferences, getString(R.string.pref_notification_key))
-        }
-    }
-
-    private fun updateNotificationStatus(sharedPreferences: SharedPreferences, key: String) {
-        if (sharedPreferences.getBoolean(key, false)) {
-            val minutes = sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "15")!!.toInt()
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis(),
-                1000L * 60 * minutes,
-                pendingIntent
-            )
-        } else {
-            alarmManager.cancel(pendingIntent)
-        }
-    }
-
-    private fun updateNotificationFrequency(sharedPreferences: SharedPreferences, key: String) {
-        if (sharedPreferences.getBoolean(key, false)) {
-            val minutes = sharedPreferences.getString(getString(R.string.pref_notification_frequency_key), "15")!!.toInt()
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis(),
-                1000L * 60 * minutes,
-                pendingIntent
-            )
-        }
     }
 
 

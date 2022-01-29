@@ -2,8 +2,10 @@ package com.vocaby.application.feature_profile.domain.use_case
 
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 
-class GetChartModeUseCase(
+class UpdateDataShareSettingsUseCase(
     private val userRepository: UserRepository
 ) {
-    operator fun invoke(): Boolean = userRepository.getChartMode()
+    suspend operator fun invoke(enabled: Boolean) {
+        userRepository.setDataShareSettings(enabled)
+    }
 }

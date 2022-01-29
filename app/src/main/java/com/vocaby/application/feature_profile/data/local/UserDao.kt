@@ -17,28 +17,6 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createUser(user: User): Long
 
-    /** --------------------- SAVES -------------------- **/
-//    @Query("SELECT entry_id FROM saves WHERE user_id = :userId ORDER BY save_id DESC")
-//    fun getSavesFlow(userId: Int)
-//
-//    @Query("SELECT entry_id FROM saves WHERE user_id = :userId ORDER BY save_id ASC")
-//    suspend fun getSaves(userId: Int)
-
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    suspend fun addSave(userSave: UserSave)
-//
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    suspend fun addSaves(userSaves: List<UserSave>)
-//
-//    @Query("DELETE FROM saves WHERE save_id = :saveId")
-//    suspend fun removeSave(saveId: Int)
-//
-//    @Query("DELETE FROM saves WHERE user_id = :userId")
-//    suspend fun clearSaves(userId: Int)
-//
-//    @Query("SELECT EXISTS(SELECT 1 FROM saves)")
-//    fun hasSave(userId: Int, entry: String): Flow<Int>
-
     /** --------------------- DATA -------------------- **/
     @Insert
     suspend fun recordVisit(dictionaryViewCount: DictionaryViewCount)

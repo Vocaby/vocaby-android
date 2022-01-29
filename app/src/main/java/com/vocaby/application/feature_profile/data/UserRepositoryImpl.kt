@@ -1,26 +1,54 @@
 package com.vocaby.application.feature_profile.data
 
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import com.vocaby.app.UserSettings
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.feature_profile.common.Constants
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_profile.data.local.UserDao
 import com.vocaby.application.feature_profile.data.local.entity.CustomDictionaryViewCount
 import com.vocaby.application.feature_profile.data.local.entity.DictionaryViewCount
 import com.vocaby.application.feature_profile.data.local.entity.User
+import com.vocaby.application.feature_profile.domain.model.NotificationFrequency
 import com.vocaby.application.feature_profile.domain.model.VisitData
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
-import com.vocaby.application.feature_save.data.local.entity.UserSave
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import java.io.IOException
 import java.util.*
 
 class UserRepositoryImpl constructor(
     private val dao: UserDao,
-    private val userSharedPref: SharedPreferences
+    private val userDataStore: DataStore<com.vocaby.app.User>,
+    private val userSettingsDataStore: DataStore<UserSettings>,
 ): UserRepository {
-    override suspend fun setupUser(userId: Int): Int{
+    override val settingsFlow: Flow<UserSettings> = userSettingsDataStore.data.catch { exception ->
+        if (exception is IOException) {
+            Logger.reportErrorToBugsnag(exception)
+            emit(UserSettings.getDefaultInstance())
+        } else {
+            throw exception
+        }
+    }
+
+    override suspend fun setupBaseUser(userId: Int): Int{
         val exists = dao.checkUser(userId)
         if (!exists) {
             val id = dao.createUser(User()).toInt()
-            userSharedPref.edit().putInt(Constants.CURRENT_USER_ID_KEY, id).apply()
+            userSettingsDataStore.updateData { preferences ->
+                preferences.toBuilder()
+                    .setReportErrorEnabled(true)
+                    .setUpdateDictionaryEnabled(true)
+                    .setChartMode(UserSettings.ChartMode.MONTHLY)
+                    .setNotificationCollectionId(-1)
+                    .setNotificationFrequency(NotificationFrequency.FIFTEEN_MINUTES.value)
+                    .setNotificationEnabled(false)
+                    .build()
+            }
+
+            userDataStore.updateData { preferences ->
+                preferences.toBuilder().setUserId(id).build()
+            }
 
             return id
         }
@@ -28,16 +56,7 @@ class UserRepositoryImpl constructor(
         return userId
     }
 
-    override suspend fun getUser(): Int = userSharedPref.getInt(Constants.CURRENT_USER_ID_KEY, 1)
-
-
-    override suspend fun getSavedWords(userId: Int): List<String> {
-        return arrayListOf()
-    }
-
-    override suspend fun addSaveItems(saves: List<UserSave>) {
-        // dao.addSaves(saves)
-    }
+    override suspend fun getUser(): Int = userDataStore.data.first().userId
 
 
     override suspend fun recordVisit(userId: Int, entryId: Int) {
@@ -48,18 +67,23 @@ class UserRepositoryImpl constructor(
         dao.recordCustomVisit(CustomDictionaryViewCount(0, userId, entryId, Formatter.formatDateToString(Date().time)))
     }
 
-    override fun updateChartMode(displayAll: Boolean) {
-        userSharedPref.edit().putBoolean(Constants.CHART_MODE_ID, displayAll).apply()
+    override suspend fun updateChartMode(mode: UserSettings.ChartMode) {
+        userSettingsDataStore.updateData { preferences ->
+            preferences.toBuilder().setChartMode(mode).build()
+        }
     }
 
-    override fun getChartMode(): Boolean = userSharedPref.getBoolean(Constants.CHART_MODE_ID, false)
-
-    override suspend fun getChartData(size: Int): List<VisitData> {
-        val displayAll = userSharedPref.getBoolean(Constants.CHART_MODE_ID, false)
-        return if (displayAll) {
-            dao.getAllSearchData(size)
-        } else {
-            dao.getMonthlySearchData(size)
+    override suspend fun getChartData(size: Int, chartMode: UserSettings.ChartMode): List<VisitData> {
+        return when(chartMode) {
+            UserSettings.ChartMode.ALL -> {
+                dao.getAllSearchData(size)
+            }
+            UserSettings.ChartMode.MONTHLY -> {
+                dao.getMonthlySearchData(size)
+            }
+            UserSettings.ChartMode.UNRECOGNIZED -> {
+                dao.getAllSearchData(size)
+            }
         }
     }
 
@@ -68,15 +92,35 @@ class UserRepositoryImpl constructor(
         dao.deleteCustomVisit(userId)
     }
 
-    override fun isUseConnectionEnabled() = userSharedPref.getBoolean(Constants.CONNECTION_ID, true)
+    override suspend fun isDictionaryUpdateEnabled(): Boolean = userSettingsDataStore.data.first().updateDictionaryEnabled
 
-    override fun setConnectionSettings(enabled: Boolean) {
-        userSharedPref.edit().putBoolean(Constants.CONNECTION_ID, enabled).apply()
+    override suspend fun setNotificationSettings(enabled: Boolean) {
+        userSettingsDataStore.updateData { preferences ->
+            preferences.toBuilder().setNotificationEnabled(enabled).build()
+        }
     }
 
-    override fun isDataShareEnabled() = userSharedPref.getBoolean(Constants.DATA_SHARE_ID, true)
+    override suspend fun setConnectionSettings(enabled: Boolean) {
+        userSettingsDataStore.updateData { preferences ->
+            preferences.toBuilder().setUpdateDictionaryEnabled(enabled).build()
+        }
+    }
 
-    override fun setDataShareSettings(enabled: Boolean) {
-        userSharedPref.edit().putBoolean(Constants.DATA_SHARE_ID, enabled).apply()
+    override suspend fun setDataShareSettings(enabled: Boolean) {
+        userSettingsDataStore.updateData { preferences ->
+            preferences.toBuilder().setReportErrorEnabled(enabled).build()
+        }
+    }
+
+    override suspend fun setNotificationCollection(id: Int) {
+        userSettingsDataStore.updateData { preferences ->
+            preferences.toBuilder().setNotificationCollectionId(id).build()
+        }
+    }
+
+    override suspend fun setNotificationFrequency(seconds: Int) {
+        userSettingsDataStore.updateData { preferences ->
+            preferences.toBuilder().setNotificationFrequency(seconds).build()
+        }
     }
 }

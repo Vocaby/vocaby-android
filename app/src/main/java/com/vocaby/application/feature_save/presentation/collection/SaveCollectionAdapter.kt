@@ -59,7 +59,6 @@ class SaveCollectionAdapter(
 
     fun submitList(list: List<SaveCollectionModel>) {
         differ.submitList(list)
-        notifyDataSetChanged()
     }
 
     class SaveCollectionAdapterViewHolder

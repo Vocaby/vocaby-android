@@ -86,7 +86,9 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
                 }
             }) {
                 val userId = userRepository.getUser()
-                val saves = userRepository.getSavedWords(userId)
+//                val saves = userRepository.getSavedWords(userId)
+                val saves = listOf<String>()
+
                 val prevWord = sp.getString(WIDGET_PREV_KEY + id, "")
                 if (saves.isEmpty()) {
                     val editor = sp.edit()

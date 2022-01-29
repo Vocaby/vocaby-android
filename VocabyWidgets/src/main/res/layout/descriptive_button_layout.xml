@@ -14,12 +14,14 @@
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="false"
         android:fontFamily="@font/sourcesanspro_semibold"
         android:textSize="14sp"/>
     <TextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="false"
         android:fontFamily="@font/sourcesanspro_regular"
         android:layout_marginTop="4dp"
         android:textSize="12sp"/>

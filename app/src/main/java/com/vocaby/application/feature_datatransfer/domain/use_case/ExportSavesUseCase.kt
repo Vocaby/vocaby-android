@@ -17,7 +17,8 @@ class ExportSavesUseCase @Inject constructor(
     operator fun invoke(uri: Uri): Flow<DataTransferState> = flow {
         emit(DataTransferState.InProgress(message = UiText(textResource = R.string.data_transfer_fetching_data)))
         val userId = userRepository.getUser()
-        val saves = userRepository.getSavedWords(userId)
+//        val saves = userRepository.getSavedWords(userId)
+        val saves = listOf<String>()
         if (saves.isEmpty()) {
             emit(DataTransferState.Error(
                 uiText = UiText(textResource = R.string.data_transfer_export_empty)

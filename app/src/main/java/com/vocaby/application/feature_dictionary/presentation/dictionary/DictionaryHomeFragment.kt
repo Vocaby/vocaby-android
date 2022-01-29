@@ -11,11 +11,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter.formatDateToString
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 
@@ -69,7 +69,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launchWhenStarted {
+        launchAndRepeatWithViewLifecycle {
             dictionaryViewModel.dailyPick.collectLatest { dailyPickState ->
                 dateView.text = formatDateToString(Date().time, true, showDay = true)
 
@@ -117,7 +117,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
             }
         }
 
-        lifecycleScope.launchWhenStarted {
+        launchAndRepeatWithViewLifecycle {
             dictionaryViewModel.searchHistory.collectLatest { searchHistory ->
                 searchHistory?.let {
                     searchHistoryAdapter.updateSearchHistory(searchHistory)

@@ -1,6 +1,7 @@
 package com.vocaby.application.feature_profile.domain.use_case
 
 import com.github.mikephil.charting.data.BarEntry
+import com.vocaby.app.UserSettings
 import com.vocaby.application.core.util.Generators
 import com.vocaby.application.feature_profile.common.Constants
 import com.vocaby.application.feature_profile.domain.model.ChartData
@@ -15,9 +16,9 @@ class UpdateChartUseCase(
     private val placeholderColorsList: List<Int>,
     private val colorsList: List<Int>
 ) {
-    operator fun invoke(): Flow<ChartState> = flow {
+    operator fun invoke(mode: UserSettings.ChartMode): Flow<ChartState> = flow {
         emit(ChartState.InProgress)
-        val searchData = userRepository.getChartData(Constants.MAX_BARS)
+        val searchData = userRepository.getChartData(Constants.MAX_BARS, mode)
         val values = arrayListOf<String>()
         val dataEntries = arrayListOf<BarEntry>()
         var maxData = VisitData("", 0)

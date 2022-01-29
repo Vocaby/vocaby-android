@@ -1,13 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.VocabyAndroid.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash</item>
-        <item name="colorPrimary">@color/colorPrimaryAccent</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryAccent</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/white</item>
-    </style>
-
     <!-- Base application theme. -->
     <style name="Theme.VocabyAndroid" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -33,6 +24,13 @@
         <item name="alertDialogTheme">@style/AlertDialogStyle</item>
         <item name="snackbarStyle">@style/Theme.VocabyAndroid.Snackbar</item>
         <item name="snackbarButtonStyle">@style/Theme.VocabyAndroid.SnackbarButton</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.VocabyAndroid</item>
     </style>
 
     <style name="Theme.VocabyAndroid.Snackbar" parent="Widget.MaterialComponents.Snackbar">
@@ -91,10 +89,6 @@
         <item name="dialogPreferenceStyle">@style/Theme.VocabyAndroid.PreferenceDialog</item>
         <item name="switchPreferenceStyle">@style/Theme.VocabyAndroid.PreferenceSwitch</item>
         <item name="switchPreferenceCompatStyle">@style/Theme.VocabyAndroid.PreferenceSwitchCompat</item>
-    </style>
-
-    <style name="Theme.VocabyAndroid.PreferenceCategory" parent="@style/Preference.Category">
-        <item name="android:layout">@layout/custom_preference_category</item>
     </style>
 
 

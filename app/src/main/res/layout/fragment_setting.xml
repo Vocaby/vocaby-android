@@ -100,7 +100,6 @@
                 android:id="@+id/notification_collection_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:enabled="false"
                 app:headerText="@string/notification_save_collection"
                 app:descriptionText="All Saves"
                 app:headerColor="@color/button_header_color"

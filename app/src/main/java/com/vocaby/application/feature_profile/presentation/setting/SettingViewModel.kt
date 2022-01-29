@@ -1,17 +1,128 @@
 package com.vocaby.application.feature_profile.presentation.setting
 
 import androidx.lifecycle.ViewModel
-import com.vocaby.application.feature_profile.domain.repository.UserRepository
+import androidx.lifecycle.viewModelScope
+import com.vocaby.application.feature_profile.domain.model.NotificationFrequency
+import com.vocaby.application.feature_profile.domain.model.NotificationModel
+import com.vocaby.application.feature_profile.domain.use_case.SettingsUseCases
+import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
+import com.vocaby.application.feature_save.domain.use_cases.collection.GetAllCollectionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val repository: UserRepository
+    private val settingsUseCases: SettingsUseCases,
+    private val getAllCollectionsUseCase: GetAllCollectionsUseCase,
 ): ViewModel() {
-    fun isUseConnectionEnabled() = repository.isUseConnectionEnabled()
-    fun setConnectionSettings(enabled: Boolean) = repository.setConnectionSettings(enabled)
+    private var notificationCollections: List<SaveCollectionModel>? = null
+    private var notificationFrequencies: List<NotificationFrequency>? = null
 
-    fun isDataShareEnabled() = repository.isDataShareEnabled()
-    fun setDataShareSettings(enabled: Boolean) = repository.setDataShareSettings(enabled)
+
+    private val _notificationSettings = MutableSharedFlow<NotificationModel>()
+    private val _dictionarySettings = MutableSharedFlow<Boolean>()
+    private val _dataSettings = MutableSharedFlow<Boolean>()
+    private val _uiEvent = MutableSharedFlow<SettingsUiEvent>(replay = 2)
+
+    val notificationSettings get() = _notificationSettings.asSharedFlow()
+    val dictionarySettings get() = _dictionarySettings.asSharedFlow()
+    val dataSettings get() = _dataSettings.asSharedFlow()
+    val uiEvent get() = _uiEvent.asSharedFlow()
+
+    init {
+        viewModelScope.launch {
+            settingsUseCases.getNotificationSettingsUseCase().collectLatest { model ->
+                _notificationSettings.emit(model)
+            }
+        }
+
+        viewModelScope.launch {
+            settingsUseCases.getDictionarySettingsUseCase().collectLatest {
+                _dictionarySettings.emit(it)
+            }
+        }
+
+        viewModelScope.launch {
+            settingsUseCases.getDataSettingsUseCase().collectLatest {
+                _dataSettings.emit(it)
+            }
+        }
+
+        viewModelScope.launch {
+            val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
+            val selectedCollection = settingsUseCases.getSelectedNotificationCollectionUseCase(initModel.collectionId)
+            _uiEvent.emit(SettingsUiEvent.UpdateNotificationCollection(selectedCollection.collectionName))
+            val selectedFrequency  = settingsUseCases.getSelectedNotificationFrequencyUseCase(initModel.minutes)
+            _uiEvent.emit(SettingsUiEvent.UpdateNotificationFrequency(selectedFrequency.uiText))
+        }
+    }
+
+    fun changeChartMode(displayAll: Boolean) {
+        viewModelScope.launch {
+            settingsUseCases.updateChartModeUseCase(displayAll)
+        }
+    }
+
+    fun setNotificationEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsUseCases.updateNotificationSettingsUseCase(enabled)
+        }
+    }
+
+    fun setNotificationFrequency(position: Int) {
+        viewModelScope.launch {
+            settingsUseCases.updateNotificationFrequencyUseCase(position, notificationFrequencies)
+        }
+    }
+
+    fun setNotificationCollection(position: Int) {
+        viewModelScope.launch {
+            settingsUseCases.updateNotificationCollectionUseCase(position, notificationCollections)
+        }
+    }
+
+    fun setDictionaryAutoUpdateEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsUseCases.updateConnectionSettingsUseCase(enabled)
+        }
+    }
+
+    fun setErrorReportEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsUseCases.updateDataShareSettingsUseCase(enabled)
+        }
+    }
+
+    fun getSaveCollections(enabled: Boolean) {
+        if (enabled) {
+            viewModelScope.launch {
+                notificationCollections = getAllCollectionsUseCase()
+                notificationCollections?.let {
+                    _uiEvent.emit(SettingsUiEvent.ShowNotificationCollectionDialog(
+                        title = "Select a save collection",
+                        items = it.map { model -> model.collectionName }.toTypedArray()
+                    ))
+                }
+            }
+        }
+    }
+
+    fun getNotificationFrequencies(enabled: Boolean) {
+        if (enabled) {
+            viewModelScope.launch {
+                notificationFrequencies = settingsUseCases.getNotificationFrequenciesUseCase()
+                notificationFrequencies?.let {
+                    _uiEvent.emit(SettingsUiEvent.ShowNotificationFrequencyDialog(
+                        title = "Select a notification frequency",
+                        items = it.map { model -> model.uiText }.toTypedArray()
+                    ))
+                }
+            }
+        }
+    }
 }

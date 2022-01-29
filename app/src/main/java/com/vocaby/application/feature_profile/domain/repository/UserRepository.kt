@@ -1,26 +1,26 @@
 package com.vocaby.application.feature_profile.domain.repository
 
+import com.vocaby.app.UserSettings
 import com.vocaby.application.feature_profile.domain.model.VisitData
-import com.vocaby.application.feature_save.data.local.entity.UserSave
+import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    /** --------------------- USER -------------------- **/
-    suspend fun setupUser(userId: Int): Int
-    suspend fun getUser(): Int
+    val settingsFlow: Flow<UserSettings>
 
-    /** --------------------- SAVES -------------------- **/
-    suspend fun getSavedWords(userId: Int): List<String>
-    suspend fun addSaveItems(saves: List<UserSave>)
+    /** --------------------- USER -------------------- **/
+    suspend fun setupBaseUser(userId: Int): Int
+    suspend fun getUser(): Int
 
     /** --------------------- DATA -------------------- **/
     suspend fun recordVisit(userId: Int, entryId: Int)
     suspend fun recordCustomVisit(userId: Int, entryId: Int)
-    fun updateChartMode(displayAll: Boolean)
-    fun getChartMode(): Boolean
-    suspend fun getChartData(size: Int): List<VisitData>
+    suspend fun updateChartMode(mode: UserSettings.ChartMode)
+    suspend fun getChartData(size: Int, chartMode: UserSettings.ChartMode): List<VisitData>
     suspend fun eraseVisitData(userId: Int)
-    fun isUseConnectionEnabled(): Boolean
-    fun setConnectionSettings(enabled: Boolean)
-    fun isDataShareEnabled(): Boolean
-    fun setDataShareSettings(enabled: Boolean)
+    suspend fun isDictionaryUpdateEnabled(): Boolean
+    suspend fun setNotificationSettings(enabled: Boolean)
+    suspend fun setConnectionSettings(enabled: Boolean)
+    suspend fun setDataShareSettings(enabled: Boolean)
+    suspend fun setNotificationCollection(id: Int)
+    suspend fun setNotificationFrequency(seconds: Int)
 }

@@ -12,16 +12,13 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
@@ -61,49 +58,46 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                saveCollectionViewModel.uiEvent.collectLatest { event ->
-                    when (event) {
-                        is CollectionItemsUiEvent.CloseCollectionDialog -> {
-                            collectionDialog.dismiss()
+        launchAndRepeatWithViewLifecycle {
+            saveCollectionViewModel.uiEvent.collectLatest { event ->
+                when (event) {
+                    is CollectionItemsUiEvent.CloseCollectionDialog -> {
+                        collectionDialog.dismiss()
+                    }
+                    is CollectionItemsUiEvent.ScrollToTop -> {
+                        recyclerView.smoothScrollToPosition(0)
+                    }
+                    is CollectionItemsUiEvent.ShowUpdateDialog -> {
+                        collectionUpdateDialog.dismiss()
+                        dialogHeader.setText(R.string.collection_update_name)
+                        dialogButton.setText(R.string.update_collection)
+                        dialogButton.setOnClickListener {
+                            dialogButton.isEnabled = false
+                            saveCollectionViewModel.updateCollection(collectionEdit.text.toString())
                         }
-                        is CollectionItemsUiEvent.ShowUpdateDialog -> {
-                            collectionUpdateDialog.dismiss()
-                            dialogHeader.setText(R.string.collection_update_name)
-                            dialogButton.setText(R.string.update_collection)
-                            dialogButton.setOnClickListener {
-                                dialogButton.isEnabled = false
-                                saveCollectionViewModel.updateCollection(collectionEdit.text.toString())
-                            }
-                            collectionEdit.setText(event.collectionName)
-                            collectionDialog.show()
-                        }
-                        is CollectionItemsUiEvent.ShowCollectionAlert -> {
-                            collectionAlert.visibility = View.VISIBLE
-                            collectionAlert.text = event.message
-                            dialogButton.isEnabled = true
-                        }
+                        collectionEdit.setText(event.collectionName)
+                        collectionDialog.show()
+                    }
+                    is CollectionItemsUiEvent.ShowCollectionAlert -> {
+                        collectionAlert.visibility = View.VISIBLE
+                        collectionAlert.text = event.message
+                        dialogButton.isEnabled = true
                     }
                 }
             }
         }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                saveCollectionViewModel.allSaveCollectionState.collectLatest {
-                    allSaveHeader.text = it.collectionName
-                    val countText = "${it.count} Saved Entries"
-                    allSaveCount.text = countText
-                }
+        launchAndRepeatWithViewLifecycle {
+            saveCollectionViewModel.allSaveCollectionState.collectLatest {
+                allSaveHeader.text = it.collectionName
+                val countText = "${it.count} Saved Entries"
+                allSaveCount.text = countText
             }
         }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                saveCollectionViewModel.saveCollectionState.collectLatest {
-                    saveCollectionAdapter.submitList(it)
-                }
+        launchAndRepeatWithViewLifecycle {
+            saveCollectionViewModel.saveCollectionState.collectLatest {
+                saveCollectionAdapter.submitList(it)
             }
         }
     }
@@ -183,7 +177,6 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
 
         collectionDeleteButton.setOnClickListener {
             saveCollectionViewModel.removeCollection()
-            collectionDeleteButton.isEnabled = false
             collectionUpdateDialog.dismiss()
         }
     }

@@ -31,7 +31,7 @@ class ImportSavesUseCase @Inject constructor(
         }
 
         // userRepository.clearSaves(userId)
-        userRepository.addSaveItems(userSaves)
+//        userRepository.addSaveItems(userSaves)
         emit(DataTransferState.Success(message = UiText(textResource = R.string.data_transfer_import_complete)))
     }
 }

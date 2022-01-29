@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 
-class CollectionAdapter() :
+class CollectionAdapter :
     RecyclerView.Adapter<CollectionAdapter.CollectionViewHolder>() {
     private var collections: List<UpdateSaveCollectionModel> = ArrayList()
 

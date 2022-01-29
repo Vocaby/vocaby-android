@@ -1,0 +1,17 @@
+syntax = "proto3";
+option java_package = "com.vocaby.app";
+option java_multiple_files = true;
+
+message UserSettings {
+  bool notification_enabled = 1;
+  int32 notification_collection_id = 2;
+  int32 notification_frequency = 3;
+  bool update_dictionary_enabled = 4;
+  bool report_error_enabled = 5;
+  enum ChartMode {
+    ALL = 0;
+    MONTHLY = 1;
+  }
+
+  ChartMode chart_mode = 6;
+}

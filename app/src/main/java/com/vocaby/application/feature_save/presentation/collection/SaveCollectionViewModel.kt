@@ -104,6 +104,7 @@ class SaveCollectionViewModel @Inject constructor(
                 }
                 is UserInputState.Valid -> {
                     _uiEvent.emit(CollectionItemsUiEvent.CloseCollectionDialog)
+                    _uiEvent.emit(CollectionItemsUiEvent.ScrollToTop)
                 }
                 else -> {
                     _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Something went wrong..."))

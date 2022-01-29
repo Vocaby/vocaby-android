@@ -22,7 +22,7 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
 
         originalData?.let { og ->
             val isCached = dictionaryRepository.checkApiCache(entry)
-            val connectionEnabled = userRepository.isUseConnectionEnabled()
+            val connectionEnabled = userRepository.isDictionaryUpdateEnabled()
             if (!isCached && connectionEnabled) {
                 val retrievedEntry = dictionaryRepository.checkAndGetEntryDataFromApi(
                     entry,

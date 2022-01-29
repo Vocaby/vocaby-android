@@ -3,11 +3,15 @@ package com.vocaby.vocabywidgets
 import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
+import android.view.MotionEvent
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 
 class DescriptiveButtonView: LinearLayoutCompat {
+    private var mOnClickListener: OnClickListener? = null
     private var attributes: TypedArray? = null
     private val headerView: TextView
     private val descriptionView: TextView
@@ -24,7 +28,7 @@ class DescriptiveButtonView: LinearLayoutCompat {
         val view = inflate(context, R.layout.descriptive_button_layout, this)
         headerView = view.findViewById(R.id.header)
         descriptionView = view.findViewById(R.id.description)
-
+        bringToFront()
         attributes = context.obtainStyledAttributes(attrs, R.styleable.DescriptiveButtonView)
         isEnabled = context.theme.resolveAttribute(android.R.attr.enabled, TypedValue(), true)
         headerView.text = attributes?.getString(R.styleable.DescriptiveButtonView_headerText)
@@ -49,5 +53,15 @@ class DescriptiveButtonView: LinearLayoutCompat {
 
     fun setDescription(description: String) {
         descriptionView.text = description
+    }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        super.setOnClickListener(l)
+        mOnClickListener = l
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        onTouchEvent(ev)
+        return super.onInterceptTouchEvent(ev)
     }
 }

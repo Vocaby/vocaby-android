@@ -10,17 +10,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.feature_save.presentation.save.SaveListAdapter
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
@@ -73,23 +70,19 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(view)
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                collectionItemsViewModel.savedWords.collectLatest { saves ->
-                    if (saves.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
-                    else emptyCard.visibility = View.VISIBLE
+        launchAndRepeatWithViewLifecycle {
+            collectionItemsViewModel.savedWords.collectLatest { saves ->
+                if (saves.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
+                else emptyCard.visibility = View.VISIBLE
 
-                    savesAdapter.submitList(saves)
-                }
+                savesAdapter.submitList(saves)
             }
         }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                collectionItemsViewModel.saveCount.collectLatest { count ->
-                    val text= "$count Saved"
-                    collectionSaveCounter.text = text
-                }
+        launchAndRepeatWithViewLifecycle {
+            collectionItemsViewModel.saveCount.collectLatest { count ->
+                val text= "$count Saved"
+                collectionSaveCounter.text = text
             }
         }
     }

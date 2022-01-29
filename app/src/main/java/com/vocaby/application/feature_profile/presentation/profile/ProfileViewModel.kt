@@ -2,6 +2,7 @@ package com.vocaby.application.feature_profile.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vocaby.app.UserSettings
 import com.vocaby.application.feature_profile.domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -13,34 +14,50 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val profileUseCases: ProfileUseCases
 ): ViewModel() {
+    private var user: Int? = null
     private val _chartState = MutableSharedFlow<ChartState>(replay = 1)
-    private val _chartMode = MutableStateFlow(false)
+    private val _chartModeAll = MutableStateFlow(false)
 
     val chartState get() = _chartState.asSharedFlow()
-    val chartMode get() = _chartMode.asStateFlow()
+    val chartModeAll get() = _chartModeAll.asStateFlow()
+    val isReady:Boolean get() = user != null
 
-
-    fun setupUser() {
+    init {
         viewModelScope.launch {
-            profileUseCases.setupUserUseCase()
+            user = profileUseCases.setupBaseUserUseCase()
         }
     }
 
     fun updateChart() {
+        val mode = if (_chartModeAll.value) {
+            UserSettings.ChartMode.ALL
+        } else {
+            UserSettings.ChartMode.MONTHLY
+        }
+
         viewModelScope.launch(Dispatchers.Default) {
-            profileUseCases.updateChartUseCase().collectLatest { chartState ->
+            profileUseCases.updateChartUseCase(mode).collectLatest { chartState ->
                 _chartState.emit(chartState)
             }
         }
     }
 
-    fun changeChartMode(displayAll: Boolean) {
-        profileUseCases.updateChartModeUseCase(displayAll)
-        _chartMode.value = displayAll
-    }
-
     fun initializeChart() {
-        _chartMode.value = profileUseCases.getChartModeUseCase()
+        viewModelScope.launch {
+            profileUseCases.getChartSettingsUseCase().collectLatest { chartMode ->
+                when(chartMode) {
+                    UserSettings.ChartMode.ALL -> {
+                        _chartModeAll.value = true
+                    }
+                    UserSettings.ChartMode.MONTHLY -> {
+                        _chartModeAll.value = false
+                    }
+                    UserSettings.ChartMode.UNRECOGNIZED -> {
+                        _chartModeAll.value = true
+                    }
+                }
+            }
+        }
     }
 
     fun eraseChartData() {

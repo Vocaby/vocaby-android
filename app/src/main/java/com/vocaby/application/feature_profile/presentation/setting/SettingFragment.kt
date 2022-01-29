@@ -1,6 +1,6 @@
 package com.vocaby.application.feature_profile.presentation.setting
 
-import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,16 +8,23 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.vocaby.application.R
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import com.vocaby.vocabywidgets.DescriptiveButtonView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class SettingFragment : Fragment() {
-    private val settingViewModel: SettingViewModel by viewModels()
+    private val settingsViewModel: SettingViewModel by viewModels()
     private lateinit var notificationCollectionButton: DescriptiveButtonView
     private lateinit var notificationFrequencyButton: DescriptiveButtonView
+    private lateinit var dictionaryUpdaterSwitch: SwitchMaterial
+    private lateinit var dataShareSwitch: SwitchMaterial
+    private lateinit var notificationSwitch: SwitchMaterial
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,32 +34,84 @@ class SettingFragment : Fragment() {
         notificationCollectionButton = view.findViewById(R.id.notification_collection_button)
         notificationFrequencyButton = view.findViewById(R.id.notification_frequency_button)
 
-        val backButton = view.findViewById<Button>(R.id.back_button)
-        backButton.setOnClickListener { requireActivity().onBackPressed() }
-        return view
-    }
+        dictionaryUpdaterSwitch = view.findViewById(R.id.connections_switch)
+        dataShareSwitch = view.findViewById(R.id.data_share_switch)
+        notificationSwitch = view.findViewById(R.id.notification_switch)
 
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val notificationSwitch = view.findViewById<SwitchMaterial>(R.id.notification_switch)
-//        notificationSwitch.isChecked = settingViewModel.isUseConnectionEnabled()
         notificationSwitch.setOnCheckedChangeListener { _, enabled ->
             notificationCollectionButton.isEnabled = enabled
             notificationFrequencyButton.isEnabled = enabled
+            settingsViewModel.setNotificationEnabled(enabled)
         }
 
-        val connectionSwitch = view.findViewById<SwitchMaterial>(R.id.connections_switch)
-        connectionSwitch.isChecked = settingViewModel.isUseConnectionEnabled()
-        connectionSwitch.setOnCheckedChangeListener { _, enabled ->
-            settingViewModel.setConnectionSettings(enabled)
+        dictionaryUpdaterSwitch.setOnCheckedChangeListener { _, enabled ->
+            settingsViewModel.setDictionaryAutoUpdateEnabled(enabled)
         }
 
-        val dataShareSwitch = view.findViewById<SwitchMaterial>(R.id.data_share_switch)
-        dataShareSwitch.isChecked = settingViewModel.isDataShareEnabled()
         dataShareSwitch.setOnCheckedChangeListener { _, enabled ->
-            settingViewModel.setDataShareSettings(enabled)
+            settingsViewModel.setErrorReportEnabled(enabled)
         }
+
+        val backButton = view.findViewById<Button>(R.id.back_button)
+        backButton.setOnClickListener { requireActivity().onBackPressed() }
+
+        notificationCollectionButton.setOnClickListener {
+            settingsViewModel.getSaveCollections(notificationSwitch.isEnabled)
+        }
+
+        notificationFrequencyButton.setOnClickListener {
+            settingsViewModel.getNotificationFrequencies(notificationSwitch.isEnabled)
+        }
+
+        launchAndRepeatWithViewLifecycle {
+            settingsViewModel.notificationSettings.collectLatest { model ->
+                notificationSwitch.isChecked = model.enabled
+            }
+        }
+
+        launchAndRepeatWithViewLifecycle {
+            settingsViewModel.dictionarySettings.collectLatest { enabled ->
+                dictionaryUpdaterSwitch.isChecked = enabled
+            }
+        }
+
+        launchAndRepeatWithViewLifecycle {
+            settingsViewModel.dataSettings.collectLatest { enabled ->
+                dataShareSwitch.isChecked = enabled
+            }
+        }
+
+        launchAndRepeatWithViewLifecycle {
+            settingsViewModel.uiEvent.collect { event ->
+                when(event) {
+                    is SettingsUiEvent.ShowNotificationCollectionDialog -> {
+                        MaterialAlertDialogBuilder(requireActivity())
+                            .setTitle(event.title)
+                            .setItems(event.items) {
+                                    _: DialogInterface, int: Int ->
+                                notificationCollectionButton.setDescription(event.items[int])
+                                settingsViewModel.setNotificationCollection(int)
+                            }.show()
+                    }
+                    is SettingsUiEvent.ShowNotificationFrequencyDialog -> {
+                        MaterialAlertDialogBuilder(requireActivity())
+                            .setTitle(event.title)
+                            .setItems(event.items) {
+                                    _: DialogInterface, int: Int ->
+                                notificationFrequencyButton.setDescription(event.items[int])
+                                settingsViewModel.setNotificationFrequency(int)
+                            }.show()
+                    }
+                    is SettingsUiEvent.UpdateNotificationCollection -> {
+                        notificationCollectionButton.setDescription(event.collectionName)
+                    }
+                    is SettingsUiEvent.UpdateNotificationFrequency -> {
+                        notificationFrequencyButton.setDescription(event.frequency)
+                    }
+                }
+            }
+        }
+
+        return view
     }
 }

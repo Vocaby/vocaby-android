@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.vocaby.application.R
 import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_dictionary.presentation.search.SearchResultsFragment
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import com.vocaby.searchview.SearchView
 import com.vocaby.searchview.suggestions.model.SearchSuggestion
 import kotlinx.coroutines.flow.collect
@@ -72,15 +72,14 @@ class DictionaryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launchWhenStarted {
+        launchAndRepeatWithViewLifecycle {
             dictionaryViewModel.searchedEntry.collect { entry ->
                 addResultsFragment(entry)
             }
         }
 
-        lifecycleScope.launchWhenStarted {
+        launchAndRepeatWithViewLifecycle {
             dictionaryViewModel.searchSuggestions.collectLatest { result ->
-
                 when(result) {
                     is GenericState.InProgress -> searchView.showProgress()
                     is GenericState.Success -> {

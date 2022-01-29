@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
@@ -28,8 +27,10 @@ import com.vocaby.application.feature_datatransfer.presentation.DataTransferFrag
 import com.vocaby.application.feature_profile.common.Constants
 import com.vocaby.application.feature_profile.presentation.dangerzone.DangerZoneFragment
 import com.vocaby.application.feature_profile.presentation.setting.SettingFragment
+import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
 import com.vocaby.application.feature_profile.util.AxisValueFormatter
 import com.vocaby.application.feature_support.presentation.SupportFragment
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -45,6 +46,7 @@ class ProfileHomeFragment : Fragment() {
     private lateinit var chartToggleButton: MaterialButton
 
     private val profileViewModel: ProfileViewModel by activityViewModels()
+    private val settingsViewModel: SettingViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -94,7 +96,7 @@ class ProfileHomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launchWhenStarted {
+        launchAndRepeatWithViewLifecycle {
             profileViewModel.chartState.collectLatest { state ->
                 when (state) {
                     is ChartState.Success -> {
@@ -158,8 +160,8 @@ class ProfileHomeFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launchWhenStarted {
-            profileViewModel.chartMode.collectLatest { displayAll ->
+        launchAndRepeatWithViewLifecycle {
+            profileViewModel.chartModeAll.collectLatest { displayAll ->
                 chartToggleButton.isChecked = displayAll
                 chartToggleButton.text = if (displayAll)
                     getString(R.string.chart_toggle_all) else getString(R.string.chart_toggle_monthly)
@@ -176,7 +178,7 @@ class ProfileHomeFragment : Fragment() {
 
     private fun setupButtons(view: View) {
         chartToggleButton.addOnCheckedChangeListener { _: MaterialButton, checked: Boolean ->
-            profileViewModel.changeChartMode(checked)
+            settingsViewModel.changeChartMode(checked)
         }
 
         // NOTIFICATION

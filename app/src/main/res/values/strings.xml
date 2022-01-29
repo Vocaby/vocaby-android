@@ -4,8 +4,6 @@
     <string name="nav_search">Dictionary</string>
     <string name="nav_saves">Saves</string>
     <string name="nav_profile">Profile</string>
-    <string name="pref_notification_key">pref_notification</string>
-    <string name="pref_notification_frequency_key">pref_notification_frequency</string>
     <string name="unsave_button_desc">unsave</string>
     <string name="no_definition_found">No definition found</string>
     <!-- Preference Titles -->
@@ -25,9 +23,6 @@
     <string name="custom_entry_header_long">This entry is too long</string>
     <string name="custom_entry_exists">The entry already exists</string>
     <string name="custom_entry_header_invalid">The given entry contains special characters</string>
-    <string name="collection_name_empty">Please enter a name</string>
-    <string name="collection_name_long">This name is too long</string>
-    <string name="collection_name_exists">This collection already exists</string>
     <string name="add_dictionary_entry">New Entry</string>
     <string name="update_dictionary_entry">Update Entry</string>
     <string name="definition_add_alert">You must add a definition</string>
@@ -114,7 +109,7 @@
     <string name="card_instructions">Card Instructions</string>
     <string name="touch_to_edit">touch to edit</string>
     <string name="chart_toggle_monthly">Monthly</string>
-    <string name="chart_toggle_all">all</string>
+    <string name="chart_toggle_all">All</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="support_faq">Frequently Asked Questions</string>
     <string name="contact_us">Contact Us</string>
@@ -129,7 +124,6 @@
     <string name="data_privacy_header">Share Crash Analytics</string>
     <string name="data_privacy_content">When enabled, you are opting in to share error related data with Vocaby. </string>
     <string name="data_privacy_warning">Warning: You must restart the app for the change to take effect</string>
-    <string name="notification_settings">Notification Settings</string>
     <string name="feedback_input_alert_type">You must select a type</string>
     <string name="feedback_input_alert_email">Please enter a valid email</string>
     <string name="feedback_input_alert_thankyou">Thank you!</string>
