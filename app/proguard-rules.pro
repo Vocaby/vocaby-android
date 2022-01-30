@@ -24,3 +24,7 @@
 -keep public class com.github.mikephil.** {
      public protected *;
 }
+
+-keep class * extends com.google.protobuf.GeneratedMessageLite {
+    <fields>;
+}
