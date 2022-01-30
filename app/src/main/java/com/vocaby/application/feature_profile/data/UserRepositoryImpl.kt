@@ -31,7 +31,7 @@ class UserRepositoryImpl constructor(
         }
     }
 
-    override suspend fun setupBaseUser(userId: Int): Int{
+    override suspend fun setupBaseUser(userId: Int): Int {
         val exists = dao.checkUser(userId)
         if (!exists) {
             val id = dao.createUser(User()).toInt()

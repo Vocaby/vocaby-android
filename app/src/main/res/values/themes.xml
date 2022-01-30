@@ -157,6 +157,13 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="Theme.VocabyAndroid.Alert" parent="Widget.AppCompat.TextView">
+        <item name="android:fontFamily">@font/sourcesanspro_semibold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/colorHeadline</item>
+    </style>
+
     <style name="Theme.VocabyAndroid.TextHeader" parent="Widget.AppCompat.TextView">
         <item name="android:fontFamily">@font/playfairdisplay_black</item>
         <item name="android:textAllCaps">true</item>

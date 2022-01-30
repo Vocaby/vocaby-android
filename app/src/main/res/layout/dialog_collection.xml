@@ -27,11 +27,11 @@
         android:background="@drawable/box_top_stroke_white"
         android:padding="@dimen/container_side_margin"
         android:orientation="vertical">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -43,13 +43,11 @@
                 android:textSize="12sp"/>
 
             <TextView
+                style="@style/Theme.VocabyAndroid.Alert"
                 android:id="@+id/collection_header_alert"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/sourcesanspro_semibold"
-                android:textColor="@color/colorHeadline"
-                android:textSize="12sp"
                 android:visibility="invisible" />
 
             <Space

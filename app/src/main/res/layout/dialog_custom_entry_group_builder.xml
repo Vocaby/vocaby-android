@@ -30,6 +30,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:layout_marginTop="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin"
             android:layout_marginBottom="8dp"
@@ -46,13 +47,12 @@
                 android:textSize="12sp"/>
 
             <TextView
+                style="@style/Theme.VocabyAndroid.Alert"
                 android:id="@+id/type_creator_alert"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/sourcesanspro_semibold"
                 android:text="@string/type_header_alert"
-                android:textColor="@color/colorHeadline"
                 android:visibility="invisible" />
         </LinearLayout>
 

@@ -60,6 +60,9 @@ class SaveCollectionViewModel @Inject constructor(
                     is UserInputState.SameInput -> {
                         _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("The collection already exists"))
                     }
+                    is UserInputState.LongInput -> {
+                        _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("The name is too long"))
+                    }
                     is UserInputState.EmptyInput -> {
                         _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Please enter a name"))
                     }
@@ -99,12 +102,17 @@ class SaveCollectionViewModel @Inject constructor(
                 is UserInputState.SameInput -> {
                     _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("The collection already exists"))
                 }
+                is UserInputState.LongInput -> {
+                    _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("The name is too long"))
+                }
                 is UserInputState.EmptyInput -> {
                     _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Please enter a name"))
                 }
                 is UserInputState.Valid -> {
                     _uiEvent.emit(CollectionItemsUiEvent.CloseCollectionDialog)
-                    _uiEvent.emit(CollectionItemsUiEvent.ScrollToTop)
+                }
+                is UserInputState.NoInput -> {
+                    _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("You must enter a name"))
                 }
                 else -> {
                     _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Something went wrong..."))

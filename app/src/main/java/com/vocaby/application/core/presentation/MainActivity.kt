@@ -17,6 +17,7 @@ import com.bugsnag.android.Bugsnag
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.adapter.FragmentAdapter
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
@@ -24,6 +25,7 @@ import com.vocaby.application.feature_profile.presentation.setting.receivers.Not
 import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Named
@@ -63,10 +65,14 @@ open class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        dictionaryViewModel.clearCache()
+        cleanup()
         setupNotification()
         setupNavigation()
         collect()
+    }
+
+    private fun cleanup() {
+        dictionaryViewModel.clearCache()
     }
 
     private fun collect() {
@@ -76,7 +82,7 @@ open class MainActivity : AppCompatActivity() {
         }
 
         launchAndRepeatWithViewLifecycle {
-            settingViewModel.notificationSettings.collect { model ->
+            settingViewModel.notificationSettings.collectLatest { model ->
                 if (model.enabled) {
                     alarmManager.setRepeating(
                         AlarmManager.RTC_WAKEUP,
@@ -106,7 +112,7 @@ open class MainActivity : AppCompatActivity() {
         viewPager = findViewById(R.id.fragment_container)
         viewPager.adapter = FragmentAdapter(this)
         viewPager.isUserInputEnabled = false
-        viewPager.offscreenPageLimit = 1
+        // viewPager.offscreenPageLimit = 1
         navigationView = findViewById(R.id.navigation_view)
         navigationView.bringToFront()
         navigationView.setOnItemSelectedListener { item: MenuItem ->

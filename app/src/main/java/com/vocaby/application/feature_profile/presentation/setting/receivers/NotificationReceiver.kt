@@ -109,6 +109,7 @@ class NotificationReceiver : BroadcastReceiver() {
         message: String
     ) {
         createNotificationChannel(notificationManager)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         val resultIntent = Intent(context, MainActivity::class.java)
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         val resultPendingIntent = PendingIntent.getActivity(
@@ -116,23 +117,20 @@ class NotificationReceiver : BroadcastReceiver() {
             resultIntent, PendingIntent.FLAG_IMMUTABLE
         )
 
-        val mergedTitle = if (isFromCollection && collection != null) {
-            "$title (${collection.collectionName})"
-        } else {
-            title
+        if (isFromCollection && collection != null) {
+            builder.setSubText(collection.collectionName)
         }
 
-
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification_white)
+        builder.setSmallIcon(R.drawable.ic_notification_white)
             .setColor(context.getColor(R.color.colorPrimary))
-            .setContentTitle(mergedTitle)
+            .setContentTitle(title)
             .setContentIntent(resultPendingIntent)
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(message)
             )
             .setContentText(message)
+
         notificationManager.notify(313, builder.build())
     }
 
