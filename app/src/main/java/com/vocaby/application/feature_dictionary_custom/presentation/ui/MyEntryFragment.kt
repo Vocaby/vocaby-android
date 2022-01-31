@@ -123,6 +123,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             }
 
             updateEmptyCardVisibility()
+            entryUpdateDialog.dismiss()
             dictionaryViewModel.resetSearchSuggestion()
         }
 

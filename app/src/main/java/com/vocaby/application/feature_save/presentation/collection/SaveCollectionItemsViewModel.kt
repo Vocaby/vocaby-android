@@ -16,7 +16,6 @@ class SaveCollectionItemsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val saveUseCases: SaveUseCases,
 ): ViewModel() {
-    private val showAll: Boolean = savedStateHandle.get(SaveCollectionItemsFragment.COLLECTION_ALL_PARAM)!!
     private val name: String = savedStateHandle.get(SaveCollectionItemsFragment.COLLECTION_NAME_PARAM)!!
     private val id: Int = savedStateHandle.get(SaveCollectionItemsFragment.COLLECTION_ID_PARAM)!!
     private val _savedWords = MutableStateFlow<List<String>>(ArrayList())
@@ -26,25 +25,14 @@ class SaveCollectionItemsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (showAll) {
-                saveUseCases.getUserSavesUseCase().collectLatest { saves ->
-                    _savedWords.emit(saves)
-                    _savesCount.emit(saves.size)
-                }
-            } else {
-                saveUseCases.getSaveCollectionItemsUseCase(name).collectLatest { saves ->
-                    _savedWords.emit(saves)
-                    _savesCount.emit(saves.size)
-                }
+            saveUseCases.getSaveCollectionItemsUseCase(name).collectLatest { saves ->
+                _savedWords.emit(saves)
+                _savesCount.emit(saves.size)
             }
         }
     }
 
     fun removeSaveItem(entry: String) = viewModelScope.launch {
-        if (showAll) {
-            saveUseCases.removeSaveItemUseCase(entry)
-        } else {
-            saveUseCases.removeSaveCollectionItemUseCase(entry, id)
-        }
+        saveUseCases.removeSaveCollectionItemUseCase(entry, id)
     }
 }

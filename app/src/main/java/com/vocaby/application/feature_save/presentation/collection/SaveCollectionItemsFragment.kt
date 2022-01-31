@@ -29,17 +29,15 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     private val collectionItemsViewModel: SaveCollectionItemsViewModel by viewModels()
 
     companion object {
-        const val COLLECTION_ALL_PARAM = "showAll"
         const val COLLECTION_NAME_PARAM = "COLLECTION"
         const val COLLECTION_ID_PARAM = "COLLECTION_ID"
 
 
         @JvmStatic
-        fun newInstance(name: String, allSaves: Boolean, id: Int): SaveCollectionItemsFragment {
+        fun newInstance(name: String, id: Int): SaveCollectionItemsFragment {
             val fragment = SaveCollectionItemsFragment()
             val args = Bundle()
             args.putString(COLLECTION_NAME_PARAM, name)
-            args.putBoolean(COLLECTION_ALL_PARAM, allSaves)
             args.putInt(COLLECTION_ID_PARAM, id)
             fragment.arguments = args
             return fragment

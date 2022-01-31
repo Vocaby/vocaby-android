@@ -158,4 +158,7 @@
     <string name="collection_rename">Rename this collection</string>
     <string name="collection_delete">Delete this collection</string>
     <string name="collection_update_name">Update collection name</string>
+    <string name="all_saves">All Saves</string>
+    <string name="collections">Collections</string>
+    <string name="empty_saves">Empty Saves</string>
 </resources>

@@ -15,6 +15,7 @@
         <TextView
             android:id="@+id/collection_header"
             style="@style/Theme.VocabyAndroid.TextHeader"
+            android:gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/box_bottom_stroke_gray"
@@ -26,7 +27,8 @@
             android:paddingStart="@dimen/container_gap_margin"
             android:paddingEnd="@dimen/container_gap_margin"
             android:textAllCaps="false"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:hyphenationFrequency="full" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,6 +58,7 @@
                 android:backgroundTint="@color/white"
                 android:contentDescription="@string/unsave_button_desc"
                 android:paddingTop="0dp"
+                android:paddingStart="10dp"
                 android:src="@drawable/ic_more" />
         </LinearLayout>
     </LinearLayout>

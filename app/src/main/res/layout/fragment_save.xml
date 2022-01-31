@@ -1,43 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".feature_save.presentation.save.SaveFragment">
-    <LinearLayout
-        android:id="@+id/vocaby_header"
+    <TextView
+        android:id="@+id/textView2"
+        style="@style/Theme.VocabyAndroid.TextHeadline"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@drawable/box_bottom_stroke_gray"
-        android:backgroundTint="@color/colorPrimaryAccent"
+        android:drawablePadding="8dp"
         android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:text="@string/nav_save_collections"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:drawablePadding="8dp"
-            app:drawableStartCompat="@drawable/ic_vocaby_logo_sm" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/save_collection_fragment_container"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
+        android:text="@string/nav_saves"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        app:drawableStartCompat="@drawable/ic_vocaby_logo_sm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_scrollFlags="noScroll" />
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocaby_header" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/save_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:theme="@style/Theme.VocabyAndroid">
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/save_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:tabIndicatorColor="@color/colorPrimary"
+                app:tabSelectedTextColor="@color/colorPrimary"
+                app:tabTextAppearance="@style/Theme.VocabyAndroid.TextHeadline">
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/all_saves" />
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/collections" />
+            </com.google.android.material.tabs.TabLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/save_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/add_collection_button"
+            android:theme="@style/Theme.VocabyAndroid"
+            style="@style/Widget.App.ExtendedFloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|end"
+            android:text="@string/add_save_collection"
+            app:layout_anchor="@id/save_fragment_container"
+            app:layout_anchorGravity="bottom|end"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.VocabyAndroid.FAB"
+            app:backgroundTint="@color/colorPrimary"
+            app:iconTint="@color/white"
+            app:icon="@drawable/ic_add"
+            app:iconPadding="4dp"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
