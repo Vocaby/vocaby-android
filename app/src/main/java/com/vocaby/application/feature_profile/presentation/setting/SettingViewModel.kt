@@ -27,7 +27,7 @@ class SettingViewModel @Inject constructor(
     private val _notificationSettings = MutableSharedFlow<NotificationModel>()
     private val _dictionarySettings = MutableSharedFlow<Boolean>()
     private val _dataSettings = MutableSharedFlow<Boolean>()
-    private val _uiEvent = MutableSharedFlow<SettingsUiEvent>(replay = 2)
+    private val _uiEvent = MutableSharedFlow<SettingsUiEvent>()
 
     val notificationSettings get() = _notificationSettings.asSharedFlow()
     val dictionarySettings get() = _dictionarySettings.asSharedFlow()
@@ -42,23 +42,17 @@ class SettingViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            settingsUseCases.getDictionarySettingsUseCase().collectLatest {
-                _dictionarySettings.emit(it)
-            }
-        }
-
-        viewModelScope.launch {
-            settingsUseCases.getDataSettingsUseCase().collectLatest {
-                _dataSettings.emit(it)
-            }
-        }
-
-        viewModelScope.launch {
-            val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
-            val selectedCollection = settingsUseCases.getSelectedNotificationCollectionUseCase(initModel.collectionId)
-            _uiEvent.emit(SettingsUiEvent.UpdateNotificationCollection(selectedCollection.collectionName))
-            val selectedFrequency  = settingsUseCases.getSelectedNotificationFrequencyUseCase(initModel.minutes)
-            _uiEvent.emit(SettingsUiEvent.UpdateNotificationFrequency(selectedFrequency.uiText))
+            val settings = settingsUseCases.getUserSettingsUseCase().first()
+            val selectedCollection = settingsUseCases.getSelectedNotificationCollectionUseCase(settings.notificationCollectionId)
+            val selectedFrequency  = settingsUseCases.getSelectedNotificationFrequencyUseCase(settings.notificationFrequency)
+            val initSettings = SettingsUiEvent.UpdateSettings(
+                settings.notificationEnabled,
+                selectedCollection.collectionName,
+                selectedFrequency.uiText,
+                settings.updateDictionaryEnabled,
+                settings.reportErrorEnabled
+            )
+            _uiEvent.emit(initSettings)
         }
     }
 
@@ -71,18 +65,24 @@ class SettingViewModel @Inject constructor(
     fun setNotificationEnabled(enabled: Boolean) {
         viewModelScope.launch {
             settingsUseCases.updateNotificationSettingsUseCase(enabled)
+            val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
+            _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
         }
     }
 
     fun setNotificationFrequency(position: Int) {
         viewModelScope.launch {
             settingsUseCases.updateNotificationFrequencyUseCase(position, notificationFrequencies)
+            val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
+            _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
         }
     }
 
     fun setNotificationCollection(position: Int) {
         viewModelScope.launch {
             settingsUseCases.updateNotificationCollectionUseCase(position, notificationCollections)
+            val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
+            _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
         }
     }
 

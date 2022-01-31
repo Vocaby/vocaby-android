@@ -91,6 +91,7 @@ class UserModule {
         saveRepository: SaveRepository,
         notificationFrequencies: Array<NotificationFrequency>
     ): SettingsUseCases = SettingsUseCases(
+        GetUserSettingsUseCase(userRepository),
         UpdateChartModeUseCase(userRepository),
         GetDataSettingsUseCase(userRepository),
         GetDictionarySettingsUseCase(userRepository),

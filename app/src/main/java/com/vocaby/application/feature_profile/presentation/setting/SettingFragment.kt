@@ -1,21 +1,25 @@
 package com.vocaby.application.feature_profile.presentation.setting
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.vocaby.application.R
+import com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver
 import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import com.vocaby.vocabywidgets.DescriptiveButtonView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class SettingFragment : Fragment() {
@@ -41,15 +45,18 @@ class SettingFragment : Fragment() {
         notificationSwitch.setOnCheckedChangeListener { _, enabled ->
             notificationCollectionButton.isEnabled = enabled
             notificationFrequencyButton.isEnabled = enabled
-            settingsViewModel.setNotificationEnabled(enabled)
         }
 
-        dictionaryUpdaterSwitch.setOnCheckedChangeListener { _, enabled ->
-            settingsViewModel.setDictionaryAutoUpdateEnabled(enabled)
+        notificationSwitch.setOnClickListener {
+            settingsViewModel.setNotificationEnabled(notificationSwitch.isChecked)
         }
 
-        dataShareSwitch.setOnCheckedChangeListener { _, enabled ->
-            settingsViewModel.setErrorReportEnabled(enabled)
+        dictionaryUpdaterSwitch.setOnClickListener {
+            settingsViewModel.setDictionaryAutoUpdateEnabled(dictionaryUpdaterSwitch.isChecked)
+        }
+
+        dataShareSwitch.setOnClickListener {
+            settingsViewModel.setErrorReportEnabled(dataShareSwitch.isChecked)
         }
 
         val backButton = view.findViewById<Button>(R.id.back_button)
@@ -64,26 +71,15 @@ class SettingFragment : Fragment() {
         }
 
         launchAndRepeatWithViewLifecycle {
-            settingsViewModel.notificationSettings.collectLatest { model ->
-                notificationSwitch.isChecked = model.enabled
-            }
-        }
-
-        launchAndRepeatWithViewLifecycle {
-            settingsViewModel.dictionarySettings.collectLatest { enabled ->
-                dictionaryUpdaterSwitch.isChecked = enabled
-            }
-        }
-
-        launchAndRepeatWithViewLifecycle {
-            settingsViewModel.dataSettings.collectLatest { enabled ->
-                dataShareSwitch.isChecked = enabled
-            }
-        }
-
-        launchAndRepeatWithViewLifecycle {
             settingsViewModel.uiEvent.collect { event ->
                 when(event) {
+                    is SettingsUiEvent.UpdateSettings -> {
+                        notificationSwitch.isChecked = event.notificationEnabled
+                        notificationCollectionButton.setDescription(event.notificationCollection)
+                        notificationFrequencyButton.setDescription(event.notificationFrequency)
+                        dictionaryUpdaterSwitch.isChecked = event.autoUpdateEnabled
+                        dataShareSwitch.isChecked = event.dataShareEnabled
+                    }
                     is SettingsUiEvent.ShowNotificationCollectionDialog -> {
                         MaterialAlertDialogBuilder(requireActivity())
                             .setTitle(event.title)
@@ -107,6 +103,28 @@ class SettingFragment : Fragment() {
                     }
                     is SettingsUiEvent.UpdateNotificationFrequency -> {
                         notificationFrequencyButton.setDescription(event.frequency)
+                    }
+                    is SettingsUiEvent.UpdateNotification -> {
+                        val alarmManager = requireActivity().getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+                        val notificationIntent = Intent(requireActivity(), NotificationReceiver::class.java)
+                        val pendingIntent = PendingIntent.getBroadcast(
+                            requireActivity(),
+                            777,
+                            notificationIntent,
+                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                        )
+
+                        if (event.enabled) {
+                            alarmManager.setRepeating(
+                                AlarmManager.RTC_WAKEUP,
+                                System.currentTimeMillis(),
+                                1000L * 60 * event.minutes,
+                                pendingIntent
+                            )
+                        } else {
+                            alarmManager.cancel(pendingIntent)
+                            pendingIntent.cancel()
+                        }
                     }
                 }
             }

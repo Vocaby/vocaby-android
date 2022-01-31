@@ -23,6 +23,7 @@ import com.vocaby.application.feature_profile.presentation.setting.SettingViewMo
 import com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver
 import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -30,13 +31,6 @@ import javax.inject.Named
 
 @AndroidEntryPoint
 open class MainActivity : AppCompatActivity() {
-    @Inject
-    @Named("application")
-    lateinit var applicationSharedPref: SharedPreferences
-
-    private lateinit var alarmManager: AlarmManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var notificationIntent: Intent
     private lateinit var viewPager: ViewPager2
     private lateinit var navigationView: BottomNavigationView
 
@@ -64,7 +58,6 @@ open class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         cleanup()
-        setupNotification()
         setupNavigation()
         collect()
     }
@@ -78,32 +71,6 @@ open class MainActivity : AppCompatActivity() {
             val enabled = settingViewModel.dataSettings.first()
             if (enabled) Bugsnag.start(this@MainActivity)
         }
-
-        launchAndRepeatWithViewLifecycle {
-            settingViewModel.notificationSettings.collectLatest { model ->
-                if (model.enabled) {
-                    alarmManager.setRepeating(
-                        AlarmManager.RTC_WAKEUP,
-                        System.currentTimeMillis(),
-                        1000L * 60 * model.minutes,
-                        pendingIntent
-                    )
-                } else {
-                    alarmManager.cancel(pendingIntent)
-                }
-            }
-        }
-    }
-
-    private fun setupNotification() {
-        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        notificationIntent = Intent(this, NotificationReceiver::class.java)
-        pendingIntent = PendingIntent.getBroadcast(
-                this,
-                777,
-                notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
     }
 
     private fun setupNavigation() {
