@@ -9,6 +9,8 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.exceptions.IllegalFileException
+import com.vocaby.application.feature_datatransfer.domain.model.EntryExportModel
+import com.vocaby.application.feature_datatransfer.domain.model.SaveExportModel
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
@@ -16,21 +18,25 @@ import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_profile.common.Constants
 import com.vocaby.application.feature_profile.domain.model.ExportModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
 class DataTransferRepositoryImpl(
     private val contentResolver: ContentResolver,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): DataTransferRepository {
-    override fun importSavesFromExternalStorage(uri: Uri): List<String> {
+    override suspend fun importSavesFromExternalStorage(uri: Uri): List<String> = withContext(defaultDispatcher) {
+        val saves: MutableList<String> = ArrayList()
         val inputStream = contentResolver.openInputStream(uri)
         inputStream.use { ins ->
             JsonReader(InputStreamReader(ins)).use { jsonReader ->
                 try {
                     val gson = Gson()
                     val jsonObject = gson.fromJson<JsonObject>(jsonReader, JsonObject::class.java)
-                    val saves: MutableList<String> = ArrayList()
                     if (jsonObject.has(Constants.EXPORT_TYPE_FIELD)) {
                         if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_TYPE_FIELD).asString
                             == Constants.EXPORT_SAVE_TYPE
@@ -47,8 +53,6 @@ class DataTransferRepositoryImpl(
                                     )
                                 }
                             }
-
-                            return saves
                         } else {
                             throw IllegalFileException(
                                 "Backup file has the wrong entry type",
@@ -69,16 +73,18 @@ class DataTransferRepositoryImpl(
                 }
             }
         }
+
+        return@withContext saves
     }
 
-    override fun importEntriesBackupFromExternalStorage(uri: Uri, availableTypes: List<Type>): List<EntryModel> {
+    override suspend fun importEntriesBackupFromExternalStorage(uri: Uri, availableTypes: List<Type>): List<EntryModel> = withContext(defaultDispatcher)  {
+        val entryModels: MutableList<EntryModel> = ArrayList()
         val inputStream = contentResolver.openInputStream(uri)
         inputStream.use { ins ->
             JsonReader(InputStreamReader(ins)).use { jsonReader ->
                 try {
                     val gson = Gson()
                     val jsonObject = gson.fromJson<JsonObject>(jsonReader, JsonObject::class.java)
-                    val entryModels: MutableList<EntryModel> = ArrayList()
                     if (jsonObject.has(Constants.EXPORT_TYPE_FIELD)) {
                         if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_TYPE_FIELD).asString
                             == Constants.EXPORT_ENTRY_TYPE
@@ -159,8 +165,6 @@ class DataTransferRepositoryImpl(
                                     }
                                 }
                             }
-
-                            return entryModels
                         } else {
                             throw IllegalFileException(
                                 "Backup file has the wrong entry type",
@@ -181,12 +185,14 @@ class DataTransferRepositoryImpl(
                 }
             }
         }
+
+        return@withContext entryModels
     }
 
-    override fun writeSavesToExternalStorage(saves: List<String>, uri: Uri) {
+    override suspend fun writeSavesToExternalStorage(exportModel: SaveExportModel, uri: Uri) = withContext(defaultDispatcher)  {
         contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
-            val exportData = ExportModel(Constants.EXPORT_SAVE_TYPE, saves)
+            val exportData = ExportModel(Constants.EXPORT_SAVE_TYPE, exportModel)
             val gson = Gson()
             gson.toJson(exportData, bw)
             bw.flush()
@@ -194,10 +200,10 @@ class DataTransferRepositoryImpl(
         }
     }
 
-    override fun writeEntriesToExternalStorage(entries: List<EntryModel>, uri: Uri) {
+    override suspend fun writeEntriesToExternalStorage(exportModel: EntryExportModel, uri: Uri) = withContext(defaultDispatcher) {
         contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
-            val exportData = ExportModel(Constants.EXPORT_ENTRY_TYPE, entries)
+            val exportData = ExportModel(Constants.EXPORT_ENTRY_TYPE, exportModel)
             val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd HH:mm:ss")
                 .create()

@@ -1,0 +1,3 @@
+package com.vocaby.application.feature_datatransfer.domain.model
+
+interface IExportModel

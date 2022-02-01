@@ -1,3 +1,5 @@
 package com.vocaby.application.feature_profile.domain.model
 
-data class ExportModel<T>(val vocabyExportType: String, val data: List<T>)
+import com.vocaby.application.feature_datatransfer.domain.model.IExportModel
+
+data class ExportModel(val vocabyExportType: String, val exportModel: IExportModel)

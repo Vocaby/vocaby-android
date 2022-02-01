@@ -11,7 +11,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/colorPrimaryAccent</item>
         <item name="colorControlActivated">@color/colorPrimary</item>
-        <item name="preferenceTheme">@style/Theme.VocabyAndroid.PreferenceThemeOverlay</item>
 
         <item name="colorAccent">@color/colorPrimaryAccent</item>
 
@@ -82,26 +81,6 @@
         <item name="android:fontFamily">@font/sourcesanspro_semibold</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/black</item>
-    </style>
-
-    <style name="Theme.VocabyAndroid.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">
-        <!--        <item name="preferenceCategoryStyle">@style/Theme.VocabyAndroid.PreferenceCategory</item>-->
-        <item name="dialogPreferenceStyle">@style/Theme.VocabyAndroid.PreferenceDialog</item>
-        <item name="switchPreferenceStyle">@style/Theme.VocabyAndroid.PreferenceSwitch</item>
-        <item name="switchPreferenceCompatStyle">@style/Theme.VocabyAndroid.PreferenceSwitchCompat</item>
-    </style>
-
-
-    <style name="Theme.VocabyAndroid.PreferenceSwitch" parent="@style/Preference.SwitchPreference.Material">
-        <item name="android:layout">@layout/custom_preference</item>
-    </style>
-
-    <style name="Theme.VocabyAndroid.PreferenceSwitchCompat" parent="@style/Preference.SwitchPreferenceCompat.Material">
-        <item name="android:layout">@layout/custom_preference</item>
-    </style>
-
-    <style name="Theme.VocabyAndroid.PreferenceDialog" parent="@style/Preference.DialogPreference.Material">
-        <item name="android:layout">@layout/custom_preference</item>
     </style>
 
     <style name="Theme.VocabyAndroid.MaterialDialogAlert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
