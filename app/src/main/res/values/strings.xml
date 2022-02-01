@@ -145,7 +145,6 @@
     <string name="empty_collection">Empty Collection</string>
     <string name="add_a_save_collection">Add a save collection</string>
     <string name="new_collection_hint">Enter your collection name…</string>
-    <string name="collection_character_limit">/ 15</string>
     <string name="snackbar_collection_action">Add to collection</string>
     <string name="save_to_your_collections">Save to…</string>
     <string name="save_collections">Save Collections</string>

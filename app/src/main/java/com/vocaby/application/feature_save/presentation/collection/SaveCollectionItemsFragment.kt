@@ -87,7 +87,7 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
 
     private fun setupRecyclerView(view: View) {
         val recyclerView: RecyclerView = view.findViewById(R.id.saves_container)
-        savesAdapter = SaveListAdapter(requireActivity(), this)
+        savesAdapter = SaveListAdapter(requireActivity(), this, true)
         recyclerView.adapter = savesAdapter
         recyclerView.layoutManager = LinearLayoutManager(ctx)
     }

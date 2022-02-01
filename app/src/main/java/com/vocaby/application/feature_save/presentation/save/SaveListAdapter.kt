@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.application.R
 
-class SaveListAdapter(activity: Activity, private val interaction: Interaction) :
+class SaveListAdapter(activity: Activity, private val interaction: Interaction, private val isCollection: Boolean = false) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val diffCallback = object : DiffUtil.ItemCallback<String>() {
         override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
@@ -35,7 +35,8 @@ class SaveListAdapter(activity: Activity, private val interaction: Interaction) 
                 false
             ),
             interaction,
-            materialAlertDialogBuilder
+            materialAlertDialogBuilder,
+            isCollection
         )
     }
 
@@ -59,7 +60,8 @@ class SaveListAdapter(activity: Activity, private val interaction: Interaction) 
     constructor(
         itemView: View,
         private val interaction: Interaction,
-        private val alertDialogBuilder: MaterialAlertDialogBuilder
+        private val alertDialogBuilder: MaterialAlertDialogBuilder,
+        private val isCollection: Boolean,
     ) : RecyclerView.ViewHolder(itemView) {
         private val saveItem: TextView = itemView.findViewById(R.id.save_item)
         private val unsaveButton: AppCompatImageButton = itemView.findViewById(R.id.unsave_button)
@@ -71,9 +73,15 @@ class SaveListAdapter(activity: Activity, private val interaction: Interaction) 
             }
 
             unsaveButton.setOnClickListener {
+                val message = if (isCollection) {
+                    entry
+                } else {
+                    "Removing this save will also remove it from all collections"
+                }
+
                 alertDialogBuilder
                     .setTitle("Are you sure you want to delete?")
-                    .setMessage(entry)
+                    .setMessage(message)
                     .setPositiveButton("DELETE") { _, _ ->
                         interaction.onItemDelete(entry)
                     }.setNegativeButton("CANCEL", null).create().show()

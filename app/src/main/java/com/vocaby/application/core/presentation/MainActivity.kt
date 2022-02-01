@@ -1,9 +1,5 @@
 package com.vocaby.application.core.presentation
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -20,14 +16,9 @@ import com.vocaby.application.core.presentation.adapter.FragmentAdapter
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
-import com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver
 import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 open class MainActivity : AppCompatActivity() {

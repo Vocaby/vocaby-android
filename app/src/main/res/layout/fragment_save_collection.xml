@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/save_collection_container"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:clipToPadding="false"
-android:background="@color/very_light_gray"
-android:orientation="vertical"
-android:overScrollMode="never"
-android:paddingStart="@dimen/container_side_margin"
-android:paddingTop="@dimen/container_side_margin"
-android:paddingEnd="@dimen/container_side_margin" />
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/very_light_gray">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/save_collection_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:overScrollMode="never"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingTop="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"/>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/add_collection_button"
+        android:theme="@style/Theme.VocabyAndroid"
+        style="@style/Widget.App.ExtendedFloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|end"
+        android:text="@string/add_save_collection"
+        app:layout_anchor="@id/save_collection_container"
+        app:layout_anchorGravity="bottom|end"
+        app:elevation="1dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.VocabyAndroid.FAB"
+        app:backgroundTint="@color/colorPrimary"
+        app:iconTint="@color/white"
+        app:icon="@drawable/ic_add"
+        app:iconPadding="4dp"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

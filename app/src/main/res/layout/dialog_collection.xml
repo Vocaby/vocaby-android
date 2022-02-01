@@ -64,13 +64,6 @@
                 android:layout_marginEnd="6dp"
                 android:textSize="12sp"
                 android:text="@string/zero" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dark_gray"
-                android:fontFamily="@font/sourcesanspro_regular"
-                android:textSize="12sp"
-                android:text="@string/collection_character_limit" />
         </LinearLayout>
 
         <EditText

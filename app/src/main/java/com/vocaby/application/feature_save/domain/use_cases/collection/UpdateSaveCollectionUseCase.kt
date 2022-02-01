@@ -1,6 +1,7 @@
 package com.vocaby.application.feature_save.domain.use_cases.collection
 
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
+import com.vocaby.application.feature_save.common.Constants
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
@@ -16,6 +17,9 @@ class UpdateSaveCollectionUseCase @Inject constructor(
         return when {
             oldName == newName -> {
                 UserInputState.NoInput
+            }
+            newName.length > Constants.MAX_COLLECTION_NAME_LENGTH -> {
+                UserInputState.LongInput
             }
             sanitized.isEmpty() -> {
                 UserInputState.EmptyInput

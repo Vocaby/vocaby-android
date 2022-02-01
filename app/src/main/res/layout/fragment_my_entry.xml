@@ -59,13 +59,15 @@
         android:id="@+id/empty_card"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginTop="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin"
         android:background="@drawable/box_gray_stroked_dash_gray"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="invisible"
-        android:layout_marginTop="@dimen/container_side_margin"
-        android:layout_marginStart="@dimen/container_side_margin"
-        android:layout_marginEnd="@dimen/container_side_margin"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/vocaby_header">
@@ -89,42 +91,48 @@
         android:scaleY="1.2"
         android:visibility="visible"
         app:layout_constraintVertical_bias="0.07"
-        app:layout_constraintBottom_toBottomOf="@+id/custom_entry_container"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/vocaby_header" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/custom_entry_container"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
-        android:paddingTop="@dimen/container_side_margin"
-        android:paddingBottom="@dimen/fob_spacing"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocaby_header" />
+        app:layout_constraintTop_toBottomOf="@+id/vocaby_header">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/custom_entry_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/container_side_margin"
+            android:paddingEnd="@dimen/container_side_margin"
+            android:paddingTop="@dimen/container_side_margin"
+            android:paddingBottom="@dimen/fob_spacing" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/add_entry_button"
-        style="@style/Theme.VocabyAndroid.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:drawableStart="@drawable/ic_add"
-        android:drawablePadding="4dp"
-        android:text="@string/add_dictionary_entry"
-        android:textSize="12sp"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/add_entry_button"
+            android:theme="@style/Theme.VocabyAndroid"
+            style="@style/Widget.App.ExtendedFloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|end"
+            android:text="@string/add_dictionary_entry"
+            app:layout_anchor="@id/custom_entry_container"
+            app:layout_anchorGravity="bottom|end"
+            app:elevation="1dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.VocabyAndroid.FAB"
+            app:backgroundTint="@color/colorPrimary"
+            app:iconTint="@color/white"
+            app:icon="@drawable/ic_add"
+            app:iconPadding="4dp"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.vocaby.searchview.SearchView
         android:id="@+id/vocaby_search"

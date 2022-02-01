@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.GenericState
@@ -177,7 +178,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     }
 
     private fun setupButtons(view: View) {
-        val addButton = view.findViewById<Button>(R.id.add_entry_button)
+        val addButton = view.findViewById<ExtendedFloatingActionButton>(R.id.add_entry_button)
         addButton.setOnClickListener { entryCreateDialog.show() }
     }
 
