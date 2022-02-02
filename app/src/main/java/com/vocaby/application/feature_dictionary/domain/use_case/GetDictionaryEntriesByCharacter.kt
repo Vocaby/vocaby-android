@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.flow
 class GetDictionaryEntriesByCharacter(
     private val dictionaryRepository: DictionaryRepository
 ) {
-    operator fun invoke(newQuery: String): Flow<GenericState<List<String>>> = flow {
-        val query = newQuery.lowercase()
-
+    operator fun invoke(query: String): Flow<GenericState<List<String>>> = flow {
         if (query.isEmpty()) {
             emit(GenericState.Success(ArrayList()))
         } else if (query.isNotEmpty()) {

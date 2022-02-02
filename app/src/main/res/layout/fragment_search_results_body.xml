@@ -15,7 +15,7 @@
         android:layout_height="90dp"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:background="@drawable/box_bottom_stroke_gray">
+        android:background="@drawable/box_white_bottom_stroke_gray">
         <TextView
             android:id="@+id/entry_header"
             style="@style/Theme.VocabyAndroid.TextHeader"

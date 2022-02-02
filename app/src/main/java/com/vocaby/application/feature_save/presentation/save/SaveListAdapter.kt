@@ -76,7 +76,7 @@ class SaveListAdapter(activity: Activity, private val interaction: Interaction, 
                 val message = if (isCollection) {
                     entry
                 } else {
-                    "Removing this save will also remove it from all collections"
+                    "$entry\n\nRemoving this save will also remove it from all collections"
                 }
 
                 alertDialogBuilder

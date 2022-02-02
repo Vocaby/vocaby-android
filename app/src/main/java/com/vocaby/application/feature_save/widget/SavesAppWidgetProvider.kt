@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
-import androidx.room.rxjava3.EmptyResultSetException
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.util.Generators.generateRandomInt
@@ -66,18 +65,6 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
 
             CoroutineScope(Dispatchers.Main.immediate).launch(CoroutineExceptionHandler { _, throwable ->
                 when (throwable) {
-                    is EmptyResultSetException -> {
-                        remoteViews.setTextViewText(R.id.widget_word, "NO SAVED WORDS")
-                        remoteViews.setTextViewText(
-                            R.id.widget_definition,
-                            "Save words in the app to review them here."
-                        )
-                        remoteViews.setTextViewText(R.id.widget_sentence, "")
-                        remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE)
-                        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true)
-                        appWidgetManager.updateAppWidget(id, remoteViews)
-                    }
-
                     is SaveRepetitionException -> {
                         /* DO NOTHING */
                     }
@@ -94,7 +81,6 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
                     val editor = sp.edit()
                     editor.putString(WIDGET_PREV_KEY + id, "")
                     editor.apply()
-                    throw EmptyResultSetException("User has no saves!")
                 } else if (saves.size == 1) {
                     if (prevWord == saves[0]) {
                         throw SaveRepetitionException()

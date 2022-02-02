@@ -11,12 +11,9 @@
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/colorPrimaryAccent"
+        android:background="@drawable/save_header"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="horizontal">
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
@@ -34,28 +31,20 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
     </LinearLayout>
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/save_fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal" />
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/save_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:theme="@style/Theme.VocabyAndroid">
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/save_tab"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_gravity="bottom"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:tabBackground="@drawable/box_top_stroke_white"
+            app:tabTextColor="@color/white"
+            app:tabBackground="@color/colorPrimaryAccent"
             app:tabIndicatorColor="@color/colorPrimary"
-            app:tabIndicatorGravity="top"
-            app:tabSelectedTextColor="@color/colorPrimary"
+            app:tabSelectedTextColor="@color/white"
+            app:tabIndicatorHeight="2dp"
             app:tabTextAppearance="@style/Theme.VocabyAndroid.TextHeadline">
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -67,4 +56,9 @@
                 android:text="@string/collections" />
         </com.google.android.material.tabs.TabLayout>
     </com.google.android.material.appbar.AppBarLayout>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/save_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 </LinearLayout>

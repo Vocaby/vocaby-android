@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/box_bottom_stroke_gray"
+        android:background="@drawable/box_white_bottom_stroke_gray"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
         android:paddingTop="@dimen/container_gap_margin"

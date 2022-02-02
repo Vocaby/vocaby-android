@@ -7,6 +7,7 @@ import com.vocaby.application.feature_datatransfer.domain.use_case.*
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
+import com.vocaby.application.feature_save.domain.repository.SaveRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,12 +22,13 @@ class DataTransferModule {
     fun provideDataTransferUseCases(
         userRepository: UserRepository,
         customDictionaryRepository: CustomDictionaryRepository,
+        saveRepository: SaveRepository,
         dataTransferRepository: DataTransferRepository,
         availableTypes: List<Type>
     ): DataTransferUseCases = DataTransferUseCases(
         ImportSavesUseCase(userRepository, dataTransferRepository),
         ImportCustomEntriesUseCase(userRepository, customDictionaryRepository, dataTransferRepository, availableTypes),
-        ExportSavesUseCase(userRepository, dataTransferRepository),
+        ExportSavesUseCase(userRepository, saveRepository, dataTransferRepository),
         ExportCustomEntriesUseCase(userRepository, customDictionaryRepository, dataTransferRepository)
     )
 

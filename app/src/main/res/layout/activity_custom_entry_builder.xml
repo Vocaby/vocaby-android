@@ -16,7 +16,7 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="@drawable/box_bottom_stroke_gray"
+        android:background="@drawable/box_white_bottom_stroke_gray"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingEnd="@dimen/container_side_margin"
         app:layout_constraintEnd_toEndOf="parent"

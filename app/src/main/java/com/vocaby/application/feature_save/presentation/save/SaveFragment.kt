@@ -25,8 +25,10 @@ class SaveFragment : Fragment() {
         val tabs = view.findViewById<TabLayout>(R.id.save_tab)
 
         appBar = view.findViewById(R.id.save_app_bar)
+        appBar.outlineProvider = null
 
         viewPager = view.findViewById(R.id.save_fragment_container)
+        viewPager.offscreenPageLimit = 1
         viewPager.adapter = SaveFragmentPagerAdapter(this)
         viewPager.isUserInputEnabled = false
 

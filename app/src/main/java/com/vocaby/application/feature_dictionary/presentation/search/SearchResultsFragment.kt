@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -30,6 +31,7 @@ import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SearchResultsFragment : Fragment() {
@@ -44,6 +46,7 @@ class SearchResultsFragment : Fragment() {
     private lateinit var saveCollectionButton: Button
     private lateinit var removeSaveButton: Button
     private lateinit var collectionAdapter: CollectionAdapter
+    private lateinit var contextView: CoordinatorLayout
 
     private val searchResultsViewModel: SearchResultsViewModel by viewModels()
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
@@ -84,6 +87,7 @@ class SearchResultsFragment : Fragment() {
         dictionarySelector = view.findViewById(R.id.dictionary_selector)
         saveButton = view.findViewById(R.id.save_button)
         searchProgress = view.findViewById(R.id.search_progress)
+        contextView = view.findViewById(R.id.search_results_coordinator_layout)
 
         setupCollectionCreateDialog()
 
@@ -92,142 +96,148 @@ class SearchResultsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val contextView = view.findViewById<View>(R.id.search_results_coordinator_layout)
 
         launchAndRepeatWithViewLifecycle {
-            searchResultsViewModel.uiEvent.collect { event ->
-                when(event) {
-                    is SearchUiEvent.ShowSnackBar -> {
-                        val snackbar = Snackbar.make(
-                            contextView,
-                            event.message,
-                            Snackbar.LENGTH_LONG
-                        )
+            launch {
+                collectUiEvent()
+            }
 
-                        if (event.showAction) snackbar.setAction(R.string.snackbar_collection_action) {
-                            searchResultsViewModel.saveToCollections()
-                        }
+            launch {
+                collectSearchState()
+            }
 
-                        snackbar.config(ctx, R.drawable.snackbar_background)
-                        snackbar.show()
-                    }
-                    is SearchUiEvent.CloseCollectionDialog -> {
-                        if (saveToCollectionDialog.isShowing) saveToCollectionDialog.dismiss()
-                    }
-                    is SearchUiEvent.ShowAddCollectionDialog -> {
-                        saveCollectionButton.setOnClickListener {
-                            saveCollectionButton.isEnabled = false
-                            searchResultsViewModel.addEntryToCollections()
-                        }
-                        removeSaveButton.visibility = View.GONE
-                        saveCollectionButton.setText(R.string.collection_save)
-                        saveToCollectionDialog.show()
-                    }
-                    is SearchUiEvent.ShowUpdateCollectionDialog -> {
-                        saveCollectionButton.setOnClickListener {
-                            saveCollectionButton.isEnabled = false
-                            searchResultsViewModel.updateItemInCollections()
-                        }
-                        removeSaveButton.visibility = View.VISIBLE
-                        saveCollectionButton.setText(R.string.collection_update)
-                        saveToCollectionDialog.show()
-                    }
-                    else -> {}
-                }
+            launch {
+                collectDictionarySelectorState()
+            }
 
+            launch {
+                collectCollections()
+            }
+
+            launch {
+                collectSaveState()
             }
         }
+    }
 
-        launchAndRepeatWithViewLifecycle {
-            searchResultsViewModel.entryData.collectLatest { searchState ->
-                when (searchState) {
-                    is ResourceState.InProgress -> searchProgress.visibility = View.VISIBLE
-                    is ResourceState.Success -> {
-                        searchState.data?.let { dictionaryResult ->
-                            setupDictionary(dictionaryResult)
-                            dictionaryViewModel.writeToHistory(searchedEntry, dictionaryResult)
-                            viewPager.adapter = FragmentAdapter(this@SearchResultsFragment, dictionaryResult)
-                            dictionarySelector.visibility = View.VISIBLE
-                            searchProgress.visibility = GONE
-                        }
+    // TODO: private suspend fun collectUiState() {}
+
+    private suspend fun collectSaveState() {
+        searchResultsViewModel.saveState.collectLatest { saveState ->
+            when (saveState) {
+                is SaveState.Processed -> {
+                    saveButton.isEnabled = true
+                    val icon: Drawable? = if (saveState.saved) {
+                        AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved)
+                    } else {
+                        AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved)
                     }
-                    else -> {}
-                }
-            }
-        }
 
-        launchAndRepeatWithViewLifecycle {
-            searchResultsViewModel.dictionarySelectorState.collectLatest { selectorState ->
-                val buttonToHide = dictionarySelector.findViewById<RadioButton>(selectorState.hideId)
-                val buttonToShow = dictionarySelector.findViewById<RadioButton>(selectorState.displayId)
-                if (selectorState.displayAll) {
-                    buttonToHide.visibility = View.VISIBLE
-                    buttonToShow.visibility = View.VISIBLE
-                } else {
-                    buttonToHide.visibility = View.GONE
-                    buttonToShow.visibility = View.VISIBLE
-                }
-
-                dictionarySelector.check(selectorState.displayId)
-            }
-        }
-
-        launchAndRepeatWithViewLifecycle {
-            searchResultsViewModel.dictionarySelectorState.collectLatest { selectorState ->
-                val buttonToHide = dictionarySelector.findViewById<RadioButton>(selectorState.hideId)
-                val buttonToShow = dictionarySelector.findViewById<RadioButton>(selectorState.displayId)
-                if (selectorState.displayAll) {
-                    buttonToHide.visibility = View.VISIBLE
-                    buttonToShow.visibility = View.VISIBLE
-                } else {
-                    buttonToHide.visibility = View.GONE
-                    buttonToShow.visibility = View.VISIBLE
-                }
-
-                dictionarySelector.check(selectorState.displayId)
-            }
-        }
-
-        launchAndRepeatWithViewLifecycle {
-            searchResultsViewModel.saveCollections.collectLatest { collections ->
-                collectionAdapter.setList(collections)
-            }
-        }
-
-        launchAndRepeatWithViewLifecycle {
-            searchResultsViewModel.saveState.collectLatest { saveState ->
-                when (saveState) {
-                    is SaveState.Processed -> {
-                        saveButton.isEnabled = true
-                        val icon: Drawable? = if (saveState.saved) {
-                            AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_saved)
+                    saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
+                    saveButton.setOnClickListener {
+                        if (saveState.saved) {
+                            searchResultsViewModel.unsaveEntry()
                         } else {
-                            AppCompatResources.getDrawable(ctx, R.drawable.ic_bookmark_unsaved)
+                            searchResultsViewModel.saveEntry()
                         }
-
-                        saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
-                        saveButton.setOnClickListener {
-                            if (saveState.saved) {
-                                searchResultsViewModel.unsaveEntry()
-                            } else {
-                                searchResultsViewModel.saveEntry()
-                            }
-                        }
-                    }
-
-                    is SaveState.InProgress -> {
-                        searchProgress.visibility = View.VISIBLE
-                        saveButton.isEnabled = false
-                    }
-
-                    is SaveState.Remove -> {
-                        saveButton.visibility = View.GONE
-                    }
-
-                    is SaveState.Show -> {
-                        saveButton.visibility = View.VISIBLE
                     }
                 }
+
+                is SaveState.InProgress -> {
+                    searchProgress.visibility = View.VISIBLE
+                    saveButton.isEnabled = false
+                }
+
+                is SaveState.Remove -> {
+                    saveButton.visibility = View.GONE
+                }
+
+                is SaveState.Show -> {
+                    saveButton.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private suspend fun collectCollections() {
+        searchResultsViewModel.saveCollections.collectLatest { collections ->
+            collectionAdapter.setList(collections)
+        }
+    }
+
+    private suspend fun collectDictionarySelectorState() {
+        searchResultsViewModel.dictionarySelectorState.collectLatest { selectorState ->
+            val buttonToHide = dictionarySelector.findViewById<RadioButton>(selectorState.hideId)
+            val buttonToShow = dictionarySelector.findViewById<RadioButton>(selectorState.displayId)
+            if (selectorState.displayAll) {
+                buttonToHide.visibility = View.VISIBLE
+                buttonToShow.visibility = View.VISIBLE
+            } else {
+                buttonToHide.visibility = View.GONE
+                buttonToShow.visibility = View.VISIBLE
+            }
+
+            dictionarySelector.check(selectorState.displayId)
+        }
+    }
+
+    private suspend fun collectSearchState() {
+        searchResultsViewModel.entryData.collectLatest { searchState ->
+            when (searchState) {
+                is ResourceState.InProgress -> searchProgress.visibility = View.VISIBLE
+                is ResourceState.Success -> {
+                    searchState.data?.let { dictionaryResult ->
+                        setupDictionary(dictionaryResult)
+                        dictionaryViewModel.writeToHistory(searchedEntry, dictionaryResult)
+                        viewPager.adapter = FragmentAdapter(this@SearchResultsFragment, dictionaryResult)
+                        dictionarySelector.visibility = View.VISIBLE
+                        searchProgress.visibility = GONE
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private suspend fun collectUiEvent() {
+        searchResultsViewModel.uiEvent.collect { event ->
+            when(event) {
+                is SearchUiEvent.ShowSnackBar -> {
+                    val snackbar = Snackbar.make(
+                        contextView,
+                        event.message,
+                        Snackbar.LENGTH_LONG
+                    )
+
+                    if (event.showAction) snackbar.setAction(R.string.snackbar_collection_action) {
+                        searchResultsViewModel.saveToCollections()
+                    }
+
+                    snackbar.config(ctx, R.drawable.snackbar_background)
+                    snackbar.show()
+                }
+                is SearchUiEvent.CloseCollectionDialog -> {
+                    if (saveToCollectionDialog.isShowing) saveToCollectionDialog.dismiss()
+                }
+                is SearchUiEvent.ShowAddCollectionDialog -> {
+                    saveCollectionButton.setOnClickListener {
+                        saveCollectionButton.isEnabled = false
+                        searchResultsViewModel.addEntryToCollections()
+                    }
+                    removeSaveButton.visibility = View.GONE
+                    saveCollectionButton.setText(R.string.collection_save)
+                    saveToCollectionDialog.show()
+                }
+                is SearchUiEvent.ShowUpdateCollectionDialog -> {
+                    saveCollectionButton.setOnClickListener {
+                        saveCollectionButton.isEnabled = false
+                        searchResultsViewModel.updateItemInCollections()
+                    }
+                    removeSaveButton.visibility = View.VISIBLE
+                    saveCollectionButton.setText(R.string.collection_update)
+                    saveToCollectionDialog.show()
+                }
+                else -> {}
             }
         }
     }

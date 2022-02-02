@@ -18,7 +18,7 @@
             android:gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/box_bottom_stroke_gray"
+            android:background="@drawable/box_white_bottom_stroke_gray"
             android:textSize="14sp"
             android:maxLines="1"
             android:ellipsize="end"

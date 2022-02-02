@@ -63,7 +63,7 @@ class DictionaryModule {
     ): DictionaryUseCases = DictionaryUseCases(
         GetSearchHistoryUseCase(dictionaryRepository),
         GetSearchHistoryItemUseCase(dictionaryRepository),
-        ValidateSearchUserCase(),
+        ValidateSearchUseCase(),
         GetDictionaryEntriesByCharacter(dictionaryRepository),
         GetSearchSuggestionsUseCase(),
         GetDailyPick(dictionaryRepository, applicationRepository),
