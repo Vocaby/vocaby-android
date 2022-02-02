@@ -11,6 +11,8 @@ import com.vocaby.application.feature_dictionary_custom.data.local.entity.EntryW
 import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class CustomDictionaryRepositoryImpl constructor(
@@ -218,7 +220,7 @@ class CustomDictionaryRepositoryImpl constructor(
         dao.insertCustomDefinitions(addedDefinitions)
     }
 
-    private fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? {
+    private suspend fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? = withContext(Dispatchers.Default) {
         data?.let {
             val entryData = EntryModel(
                 data.customEntry.entryId,
@@ -254,10 +256,8 @@ class CustomDictionaryRepositoryImpl constructor(
 
             groups.sort()
             entryData.definitionGroups = groups
-            return entryData
+            entryData
         }
-
-        return null
     }
 
     override suspend fun getTypes(): List<String> = dao.getTypes()

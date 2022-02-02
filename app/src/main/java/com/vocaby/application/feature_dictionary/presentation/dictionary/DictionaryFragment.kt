@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 class DictionaryFragment : Fragment() {
     private lateinit var backPressedCallback: OnBackPressedCallback
     private lateinit var searchView: SearchView
+
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
 
     override fun onResume() {

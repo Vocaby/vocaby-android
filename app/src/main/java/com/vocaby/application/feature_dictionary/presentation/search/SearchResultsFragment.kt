@@ -91,12 +91,6 @@ class SearchResultsFragment : Fragment() {
 
         setupCollectionCreateDialog()
 
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         launchAndRepeatWithViewLifecycle {
             launch {
                 collectUiEvent()
@@ -118,12 +112,14 @@ class SearchResultsFragment : Fragment() {
                 collectSaveState()
             }
         }
+
+        return view
     }
 
     // TODO: private suspend fun collectUiState() {}
 
     private suspend fun collectSaveState() {
-        searchResultsViewModel.saveState.collectLatest { saveState ->
+        searchResultsViewModel.saveState.collect { saveState ->
             when (saveState) {
                 is SaveState.Processed -> {
                     saveButton.isEnabled = true

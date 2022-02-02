@@ -3,6 +3,7 @@ package com.vocaby.application.feature_dictionary.presentation.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.use_case.GetAllDictionaryEntryUseCase
@@ -35,31 +36,33 @@ class SearchResultsViewModel @Inject constructor(
     private val entry: String = savedStateHandle.get(SearchResultsFragment.ENTRY)!!
     private var _entryData = MutableStateFlow<ResourceState<DictionarySearchResult>>(ResourceState.InProgress)
     private var _saveState = MutableStateFlow<SaveState>(SaveState.InProgress)
+    private var _dictionarySelectorState = MutableStateFlow(DictionarySelectorState())
     private var _uiEvent = MutableSharedFlow<SearchUiEvent>()
-    private var _dictionarySelectorState = MutableSharedFlow<DictionarySelectorState>()
     private var _saveCollections = MutableStateFlow<List<UpdateSaveCollectionModel>>(ArrayList())
     private var saveModel: SaveModel? = null
     private var oldCollections: List<UpdateSaveCollectionModel>? = ArrayList()
 
     val entryData get() = _entryData.asStateFlow()
     val saveState get() = _saveState.asStateFlow()
+    val dictionarySelectorState get() = _dictionarySelectorState.asStateFlow()
     val uiEvent get() = _uiEvent.asSharedFlow()
-    val dictionarySelectorState get() = _dictionarySelectorState.asSharedFlow()
     val saveCollections get() = _saveCollections.asStateFlow()
 
     init {
         viewModelScope.launch {
             checkSaveUseCase(entry).collect {
                 saveModel = it
-                _saveState.emit(SaveState.Processed(it.saved))
+                _saveState.value = SaveState.Processed(it.saved)
             }
         }
 
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             val searchState = getAllDictionaryEntryUseCase(entry)
-            if (searchState.removeSave) _saveState.emit(SaveState.Remove)
-            else _saveState.emit(SaveState.Show)
-            _dictionarySelectorState.emit(searchState.dictionarySelectorState)
+            if (searchState.removeSave) {
+                _saveState.value = SaveState.Remove
+            }
+
+            _dictionarySelectorState.value = searchState.dictionarySelectorState
             _entryData.value = ResourceState.Success(searchState.data)
         }
 

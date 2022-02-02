@@ -20,13 +20,12 @@ class DictionaryViewModel @Inject constructor(
 ) : ViewModel() {
     private var entriesByCharacter: List<String> = ArrayList()
     private val suggestionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
-    private val _searchedEntry = MutableSharedFlow<String>(replay=1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val _searchedEntry = MutableSharedFlow<String>()
     private val _dailyPick = MutableSharedFlow<DailyPickState>()
     private val _searchSuggestions = MutableSharedFlow<GenericState<List<SearchSuggestionItem>>>()
     private val _searchHistory = MutableSharedFlow<List<SimpleEntryModel>?>(replay=1)
 
-    val searchedEntry get() = _searchedEntry.asSharedFlow().distinctUntilChanged()
+    val searchedEntry get() = _searchedEntry.asSharedFlow().distinctUntilChanged().filter { it.isNotEmpty() }
     val dailyPick get() = _dailyPick.asSharedFlow()
     val searchSuggestions get() = _searchSuggestions.asSharedFlow()
     val searchHistory get() = _searchHistory.asSharedFlow()
@@ -42,8 +41,6 @@ class DictionaryViewModel @Inject constructor(
         }
     }
 
-    // validate and notify observer of new search
-    // TODO: Fix unexpected entry search on navigation
     fun search(entry: String) {
         val sanitized = entry.lowercase().trim()
         viewModelScope.launch {
@@ -111,6 +108,9 @@ class DictionaryViewModel @Inject constructor(
     }
 
     fun popSearchStack() {
+        viewModelScope.launch {
+            _searchedEntry.emit("")
+        }
     }
 
     fun clearCache() {

@@ -72,7 +72,6 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         launchAndRepeatWithViewLifecycle {
             dictionaryViewModel.dailyPick.collectLatest { dailyPickState ->
                 dateView.text = formatDateToString(Date().time, true, showDay = true)
-
                 when (dailyPickState) {
                     is DailyPickState.InProgress -> {
                         wordView.visibility = View.INVISIBLE

@@ -38,7 +38,7 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
         }
 
         val dictionarySearchResult = DictionarySearchResult()
-        val dictionarySelectorState = DictionarySelectorState(R.id.selection_custom, R.id.selection_original)
+        val dictionarySelectorState = DictionarySelectorState()
         var removeSave = false
         if (customData != null && originalData != null) {
             dictionarySearchResult.customModel = customData
