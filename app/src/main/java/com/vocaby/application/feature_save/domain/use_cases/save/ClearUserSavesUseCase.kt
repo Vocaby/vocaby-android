@@ -10,5 +10,6 @@ class ClearUserSavesUseCase(
     suspend operator fun invoke() {
         val userId = userRepository.getUser()
         saveRepository.clearSaves(userId)
+        saveRepository.clearSaveCollections(userId)
     }
 }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8cc9e742312721c71685e3f20c435b5d",
+    "identityHash": "9c65a303393ec90b19061eeb76c25d3e",
     "entities": [
       {
         "tableName": "vocaby_user",
@@ -425,7 +425,7 @@
       },
       {
         "tableName": "custom_user_entry",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `entry` TEXT NOT NULL, `pronunciation` TEXT, `last_updated` TEXT NOT NULL, `custom_entry_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `entry` TEXT NOT NULL, `pronunciation` TEXT, `last_updated` TEXT NOT NULL, `custom_entry_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `vocaby_user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "userId",
@@ -476,7 +476,19 @@
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_custom_user_entry_entry_custom_entry_id` ON `${TABLE_NAME}` (`entry`, `custom_entry_id`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "vocaby_user",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "user_id"
+            ],
+            "referencedColumns": [
+              "user_id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "custom_user_definition",
@@ -768,7 +780,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8cc9e742312721c71685e3f20c435b5d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9c65a303393ec90b19061eeb76c25d3e')"
     ]
   }
 }

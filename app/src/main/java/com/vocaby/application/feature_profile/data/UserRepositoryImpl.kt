@@ -14,6 +14,7 @@ import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.io.IOException
 import java.util.*
 
@@ -22,6 +23,14 @@ class UserRepositoryImpl constructor(
     private val userDataStore: DataStore<com.vocaby.app.User>,
     private val userSettingsDataStore: DataStore<UserSettings>,
 ): UserRepository {
+    override fun getCurrentUser(): Flow<Int> = dao.getCurrentUser().map { it.toInt() }
+    override suspend fun replaceOwnership(oldUserId: Int, newUserId: Int) {
+        dao.replaceCustomDictionaryUser(newUserId)
+        dao.replaceDictionaryVisitUser(newUserId)
+        dao.replaceCustomDictionaryVisitUser(newUserId)
+        dao.deleteUser(User(oldUserId))
+    }
+
     override val settingsFlow: Flow<UserSettings> = userSettingsDataStore.data.catch { exception ->
         if (exception is IOException) {
             Logger.reportErrorToBugsnag(exception)
@@ -56,7 +65,18 @@ class UserRepositoryImpl constructor(
         return userId
     }
 
+    override suspend fun setCurrentUser(userId: Int) {
+        userDataStore.updateData { preferences ->
+            preferences.toBuilder().setUserId(userId).build()
+        }
+    }
+
     override suspend fun getUser(): Int = userDataStore.data.first().userId
+
+    override suspend fun createUser(): Int = dao.createUser(User()).toInt()
+
+    override suspend fun deleteUser(userId: Int) = dao.deleteUser(User(userId))
+    override suspend fun cleanupUser(userId: Int) = dao.cleanupUser(userId)
 
 
     override suspend fun recordVisit(userId: Int, entryId: Int) {

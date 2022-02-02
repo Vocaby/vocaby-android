@@ -10,8 +10,7 @@ class GetSaveCollectionsUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val saveRepository: SaveRepository
 ) {
-    suspend operator fun invoke(): Flow<List<SaveCollectionModel>> {
-        val userId = userRepository.getUser()
+    operator fun invoke(userId: Int): Flow<List<SaveCollectionModel>> {
         return saveRepository.getSaveCollections(userId)
     }
 }

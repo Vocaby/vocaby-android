@@ -8,6 +8,7 @@ import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import java.util.*
 
 interface CustomDictionaryRepository {
+    suspend fun replaceUser(newUserId: Int)
     suspend fun getUserEntries(userId: Int): LinkedList<UserEntry>
     suspend fun getUserEntryId(userId: Int, entry: String): Int?
     suspend fun getUserEntryData(userId: Int, entry: String): EntryModel?

@@ -42,12 +42,6 @@ class AllSavesFragment : Fragment(), SaveListAdapter.Interaction {
             }
         }
 
-        launchAndRepeatWithViewLifecycle {
-            savesViewModel.saveCount.collectLatest { count ->
-                val text= "$count Saved"
-            }
-        }
-
         return view
     }
 

@@ -23,6 +23,9 @@ interface SaveDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSave(userSave: UserSave): Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addSaves(userSaves: List<UserSave>): List<Long>
+
     @Query("DELETE FROM saves WHERE user_id = :userId AND entry = :entry")
     suspend fun removeSave(userId: Int, entry: String)
 
@@ -31,6 +34,9 @@ interface SaveDao {
 
     @Query("DELETE FROM saves WHERE user_id = :userId")
     suspend fun clearSaves(userId: Int)
+
+    @Query("DELETE FROM save_collection WHERE user_id = :userId")
+    suspend fun clearSaveCollections(userId: Int)
 
     @Query("SELECT col.collection_id as id, col.collection_name as collectionName, col.last_updated as lastUpdated, " +
             "COUNT(item.collection_item_id) as count " +
@@ -51,11 +57,14 @@ interface SaveDao {
     @Query("SELECT entry FROM save_collection_item i INNER JOIN save_collection c ON c.collection_id = :collectionId AND i.collection_id = c.collection_id INNER JOIN saves s ON i.save_id = s.save_id ORDER BY last_updated DESC")
     suspend fun getCollectionItems(collectionId: Int): List<String>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSaveCollection(collection: SaveCollection)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addSaveToCollections(collectionItems: List<SaveCollectionItem>)
+    suspend fun addSaveCollections(collections: List<SaveCollection>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addSaveCollectionItems(collectionItems: List<SaveCollectionItem>)
 
     @Delete
     suspend fun removeSaveCollection(saveCollection: SaveCollection)

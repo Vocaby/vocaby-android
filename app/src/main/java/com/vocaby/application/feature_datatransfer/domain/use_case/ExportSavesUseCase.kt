@@ -3,7 +3,7 @@ package com.vocaby.application.feature_datatransfer.domain.use_case
 import android.net.Uri
 import com.vocaby.application.R
 import com.vocaby.application.core.util.UiText
-import com.vocaby.application.feature_datatransfer.domain.model.SaveExportModel
+import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferModel
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferState
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.yield
 import javax.inject.Inject
 
 class ExportSavesUseCase @Inject constructor(
@@ -33,8 +34,9 @@ class ExportSavesUseCase @Inject constructor(
             val collections = saveRepository.getSaveCollections(userId).first()
             val collectionMap = mutableMapOf<String, List<String>>()
             for (collection in collections) {
+                yield()
                 val collectionItems = saveRepository.getCollectionItems(collection.id)
-                collectionMap.put(collection.collectionName, collectionItems)
+                collectionMap[collection.collectionName] = collectionItems
             }
 
             emit(DataTransferState.InProgress(
@@ -42,10 +44,11 @@ class ExportSavesUseCase @Inject constructor(
                 count = saves.size
             ))
 
-            val exportModel = SaveExportModel(
+            val exportModel = SaveTransferModel(
                 saves,
                 collectionMap
             )
+
             dataTransferRepository.writeSavesToExternalStorage(exportModel, uri)
             emit(DataTransferState.Success(message = UiText(textResource = R.string.data_transfer_export_complete)))
         }

@@ -14,16 +14,18 @@ interface SaveRepository {
     fun getAllSavedEntriesFlow(userId: Int): Flow<List<String>>
     fun hasSaved(userId: Int, entry: String): Flow<SaveModel>
     suspend fun addSaveItem(userSave: UserSave): Long
+    suspend fun addSaveItems(userSaves: List<UserSave>): List<Long>
     suspend fun removeSaveItem(userId: Int, entry: String)
     suspend fun clearSaves(userId: Int)
-
+    suspend fun clearSaveCollections(userId: Int)
     fun getSaveCollections(userId: Int): Flow<List<SaveCollectionModel>>
     fun getCollectionItems(userId: Int, collectionName: String): Flow<List<String>>
     fun getSaveCollectionsForUpdate(userId: Int, entry: String): Flow<List<UpdateSaveCollectionModel>>
     suspend fun getCollectionItems(collectionId: Int): List<String>
     suspend fun getSaveCollectionWithId(collectionId: Int): SaveCollectionModel?
     suspend fun addSaveCollection(saveCollection: SaveCollection)
-    suspend fun addSaveToCollections(collectionItems: List<SaveCollectionItem>)
+    suspend fun addSaveCollections(saveCollections: List<SaveCollection>): List<Long>
+    suspend fun addSaveCollectionItems(collectionItems: List<SaveCollectionItem>)
     suspend fun removeSaveCollection(saveCollection: SaveCollection)
     suspend fun removeSaveFromCollections(collectionItems: List<SaveCollectionItem>)
     suspend fun removeCollectionItem(saveId: Int, collectionId: Int)

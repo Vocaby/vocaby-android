@@ -3,6 +3,7 @@ package com.vocaby.application.feature_datatransfer.presentation
 import android.app.Activity
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -32,7 +33,7 @@ class DataTransferActivity : AppCompatActivity() {
             finish()
         }
 
-        progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+        progressBar = findViewById(R.id.progress_bar)
         val progressText = findViewById<TextView>(R.id.progress_text)
         val progressCounter = findViewById<TextView>(R.id.progress_counter)
 
@@ -44,7 +45,8 @@ class DataTransferActivity : AppCompatActivity() {
                 when (transferState) {
                     is DataTransferState.Success -> {
                         setProgressBar(true)
-                        transferState.message.textResource?.let {progressText.setText(it)}
+                        transferState.message.text?.let { progressText.text = it }
+                            ?: transferState.message.textResource?.let { progressText.setText(it) }
 
                         closeButton.setOnClickListener {
                             setResult(Activity.RESULT_OK, dataTransferViewModel.addResult())
@@ -52,7 +54,9 @@ class DataTransferActivity : AppCompatActivity() {
                         }
                     }
                     is DataTransferState.InProgress -> {
-                        transferState.message?.textResource?.let {progressText.setText(it)}
+                        transferState.message.text?.let { progressText.text = it }
+                            ?: transferState.message.textResource?.let { progressText.setText(it) }
+
                         transferState.count?.let {
                             val text = if (it < 2) {
                                 "$it entry"
@@ -65,7 +69,10 @@ class DataTransferActivity : AppCompatActivity() {
                     }
                     is DataTransferState.Error -> {
                         setProgressBar(false)
-                        transferState.uiText.textResource?.let { progressText.setText(it) }
+                        transferState.uiText.text?.let { progressText.text = it }
+                            ?: transferState.uiText.textResource?.let { progressText.setText(it) }
+
+                        progressCounter.visibility = View.INVISIBLE
                     }
                 }
             }

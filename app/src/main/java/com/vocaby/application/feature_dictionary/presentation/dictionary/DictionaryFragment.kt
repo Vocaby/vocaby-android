@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
 import com.vocaby.application.core.util.GenericState
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.presentation.search.SearchResultsFragment
 import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import com.vocaby.searchview.SearchView
@@ -73,7 +72,6 @@ class DictionaryFragment : Fragment() {
         launchAndRepeatWithViewLifecycle {
             launch {
                 dictionaryViewModel.searchedEntry.collect { entry ->
-                    Logger.reportToDebug("new search: $entry")
                     addResultsFragment(entry)
                 }
             }

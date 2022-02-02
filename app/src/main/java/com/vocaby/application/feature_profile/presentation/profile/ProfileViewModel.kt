@@ -25,6 +25,7 @@ class ProfileViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             user = profileUseCases.setupBaseUserUseCase()
+            profileUseCases.cleanUpUserUseCase()
         }
     }
 

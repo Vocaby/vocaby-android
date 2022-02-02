@@ -3,7 +3,7 @@ package com.vocaby.application.feature_datatransfer.domain.use_case
 import android.net.Uri
 import com.vocaby.application.R
 import com.vocaby.application.core.util.UiText
-import com.vocaby.application.feature_datatransfer.domain.model.EntryExportModel
+import com.vocaby.application.feature_datatransfer.domain.model.EntryTransferModel
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferState
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
@@ -28,7 +28,7 @@ class ExportCustomEntriesUseCase @Inject constructor(
                 message = UiText(textResource = R.string.data_transfer_exporting_saves),
                 count = entries.size
             ))
-            dataTransferRepository.writeEntriesToExternalStorage(EntryExportModel(entries), uri)
+            dataTransferRepository.writeEntriesToExternalStorage(EntryTransferModel(entries), uri)
             emit(DataTransferState.Success(message = UiText(textResource = R.string.data_transfer_export_complete)))
         }
     }

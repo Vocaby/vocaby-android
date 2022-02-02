@@ -1,12 +1,19 @@
 package com.vocaby.application.feature_dictionary_custom.data.local.entity
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
+import com.vocaby.application.feature_profile.data.local.entity.User
 import java.util.*
 
-@Entity(tableName = "custom_user_entry", indices = [Index(value = ["entry", "custom_entry_id"], unique = true)])
+@Entity(
+    tableName = "custom_user_entry",
+    foreignKeys = [ForeignKey(
+        onDelete = ForeignKey.CASCADE,
+        entity = User::class,
+        parentColumns = arrayOf("user_id"),
+        childColumns = arrayOf("user_id")
+    )],
+    indices = [Index(value = ["entry", "custom_entry_id"], unique = true)]
+)
 data class CustomEntry(
     @ColumnInfo(name = "user_id")
     var userId: Int,

@@ -26,7 +26,7 @@ class DataTransferModule {
         dataTransferRepository: DataTransferRepository,
         availableTypes: List<Type>
     ): DataTransferUseCases = DataTransferUseCases(
-        ImportSavesUseCase(userRepository, dataTransferRepository),
+        ImportSavesUseCase(userRepository, saveRepository, customDictionaryRepository, dataTransferRepository),
         ImportCustomEntriesUseCase(userRepository, customDictionaryRepository, dataTransferRepository, availableTypes),
         ExportSavesUseCase(userRepository, saveRepository, dataTransferRepository),
         ExportCustomEntriesUseCase(userRepository, customDictionaryRepository, dataTransferRepository)

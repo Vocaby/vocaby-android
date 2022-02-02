@@ -2,18 +2,22 @@ package com.vocaby.application.feature_save.presentation.collection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.use_cases.collection.SaveCollectionUseCases
 import com.vocaby.application.states.UserInputState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SaveCollectionViewModel @Inject constructor(
-    private val saveCollectionUseCases: SaveCollectionUseCases
+    private val saveCollectionUseCases: SaveCollectionUseCases,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ): ViewModel() {
     private var collectionId: Int? = null
     private var selectedCollection: String? = null
@@ -25,7 +29,9 @@ class SaveCollectionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            saveCollectionUseCases.getSaveCollectionsUseCase().collectLatest { collections ->
+            getCurrentUserUseCase().flatMapLatest { userId ->
+                saveCollectionUseCases.getSaveCollectionsUseCase(userId)
+            }.collectLatest { collections ->
                 _saveCollectionState.value = collections
             }
         }

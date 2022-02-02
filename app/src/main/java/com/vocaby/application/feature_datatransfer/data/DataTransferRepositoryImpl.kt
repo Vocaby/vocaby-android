@@ -9,8 +9,8 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.exceptions.IllegalFileException
-import com.vocaby.application.feature_datatransfer.domain.model.EntryExportModel
-import com.vocaby.application.feature_datatransfer.domain.model.SaveExportModel
+import com.vocaby.application.feature_datatransfer.domain.model.EntryTransferModel
+import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferModel
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
@@ -21,6 +21,7 @@ import com.vocaby.application.feature_profile.domain.model.ExportModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -29,23 +30,45 @@ class DataTransferRepositoryImpl(
     private val contentResolver: ContentResolver,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): DataTransferRepository {
-    override suspend fun importSavesFromExternalStorage(uri: Uri): List<String> = withContext(defaultDispatcher) {
-        val saves: MutableList<String> = ArrayList()
+    override suspend fun importSavesFromExternalStorage(uri: Uri): SaveTransferModel = withContext(defaultDispatcher) {
+        val saves: MutableList<String> = mutableListOf()
+        val collectionMap: MutableMap<String, List<String>> = mutableMapOf()
         val inputStream = contentResolver.openInputStream(uri)
         inputStream.use { ins ->
             JsonReader(InputStreamReader(ins)).use { jsonReader ->
-                try {
-                    val gson = Gson()
-                    val jsonObject = gson.fromJson<JsonObject>(jsonReader, JsonObject::class.java)
-                    if (jsonObject.has(Constants.EXPORT_TYPE_FIELD)) {
-                        if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_TYPE_FIELD).asString
-                            == Constants.EXPORT_SAVE_TYPE
-                        ) {
-                            for (item in jsonObject.getAsJsonArray("data")) {
-                                val entry = item.asString.lowercase()
+                val gson = Gson()
+                val jsonObject = gson.fromJson<JsonObject>(jsonReader, JsonObject::class.java)
+                if (jsonObject.has(Constants.EXPORT_TYPE_FIELD)) {
+                    if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_TYPE_FIELD).asString
+                        == Constants.EXPORT_SAVE_TYPE
+                    ) {
+                        val data = jsonObject.getAsJsonObject("data")
+                        val allSaves = data.getAsJsonArray("savedEntries")
+                        val collections = data.getAsJsonObject("collections")
+                        for (item in allSaves) {
+                            yield()
+                            val entry = item.asString.lowercase().trim()
+                            val entryIsValid = Formatter.validateEntry(entry)
+                            if (entryIsValid) {
+                                saves.add(entry)
+                            } else {
+                                throw IllegalFileException(
+                                    "$entry is not valid",
+                                    IllegalFileException.INVALID_FILE
+                                )
+                            }
+                        }
+
+                        for (collection in collections.keySet()) {
+                            val sanitizedCollection = collection.trim()
+                            yield()
+                            val savesInCollection = mutableListOf<String>()
+                            for (save in collections.getAsJsonArray(collection)) {
+                                yield()
+                                val entry = save.asString.lowercase().trim()
                                 val entryIsValid = Formatter.validateEntry(entry)
                                 if (entryIsValid) {
-                                    saves.add(entry)
+                                    savesInCollection.add(entry)
                                 } else {
                                     throw IllegalFileException(
                                         "$entry is not valid",
@@ -53,28 +76,30 @@ class DataTransferRepositoryImpl(
                                     )
                                 }
                             }
-                        } else {
-                            throw IllegalFileException(
-                                "Backup file has the wrong entry type",
-                                IllegalFileException.INVALID_FILE
-                            )
+
+                            if (collectionMap.containsKey(sanitizedCollection)) {
+                                throw IllegalFileException(
+                                    "spaced collection",
+                                    IllegalFileException.INVALID_FILE
+                                )
+                            } else collectionMap[sanitizedCollection] = savesInCollection
                         }
                     } else {
                         throw IllegalFileException(
-                            "File is json but not Vocaby's backup",
-                            IllegalFileException.INVALID_FORMAT
+                            "Backup file has the wrong entry type",
+                            IllegalFileException.INVALID_FILE
                         )
                     }
-                } catch (e: JsonSyntaxException) {
+                } else {
                     throw IllegalFileException(
-                        e.message,
+                        "File is json but not Vocaby's backup",
                         IllegalFileException.INVALID_FORMAT
                     )
                 }
             }
         }
 
-        return@withContext saves
+        return@withContext SaveTransferModel(saves, collectionMap)
     }
 
     override suspend fun importEntriesBackupFromExternalStorage(uri: Uri, availableTypes: List<Type>): List<EntryModel> = withContext(defaultDispatcher)  {
@@ -189,10 +214,10 @@ class DataTransferRepositoryImpl(
         return@withContext entryModels
     }
 
-    override suspend fun writeSavesToExternalStorage(exportModel: SaveExportModel, uri: Uri) = withContext(defaultDispatcher)  {
+    override suspend fun writeSavesToExternalStorage(transferModel: SaveTransferModel, uri: Uri) = withContext(defaultDispatcher)  {
         contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
-            val exportData = ExportModel(Constants.EXPORT_SAVE_TYPE, exportModel)
+            val exportData = ExportModel(Constants.EXPORT_SAVE_TYPE, transferModel)
             val gson = Gson()
             gson.toJson(exportData, bw)
             bw.flush()
@@ -200,7 +225,7 @@ class DataTransferRepositoryImpl(
         }
     }
 
-    override suspend fun writeEntriesToExternalStorage(exportModel: EntryExportModel, uri: Uri) = withContext(defaultDispatcher) {
+    override suspend fun writeEntriesToExternalStorage(exportModel: EntryTransferModel, uri: Uri) = withContext(defaultDispatcher) {
         contentResolver.openOutputStream(uri).use { outputStream ->
             val bw = BufferedWriter(OutputStreamWriter(outputStream))
             val exportData = ExportModel(Constants.EXPORT_ENTRY_TYPE, exportModel)

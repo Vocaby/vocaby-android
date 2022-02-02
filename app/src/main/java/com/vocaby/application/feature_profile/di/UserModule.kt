@@ -59,7 +59,8 @@ class UserModule {
         UpdateChartUseCase(userRepository, placeholderColors, chartColors),
         GetChartSettingsUseCase(userRepository),
         EraseChartDataUseCase(userRepository),
-        SetupBaseUserUseCase(userRepository)
+        SetupBaseUserUseCase(userRepository),
+        CleanUpUserUseCase(userRepository)
     )
 
     private val Context.userSettingsDataStore: DataStore<UserSettings> by dataStore(

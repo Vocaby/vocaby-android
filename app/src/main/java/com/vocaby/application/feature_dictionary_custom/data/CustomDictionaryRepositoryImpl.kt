@@ -18,6 +18,8 @@ import java.util.*
 class CustomDictionaryRepositoryImpl constructor(
     private val dao: CustomDictionaryDao
 ): CustomDictionaryRepository {
+    override suspend fun replaceUser(newUserId: Int) = dao.replaceUser(newUserId)
+
     override suspend fun getUserEntries(userId: Int): LinkedList<UserEntry> {
         val list = dao.getUserEntries(userId)
         return LinkedList(list)

@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:context=".feature_save.presentation.save.SaveFragment">
     <LinearLayout
-        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@drawable/save_header"

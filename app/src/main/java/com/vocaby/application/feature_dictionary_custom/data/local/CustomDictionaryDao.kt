@@ -11,6 +11,10 @@ import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 @Dao
 interface CustomDictionaryDao {
     @Transaction
+    @Query("UPDATE custom_user_entry SET user_id = :newUserId")
+    suspend fun replaceUser(newUserId: Int)
+
+    @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :userId AND entry = :entry")
     suspend fun getUserEntryData(userId: Int, entry: String?): EntryWithData?
 

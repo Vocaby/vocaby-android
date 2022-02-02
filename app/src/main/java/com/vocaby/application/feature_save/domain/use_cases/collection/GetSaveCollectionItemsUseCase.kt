@@ -6,11 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetSaveCollectionItemsUseCase @Inject constructor(
-    private val userRepository: UserRepository,
     private val saveRepository: SaveRepository
 ) {
-    suspend operator fun invoke(collectionName: String): Flow<List<String>> {
-        val userId = userRepository.getUser()
+    operator fun invoke(userId: Int, collectionName: String): Flow<List<String>> {
         return saveRepository.getCollectionItems(userId, collectionName)
     }
 }

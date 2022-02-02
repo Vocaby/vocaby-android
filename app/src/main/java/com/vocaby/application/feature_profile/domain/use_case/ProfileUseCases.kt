@@ -4,5 +4,6 @@ class ProfileUseCases (
     val updateChartUseCase: UpdateChartUseCase,
     val getChartSettingsUseCase: GetChartSettingsUseCase,
     val eraseChartDataUseCase: EraseChartDataUseCase,
-    val setupBaseUserUseCase: SetupBaseUserUseCase
+    val setupBaseUserUseCase: SetupBaseUserUseCase,
+    val cleanUpUserUseCase: CleanUpUserUseCase
 )

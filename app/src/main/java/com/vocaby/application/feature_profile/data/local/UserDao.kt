@@ -1,21 +1,37 @@
 package com.vocaby.application.feature_profile.data.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.vocaby.application.feature_profile.data.local.entity.CustomDictionaryViewCount
 import com.vocaby.application.feature_profile.data.local.entity.DictionaryViewCount
 import com.vocaby.application.feature_profile.data.local.entity.User
 import com.vocaby.application.feature_profile.domain.model.VisitData
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
+    @Query("SELECT user_id FROM vocaby_user ORDER BY user_id DESC LIMIT 1")
+    fun getCurrentUser(): Flow<Long>
+
     @Query("SELECT EXISTS(SELECT * FROM vocaby_user WHERE user_id = :id)")
     suspend fun checkUser(id: Int): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createUser(user: User): Long
+
+    @Query("UPDATE custom_user_entry SET user_id = :newUserId")
+    suspend fun replaceCustomDictionaryUser(newUserId: Int)
+
+    @Query("UPDATE custom_dictionary_view_count SET user_id = :newUserId")
+    suspend fun replaceDictionaryVisitUser(newUserId: Int)
+
+    @Query("UPDATE dictionary_view_count SET user_id = :newUserId")
+    suspend fun replaceCustomDictionaryVisitUser(newUserId: Int)
+
+    @Delete
+    suspend fun deleteUser(user: User)
+
+    @Query("DELETE FROM vocaby_user WHERE user_id != :userId")
+    suspend fun cleanupUser(userId: Int)
 
     /** --------------------- DATA -------------------- **/
     @Insert

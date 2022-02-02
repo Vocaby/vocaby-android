@@ -1,24 +1,29 @@
 package com.vocaby.application.feature_datatransfer.presentation
 
 import android.content.Intent
+import android.database.sqlite.SQLiteConstraintException
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonSyntaxException
 import com.vocaby.application.R
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.use_case.DataTransferUseCases
+import com.vocaby.application.feature_profile.domain.use_case.CleanUpUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.io.StreamCorruptedException
 import javax.inject.Inject
 
 @HiltViewModel
 class DataTransferViewModel @Inject constructor(
-    private val dataTransferUseCases: DataTransferUseCases
+    private val dataTransferUseCases: DataTransferUseCases,
+    private val cleanUpUserUseCase: CleanUpUserUseCase
 ) : ViewModel() {
     companion object {
         const val EXPORT_SAVE_BACKUP = 1
@@ -29,7 +34,7 @@ class DataTransferViewModel @Inject constructor(
 
     private val transferScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var actionType: Int = -1
-    private val _transferState = MutableStateFlow<DataTransferState>(DataTransferState.InProgress())
+    private val _transferState = MutableStateFlow<DataTransferState>(DataTransferState.InProgress(UiText()))
 
     val transferState get() = _transferState.asSharedFlow()
 
@@ -98,10 +103,9 @@ class DataTransferViewModel @Inject constructor(
     }
 
     private fun importSaves(uri: Uri) {
-        transferScope.launch {
+        transferScope.launch(importExceptionHandler) {
             dataTransferUseCases.importSavesUseCase(uri)
-                .catch { e -> emit(catchImportExceptions(e)) }
-                .collectLatest { transferState ->
+                .collect { transferState ->
                     _transferState.emit(transferState)
                 }
         }
@@ -110,7 +114,6 @@ class DataTransferViewModel @Inject constructor(
     private fun importEntries(uri: Uri) {
         transferScope.launch {
             dataTransferUseCases.importCustomEntriesUseCase(uri)
-                .catch { e -> emit(catchImportExceptions(e)) }
                 .collectLatest { transferState ->
                     _transferState.emit(transferState)
                 }
@@ -140,33 +143,40 @@ class DataTransferViewModel @Inject constructor(
     fun cancelJob() {
         if (transferScope.isActive) {
             transferScope.cancel("User cancelled the job")
+            cleanupImport()
         }
     }
 
-    private fun catchImportExceptions(e: Throwable): DataTransferState {
-        return when (e) {
+    private val importExceptionHandler = CoroutineExceptionHandler { _, e ->
+        cleanupImport()
+        when (e) {
             is IllegalFileException -> {
-                when (e.code) {
-                    IllegalFileException.INVALID_FORMAT -> {
-                        DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_format))
-                    }
-                    IllegalFileException.INVALID_FILE -> {
-                        DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_file))
-                    }
-                    else -> {
-                        DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_generic))
-                    }
-                }
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = e.message))
             }
             is StreamCorruptedException -> {
-                DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_file))
+                _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_file))
             }
             is NullPointerException -> {
-                DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_wrong_backup_file))
+                _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_wrong_backup_file))
+            }
+            is SQLiteConstraintException -> {
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file has invalid data"))
+            }
+            is JsonSyntaxException -> {
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file is invalid"))
+            }
+            is ClassCastException -> {
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file is invalid"))
             }
             else -> {
-                DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_generic))
+                _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_generic))
             }
+        }
+    }
+
+    private fun cleanupImport() {
+        viewModelScope.launch {
+            cleanUpUserUseCase()
         }
     }
 

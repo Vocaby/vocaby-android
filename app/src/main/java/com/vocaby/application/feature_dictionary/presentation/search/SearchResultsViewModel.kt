@@ -3,10 +3,10 @@ package com.vocaby.application.feature_dictionary.presentation.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.use_case.GetAllDictionaryEntryUseCase
+import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import com.vocaby.application.feature_save.domain.model.SaveModel
 import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import com.vocaby.application.feature_save.domain.use_cases.collection.AddSaveToCollectionsUseCase
@@ -17,11 +17,12 @@ import com.vocaby.application.feature_save.domain.use_cases.save.CheckSaveUseCas
 import com.vocaby.application.feature_save.domain.use_cases.save.RemoveSaveItemUseCase
 import com.vocaby.application.feature_save.presentation.save.SaveState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchResultsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -32,6 +33,7 @@ class SearchResultsViewModel @Inject constructor(
     private val getSaveCollectionsUseCase: GetSaveCollectionsForUpdateUseCase,
     private val addSaveToCollectionsUseCase: AddSaveToCollectionsUseCase,
     private val removeSaveFromCollectionsUseCase: RemoveSaveFromCollectionsUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
 ): ViewModel() {
     private val entry: String = savedStateHandle.get(SearchResultsFragment.ENTRY)!!
     private var _entryData = MutableStateFlow<ResourceState<DictionarySearchResult>>(ResourceState.InProgress)
@@ -50,20 +52,24 @@ class SearchResultsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            checkSaveUseCase(entry).collect {
+            getCurrentUserUseCase().flatMapLatest { userId ->
+                checkSaveUseCase(userId, entry)
+            }.collect {
                 saveModel = it
                 _saveState.value = SaveState.Processed(it.saved)
             }
         }
 
         viewModelScope.launch {
-            val searchState = getAllDictionaryEntryUseCase(entry)
-            if (searchState.removeSave) {
-                _saveState.value = SaveState.Remove
-            }
+            getCurrentUserUseCase().collectLatest { userId ->
+                val searchState = getAllDictionaryEntryUseCase(userId, entry)
+                if (searchState.removeSave) {
+                    _saveState.value = SaveState.Remove
+                }
 
-            _dictionarySelectorState.value = searchState.dictionarySelectorState
-            _entryData.value = ResourceState.Success(searchState.data)
+                _dictionarySelectorState.value = searchState.dictionarySelectorState
+                _entryData.value = ResourceState.Success(searchState.data)
+            }
         }
 
         updateCollections()
@@ -71,7 +77,9 @@ class SearchResultsViewModel @Inject constructor(
 
     private fun updateCollections() {
         viewModelScope.launch {
-            getSaveCollectionsUseCase(entry).collectLatest { collections ->
+            getCurrentUserUseCase().flatMapLatest { userId ->
+                getSaveCollectionsUseCase(userId, entry)
+            }.collectLatest { collections ->
                 _saveCollections.value = collections
             }
         }

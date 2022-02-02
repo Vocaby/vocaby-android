@@ -6,12 +6,10 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetUserSavesUseCase @Inject constructor(
-    private val userRepository: UserRepository,
     private val saveRepository: SaveRepository
 ) {
-    suspend operator fun invoke(): Flow<List<String>> {
-        val userId = userRepository.getUser()
-        return saveRepository.getAllSavedEntriesFlow(userId)
+    operator fun invoke(currentUser: Int): Flow<List<String>> {
+        return saveRepository.getAllSavedEntriesFlow(currentUser)
     }
 
 }

@@ -33,7 +33,7 @@ class AddSaveToCollectionsUseCase @Inject constructor(
                 }
             }
 
-            saveRepository.addSaveToCollections(itemsToAdd)
+            saveRepository.addSaveCollectionItems(itemsToAdd)
             saveRepository.updateSaveCollections(collectionsToUpdate)
         }
     }

@@ -1,12 +1,13 @@
 package com.vocaby.application.feature_profile.domain.use_case
 
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class SetupBaseUserUseCase(
+class GetCurrentUserUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(): Int {
-        val userId = userRepository.getUser()
-        return userRepository.setupBaseUser(userId)
+    operator fun invoke(): Flow<Int> {
+        return userRepository.getCurrentUser()
     }
 }
