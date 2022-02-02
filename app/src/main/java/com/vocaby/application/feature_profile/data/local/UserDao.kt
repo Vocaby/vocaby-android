@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
-    @Query("SELECT user_id FROM vocaby_user ORDER BY user_id DESC LIMIT 1")
+    @Query("SELECT user_id FROM vocaby_user ORDER BY user_id ASC LIMIT 1")
     fun getCurrentUser(): Flow<Long>
 
     @Query("SELECT EXISTS(SELECT * FROM vocaby_user WHERE user_id = :id)")

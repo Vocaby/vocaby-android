@@ -122,12 +122,10 @@ class DataTransferViewModel @Inject constructor(
 
     private fun writeSaves(uri: Uri) {
         transferScope.launch {
-            transferScope.launch {
-                dataTransferUseCases.exportSavesUseCase(uri)
-                    .collectLatest { transferState ->
-                        _transferState.emit(transferState)
-                    }
-            }
+            dataTransferUseCases.exportSavesUseCase(uri)
+                .collectLatest { transferState ->
+                    _transferState.emit(transferState)
+                }
         }
     }
 

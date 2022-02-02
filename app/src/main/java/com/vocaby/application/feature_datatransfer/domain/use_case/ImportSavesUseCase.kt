@@ -6,7 +6,6 @@ import com.vocaby.application.core.util.UiText
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferState
-import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
@@ -22,7 +21,6 @@ import javax.inject.Inject
 class ImportSavesUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val saveRepository: SaveRepository,
-    private val customDictionaryRepository: CustomDictionaryRepository,
     private val dataTransferRepository: DataTransferRepository
 ) {
     suspend operator fun invoke(uri: Uri): Flow<DataTransferState> = flow {
@@ -95,7 +93,6 @@ class ImportSavesUseCase @Inject constructor(
         }
         saveRepository.addSaveCollectionItems(collectionItems)
 
-        userRepository.setCurrentUser(newUser)
         userRepository.replaceOwnership(userId, newUser)
         emit(DataTransferState.Success(message = UiText(textResource = R.string.data_transfer_import_complete)))
     }.flowOn(Dispatchers.Default)

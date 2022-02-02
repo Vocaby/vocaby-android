@@ -55,23 +55,13 @@ class UserRepositoryImpl constructor(
                     .build()
             }
 
-            userDataStore.updateData { preferences ->
-                preferences.toBuilder().setUserId(id).build()
-            }
-
             return id
         }
 
         return userId
     }
 
-    override suspend fun setCurrentUser(userId: Int) {
-        userDataStore.updateData { preferences ->
-            preferences.toBuilder().setUserId(userId).build()
-        }
-    }
-
-    override suspend fun getUser(): Int = userDataStore.data.first().userId
+    override suspend fun getUser(): Int = dao.getCurrentUser().first().toInt()
 
     override suspend fun createUser(): Int = dao.createUser(User()).toInt()
 
