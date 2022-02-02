@@ -158,4 +158,5 @@
     <string name="all_saves">All Saves</string>
     <string name="collections">Collections</string>
     <string name="empty_saves">Empty Saves</string>
+    <string name="empty_collections">No Save Collections</string>
 </resources>

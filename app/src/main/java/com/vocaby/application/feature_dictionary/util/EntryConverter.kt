@@ -5,7 +5,7 @@ import com.vocaby.application.feature_dictionary.data.local.entity.WordDefinitio
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 
 object EntryConverter: EntityConverter<WordDefinitions, EntryModel> {
-    override fun convertFromEntity(entity: WordDefinitions): EntryModel {
+    override suspend fun convertFromEntity(entity: WordDefinitions): EntryModel {
         val pronunciation =
             entity.wordData.pronunciation?.let { entity.wordData.pronunciation }
                 ?: ""

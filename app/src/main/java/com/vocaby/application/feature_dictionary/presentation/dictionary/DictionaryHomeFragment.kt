@@ -64,6 +64,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         emptyCard = view.findViewById(R.id.empty_card)
 
         setUpHistoryRecyclerView(view)
+        dictionaryViewModel.updateDailyPick()
         return view
     }
 
@@ -89,14 +90,14 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
                         progressBar.visibility = View.GONE
 
                         val dailyPick = dailyPickState.pick
-                        wordView.text = dailyPick.entryModel.entry
-                        posView.text =  dailyPick.entryModel.firstGroup.type
-                        definition.text = dailyPick.entryModel.firstGroup.definitionData[0].toString()
+                        wordView.text = dailyPick.entry
+                        posView.text =  dailyPick.pos
+                        definition.text = dailyPick.definition
 
-                        dailyPick.entryModel.firstGroup.definitionData[0].example?.let { example ->
-                            if (example.isNotEmpty()) {
+                        dailyPick.example?.let {
+                            if (it.isNotEmpty()) {
                                 sentence.visibility = View.VISIBLE
-                                sentence.text = example
+                                sentence.text = it
                             }
                         }
 
@@ -110,7 +111,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
                             wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
                         }
 
-                        wordBox.setOnClickListener { dictionaryViewModel.search(dailyPick.entryModel.entry) }
+                        wordBox.setOnClickListener { dictionaryViewModel.search(dailyPick.entry) }
                     }
                 }
             }
@@ -134,13 +135,6 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         historyContainer.adapter = searchHistoryAdapter
         historyContainer.layoutManager =
             LinearLayoutManager(ctx, LinearLayoutManager.HORIZONTAL, false)
-    }
-
-
-
-    override fun onResume() {
-        super.onResume()
-        dictionaryViewModel.updateDailyPick()
     }
 
     override fun onItemTouch(position: Int) {

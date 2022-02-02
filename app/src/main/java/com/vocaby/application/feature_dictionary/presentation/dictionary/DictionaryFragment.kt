@@ -50,7 +50,7 @@ class DictionaryFragment : Fragment() {
             override fun handleOnBackPressed() {
                 if (childFragmentManager.backStackEntryCount > 0) {
                     childFragmentManager.popBackStack()
-                    dictionaryViewModel.popSearchStack()
+                    dictionaryViewModel.resetSearch()
                 }
                 if (childFragmentManager.backStackEntryCount == 0) {
                     this.isEnabled = false

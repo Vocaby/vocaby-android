@@ -5,16 +5,13 @@ import com.vocaby.application.feature_dictionary.domain.model.DailyPick
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DailyPickState
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import java.util.*
 
 class GetDailyPick(
     private val dictionaryRepository: DictionaryRepository,
     private val applicationRepository: ApplicationRepository,
 ) {
-    suspend operator fun invoke(): Flow<DailyPickState> = flow {
-        emit(DailyPickState.InProgress)
+    suspend operator fun invoke(): DailyPickState {
         val lastTimeStarted = applicationRepository.getLastTimeStarted()
         val calendar = Calendar.getInstance()
         val today = calendar[Calendar.DAY_OF_YEAR]
@@ -24,17 +21,35 @@ class GetDailyPick(
             applicationRepository.setLastStarted(today)
             apiPick?.let {
                 dictionaryRepository.cacheDailyPick(it.entry, false)
-                emit(DailyPickState.Picked(DailyPick(it, random = false)))
+                return DailyPickState.Picked(DailyPick(
+                    it.entry,
+                    it.firstGroup.type,
+                    it.firstGroup.definitionData[0].definition,
+                    it.firstGroup.definitionData[0].example,
+                    false
+                ))
             } ?: run {
                 val randomPick = dictionaryRepository.getRandomEntry()
                 dictionaryRepository.cacheDailyPick(randomPick.entry, true)
-                emit(DailyPickState.Picked(DailyPick(randomPick, random = true)))
+                return DailyPickState.Picked(DailyPick(
+                    randomPick.entry,
+                    randomPick.firstGroup.type,
+                    randomPick.firstGroup.definitionData[0].definition,
+                    randomPick.firstGroup.definitionData[0].example,
+                    false
+                ))
             }
         } else {
             applicationRepository.setLastStarted(today)
-            val pick = dictionaryRepository.getCachedPick()
-            val entryModel = dictionaryRepository.getEntryDataFromDatabase(pick.entryModel.entry)!!
-            emit(DailyPickState.Picked(DailyPick(entryModel, pick.random)))
+            val (pick, random) = dictionaryRepository.getCachedPick()
+            val entryModel = dictionaryRepository.getEntryDataFromDatabase(pick)!!
+            return DailyPickState.Picked(DailyPick(
+                entryModel.entry,
+                entryModel.firstGroup.type,
+                entryModel.firstGroup.definitionData[0].definition,
+                entryModel.firstGroup.definitionData[0].example,
+                random
+            ))
         }
     }
 }

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -37,6 +38,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private lateinit var collectionUpdateDialog: BottomSheetDialog
     private lateinit var collectionEditNameButton: Button
     private lateinit var collectionDeleteButton: Button
+    private lateinit var emptyCard: LinearLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +47,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
         val view = inflater.inflate(R.layout.fragment_save_collection, container, false)
         recyclerView = view.findViewById(R.id.save_collection_container)
         addCollectionButton = view.findViewById(R.id.add_collection_button)
+        emptyCard = view.findViewById(R.id.empty_card)
 
         setupRecyclerView()
         setupCollectionDialog()
@@ -59,6 +62,8 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
         launchAndRepeatWithViewLifecycle {
             saveCollectionViewModel.saveCollectionState.collectLatest {
                 saveCollectionAdapter.submitList(it)
+                if (it.isEmpty()) emptyCard.visibility = View.VISIBLE
+                else emptyCard.visibility = View.INVISIBLE
             }
         }
 

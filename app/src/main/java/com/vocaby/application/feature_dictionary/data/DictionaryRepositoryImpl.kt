@@ -7,11 +7,13 @@ import com.vocaby.application.feature_dictionary.data.local.DictionaryDao
 import com.vocaby.application.feature_dictionary.data.local.entity.Definition
 import com.vocaby.application.feature_dictionary.data.local.entity.Word
 import com.vocaby.application.feature_dictionary.data.remote.DictionaryApi
-import com.vocaby.application.feature_dictionary.domain.model.DailyPick
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.util.EntryConverter
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class DictionaryRepositoryImpl(
@@ -19,6 +21,7 @@ class DictionaryRepositoryImpl(
     private val api: DictionaryApi,
     private val dataManager: DataManager,
     private val dictionarySharedPref: SharedPreferences,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     ): DictionaryRepository {
     override suspend fun getEntryDataFromDatabase(entry: String): EntryModel? {
         val wordDefinitions = dao.getEntryData(entry)
@@ -35,7 +38,7 @@ class DictionaryRepositoryImpl(
         return EntryConverter.convertFromEntity(dao.getRandomWord())
     }
 
-    override suspend fun replaceEntry(original: EntryModel, remote: EntryModel): Int {
+    override suspend fun replaceEntry(original: EntryModel, remote: EntryModel): Int = withContext(defaultDispatcher){
         dao.deleteEntry(Word(original.id))
         val id = dao.insertEntry(Word(remote.entry, remote.pronunciation, remote.lastUpdated)).toInt()
         val definitions = mutableListOf<Definition>()
@@ -52,7 +55,7 @@ class DictionaryRepositoryImpl(
         }
 
         dao.insertDefinitions(definitions)
-        return id
+        id
     }
 
     override suspend fun checkAndGetEntryDataFromApi(entry: String, date: String): EntryModel? {
@@ -95,10 +98,10 @@ class DictionaryRepositoryImpl(
         }
     }
 
-    override fun getCachedPick(): DailyPick {
+    override fun getCachedPick(): Pair<String, Boolean> {
         val pick = dictionarySharedPref.getString(Constants.DICTIONARY_PICK_ID, "enthusiasm")!!
         val isRandom = dictionarySharedPref.getBoolean(Constants.DICTIONARY_PICK_RANDOM, true)
-        return DailyPick(EntryModel(entry = pick), isRandom)
+        return Pair(pick, isRandom)
     }
 
     override fun cacheDailyPick(entry: String, random: Boolean) {

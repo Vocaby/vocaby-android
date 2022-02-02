@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/very_light_gray">
+    <LinearLayout
+        android:id="@+id/empty_card"
+        android:layout_width="match_parent"
+        android:weightSum="1"
+        android:layout_height="80dp"
+        android:layout_marginTop="@dimen/container_side_margin"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        <TextView
+            style="@style/Theme.VocabyAndroid.TextHeadline"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.46"
+            android:background="@drawable/box_gray_stroked_dash_gray"
+            android:gravity="center"
+            android:text="@string/empty_collections"
+            android:textAllCaps="true"
+            android:textColor="@color/gray" />
+    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/save_collection_container"
         android:layout_width="match_parent"
@@ -13,23 +36,24 @@
         android:overScrollMode="never"
         android:paddingStart="@dimen/container_side_margin"
         android:paddingTop="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"/>
+        android:paddingEnd="@dimen/container_side_margin" />
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/add_collection_button"
-        android:theme="@style/Theme.VocabyAndroid"
         style="@style/Widget.App.ExtendedFloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
         android:text="@string/add_save_collection"
-        app:layout_anchor="@id/save_collection_container"
-        app:layout_anchorGravity="bottom|end"
-        app:elevation="1dp"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.VocabyAndroid.FAB"
+        android:theme="@style/Theme.VocabyAndroid"
         app:backgroundTint="@color/colorPrimary"
-        app:iconTint="@color/white"
+        app:elevation="1dp"
         app:icon="@drawable/ic_add"
         app:iconPadding="4dp"
-        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
+        app:iconTint="@color/white"
+        app:layout_anchor="@id/save_collection_container"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.VocabyAndroid.FAB" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

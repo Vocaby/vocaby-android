@@ -19,7 +19,7 @@ class DictionaryViewModel @Inject constructor(
     private var entriesByCharacter: List<String> = ArrayList()
     private val suggestionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val _searchedEntry = MutableSharedFlow<String>()
-    private val _dailyPick = MutableSharedFlow<DailyPickState>()
+    private val _dailyPick = MutableStateFlow<DailyPickState>(DailyPickState.InProgress)
     private val _searchSuggestions = MutableSharedFlow<GenericState<List<SearchSuggestionItem>>>()
     private val _searchHistory = MutableSharedFlow<List<SimpleEntryModel>?>(replay=1)
 
@@ -53,7 +53,6 @@ class DictionaryViewModel @Inject constructor(
 
     fun getSearchSuggestions(newQuery:String) {
         val query = newQuery.lowercase()
-
         if (query.isEmpty() || entriesByCharacter.isNullOrEmpty()) {
             viewModelScope.launch {
                 dictionaryUseCases.getDictionaryEntriesByCharacter(query).collectLatest { result ->
@@ -86,10 +85,9 @@ class DictionaryViewModel @Inject constructor(
         entriesByCharacter = ArrayList()
     }
 
-    // return to observer of random word
     fun updateDailyPick() {
         viewModelScope.launch {
-            dictionaryUseCases.getDailyPick().collectLatest { _dailyPick.emit(it) }
+            _dailyPick.value = dictionaryUseCases.getDailyPick()
         }
     }
 
@@ -105,7 +103,7 @@ class DictionaryViewModel @Inject constructor(
         }
     }
 
-    fun popSearchStack() {
+    fun resetSearch() {
         viewModelScope.launch {
             _searchedEntry.emit("")
         }

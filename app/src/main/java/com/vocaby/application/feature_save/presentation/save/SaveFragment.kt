@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
@@ -12,10 +14,14 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.vocaby.application.R
 import com.vocaby.application.feature_save.presentation.collection.SaveCollectionBaseFragment
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import kotlinx.coroutines.flow.collect
 
 class SaveFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
     private lateinit var appBar: AppBarLayout
+    private lateinit var saveCount: TextView
+    private val savesViewModel: SaveViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,7 +29,7 @@ class SaveFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_save, container, false)
         val tabs = view.findViewById<TabLayout>(R.id.save_tab)
-
+        saveCount = view.findViewById(R.id.save_count)
         appBar = view.findViewById(R.id.save_app_bar)
         appBar.outlineProvider = null
 
@@ -40,6 +46,12 @@ class SaveFragment : Fragment() {
                 tab.text = "COLLECTIONS"
             }
         }.attach()
+
+        launchAndRepeatWithViewLifecycle {
+            savesViewModel.saveCount.collect {
+                saveCount.text = it
+            }
+        }
 
         return view
     }

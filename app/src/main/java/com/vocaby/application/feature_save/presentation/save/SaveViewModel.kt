@@ -1,6 +1,7 @@
 package com.vocaby.application.feature_save.presentation.save
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import com.vocaby.application.feature_save.domain.use_cases.save.SaveUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,7 @@ class SaveViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ): ViewModel() {
     private val _savedWords = MutableStateFlow<List<String>>(ArrayList())
-    private val _savesCount = MutableStateFlow(0)
+    private val _savesCount = MutableStateFlow("- Saved Entry")
     val savedWords get() = _savedWords.asStateFlow()
     val saveCount get() = _savesCount.asStateFlow()
 
@@ -29,7 +30,12 @@ class SaveViewModel @Inject constructor(
                 saveUseCases.getUserSavesUseCase(userId)
             }.collect {
                 _savedWords.value = it
-                _savesCount.value = it.size
+                val count = Formatter.cleanNumber(it.size)
+                val countText = if (it.size < 2) {
+                    "$count Saved Entry"
+                } else "$count Saved Entries"
+
+                _savesCount.value = countText
             }
         }
     }
