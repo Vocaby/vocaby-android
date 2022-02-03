@@ -11,12 +11,12 @@ interface DictionaryRepository {
     suspend fun getRandomEntry(): EntryModel
     suspend fun replaceEntry(original: EntryModel, remote: EntryModel): Int
     suspend fun checkAndGetEntryDataFromApi(entry: String, date: String): EntryModel?
-    fun checkApiCache(entry: String): Boolean
-    fun clearDictionaryCache()
+    suspend fun checkApiCache(entry: String): Boolean
+    suspend fun clearDictionaryCache()
 
     suspend fun getDailyPickFromApi(): EntryModel?
-    fun cacheDailyPick(entry: String, random: Boolean)
-    fun getCachedPick(): Pair<String, Boolean>
+    suspend fun cacheDailyPick(entry: String, random: Boolean)
+    suspend fun getCachedPick(): Pair<String, Boolean>
 
     /** --------------------- HISTORY -------------------- **/
     fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>?

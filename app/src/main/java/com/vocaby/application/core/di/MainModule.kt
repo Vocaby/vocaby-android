@@ -3,11 +3,17 @@ package com.vocaby.application.core.di
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
 import androidx.preference.PreferenceManager
+import com.vocaby.app.ApplicationData
+import com.vocaby.app.DictionaryCache
 import com.vocaby.application.core.data.ApplicationRepositoryImpl
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.core.domain.repository.ApplicationRepository
+import com.vocaby.application.core.presentation.ApplicationDataSerializer
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
+import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryCacheSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,11 +32,16 @@ class MainModule {
         availableTypes: List<Type>
     ): VocabyDatabase = VocabyDatabase.getDatabase(context, availableTypes)
 
+    private val Context.applicationDataStore: DataStore<ApplicationData> by dataStore(
+        fileName = "application.pb",
+        serializer = ApplicationDataSerializer
+    )
+
     @Provides
     @Singleton
-    @Named("application")
-    fun provideApplicationSharedPref(@ApplicationContext context: Context): SharedPreferences
-        = PreferenceManager.getDefaultSharedPreferences(context)
+    fun provideApplicationDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<ApplicationData> = context.applicationDataStore
 
     @Provides
     @Singleton
@@ -39,11 +50,10 @@ class MainModule {
     @Provides
     @Singleton
     fun provideApplicationRepository(
-        @Named("application")
-        applicationSharedPref: SharedPreferences
+        applicationDataStore: DataStore<ApplicationData>
     ): ApplicationRepository {
         return ApplicationRepositoryImpl(
-            applicationSharedPref
+            applicationDataStore
         )
     }
 

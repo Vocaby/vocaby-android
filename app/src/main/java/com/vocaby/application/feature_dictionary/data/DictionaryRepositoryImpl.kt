@@ -1,7 +1,7 @@
 package com.vocaby.application.feature_dictionary.data
 
-import android.content.SharedPreferences
-import com.vocaby.application.core.Constants
+import androidx.datastore.core.DataStore
+import com.vocaby.app.DictionaryCache
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_dictionary.data.local.DictionaryDao
 import com.vocaby.application.feature_dictionary.data.local.entity.Definition
@@ -13,6 +13,7 @@ import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRep
 import com.vocaby.application.feature_dictionary.util.EntryConverter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -20,7 +21,7 @@ class DictionaryRepositoryImpl(
     private val dao: DictionaryDao,
     private val api: DictionaryApi,
     private val dataManager: DataManager,
-    private val dictionarySharedPref: SharedPreferences,
+    private val dictionaryCache: DataStore<DictionaryCache>,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     ): DictionaryRepository {
     override suspend fun getEntryDataFromDatabase(entry: String): EntryModel? {
@@ -62,10 +63,11 @@ class DictionaryRepositoryImpl(
         return try {
             val response = api.checkAndGetDefinitions(entry, date)
 
-            val oldSet = dictionarySharedPref.getStringSet(Constants.SEARCH_CACHE, mutableSetOf<String>())!!
-            val newSet = oldSet.toMutableSet()
-            newSet.add(entry)
-            dictionarySharedPref.edit().putStringSet(Constants.SEARCH_CACHE, newSet).apply()
+            dictionaryCache.updateData { cache ->
+                cache.toBuilder()
+                    .addApiCache(entry)
+                    .build()
+            }
 
             response.body()
         } catch (throwable: Throwable) {
@@ -73,13 +75,16 @@ class DictionaryRepositoryImpl(
         }
     }
 
-    override fun checkApiCache(entry: String): Boolean {
-        val set = dictionarySharedPref.getStringSet(Constants.SEARCH_CACHE, mutableSetOf<String>())!!
-        return set.contains(entry)
+    override suspend fun checkApiCache(entry: String): Boolean {
+        return dictionaryCache.data.first().apiCacheList.contains(entry)
     }
 
-    override fun clearDictionaryCache() {
-        dictionarySharedPref.edit().remove(Constants.SEARCH_CACHE).apply()
+    override suspend fun clearDictionaryCache() {
+        dictionaryCache.updateData { cache ->
+            cache.toBuilder()
+                .clearApiCache()
+                .build()
+        }
     }
 
     override suspend fun getEntriesByCharacterFromDB(character: String): List<String>
@@ -98,17 +103,20 @@ class DictionaryRepositoryImpl(
         }
     }
 
-    override fun getCachedPick(): Pair<String, Boolean> {
-        val pick = dictionarySharedPref.getString(Constants.DICTIONARY_PICK_ID, "enthusiasm")!!
-        val isRandom = dictionarySharedPref.getBoolean(Constants.DICTIONARY_PICK_RANDOM, true)
+    override suspend fun getCachedPick(): Pair<String, Boolean> {
+        val cache = dictionaryCache.data.first()
+        val pick = cache.dailyPickEntry
+        val isRandom = cache.dailyPickRandom
         return Pair(pick, isRandom)
     }
 
-    override fun cacheDailyPick(entry: String, random: Boolean) {
-        val editor = dictionarySharedPref.edit()
-        editor.putString(Constants.DICTIONARY_PICK_ID, entry)
-        editor.putBoolean(Constants.DICTIONARY_PICK_RANDOM, random)
-        editor.apply()
+    override suspend fun cacheDailyPick(entry: String, random: Boolean) {
+        dictionaryCache.updateData { cache ->
+            cache.toBuilder()
+                .setDailyPickEntry(entry)
+                .setDailyPickRandom(random)
+                .build()
+        }
     }
 
 

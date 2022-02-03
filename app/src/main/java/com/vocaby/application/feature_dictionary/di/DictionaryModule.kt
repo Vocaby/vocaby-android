@@ -1,8 +1,10 @@
 package com.vocaby.application.feature_dictionary.di
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
 import com.google.gson.GsonBuilder
+import com.vocaby.app.DictionaryCache
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.core.domain.repository.ApplicationRepository
@@ -13,6 +15,7 @@ import com.vocaby.application.feature_dictionary.data.remote.EntryDeserializer
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.domain.use_case.*
+import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryCacheSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +25,6 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -34,22 +36,26 @@ class DictionaryModule {
         database: VocabyDatabase,
         dictionaryApi: DictionaryApi,
         dataManager: DataManager,
-        @Named("dictionary")
-        dictionarySharedPref: SharedPreferences
+        dictionaryCacheDataStore: DataStore<DictionaryCache>
     ): DictionaryRepository {
         return DictionaryRepositoryImpl(
             database.dictionaryDao,
             dictionaryApi,
             dataManager,
-            dictionarySharedPref
+            dictionaryCacheDataStore
         )
     }
 
+    private val Context.dictionaryCacheDataStore: DataStore<DictionaryCache> by dataStore(
+        fileName = "dictionary_cache.pb",
+        serializer = DictionaryCacheSerializer
+    )
+
     @Provides
     @Singleton
-    @Named("dictionary")
-    fun provideDictionarySharedPref(@ApplicationContext context: Context): SharedPreferences
-            = context.getSharedPreferences(Constants.DICTIONARY_SHARED_PREF_ID, Context.MODE_PRIVATE)
+    fun provideDictionaryCacheDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<DictionaryCache> = context.dictionaryCacheDataStore
 
     @Provides
     @Singleton

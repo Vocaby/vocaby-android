@@ -5,7 +5,7 @@ import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRep
 class ClearDictionaryCacheUseCase (
     private val dictionaryRepository: DictionaryRepository
 ) {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         dictionaryRepository.clearDictionaryCache()
     }
 }

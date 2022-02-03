@@ -1,17 +1,22 @@
 package com.vocaby.application.core.data
 
-import android.content.SharedPreferences
-import com.vocaby.application.core.Constants
+import androidx.datastore.core.DataStore
+import com.vocaby.app.ApplicationData
 import com.vocaby.application.core.domain.repository.ApplicationRepository
+import kotlinx.coroutines.flow.first
 
 class ApplicationRepositoryImpl(
-    private val applicationSharedPref: SharedPreferences
+    private val applicationDataStore: DataStore<ApplicationData>
 ): ApplicationRepository {
-    override fun getLastTimeStarted(): Int {
-        return applicationSharedPref.getInt(Constants.LAST_APP_STARTED, -1)
+    override suspend fun getLastTimeStarted(): Int {
+        return applicationDataStore.data.first().lastTimeStarted
     }
 
-    override fun setLastStarted(dayOfYear: Int) {
-        applicationSharedPref.edit().putInt(Constants.LAST_APP_STARTED, dayOfYear).apply()
+    override suspend fun setLastStarted(dayOfYear: Int) {
+        applicationDataStore.updateData { data ->
+            data.toBuilder()
+                .setLastTimeStarted(dayOfYear)
+                .build()
+        }
     }
 }

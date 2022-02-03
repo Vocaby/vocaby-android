@@ -1,0 +1,9 @@
+syntax = "proto3";
+option java_package = "com.vocaby.app";
+option java_multiple_files = true;
+
+message DictionaryCache {
+  repeated string api_cache = 1;
+  string daily_pick_entry = 2;
+  bool daily_pick_random = 3;
+}

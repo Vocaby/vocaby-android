@@ -3,8 +3,6 @@ package com.vocaby.application.feature_profile.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.app.UserSettings
-import com.vocaby.application.core.util.Logger
-import com.vocaby.application.core.util.Logger.reportToDebug
 import com.vocaby.application.feature_profile.domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,9 +26,7 @@ class ProfileViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _userIsReady = profileUseCases.setupBaseUserUseCase()
-            Logger.reportToDebug("user set up")
             profileUseCases.cleanUpUserUseCase()
-            Logger.reportToDebug("cleaned up")
             _cleanedUp = true
         }
     }
