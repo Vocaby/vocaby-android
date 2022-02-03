@@ -1,19 +1,15 @@
 package com.vocaby.application.feature_profile.di
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import com.vocaby.app.User
 import com.vocaby.app.UserSettings
 import com.vocaby.application.core.data.VocabyDatabase
-import com.vocaby.application.feature_profile.common.Constants
 import com.vocaby.application.feature_profile.data.UserRepositoryImpl
 import com.vocaby.application.feature_profile.domain.model.NotificationFrequency
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import com.vocaby.application.feature_profile.domain.use_case.*
-import com.vocaby.application.feature_profile.presentation.profile.UserSerializer
 import com.vocaby.application.feature_profile.presentation.setting.UserSettingsSerializer
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
 import dagger.Module
@@ -29,20 +25,12 @@ import javax.inject.Singleton
 class UserModule {
     @Provides
     @Singleton
-    @Named("user")
-    fun provideUserSharedPref(@ApplicationContext context: Context): SharedPreferences =
-        context.getSharedPreferences(Constants.USER_ID_KEY, Context.MODE_PRIVATE)
-
-    @Provides
-    @Singleton
     fun provideUserRepository(
         database: VocabyDatabase,
-        user: DataStore<User>,
         userSettings: DataStore<UserSettings>
     ): UserRepository {
         return UserRepositoryImpl(
             database.userDao,
-            user,
             userSettings
         )
     }
@@ -67,17 +55,6 @@ class UserModule {
         fileName = "base_user_settings.pb",
         serializer = UserSettingsSerializer
     )
-
-    private val Context.userDataStore: DataStore<User> by dataStore(
-        fileName = "base_user.pb",
-        serializer = UserSerializer
-    )
-
-    @Provides
-    @Singleton
-    fun provideUserDataStore(
-        @ApplicationContext context: Context
-    ): DataStore<User> = context.userDataStore
 
     @Provides
     @Singleton

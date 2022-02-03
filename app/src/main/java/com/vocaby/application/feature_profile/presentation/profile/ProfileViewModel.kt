@@ -3,6 +3,8 @@ package com.vocaby.application.feature_profile.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.app.UserSettings
+import com.vocaby.application.core.util.Logger
+import com.vocaby.application.core.util.Logger.reportToDebug
 import com.vocaby.application.feature_profile.domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -14,18 +16,22 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val profileUseCases: ProfileUseCases
 ): ViewModel() {
-    private var user: Int? = null
+    private var _userIsReady: Boolean = false
+    private var _cleanedUp: Boolean = false
     private val _chartState = MutableSharedFlow<ChartState>(replay = 1)
     private val _chartModeAll = MutableStateFlow(false)
 
     val chartState get() = _chartState.asSharedFlow()
     val chartModeAll get() = _chartModeAll.asStateFlow()
-    val isReady:Boolean get() = user != null
+    val isReady get() = _userIsReady && _cleanedUp
 
     init {
         viewModelScope.launch {
-            user = profileUseCases.setupBaseUserUseCase()
+            _userIsReady = profileUseCases.setupBaseUserUseCase()
+            Logger.reportToDebug("user set up")
             profileUseCases.cleanUpUserUseCase()
+            Logger.reportToDebug("cleaned up")
+            _cleanedUp = true
         }
     }
 

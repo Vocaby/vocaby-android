@@ -25,8 +25,8 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var navigationView: BottomNavigationView
 
-    private val dictionaryViewModel: DictionaryViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
+    private val dictionaryViewModel: DictionaryViewModel by viewModels()
     private val settingViewModel: SettingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +35,9 @@ open class MainActivity : AppCompatActivity() {
         content.viewTreeObserver.addOnPreDrawListener(
             object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
-                    return if (profileViewModel.isReady) {
+                    return if (profileViewModel.isReady
+                        && dictionaryViewModel.dictionaryIsReady
+                    ) {
                         content.viewTreeObserver.removeOnPreDrawListener(this)
                         true
                     } else {
@@ -47,14 +49,8 @@ open class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        cleanup()
         setupNavigation()
         collect()
-    }
-
-    private fun cleanup() {
-        dictionaryViewModel.clearCache()
     }
 
     private fun collect() {

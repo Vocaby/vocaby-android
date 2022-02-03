@@ -22,13 +22,20 @@ class DictionaryViewModel @Inject constructor(
     private val _dailyPick = MutableStateFlow<DailyPickState>(DailyPickState.InProgress)
     private val _searchSuggestions = MutableSharedFlow<GenericState<List<SearchSuggestionItem>>>()
     private val _searchHistory = MutableSharedFlow<List<SimpleEntryModel>?>(replay=1)
+    private var _dictionaryIsReady: Boolean = false
 
     val searchedEntry get() = _searchedEntry.asSharedFlow().distinctUntilChanged().filter { it.isNotEmpty() }
     val dailyPick get() = _dailyPick.asSharedFlow()
     val searchSuggestions get() = _searchSuggestions.asSharedFlow()
     val searchHistory get() = _searchHistory.asSharedFlow()
+    val dictionaryIsReady get() = _dictionaryIsReady
 
     init {
+        viewModelScope.launch {
+            dictionaryUseCases.clearDictionaryCacheUseCase()
+            _dictionaryIsReady = true
+        }
+
         getHistory()
     }
 
@@ -107,10 +114,6 @@ class DictionaryViewModel @Inject constructor(
         viewModelScope.launch {
             _searchedEntry.emit("")
         }
-    }
-
-    fun clearCache() {
-        dictionaryUseCases.clearDictionaryCacheUseCase()
     }
 
     override fun onCleared() {

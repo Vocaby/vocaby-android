@@ -23,6 +23,7 @@ import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
 import com.vocaby.application.feature_save.data.local.entity.UserSave
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
@@ -49,7 +50,7 @@ abstract class VocabyDatabase : RoomDatabase() {
             .setJournalMode(JournalMode.AUTOMATIC)
             .addCallback(object: Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
-                    val applicationScope = CoroutineScope(SupervisorJob())
+                    val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
                     applicationScope.launch {
                         getDatabase(context, availableTypes).customDictionaryDao.insertTypes(*availableTypes.toTypedArray())
                     }

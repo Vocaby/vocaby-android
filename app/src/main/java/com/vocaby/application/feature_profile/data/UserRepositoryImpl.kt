@@ -20,10 +20,9 @@ import java.util.*
 
 class UserRepositoryImpl constructor(
     private val dao: UserDao,
-    private val userDataStore: DataStore<com.vocaby.app.User>,
     private val userSettingsDataStore: DataStore<UserSettings>,
 ): UserRepository {
-    override fun getCurrentUser(): Flow<Int> = dao.getCurrentUser().map { it.toInt() }
+    override fun getCurrentUser(): Flow<Int> = dao.getCurrentUser().map { it?.toInt() ?: 1 }
     override suspend fun replaceOwnership(oldUserId: Int, newUserId: Int) {
         dao.replaceCustomDictionaryUser(newUserId)
         dao.replaceDictionaryVisitUser(newUserId)
@@ -40,10 +39,10 @@ class UserRepositoryImpl constructor(
         }
     }
 
-    override suspend fun setupBaseUser(userId: Int): Int {
-        val exists = dao.checkUser(userId)
+    override suspend fun setupBaseUser(): Boolean {
+        val exists = dao.checkAnyUserExists()
         if (!exists) {
-            val id = dao.createUser(User()).toInt()
+            dao.createUser(User()).toInt()
             userSettingsDataStore.updateData { preferences ->
                 preferences.toBuilder()
                     .setReportErrorEnabled(true)
@@ -54,14 +53,12 @@ class UserRepositoryImpl constructor(
                     .setNotificationEnabled(false)
                     .build()
             }
-
-            return id
         }
 
-        return userId
+        return true
     }
 
-    override suspend fun getUser(): Int = dao.getCurrentUser().first().toInt()
+    override suspend fun getUser(): Int = dao.getCurrentUser().first()?.toInt() ?: 1
 
     override suspend fun createUser(): Int = dao.createUser(User()).toInt()
 

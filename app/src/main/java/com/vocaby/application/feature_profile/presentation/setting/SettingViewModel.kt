@@ -52,6 +52,7 @@ class SettingViewModel @Inject constructor(
                 settings.updateDictionaryEnabled,
                 settings.reportErrorEnabled
             )
+
             _uiEvent.emit(initSettings)
         }
     }

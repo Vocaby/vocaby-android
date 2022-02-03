@@ -1,6 +1,5 @@
 package com.vocaby.application.feature_dictionary.domain.repository
 
-import com.vocaby.application.feature_dictionary.domain.model.DailyPick
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import java.util.*
