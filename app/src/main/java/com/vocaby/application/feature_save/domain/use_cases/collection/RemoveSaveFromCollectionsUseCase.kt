@@ -14,7 +14,7 @@ class RemoveSaveFromCollectionsUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         new: List<UpdateSaveCollectionModel>
-    ) = withContext(Dispatchers.Default) {
+    ): Boolean = withContext(Dispatchers.Default) {
         val userId = userRepository.getUser()
         val itemsToRemove = mutableListOf<SaveCollectionItem>()
         val collectionsToUpdate = mutableListOf<SaveCollection>()
@@ -30,8 +30,8 @@ class RemoveSaveFromCollectionsUseCase @Inject constructor(
             }
         }
 
-
         saveRepository.removeSaveFromCollections(itemsToRemove)
         saveRepository.updateSaveCollections(collectionsToUpdate)
+        itemsToRemove.isNotEmpty() || collectionsToUpdate.isNotEmpty()
     }
 }

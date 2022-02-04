@@ -25,6 +25,6 @@
             android:fontFamily="@font/playfairdisplay_bold"
             android:textSize="18sp"
             android:textAllCaps="false"
-            android:textColor="@color/type_item_colors" />
+            android:textColor="@color/chip_text_colors" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

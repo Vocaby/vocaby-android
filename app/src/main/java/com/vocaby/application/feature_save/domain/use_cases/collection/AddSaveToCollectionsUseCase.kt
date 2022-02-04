@@ -16,11 +16,12 @@ class AddSaveToCollectionsUseCase @Inject constructor(
     suspend operator fun invoke(
         saveModel: SaveModel?,
         collections: List<UpdateSaveCollectionModel>?
-    ) = withContext(Dispatchers.Default){
+    ): Boolean = withContext(Dispatchers.Default){
         val userId = userRepository.getUser()
+        val itemsToAdd = mutableListOf<SaveCollectionItem>()
+        val collectionsToUpdate = mutableListOf<SaveCollection>()
+
         if (collections != null && saveModel?.saveId != null) {
-            val itemsToAdd = mutableListOf<SaveCollectionItem>()
-            val collectionsToUpdate = mutableListOf<SaveCollection>()
             for (item in collections) {
                 if (item.saved && item.collectionItemId == -1) {
                     itemsToAdd.add(
@@ -36,5 +37,7 @@ class AddSaveToCollectionsUseCase @Inject constructor(
             saveRepository.addSaveCollectionItems(itemsToAdd)
             saveRepository.updateSaveCollections(collectionsToUpdate)
         }
+
+        itemsToAdd.isNotEmpty() || collectionsToUpdate.isNotEmpty()
     }
 }

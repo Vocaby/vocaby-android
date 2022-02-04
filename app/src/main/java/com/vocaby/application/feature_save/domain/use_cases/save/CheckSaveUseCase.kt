@@ -1,6 +1,5 @@
 package com.vocaby.application.feature_save.domain.use_cases.save
 
-import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import com.vocaby.application.feature_save.domain.model.SaveModel
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
 import kotlinx.coroutines.flow.Flow

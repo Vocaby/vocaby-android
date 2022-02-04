@@ -2,24 +2,19 @@ package com.vocaby.application.core.di
 
 import android.content.ContentResolver
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import androidx.preference.PreferenceManager
 import com.vocaby.app.ApplicationData
-import com.vocaby.app.DictionaryCache
 import com.vocaby.application.core.data.ApplicationRepositoryImpl
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.core.domain.repository.ApplicationRepository
 import com.vocaby.application.core.presentation.ApplicationDataSerializer
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
-import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryCacheSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module

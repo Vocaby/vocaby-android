@@ -6,19 +6,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.vocaby.application.R
@@ -41,11 +41,6 @@ class SearchResultsFragment : Fragment() {
     private lateinit var dictionarySelector: RadioGroup
     private lateinit var saveButton: Button
     private lateinit var searchProgress: ProgressBar
-    private lateinit var saveToCollectionDialog: BottomSheetDialog
-    private lateinit var collectionAlert: TextView
-    private lateinit var saveCollectionButton: Button
-    private lateinit var removeSaveButton: Button
-    private lateinit var collectionAdapter: CollectionAdapter
     private lateinit var contextView: CoordinatorLayout
 
     private val searchResultsViewModel: SearchResultsViewModel by viewModels()
@@ -89,8 +84,11 @@ class SearchResultsFragment : Fragment() {
         searchProgress = view.findViewById(R.id.search_progress)
         contextView = view.findViewById(R.id.search_results_coordinator_layout)
 
-        setupCollectionCreateDialog()
+        return view
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         launchAndRepeatWithViewLifecycle {
             launch {
                 collectUiEvent()
@@ -105,15 +103,9 @@ class SearchResultsFragment : Fragment() {
             }
 
             launch {
-                collectCollections()
-            }
-
-            launch {
                 collectSaveState()
             }
         }
-
-        return view
     }
 
     // TODO: private suspend fun collectUiState() {}
@@ -132,7 +124,7 @@ class SearchResultsFragment : Fragment() {
                     saveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
                     saveButton.setOnClickListener {
                         if (saveState.saved) {
-                            searchResultsViewModel.unsaveEntry()
+                            searchResultsViewModel.removeSavedEntry()
                         } else {
                             searchResultsViewModel.saveEntry()
                         }
@@ -152,12 +144,6 @@ class SearchResultsFragment : Fragment() {
                     saveButton.visibility = View.VISIBLE
                 }
             }
-        }
-    }
-
-    private suspend fun collectCollections() {
-        searchResultsViewModel.saveCollections.collectLatest { collections ->
-            collectionAdapter.setList(collections)
         }
     }
 
@@ -195,45 +181,51 @@ class SearchResultsFragment : Fragment() {
         }
     }
 
+    private fun showSnackBar(message: String, showAction: Boolean = false) {
+        val snackbar = Snackbar.make(
+            contextView,
+            message,
+            Snackbar.LENGTH_LONG
+        )
+
+        if (showAction) snackbar.setAction(R.string.snackbar_collection_action) {
+            searchResultsViewModel.saveToCollections()
+        }
+
+        snackbar.config(ctx, R.drawable.snackbar_background)
+        snackbar.show()
+    }
+
     private suspend fun collectUiEvent() {
         searchResultsViewModel.uiEvent.collect { event ->
             when(event) {
                 is SearchUiEvent.ShowSnackBar -> {
-                    val snackbar = Snackbar.make(
-                        contextView,
-                        event.message,
-                        Snackbar.LENGTH_LONG
+                    showSnackBar(event.message, event.showAction)
+                }
+                is SearchUiEvent.ShowCollectionDialog -> {
+                    val dialogFragment = SearchCollectionDialogFragment.newInstance(
+                        event.updateMode,
+                        event.saveModel,
+                        event.collections
                     )
 
-                    if (event.showAction) snackbar.setAction(R.string.snackbar_collection_action) {
-                        searchResultsViewModel.saveToCollections()
+                    childFragmentManager.setFragmentResultListener(SearchCollectionDialogFragment.TAG, viewLifecycleOwner) { _, bundle ->
+                        if (bundle.getBoolean(SearchCollectionDialogFragment.REMOVE_ALL)) {
+                            val alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
+                            alertDialogBuilder
+                                .setTitle("Remove from saved and collections?")
+                                .setMessage("Removing this save will also remove it from all collections")
+                                .setPositiveButton("REMOVE") { _, _ ->
+                                    searchResultsViewModel.removeSavedEntry(true)
+                                }.setNegativeButton("CANCEL", null).create().show()
+                        } else {
+                            val showSnackbar = bundle.getBoolean(SearchCollectionDialogFragment.SHOW_SNACKBAR)
+                            if (showSnackbar) showSnackBar("Collections have been updated")
+                        }
                     }
 
-                    snackbar.config(ctx, R.drawable.snackbar_background)
-                    snackbar.show()
+                    dialogFragment.show(childFragmentManager, SearchCollectionDialogFragment.TAG)
                 }
-                is SearchUiEvent.CloseCollectionDialog -> {
-                    if (saveToCollectionDialog.isShowing) saveToCollectionDialog.dismiss()
-                }
-                is SearchUiEvent.ShowAddCollectionDialog -> {
-                    saveCollectionButton.setOnClickListener {
-                        saveCollectionButton.isEnabled = false
-                        searchResultsViewModel.addEntryToCollections()
-                    }
-                    removeSaveButton.visibility = View.GONE
-                    saveCollectionButton.setText(R.string.collection_save)
-                    saveToCollectionDialog.show()
-                }
-                is SearchUiEvent.ShowUpdateCollectionDialog -> {
-                    saveCollectionButton.setOnClickListener {
-                        saveCollectionButton.isEnabled = false
-                        searchResultsViewModel.updateItemInCollections()
-                    }
-                    removeSaveButton.visibility = View.VISIBLE
-                    saveCollectionButton.setText(R.string.collection_update)
-                    saveToCollectionDialog.show()
-                }
-                else -> {}
             }
         }
     }
@@ -258,38 +250,6 @@ class SearchResultsFragment : Fragment() {
                     viewPager.currentItem = 0
                 }
             }
-        }
-    }
-
-    private fun setupCollectionCreateDialog() {
-        saveToCollectionDialog =
-            BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        saveToCollectionDialog.setContentView(R.layout.dialog_save_collection)
-        collectionAlert = saveToCollectionDialog.findViewById(R.id.header_alert)!!
-        saveCollectionButton = saveToCollectionDialog.findViewById(R.id.save_button)!!
-        val alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
-        removeSaveButton = saveToCollectionDialog.findViewById(R.id.remove_button)!!
-        removeSaveButton.setOnClickListener {
-            saveToCollectionDialog.dismiss()
-            alertDialogBuilder
-                .setTitle("Remove from saved and collections?")
-                .setMessage("Removing this save will also remove it from all collections")
-                .setPositiveButton("REMOVE") { _, _ ->
-                    searchResultsViewModel.unsaveEntry(true)
-                }.setNegativeButton("CANCEL", null).create().show()
-        }
-
-        val builderRecyclerView = saveToCollectionDialog.findViewById<RecyclerView>(R.id.collection_container)!!
-        builderRecyclerView.setHasFixedSize(true)
-        builderRecyclerView.layoutManager =
-            LinearLayoutManager(requireContext().applicationContext, LinearLayoutManager.HORIZONTAL, false)
-        collectionAdapter = CollectionAdapter()
-        builderRecyclerView.adapter = collectionAdapter
-
-        // Clear content on show
-        saveToCollectionDialog.setOnShowListener {
-            collectionAlert.visibility = View.INVISIBLE
-            saveCollectionButton.isEnabled = true
         }
     }
 
