@@ -52,7 +52,6 @@
             app:tabBackground="@color/colorPrimaryAccent"
             app:tabIndicatorColor="@color/colorPrimary"
             app:tabSelectedTextColor="@color/white"
-            app:tabIndicatorHeight="2dp"
             app:tabTextAppearance="@style/Theme.VocabyAndroid.TextHeadline">
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

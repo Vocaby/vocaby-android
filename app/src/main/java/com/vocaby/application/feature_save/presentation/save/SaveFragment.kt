@@ -21,6 +21,7 @@ class SaveFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
     private lateinit var appBar: AppBarLayout
     private lateinit var saveCount: TextView
+    private lateinit var tabs: TabLayout
     private val savesViewModel: SaveViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -28,7 +29,7 @@ class SaveFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_save, container, false)
-        val tabs = view.findViewById<TabLayout>(R.id.save_tab)
+        tabs = view.findViewById(R.id.save_tab)
         saveCount = view.findViewById(R.id.save_count)
         appBar = view.findViewById(R.id.save_app_bar)
         appBar.outlineProvider = null
@@ -38,6 +39,17 @@ class SaveFragment : Fragment() {
         viewPager.adapter = SaveFragmentPagerAdapter(this)
         viewPager.isUserInputEnabled = false
 
+        launchAndRepeatWithViewLifecycle {
+            savesViewModel.saveCount.collect {
+                saveCount.text = it
+            }
+        }
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             if (position == 0) {
@@ -46,14 +58,6 @@ class SaveFragment : Fragment() {
                 tab.text = "COLLECTIONS"
             }
         }.attach()
-
-        launchAndRepeatWithViewLifecycle {
-            savesViewModel.saveCount.collect {
-                saveCount.text = it
-            }
-        }
-
-        return view
     }
 
 
