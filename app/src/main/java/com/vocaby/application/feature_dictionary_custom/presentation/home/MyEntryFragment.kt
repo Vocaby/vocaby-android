@@ -85,12 +85,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                             fetchProgress.visibility = View.INVISIBLE
                             entryCountView.text = state.count
                         }
-                        is CustomEntryUiState.ShowEntries -> {
-                            customEntryAdapter.submitList(state.entries)
-                            fetchProgress.visibility = View.INVISIBLE
-                            entryCountView.text = state.count
-                            updateEmptyCardVisibility()
-                        }
                     }
                 }
             }
@@ -98,6 +92,12 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             launch {
                 entryViewModel.uiEvent.collect { event ->
                     when(event) {
+                        is CustomEntryUiEvent.ShowEntries -> {
+                            customEntryAdapter.submitList(event.entries)
+                            fetchProgress.visibility = View.INVISIBLE
+                            entryCountView.text = event.count
+                            updateEmptyCardVisibility()
+                        }
                         is CustomEntryUiEvent.ShowAlert -> {
                             entryAlert.text = event.message
                             entryAlert.visibility = View.VISIBLE
