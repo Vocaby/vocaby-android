@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.ui
+package com.vocaby.application.feature_dictionary_custom.presentation.entry_builder
 
 import android.content.Intent
 import android.os.Bundle
@@ -19,9 +19,6 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
 import com.vocaby.application.core.util.LiveDataUtil.observeOnce
-import com.vocaby.application.feature_dictionary_custom.presentation.adapter.CustomGroupAdapter
-import com.vocaby.application.feature_dictionary_custom.presentation.adapter.TypeAdapter
-import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.EntryViewModel
 import com.vocaby.application.payloads.ItemIntPayload
 import com.vocaby.application.states.ItemState
 import dagger.hilt.android.AndroidEntryPoint

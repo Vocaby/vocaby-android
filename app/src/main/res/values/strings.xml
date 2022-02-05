@@ -17,12 +17,7 @@
 
     <string name="notifications">Notifications</string>
     <string name="zero">0</string>
-    <string name="custom_entries">Custom Entries</string>
     <string name="nav_custom_entries">My Entries</string>
-    <string name="custom_entry_header_empty">Please enter a word or phrase</string>
-    <string name="custom_entry_header_long">This entry is too long</string>
-    <string name="custom_entry_exists">The entry already exists</string>
-    <string name="custom_entry_header_invalid">The given entry contains special characters</string>
     <string name="add_dictionary_entry">New Entry</string>
     <string name="update_dictionary_entry">Update Entry</string>
     <string name="definition_add_alert">You must add a definition</string>
@@ -145,8 +140,6 @@
     <string name="new_collection_hint">Enter your collection name…</string>
     <string name="snackbar_collection_action">Add to collection</string>
     <string name="save_to_your_collections">Save to…</string>
-    <string name="save_collections">Save Collections</string>
-    <string name="remove">REMOVE</string>
     <string name="custom_entry_edit">Edit this custom entry</string>
     <string name="custom_entry_delete">Delete this custom entry</string>
     <string name="actions">Actions</string>
@@ -160,5 +153,6 @@
     <string name="empty_saves">Empty Saves</string>
     <string name="empty_collections">No Save Collections</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="remove_save">Remove Save</string>
+    <string name="default_custom_entry_count">- Entries</string>
 </resources>

@@ -1,6 +1,5 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.ui
+package com.vocaby.application.feature_dictionary_custom.presentation.home
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -13,26 +12,24 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
-import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
-import com.vocaby.application.feature_dictionary_custom.presentation.adapter.CustomEntryAdapter
-import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.MyEntryViewModel
+import com.vocaby.application.feature_dictionary_custom.presentation.entry_builder.EntryBuilderActivity
 import com.vocaby.application.states.ItemState
-import com.vocaby.application.states.UserInputState
 import com.vocaby.searchview.SearchView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
-    private lateinit var ctx: Context
     private lateinit var entryCountView: TextView
     private lateinit var customEntryAdapter: CustomEntryAdapter
     private lateinit var emptyCard: LinearLayout
@@ -50,26 +47,19 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
     private val entryViewModel: MyEntryViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        ctx = requireActivity().applicationContext
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_entry, container, false)
+        alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
         entryCountView = view.findViewById(R.id.entry_count)
         emptyCard = view.findViewById(R.id.empty_card)
         fetchProgress = view.findViewById(R.id.fetch_progress)
-
         searchView = view.findViewById(R.id.vocaby_search)
         searchView.apply {
             setOnQueryChangeListener(queryChangeListener)
         }
-
-        alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
 
         setupButtons(view)
         setupEntryBuilderDialog()
@@ -81,100 +71,76 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // On config change
-        if (savedInstanceState != null) {
-            entryViewModel.reinitializeEntries()
-        }
-
-        entryViewModel.entries.observe(viewLifecycleOwner) { fetchState ->
-            when (fetchState) {
-                is GenericState.Success -> {
-                    fetchProgress.visibility = View.GONE
-                    customEntryAdapter.submitList(fetchState.data)
-                    updateEmptyCardVisibility()
-                }
-
-                is GenericState.InProgress -> {
-                    fetchProgress.visibility = View.VISIBLE
-                    emptyCard.visibility = View.INVISIBLE
-                }
-
-                is GenericState.Error -> {
-                    fetchProgress.visibility = View.GONE
-                }
-            }
-        }
-
-        entryViewModel.customEntryCount.observe(viewLifecycleOwner) { count ->
-            entryCountView.text = Formatter.cleanNumber(count)
-        }
-
-        entryViewModel.entryResult.observe(viewLifecycleOwner) { itemPayload ->
-            when (itemPayload.state) {
-                ItemState.DELETE -> customEntryAdapter.deleteEntry(itemPayload.payload)
-                ItemState.ADD -> {
-                    customEntryAdapter.addEntry()
-                    recyclerView.smoothScrollToPosition(0)
-                }
-                ItemState.UPDATE -> {
-                    customEntryAdapter.deleteEntry(itemPayload.payload)
-                    customEntryAdapter.addEntry()
-                    recyclerView.smoothScrollToPosition(0)
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            // Just suspend on stop, do not unsubscribe onStop
+            launch {
+                entryViewModel.uiState.collect { state ->
+                    when(state) {
+                        is CustomEntryUiState.InProgress -> {
+                            entryCountView.text = getString(R.string.default_custom_entry_count)
+                            fetchProgress.visibility = View.VISIBLE
+                            emptyCard.visibility = View.INVISIBLE
+                        }
+                        is CustomEntryUiState.UpdateCount -> {
+                            fetchProgress.visibility = View.INVISIBLE
+                            entryCountView.text = state.count
+                        }
+                        is CustomEntryUiState.ShowEntries -> {
+                            customEntryAdapter.submitList(state.entries)
+                            fetchProgress.visibility = View.INVISIBLE
+                            entryCountView.text = state.count
+                            updateEmptyCardVisibility()
+                        }
+                    }
                 }
             }
 
-            updateEmptyCardVisibility()
-            entryUpdateDialog.dismiss()
-            dictionaryViewModel.resetSearchSuggestion()
-        }
+            launch {
+                entryViewModel.uiEvent.collect { event ->
+                    when(event) {
+                        is CustomEntryUiEvent.ShowAlert -> {
+                            entryAlert.text = event.message
+                            entryAlert.visibility = View.VISIBLE
+                        }
+                        is CustomEntryUiEvent.StartEntryBuilder -> {
+                            entryEdit.text.clear()
+                            entryAlert.visibility = View.INVISIBLE
+                            entryCreateDialog.dismiss()
 
-        entryViewModel.entryCreationState.observe(viewLifecycleOwner) { input ->
-            when(input) {
-                is UserInputState.EmptyInput -> {
-                    entryAlert.text = getString(R.string.custom_entry_header_empty)
-                    entryAlert.visibility = View.VISIBLE
-                }
-                is UserInputState.InvalidInput -> {
-                    entryAlert.text = getString(R.string.custom_entry_header_invalid)
-                    entryAlert.visibility = View.VISIBLE
-                }
-                is UserInputState.LongInput -> {
-                    entryAlert.text = getString(R.string.custom_entry_header_long)
-                    entryAlert.visibility = View.VISIBLE
-                }
-                is UserInputState.SameInput -> {
-                    entryAlert.text = getString(R.string.custom_entry_exists)
-                    entryAlert.visibility = View.VISIBLE
-                }
-                is UserInputState.Valid -> {
-                    entryEdit.text.clear()
-                    entryAlert.visibility = View.INVISIBLE
-                    entryCreateDialog.dismiss()
+                            openEditor(event.entry, event.position)
+                        }
+                        is CustomEntryUiEvent.UpdateAdapter -> {
+                            when(event.state) {
+                                ItemState.DELETE -> {
+                                    customEntryAdapter.deleteEntry(event.position)
+                                    updateEmptyCardVisibility()
+                                }
+                                ItemState.ADD -> {
+                                    customEntryAdapter.addEntry()
+                                    recyclerView.smoothScrollToPosition(0)
+                                    updateEmptyCardVisibility()
+                                }
+                                ItemState.UPDATE -> {
+                                    customEntryAdapter.deleteEntry(event.position)
+                                    customEntryAdapter.addEntry()
+                                    recyclerView.smoothScrollToPosition(0)
+                                }
+                            }
 
-                    var startEntryBuilderIntent =
-                        Intent(requireActivity(), EntryBuilderActivity::class.java)
-                    startEntryBuilderIntent = entryViewModel.addEntryDataToIntent(
-                        startEntryBuilderIntent,
-                        input.data
-                    )
-
-                    entryBuilderActivity.launch(startEntryBuilderIntent)
+                            entryUpdateDialog.dismiss()
+                            dictionaryViewModel.resetSearchSuggestion()
+                        }
+                    }
                 }
-                else -> {}
             }
         }
-    }
-
-    private fun updateEmptyCardVisibility() {
-        if (customEntryAdapter.itemCount > 0 ) emptyCard.visibility = View.INVISIBLE
-        else emptyCard.visibility = View.VISIBLE
     }
 
     private fun setupRecyclerView(view: View) {
         recyclerView = view.findViewById(R.id.custom_entry_container)
         customEntryAdapter = CustomEntryAdapter( this)
         recyclerView.adapter = customEntryAdapter
-        recyclerView.layoutManager = LinearLayoutManager(ctx)
+        recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
     }
 
     private fun setupButtons(view: View) {
@@ -194,7 +160,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         createButton?.setText(R.string.create)
         createButton?.setOnClickListener {
             entryViewModel.createCustomEntry(entryEdit.text.toString())
-            entryViewModel.resetSelections()
         }
 
         // Clear content on show
@@ -217,6 +182,11 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         }
 
         entryEdit.addTextChangedListener(textWatcher)
+    }
+
+    private fun updateEmptyCardVisibility() {
+        if (customEntryAdapter.itemCount > 0 ) emptyCard.visibility = View.INVISIBLE
+        else emptyCard.visibility = View.VISIBLE
     }
 
     private fun setupEntryUpdateDialog() {
@@ -245,7 +215,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         }
     }
 
-    private fun openEditor(entry: String, position: Int) {
+    private fun openEditor(entry: String, position: Int = -1) {
         var startEntryBuilderIntent = Intent(requireActivity(), EntryBuilderActivity::class.java)
         startEntryBuilderIntent =
             entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, position)
@@ -259,7 +229,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
         entryDeleteButton.setOnClickListener {
             entryUpdateDialog.dismiss()
-
             alertDialogBuilder
                 .setTitle("Are you sure you want to delete?")
                 .setMessage(entry)

@@ -1,10 +1,10 @@
 package com.vocaby.application.states
 
 sealed class UserInputState {
-    data class Valid(val data: String): UserInputState()
+    data class Valid<out T: Any>(val data: T): UserInputState()
+    data class SameInput<out T: Any>(val data: T): UserInputState()
     object EmptyInput: UserInputState()
     object LongInput: UserInputState()
     object NoInput: UserInputState()
     object InvalidInput: UserInputState()
-    object SameInput: UserInputState()
 }

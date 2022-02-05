@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.viewmodel
+package com.vocaby.application.feature_dictionary_custom.presentation.entry_builder
 
 import android.content.Intent
 import android.os.Parcelable
@@ -76,7 +76,7 @@ class EntryGroupViewModel : ViewModel() {
         if (newDefinition.isEmpty()) {
             _definitionsState.value = ItemIntPayload(position, ItemState.DELETE)
         } else if (oldDefinition == newDefinition && oldExample == newExample) {
-            _inputState.value = UserInputState.SameInput
+            _inputState.value = UserInputState.SameInput(Unit)
         } else if (definitionGroup.hasDefinitionExclusive(newDefinition, position)) {
             _inputState.value = UserInputState.InvalidInput
         } else {

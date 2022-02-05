@@ -2,7 +2,7 @@
 <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minWidth="400dp"
+    android:minWidth="320dp"
     android:background="@drawable/rounded_background"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
@@ -33,25 +33,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/remove_button"
-            style="@style/Theme.VocabyAndroid.NavButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/remove"
-            android:layout_marginEnd="8dp"
-            android:textColor="@color/colorHeadline"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@color/white">
+        android:background="@drawable/nav_header">
         <com.vocaby.vocabywidgets.ChipGroup
             android:id="@+id/collection_chip_group"
             android:theme="@style/Theme.VocabyAndroid"
@@ -61,16 +47,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/container_gap_margin"
-        android:paddingBottom="@dimen/container_gap_margin"
-        android:background="@drawable/box_top_stroke_white">
+        android:orientation="vertical"
+        android:background="@color/white">
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_button"
-            style="@style/Theme.VocabyAndroid.Button"
+            style="@style/Theme.VocabyAndroid.Button.Positive"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
             android:text="@string/collection_save" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/remove_button"
+            style="@style/Theme.VocabyAndroid.Button.Negative"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_save"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

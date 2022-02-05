@@ -157,6 +157,26 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="Theme.VocabyAndroid.Button.Positive" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/sourcesanspro_black</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.Button.Negative" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/sourcesanspro_black</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textColor">@color/colorHeadline</item>
+    </style>
+
     <style name="Widget.App.ExtendedFloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
         <item name="android:textSize">10sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>

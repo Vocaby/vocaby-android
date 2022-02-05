@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.ui
+package com.vocaby.application.feature_dictionary_custom.presentation.entry_builder
 
 import android.content.Intent
 import android.os.Bundle
@@ -18,8 +18,6 @@ import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.ItemTouchCallback
 import com.vocaby.application.core.util.LiveDataUtil.observeOnce
-import com.vocaby.application.feature_dictionary_custom.presentation.adapter.CustomDefAdapter
-import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.EntryGroupViewModel
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
 
@@ -70,11 +68,11 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
                 is UserInputState.InvalidInput -> {
                     definitionAlertView.text = getString(R.string.definition_exists_alert)
                 }
-                is UserInputState.SameInput -> {
+                is UserInputState.SameInput<*> -> {
                     definitionAlertView.text = getString(R.string.no_changes)
                 }
-                is UserInputState.Valid -> {
-                    definitionAlertView.text = input.data
+                is UserInputState.Valid<*> -> {
+                    definitionAlertView.text = input.data.toString()
                 }
                 else -> {
                     definitionAlertView.text = ""

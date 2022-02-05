@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.viewmodel
+package com.vocaby.application.feature_dictionary_custom.presentation.entry_builder
 
 import android.app.Activity
 import android.content.Intent
@@ -214,7 +214,7 @@ class EntryViewModel @Inject constructor(
             } else {
                 // DELETE THE EXISTING ENTRY BECAUSE THE USER DELETED ALL GROUPS
                 viewModelScope.launch {
-                    customDictionaryRepository.removeCustomEntry(entryData.id)
+                    customDictionaryRepository.removeUserEntry(entryData.id)
                     payload.state = ItemState.DELETE
                     _saveResult.postValue(true)
                 }

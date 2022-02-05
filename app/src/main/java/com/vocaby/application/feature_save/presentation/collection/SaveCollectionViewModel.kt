@@ -56,7 +56,7 @@ class SaveCollectionViewModel @Inject constructor(
                     newName,
                     _saveCollectionState.value
                 )) {
-                    is UserInputState.SameInput -> {
+                    is UserInputState.SameInput<*> -> {
                         _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("The collection already exists"))
                     }
                     is UserInputState.LongInput -> {
@@ -65,7 +65,7 @@ class SaveCollectionViewModel @Inject constructor(
                     is UserInputState.EmptyInput -> {
                         _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("Please enter a name"))
                     }
-                    is UserInputState.Valid -> {
+                    is UserInputState.Valid<*> -> {
                         _uiEvent.emit(CollectionItemsUiEvent.CloseCollectionDialog)
                     }
                     is UserInputState.NoInput -> {
@@ -98,7 +98,7 @@ class SaveCollectionViewModel @Inject constructor(
     fun addSaveCollection(collectionName: String) {
         viewModelScope.launch {
             when (saveCollectionUseCases.addSaveCollectionUseCase(collectionName, _saveCollectionState.value)) {
-                is UserInputState.SameInput -> {
+                is UserInputState.SameInput<*> -> {
                     _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("The collection already exists"))
                 }
                 is UserInputState.LongInput -> {
@@ -110,7 +110,7 @@ class SaveCollectionViewModel @Inject constructor(
                 is UserInputState.NoInput -> {
                     _uiEvent.emit(CollectionItemsUiEvent.ShowCollectionAlert("You must enter a name"))
                 }
-                is UserInputState.Valid -> {
+                is UserInputState.Valid<*> -> {
                     _uiEvent.emit(CollectionItemsUiEvent.ScrollToTop)
                     _uiEvent.emit(CollectionItemsUiEvent.CloseCollectionDialog)
                 }

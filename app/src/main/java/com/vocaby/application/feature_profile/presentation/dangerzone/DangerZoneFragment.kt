@@ -10,7 +10,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
-import com.vocaby.application.feature_dictionary_custom.presentation.viewmodel.MyEntryViewModel
+import com.vocaby.application.feature_dictionary_custom.presentation.home.MyEntryViewModel
 import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
 import com.vocaby.application.feature_save.presentation.save.SaveViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,7 +54,7 @@ class DangerZoneFragment : Fragment() {
         eraseEntriesButton.setOnClickListener {
             builder.setTitle("Are you sure you wish to erase your entries?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("ERASE") { _, _ -> myEntryViewModel.clearEntries() }
+                .setPositiveButton("ERASE") { _, _ -> myEntryViewModel.clearUserEntries() }
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
@@ -71,9 +71,10 @@ class DangerZoneFragment : Fragment() {
             builder.setTitle("Are you sure you wish to erase all of your data?")
                 .setMessage("All of your data will be deleted. This action is irreversible.")
                 .setPositiveButton("ERASE") { _, _ ->
+                    // TODO: REPLACE WITH NEW USER
                     saveViewModel.clearSaves()
                     dictionaryViewModel.clearHistory()
-                    myEntryViewModel.clearEntries()
+                    myEntryViewModel.clearUserEntries()
                     profileViewModel.eraseChartData()
                 }.setNegativeButton("CANCEL", null).create().show()
         }

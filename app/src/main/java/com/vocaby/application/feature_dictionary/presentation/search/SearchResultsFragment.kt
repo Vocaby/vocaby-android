@@ -19,7 +19,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.vocaby.application.R
 import com.vocaby.application.core.util.ResourceState
@@ -211,13 +210,7 @@ class SearchResultsFragment : Fragment() {
 
                     childFragmentManager.setFragmentResultListener(SearchCollectionDialogFragment.TAG, viewLifecycleOwner) { _, bundle ->
                         if (bundle.getBoolean(SearchCollectionDialogFragment.REMOVE_ALL)) {
-                            val alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
-                            alertDialogBuilder
-                                .setTitle("Remove from saved and collections?")
-                                .setMessage("Removing this save will also remove it from all collections")
-                                .setPositiveButton("REMOVE") { _, _ ->
-                                    searchResultsViewModel.removeSavedEntry(true)
-                                }.setNegativeButton("CANCEL", null).create().show()
+                            searchResultsViewModel.removeSavedEntry(true)
                         } else {
                             val showSnackbar = bundle.getBoolean(SearchCollectionDialogFragment.SHOW_SNACKBAR)
                             if (showSnackbar) showSnackBar("Collections have been updated")

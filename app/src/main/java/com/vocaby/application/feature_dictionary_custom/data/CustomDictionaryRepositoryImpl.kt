@@ -11,18 +11,20 @@ import com.vocaby.application.feature_dictionary_custom.data.local.entity.EntryW
 import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
 class CustomDictionaryRepositoryImpl constructor(
-    private val dao: CustomDictionaryDao
+    private val dao: CustomDictionaryDao,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): CustomDictionaryRepository {
     override suspend fun replaceUser(newUserId: Int) = dao.replaceUser(newUserId)
 
-    override suspend fun getUserEntries(userId: Int): LinkedList<UserEntry> {
+    override suspend fun getUserEntries(userId: Int): LinkedList<UserEntry> = withContext(defaultDispatcher) {
         val list = dao.getUserEntries(userId)
-        return LinkedList(list)
+        LinkedList(list)
     }
 
     override suspend fun getUserEntryId(userId: Int, entry: String): Int? = dao.getUserEntryId(userId, entry)
@@ -30,9 +32,9 @@ class CustomDictionaryRepositoryImpl constructor(
     override suspend fun getUserEntryData(userId: Int, entry: String): EntryModel? =
         convertCustomToEntryModel(dao.getUserEntryData(userId, entry))
 
-    override suspend fun removeCustomEntry(entryId: Int) = dao.deleteUserEntry(entryId)
+    override suspend fun removeUserEntry(entryId: Int) = dao.deleteUserEntry(entryId)
 
-    override suspend fun removeCustomEntry(entry: String) = dao.deleteUserEntry(entry)
+    override suspend fun removeUserEntry(entry: String) = dao.deleteUserEntry(entry)
 
     override suspend fun clearUserEntries(userId: Int) = dao.clearUserEntries(userId)
 
@@ -222,7 +224,8 @@ class CustomDictionaryRepositoryImpl constructor(
         dao.insertCustomDefinitions(addedDefinitions)
     }
 
-    private suspend fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? = withContext(Dispatchers.Default) {
+    private suspend fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? =
+        withContext(Dispatchers.Default) {
         data?.let {
             val entryData = EntryModel(
                 data.customEntry.entryId,

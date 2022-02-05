@@ -21,7 +21,7 @@ class AddSaveCollectionUseCase @Inject constructor(
                 UserInputState.LongInput
             }
             collections.any { it.collectionName == sanitized } -> {
-                UserInputState.SameInput
+                UserInputState.SameInput(Unit)
             }
             else -> {
                 val userId = userRepository.getUser()

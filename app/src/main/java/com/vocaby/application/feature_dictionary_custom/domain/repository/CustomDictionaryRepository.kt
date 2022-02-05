@@ -12,8 +12,8 @@ interface CustomDictionaryRepository {
     suspend fun getUserEntries(userId: Int): LinkedList<UserEntry>
     suspend fun getUserEntryId(userId: Int, entry: String): Int?
     suspend fun getUserEntryData(userId: Int, entry: String): EntryModel?
-    suspend fun removeCustomEntry(entryId: Int)
-    suspend fun removeCustomEntry(entry: String)
+    suspend fun removeUserEntry(entryId: Int)
+    suspend fun removeUserEntry(entry: String)
     suspend fun clearUserEntries(userId: Int)
     suspend fun getAllUserEntries(userId: Int): List<EntryModel>
     suspend fun insertOrUpdateEntry(

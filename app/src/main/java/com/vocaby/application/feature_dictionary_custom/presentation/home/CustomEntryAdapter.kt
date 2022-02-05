@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.adapter
+package com.vocaby.application.feature_dictionary_custom.presentation.home
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -32,7 +32,7 @@ class CustomEntryAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is CustomEntryViewHolder -> holder.bind(customEntries[position])
+            is CustomEntryViewHolder -> holder.bind(customEntries[holder.adapterPosition])
         }
     }
 
@@ -48,10 +48,6 @@ class CustomEntryAdapter(
 
     fun deleteEntry(position: Int) {
         notifyItemRemoved(position)
-    }
-
-    fun updateEntry(position: Int) {
-        notifyItemChanged(position)
     }
 
     override fun getItemCount(): Int {

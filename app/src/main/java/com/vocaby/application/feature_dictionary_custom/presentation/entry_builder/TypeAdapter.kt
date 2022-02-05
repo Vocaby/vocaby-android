@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.adapter
+package com.vocaby.application.feature_dictionary_custom.presentation.entry_builder
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
-import com.vocaby.application.feature_dictionary_custom.presentation.adapter.TypeAdapter.TypeViewHolder
+import com.vocaby.application.feature_dictionary_custom.presentation.entry_builder.TypeAdapter.TypeViewHolder
 
 class TypeAdapter(private val itemInteractionListener: ItemInteractionListener) :
     RecyclerView.Adapter<TypeViewHolder>() {

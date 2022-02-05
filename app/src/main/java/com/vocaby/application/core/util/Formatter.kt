@@ -62,8 +62,16 @@ object Formatter {
         return newString
     }
 
-    fun cleanNumber(num: Int): String {
-        return NumberFormat.getNumberInstance(Locale.US).format(num.toLong())
+    fun cleanNumber(num: Int, singularSuffix: String = "", pluralSuffix: String = ""): String {
+        return if (num < 2) {
+            var formatted = NumberFormat.getNumberInstance(Locale.US).format(num.toLong())
+            if (singularSuffix.isNotEmpty()) formatted += " $singularSuffix"
+            formatted
+        } else {
+            var formatted = NumberFormat.getNumberInstance(Locale.US).format(num.toLong())
+            if (pluralSuffix.isNotEmpty()) formatted += " $pluralSuffix"
+            formatted
+        }
     }
 
     fun validateEmail(email: String): Boolean {

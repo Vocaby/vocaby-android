@@ -25,7 +25,7 @@ class UpdateSaveCollectionUseCase @Inject constructor(
                 UserInputState.EmptyInput
             }
             collections.any { it.collectionName == sanitized } -> {
-                UserInputState.SameInput
+                UserInputState.SameInput(Unit)
             }
             else -> {
                 val userId = userRepository.getUser()

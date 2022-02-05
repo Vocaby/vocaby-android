@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".feature_dictionary_custom.presentation.ui.MyEntryFragment"
+    tools:context=".feature_dictionary_custom.presentation.home.MyEntryFragment"
     android:orientation="vertical"
     android:background="@color/very_light_gray">
     <LinearLayout
@@ -40,18 +40,8 @@
             style="@style/Theme.VocabyAndroid.TextHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="@string/zero"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/custom_entries"
-            android:textColor="@color/white"
             android:layout_marginEnd="@dimen/container_side_margin"
+            android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>
 
