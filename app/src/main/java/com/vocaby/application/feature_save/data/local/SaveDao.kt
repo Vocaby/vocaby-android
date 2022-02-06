@@ -17,7 +17,7 @@ interface SaveDao {
     @Query("SELECT save_id FROM saves s WHERE user_id = :userId AND entry = :entry")
     suspend fun getSaveId(userId: Int, entry: String): Int?
 
-    @Query("SELECT entry FROM saves WHERE user_id = :userId")
+    @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY last_saved DESC")
     fun getSavesFlow(userId: Int): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

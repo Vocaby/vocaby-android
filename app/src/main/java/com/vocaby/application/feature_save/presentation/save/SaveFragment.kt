@@ -13,8 +13,8 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.vocaby.application.R
-import com.vocaby.application.feature_save.presentation.collection.SaveCollectionBaseFragment
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.feature_save.presentation.collection.SaveCollectionBaseFragment
 import kotlinx.coroutines.flow.collect
 
 class SaveFragment : Fragment() {

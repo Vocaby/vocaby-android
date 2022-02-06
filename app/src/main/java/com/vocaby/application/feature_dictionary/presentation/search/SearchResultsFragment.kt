@@ -23,10 +23,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.vocaby.application.R
 import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.core.util.config
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_save.presentation.save.SaveState
-import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest

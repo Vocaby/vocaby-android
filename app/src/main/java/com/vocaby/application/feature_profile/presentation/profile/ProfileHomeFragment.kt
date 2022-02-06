@@ -24,15 +24,15 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.button.MaterialButton
 import com.vocaby.application.R
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferFragment
+import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.application.feature_profile.common.Constants
 import com.vocaby.application.feature_profile.presentation.dangerzone.DangerZoneFragment
 import com.vocaby.application.feature_profile.presentation.setting.SettingFragment
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
 import com.vocaby.application.feature_profile.util.AxisValueFormatter
 import com.vocaby.application.feature_support.presentation.SupportFragment
-import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
-import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 

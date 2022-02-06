@@ -89,10 +89,11 @@ class CustomDefAdapter(
         private val ctx: Context
     ) : RecyclerView.ViewHolder(itemView),
         ItemTouchHelperViewHolder {
-        private var definitionView: TextView = itemView.findViewById(R.id.definition)
-        private var exampleView: TextView = itemView.findViewById(R.id.example)
-        private var dragHandle: FrameLayout = itemView.findViewById(R.id.drag_handle)
-        private var container: LinearLayout = itemView.findViewById(R.id.card_container)
+        private val card: MaterialCardView = itemView.findViewById(R.id.definition_card)
+        private val definitionView: TextView = itemView.findViewById(R.id.definition)
+        private val exampleView: TextView = itemView.findViewById(R.id.example)
+        private val dragHandle: FrameLayout = itemView.findViewById(R.id.drag_handle)
+        private val container: LinearLayout = itemView.findViewById(R.id.card_container)
 
         @SuppressLint("ClickableViewAccessibility")
         fun bind(definition: String, example: String) {
@@ -117,15 +118,17 @@ class CustomDefAdapter(
         }
 
         override fun onItemDragged() {
-            (itemView as MaterialCardView).strokeColor = ctx.getColor(R.color.colorPrimary)
+            card.strokeColor = ctx.getColor(R.color.colorPrimary)
+            card.alpha = 0.8f
         }
 
         override fun onItemSwiped() {
-            (itemView as MaterialCardView).strokeColor = ctx.getColor(R.color.colorHeadline)
+            card.strokeColor = ctx.getColor(R.color.colorHeadline)
         }
 
         override fun onItemDone() {
-            (itemView as MaterialCardView).strokeColor = ctx.getColor(R.color.light_gray)
+            card.strokeColor = ctx.getColor(R.color.light_gray)
+            card.alpha = 1f
         }
     }
 }

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/group_card"
     android:layout_width="match_parent"
     android:layout_height="60dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="8dp"
     app:cardCornerRadius="@dimen/radius"
+    app:cardElevation="0dp"
     app:strokeColor="@color/light_gray"
     app:strokeWidth="1dp">
 
@@ -15,28 +17,13 @@
         android:background="@color/white"
         android:orientation="horizontal"
         android:baselineAligned="false">
-
-        <FrameLayout
-            android:id="@+id/drag_handle"
-            android:layout_width="60dp"
-            android:layout_height="match_parent"
-            android:background="@color/very_light_gray">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_drag_handle"
-                android:contentDescription="@string/drag_icon" />
-        </FrameLayout>
-
         <TextView
             android:id="@+id/group_card_header"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingBottom="4dp"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="@dimen/container_side_margin"
             android:layout_marginEnd="12dp"
             android:layout_gravity="center_vertical"
             android:textAllCaps="true"
@@ -44,7 +31,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:fontFamily="@font/playfairdisplay_bold"
-            android:textColor="@color/black" />
+            android:textColor="@color/colorPrimaryAccent" />
 
         <TextView
             android:id="@+id/group_card_def_counter"
@@ -66,5 +53,17 @@
             android:textSize="11sp"
             android:fontFamily="@font/sourcesanspro_regular"
             android:textColor="@color/black" />
+        <FrameLayout
+            android:id="@+id/drag_handle"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:background="@color/very_light_gray">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_drag_handle"
+                android:contentDescription="@string/drag_icon" />
+        </FrameLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

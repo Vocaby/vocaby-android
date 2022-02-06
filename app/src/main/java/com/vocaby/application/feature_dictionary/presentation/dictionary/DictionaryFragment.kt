@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
 import com.vocaby.application.core.util.GenericState
-import com.vocaby.application.feature_dictionary.presentation.search.SearchResultsFragment
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.feature_dictionary.presentation.search.SearchResultsFragment
 import com.vocaby.searchview.SearchView
 import com.vocaby.searchview.suggestions.model.SearchSuggestion
 import kotlinx.coroutines.flow.collect

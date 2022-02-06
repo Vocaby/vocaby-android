@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.CustomEntryUseCases
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase

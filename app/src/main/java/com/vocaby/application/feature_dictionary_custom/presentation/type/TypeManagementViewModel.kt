@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashMap
 
 @HiltViewModel
 class TypeManagementViewModel @Inject constructor(

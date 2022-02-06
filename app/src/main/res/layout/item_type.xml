@@ -7,6 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="8dp"
     app:cardCornerRadius="@dimen/radius"
+    app:cardElevation="0dp"
     app:strokeColor="@color/light_gray"
     app:strokeWidth="1dp">
     <LinearLayout
@@ -16,24 +17,13 @@
         android:background="@color/white"
         android:orientation="horizontal"
         android:baselineAligned="false">
-        <FrameLayout
-            android:id="@+id/drag_handle"
-            android:layout_width="60dp"
-            android:layout_height="match_parent"
-            android:background="@color/very_light_gray">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_drag_handle"
-                android:contentDescription="@string/drag_icon" />
-        </FrameLayout>
         <TextView
             android:id="@+id/type_card_header"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:paddingBottom="4dp"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin"
             android:layout_gravity="center_vertical"
             android:textAllCaps="true"
@@ -41,6 +31,18 @@
             android:fontFamily="@font/playfairdisplay_bold"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textColor="@color/black" />
+            android:textColor="@color/colorPrimaryAccent" />
+        <FrameLayout
+            android:id="@+id/drag_handle"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_drag_handle"
+                android:contentDescription="@string/drag_icon" />
+        </FrameLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
