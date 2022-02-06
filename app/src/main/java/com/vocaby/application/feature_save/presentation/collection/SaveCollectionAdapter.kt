@@ -81,13 +81,13 @@ class SaveCollectionAdapter(
             }
 
             moreButton.setOnClickListener {
-                interaction.onItemUpdate(collectionModel.collectionName, collectionModel.id)
+                interaction.onItemUpdate(collectionModel)
             }
         }
     }
 
     interface Interaction {
         fun onItemTouch(name: String, id: Int)
-        fun onItemUpdate(collectionName: String, collectionId: Int)
+        fun onItemUpdate(collection: SaveCollectionModel)
     }
 }

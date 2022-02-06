@@ -83,6 +83,7 @@ class SearchResultsFragment : Fragment() {
         searchProgress = view.findViewById(R.id.search_progress)
         contextView = view.findViewById(R.id.search_results_coordinator_layout)
 
+        setupFragmentManager()
         return view
     }
 
@@ -208,17 +209,19 @@ class SearchResultsFragment : Fragment() {
                         event.collections
                     )
 
-                    childFragmentManager.setFragmentResultListener(SearchCollectionDialogFragment.TAG, viewLifecycleOwner) { _, bundle ->
-                        if (bundle.getBoolean(SearchCollectionDialogFragment.REMOVE_ALL)) {
-                            searchResultsViewModel.removeSavedEntry(true)
-                        } else {
-                            val showSnackbar = bundle.getBoolean(SearchCollectionDialogFragment.SHOW_SNACKBAR)
-                            if (showSnackbar) showSnackBar("Collections have been updated")
-                        }
-                    }
-
                     dialogFragment.show(childFragmentManager, SearchCollectionDialogFragment.TAG)
                 }
+            }
+        }
+    }
+
+    private fun setupFragmentManager() {
+        childFragmentManager.setFragmentResultListener(SearchCollectionDialogFragment.TAG, viewLifecycleOwner) { _, bundle ->
+            if (bundle.getBoolean(SearchCollectionDialogFragment.REMOVE_ALL)) {
+                searchResultsViewModel.removeSavedEntry(true)
+            } else {
+                val showSnackbar = bundle.getBoolean(SearchCollectionDialogFragment.SHOW_SNACKBAR)
+                if (showSnackbar) showSnackBar("Collections have been updated")
             }
         }
     }

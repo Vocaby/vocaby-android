@@ -48,15 +48,13 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.dialog_custom_entry_group_builder, container, false)
+        val view = inflater.inflate(R.layout.dialog_fragment_entry_type_picker, container, false)
         chipGroup = view.findViewById(R.id.types_chip_group)
         addGroupButton = view.findViewById(R.id.create_group_button)
         groupAlert = view.findViewById(R.id.type_creator_alert)
 
         addGroupButton.setOnClickListener {
-            val selectedType = chipGroup.findViewById<Chip>(chipGroup.checkedChipId).text
-            setFragmentResult(TAG, bundleOf(SELECTED_TYPE to selectedType))
-            dismiss()
+            viewModel.validate(chipGroup.checkedChipId)
         }
 
         launchAndRepeatWithViewLifecycle {
@@ -75,7 +73,25 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
                                 chipGroup.addView(chip)
                             }
                         }
+                        is DialogUiState.ShowAlert -> {
+                            groupAlert.visibility = View.VISIBLE
+                        }
                         else -> {}
+                    }
+                }
+            }
+
+            launch {
+                viewModel.uiEvent.collect { event ->
+                    when(event) {
+                        is DialogUiEvent.ShowAlert -> {
+                            groupAlert.visibility = View.VISIBLE
+                        }
+                        is DialogUiEvent.CloseDialog -> {
+                            val selectedType = chipGroup.findViewById<Chip>(chipGroup.checkedChipId).text
+                            setFragmentResult(TAG, bundleOf(SELECTED_TYPE to selectedType))
+                            dismiss()
+                        }
                     }
                 }
             }

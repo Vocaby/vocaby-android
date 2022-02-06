@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -23,7 +22,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class SearchCollectionDialogFragment: DialogFragment() {
     private val searchCollectionDialogViewModel: SearchCollectionDialogViewModel by viewModels()
-    private lateinit var collectionAlert: TextView
     private lateinit var saveCollectionButton: Button
     private lateinit var removeSaveButton: Button
     private lateinit var chipGroup: ChipGroup
@@ -61,7 +59,6 @@ class SearchCollectionDialogFragment: DialogFragment() {
         val view = inflater.inflate(R.layout.dialog_fragment_save_collection, container, false)
         chipGroup = view.findViewById(R.id.collection_chip_group)
         saveCollectionButton = view.findViewById(R.id.save_button)
-        collectionAlert = view.findViewById(R.id.header_alert)
         removeSaveButton = view.findViewById(R.id.remove_button)
         removeSaveButton.setOnClickListener {
             setFragmentResult(TAG, bundleOf(REMOVE_ALL to true))

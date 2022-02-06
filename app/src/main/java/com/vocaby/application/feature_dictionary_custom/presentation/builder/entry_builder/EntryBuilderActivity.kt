@@ -18,6 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.presentation.search.SearchCollectionDialogFragment
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity
 import com.vocaby.application.launchAndRepeatWithViewLifecycle
@@ -49,9 +50,11 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         groupAlert = findViewById(R.id.group_header_alert)
         pronunciationInput = findViewById(R.id.feedback_input)
 
+
         setUpBottomSheet()
         setupRecyclerView()
         setupButtons()
+        setupFragmentManager()
 
         launchAndRepeatWithViewLifecycle {
             launch {
@@ -97,20 +100,6 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                 is EntryBuilderUiEvent.ShowTypeSelectionDialog -> {
                     val dialogFragment = EntryBuilderGroupDialogFragment.newInstance(event.types)
 
-                    supportFragmentManager.setFragmentResultListener(
-                        EntryBuilderGroupDialogFragment.TAG,
-                        this
-                    ) { _, bundle ->
-                        val selectedType = bundle.getString(EntryBuilderGroupDialogFragment.SELECTED_TYPE)
-                        selectedType?.let {
-                            var groupBuilderActivityData =
-                                Intent(this, EntryGroupBuilderActivity::class.java)
-                            groupBuilderActivityData =
-                                entryBuilderViewModel.addNewGroupDataToIntent(groupBuilderActivityData, selectedType)
-                            groupBuilderActivity.launch(groupBuilderActivityData)
-                        }
-                    }
-
                     dialogFragment.show(supportFragmentManager, SearchCollectionDialogFragment.TAG)
                 }
                 is EntryBuilderUiEvent.CloseBuilder -> {
@@ -121,6 +110,22 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                     setResult(RESULT_CANCELED)
                     finish()
                 }
+            }
+        }
+    }
+
+    private fun setupFragmentManager() {
+        supportFragmentManager.setFragmentResultListener(
+            EntryBuilderGroupDialogFragment.TAG,
+            this
+        ) { _, bundle ->
+            val selectedType = bundle.getString(EntryBuilderGroupDialogFragment.SELECTED_TYPE)
+            selectedType?.let {
+                var groupBuilderActivityData =
+                    Intent(this, EntryGroupBuilderActivity::class.java)
+                groupBuilderActivityData =
+                    entryBuilderViewModel.addNewGroupDataToIntent(groupBuilderActivityData, selectedType)
+                groupBuilderActivity.launch(groupBuilderActivityData)
             }
         }
     }

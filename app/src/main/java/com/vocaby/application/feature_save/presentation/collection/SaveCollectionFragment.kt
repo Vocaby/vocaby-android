@@ -1,8 +1,6 @@
 package com.vocaby.application.feature_save.presentation.collection
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +14,11 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.GridItemDecoration
+import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -92,7 +92,17 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
                     is CollectionItemsUiEvent.ShowActionsDialog -> {
                         collectionUpdateDialog.show()
                     }
-                    else -> {}
+                    is CollectionItemsUiEvent.ShowDeletionWarning -> {
+                        MaterialAlertDialogBuilder(requireActivity())
+                            .setTitle("Are you sure you want to delete?")
+                            .setMessage(event.collectionName)
+                            .setPositiveButton("DELETE") { _, _ ->
+                                saveCollectionViewModel.removeCollection(true)
+                            }.setNegativeButton("CANCEL", null).create().show()
+                    }
+                    is CollectionItemsUiEvent.ScrollToTop -> {
+                        recyclerView.smoothScrollToPosition(0)
+                    }
                 }
             }
         }
@@ -127,18 +137,6 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
             collectionAlert.visibility = View.INVISIBLE
             dialogButton.isEnabled = true
         }
-
-        val counter = collectionDialog.findViewById<TextView>(R.id.character_counter)!!
-        val textWatcher: TextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            }
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                counter.text = s.length.toString()
-            }
-            override fun afterTextChanged(s: Editable) {}
-        }
-
-        collectionEdit.addTextChangedListener(textWatcher)
     }
 
     private fun setupUpdateDialog() {
@@ -196,7 +194,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
             .commit()
     }
 
-    override fun onItemUpdate(collectionName: String, collectionId: Int) {
-        saveCollectionViewModel.setCollection(collectionId, collectionName)
+    override fun onItemUpdate(collection: SaveCollectionModel) {
+        saveCollectionViewModel.setCollection(collection)
     }
 }

@@ -19,8 +19,7 @@ class SaveCollectionViewModel @Inject constructor(
     private val saveCollectionUseCases: SaveCollectionUseCases,
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ): ViewModel() {
-    private var collectionId: Int? = null
-    private var selectedCollection: String? = null
+    private var selectedCollection: SaveCollectionModel? = null
     private val _saveCollectionState = MutableStateFlow<List<SaveCollectionModel>>(LinkedList())
     private val _uiEvent = MutableSharedFlow<CollectionItemsUiEvent>()
 
@@ -37,22 +36,19 @@ class SaveCollectionViewModel @Inject constructor(
         }
     }
 
-    fun setCollection(id: Int, collectionName: String) {
-        collectionId = id
-        selectedCollection = collectionName
+    fun setCollection(collection: SaveCollectionModel) {
+        selectedCollection = collection
         viewModelScope.launch {
             _uiEvent.emit(CollectionItemsUiEvent.ShowActionsDialog)
         }
     }
 
     fun updateCollection(newName: String) {
-        val id = collectionId
-        val name = selectedCollection
-        if (id != null && name != null) {
+        selectedCollection?.let {
             viewModelScope.launch {
                 when (saveCollectionUseCases.updateSaveCollectionUseCase(
-                    id,
-                    name,
+                    it.id,
+                    it.collectionName,
                     newName,
                     _saveCollectionState.value
                 )) {
@@ -79,10 +75,14 @@ class SaveCollectionViewModel @Inject constructor(
         }
     }
 
-    fun removeCollection() {
-        collectionId?.let {
+    fun removeCollection(force: Boolean = false) {
+        selectedCollection?.let {
             viewModelScope.launch {
-                saveCollectionUseCases.removeSaveCollectionUseCase(it)
+                if (force || it.count == 0) {
+                    saveCollectionUseCases.removeSaveCollectionUseCase(it.id)
+                } else {
+                    _uiEvent.emit(CollectionItemsUiEvent.ShowDeletionWarning(it.collectionName))
+                }
             }
         }
     }
@@ -90,7 +90,7 @@ class SaveCollectionViewModel @Inject constructor(
     fun prepareUpdateDialog() {
         selectedCollection?.let {
             viewModelScope.launch {
-                _uiEvent.emit(CollectionItemsUiEvent.ShowUpdateDialog(it))
+                _uiEvent.emit(CollectionItemsUiEvent.ShowUpdateDialog(it.collectionName))
             }
         }
     }

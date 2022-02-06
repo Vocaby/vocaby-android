@@ -13,16 +13,6 @@
         android:background="@drawable/nav_header"
         android:padding="16dp">
         <TextView
-            android:id="@+id/header_alert"
-            style="@style/Theme.VocabyAndroid.Alert"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/type_header_alert"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcesanspro_semibold"
