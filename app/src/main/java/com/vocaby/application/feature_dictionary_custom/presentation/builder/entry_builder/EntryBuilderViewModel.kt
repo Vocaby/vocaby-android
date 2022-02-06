@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 @HiltViewModel
@@ -96,6 +95,7 @@ class EntryBuilderViewModel @Inject constructor(
 
     fun addExistingGroupDataToIntent(intent: Intent, position: Int): Intent {
         val type = entryData.getDefinitionGroup(position).type
+
         intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position) as Parcelable)
         intent.putExtra(DEFINITION_CHANGES, definitionChangesMap[type])
         intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups[type] as Parcelable)
@@ -106,11 +106,9 @@ class EntryBuilderViewModel @Inject constructor(
     fun addNewGroupDataToIntent(intent: Intent, type: String): Intent {
         val newGroup = DefinitionGroupModel(type)
         initialGroups[type] = newGroup
+
         intent.putExtra(GROUP_KEY, newGroup as Parcelable)
-        intent.putExtra(
-            DEFINITION_CHANGES,
-            ItemChangeState<DefinitionModel>()
-        )
+        intent.putExtra(DEFINITION_CHANGES, ItemChangeState<DefinitionModel>())
         intent.putExtra(INITIAL_DEFINITIONS_KEY, newGroup as Parcelable)
         intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.ADD as Parcelable)
         return intent

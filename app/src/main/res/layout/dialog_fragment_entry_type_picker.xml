@@ -39,6 +39,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:paddingBottom="1dp"
         android:background="@drawable/nav_header">
         <com.vocaby.vocabywidgets.ChipGroup
             android:id="@+id/types_chip_group"

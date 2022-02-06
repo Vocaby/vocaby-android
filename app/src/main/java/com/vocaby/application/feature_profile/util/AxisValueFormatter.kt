@@ -3,7 +3,7 @@ package com.vocaby.application.feature_profile.util
 import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlin.math.roundToInt
 
-class AxisValueFormatter(private val values: List<String>, val maxLength: Int): ValueFormatter() {
+class AxisValueFormatter(private val values: List<String>, private val maxLength: Int): ValueFormatter() {
     private val count = values.size
 
     override fun getFormattedValue(value: Float): String {

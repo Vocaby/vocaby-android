@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
 class AllSavesFragment : Fragment(), SaveListAdapter.Interaction {

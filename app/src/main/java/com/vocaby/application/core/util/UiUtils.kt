@@ -1,4 +1,4 @@
-package com.vocaby.application
+package com.vocaby.application.core.util
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment

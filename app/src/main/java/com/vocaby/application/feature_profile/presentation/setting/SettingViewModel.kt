@@ -29,8 +29,6 @@ class SettingViewModel @Inject constructor(
     private val _dataSettings = MutableSharedFlow<Boolean>()
     private val _uiEvent = MutableSharedFlow<SettingsUiEvent>()
 
-    val notificationSettings get() = _notificationSettings.asSharedFlow()
-    val dictionarySettings get() = _dictionarySettings.asSharedFlow()
     val dataSettings get() = _dataSettings.asSharedFlow()
     val uiEvent get() = _uiEvent.asSharedFlow()
 

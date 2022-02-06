@@ -30,7 +30,7 @@ import com.vocaby.application.feature_profile.presentation.setting.SettingFragme
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
 import com.vocaby.application.feature_profile.util.AxisValueFormatter
 import com.vocaby.application.feature_support.presentation.SupportFragment
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 

@@ -16,7 +16,7 @@ import com.vocaby.application.core.presentation.adapter.FragmentAdapter
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 

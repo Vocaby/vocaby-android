@@ -18,10 +18,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.presentation.search.SearchCollectionDialogFragment
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.states.ItemState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect

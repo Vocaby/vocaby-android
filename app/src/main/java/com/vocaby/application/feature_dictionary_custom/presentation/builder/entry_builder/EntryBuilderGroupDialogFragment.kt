@@ -12,7 +12,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.google.android.material.chip.Chip
 import com.vocaby.application.R
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.vocabywidgets.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect

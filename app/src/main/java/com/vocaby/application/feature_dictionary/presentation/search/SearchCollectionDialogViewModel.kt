@@ -43,12 +43,12 @@ class SearchCollectionDialogViewModel @Inject constructor(
     fun updateItemInCollections() {
         var showSnackBar: Boolean
         viewModelScope.launch {
-            if (updateMode) {
+            showSnackBar = if (updateMode) {
                 val removed = removeSaveFromCollectionsUseCase(collections)
                 val added = addSaveToCollectionsUseCase(saveModel, collections)
-                showSnackBar = removed || added
+                removed || added
             } else {
-                showSnackBar = addSaveToCollectionsUseCase(saveModel, collections)
+                addSaveToCollectionsUseCase(saveModel, collections)
             }
 
             _uiEvent.emit(DialogUiEvent.CloseCollectionDialog(false, showSnackBar))

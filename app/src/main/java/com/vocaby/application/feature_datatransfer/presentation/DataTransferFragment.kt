@@ -17,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DataTransferFragment : Fragment() {
-    private val entryViewModel: MyEntryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

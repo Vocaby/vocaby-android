@@ -5,12 +5,6 @@ import com.bugsnag.android.Bugsnag
 import com.vocaby.application.core.Constants
 
 object Logger {
-    fun reportErrorToDebug(error: Throwable) {
-        error.message?.let { message ->
-            Log.d(Constants.DEBUG_TAG, message)
-            Log.d(Constants.DEBUG_TAG, error.stackTraceToString())
-        } ?: Log.d(Constants.DEBUG_TAG, "There was an error..." + error.javaClass)
-    }
 
     fun reportErrorToBugsnag(error: Throwable) {
         Bugsnag.notify(error)

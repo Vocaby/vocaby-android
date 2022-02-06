@@ -42,24 +42,11 @@ open class ItemChangeState<T> (
     }
 
     val addedItems: List<T> get() = ArrayList(itemsAdded.values)
-    val addedKeySet: HashSet<String?> get() = HashSet(itemsAdded.keys)
     val deletedItems: List<T> get() = ArrayList(itemsDeleted.values)
     val updatedItems: List<T> get() = ArrayList(itemsUpdated.values)
 
-    fun getAddedItem(key: String?): T? {
-        return itemsAdded[key]
-    }
-
-    fun getUpdatedItem(key: String?): T? {
-        return itemsUpdated[key]
-    }
-
     fun putItemAdded(key: String?, item: T): T? {
         return itemsAdded.put(key, item)
-    }
-
-    fun replaceItemAdded(key: String?, item: T): T? {
-        return itemsAdded.replace(key, item)
     }
 
     fun removeItemAdded(key: String?): T? {
@@ -70,15 +57,15 @@ open class ItemChangeState<T> (
         return itemsAdded.containsKey(key)
     }
 
-    fun putItemDeleted(key: String?, item: T): T? {
+    private fun putItemDeleted(key: String?, item: T): T? {
         return itemsDeleted.put(key, item)
     }
 
-    fun removeItemDeleted(key: String?): T? {
+    private fun removeItemDeleted(key: String?): T? {
         return itemsDeleted.remove(key)
     }
 
-    fun hasItemDeleted(key: String?): Boolean {
+    private fun hasItemDeleted(key: String?): Boolean {
         return itemsDeleted.containsKey(key)
     }
 
@@ -92,10 +79,6 @@ open class ItemChangeState<T> (
 
     fun hasItemUpdated(key: String?): Boolean {
         return itemsUpdated.containsKey(key)
-    }
-
-    fun getItemsUpdatedSize(): Int {
-        return itemsUpdated.size
     }
 
     fun addItem(key: String?, item: T): T? {
@@ -118,7 +101,4 @@ open class ItemChangeState<T> (
         return itemsUpdated.isNotEmpty() || itemsAdded.isNotEmpty() || itemsDeleted.isNotEmpty()
     }
 
-    fun hasItem(key: String?): Boolean {
-        return hasItemAdded(key) || hasItemDeleted(key) || hasItemUpdated(key)
-    }
 }

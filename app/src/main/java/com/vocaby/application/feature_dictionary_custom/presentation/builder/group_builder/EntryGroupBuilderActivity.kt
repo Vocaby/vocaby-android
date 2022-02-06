@@ -1,6 +1,5 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -15,18 +14,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
-import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.ItemTouchCallback
-import com.vocaby.application.core.util.LiveDataUtil.observeOnce
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.states.ItemState
-import com.vocaby.application.states.UserInputState
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
     CustomDefAdapter.ItemInteractionListener {
     private val entryGroupViewModel: EntryGroupViewModel by viewModels()
 
     private lateinit var itemTouchHelper: ItemTouchHelper
-    private lateinit var definitionBuilder: BottomSheetDialog
+    private lateinit var definitionBuilderDialog: BottomSheetDialog
     private lateinit var definitionAlertView: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var customDefAdapter: CustomDefAdapter
@@ -40,77 +41,79 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_custom_entry_group_builder)
         saveAlert = findViewById(R.id.definition_add_alert)
+        val activityHeader = findViewById<TextView>(R.id.custom_group_activity_header)
+        val typeHeader = findViewById<TextView>(R.id.type_header)
+
 
         setupDefinitionBuilder()
         setupButtons()
         setupRecyclerView()
-
-        entryGroupViewModel.handleIntent(intent)
-
-        entryGroupViewModel.definitions.observeOnce(this) { list ->
-            customDefAdapter.setList(list)
-        }
-
-        entryGroupViewModel.type.observeOnce(this) { type ->
-            val header = Formatter.firstLetterUpperOnly(type) + " Group"
-            val activityHeader = findViewById<TextView>(R.id.custom_group_activity_header)
-            val typeHeader = findViewById<TextView>(R.id.type_header)
-
-            activityHeader.text = header
-            typeHeader.text = type
-        }
-
-        entryGroupViewModel.inputState.observe(this) { input ->
-            when (input) {
-                is UserInputState.EmptyInput -> {
-                    definitionAlertView.text = getString(R.string.definition_empty_alert)
-                }
-                is UserInputState.InvalidInput -> {
-                    definitionAlertView.text = getString(R.string.definition_exists_alert)
-                }
-                is UserInputState.SameInput<*> -> {
-                    definitionAlertView.text = getString(R.string.no_changes)
-                }
-                is UserInputState.Valid<*> -> {
-                    definitionAlertView.text = input.data.toString()
-                }
-                else -> {
-                    definitionAlertView.text = ""
+        launchAndRepeatWithViewLifecycle {
+            launch {
+                entryGroupViewModel.uiState.collect { state ->
+                    when(state) {
+                        is EntryGroupBuilderUiState.UpdateUiState -> {
+                            customDefAdapter.setList(state.definitions)
+                            activityHeader.text = state.typeHeader
+                            typeHeader.text = state.type
+                        }
+                        is EntryGroupBuilderUiState.InProgress -> {}
+                    }
                 }
             }
-        }
 
-        entryGroupViewModel.definitionState.observe(this) { payload ->
-            if (payload.state == ItemState.ADD) {
-                customDefAdapter.addItem()
-            } else if (payload.state == ItemState.UPDATE) {
-                customDefAdapter.updateItem(payload.payload)
-            } else if (payload.state == ItemState.DELETE) {
-                entryGroupViewModel.removeDefinition(payload.payload)
-                customDefAdapter.notifyItemRemoved(payload.payload)
+            launch {
+                entryGroupViewModel.uiEvent.collect { event ->
+                    when(event) {
+                        is EntryGroupBuilderUiEvent.UpdateAdapter -> {
+                            when (event.state) {
+                                ItemState.ADD -> {
+                                    customDefAdapter.addItem()
+                                }
+                                ItemState.UPDATE -> {
+                                    customDefAdapter.updateItem(event.position)
+                                }
+                                ItemState.DELETE -> {
+                                    entryGroupViewModel.removeDefinition(event.position)
+                                    customDefAdapter.notifyItemRemoved(event.position)
+                                }
+                            }
+
+                            definitionBuilderDialog.dismiss()
+                        }
+                        is EntryGroupBuilderUiEvent.CloseBuilder -> {
+                            setResult(RESULT_OK, event.resultData)
+                            finish()
+                        }
+                        is EntryGroupBuilderUiEvent.ShowAlert -> {
+                            definitionAlertView.text = event.message
+                        }
+                        is EntryGroupBuilderUiEvent.CloseDialog -> {
+                            if (definitionBuilderDialog.isShowing) definitionBuilderDialog.dismiss()
+                        }
+                    }
+                }
             }
-
-            definitionBuilder.dismiss()
         }
     }
 
     private fun setupDefinitionBuilder() {
-        definitionBuilder = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        definitionBuilder.setContentView(R.layout.dialog_custom_entry_definition_builder)
+        definitionBuilderDialog = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        definitionBuilderDialog.setContentView(R.layout.dialog_custom_entry_definition_builder)
 
-        dialogDefinitionInput = definitionBuilder.findViewById(R.id.definition_edit)!!
-        dialogExampleInput = definitionBuilder.findViewById(R.id.example_edit)!!
-        definitionAlertView = definitionBuilder.findViewById(R.id.definition_header_alert)!!
-        dialogHeader = definitionBuilder.findViewById(R.id.definition_dialog_header)!!
+        dialogDefinitionInput = definitionBuilderDialog.findViewById(R.id.definition_edit)!!
+        dialogExampleInput = definitionBuilderDialog.findViewById(R.id.example_edit)!!
+        definitionAlertView = definitionBuilderDialog.findViewById(R.id.definition_header_alert)!!
+        dialogHeader = definitionBuilderDialog.findViewById(R.id.definition_dialog_header)!!
 
-        definitionBuilder.setOnShowListener {
+        definitionBuilderDialog.setOnShowListener {
             definitionAlertView.text = ""
             dialogDefinitionInput.clearFocus()
             dialogExampleInput.clearFocus()
         }
 
         // Add New Definition
-        dialogSaveButton = definitionBuilder.findViewById(R.id.save_definition_button)!!
+        dialogSaveButton = definitionBuilderDialog.findViewById(R.id.save_definition_button)!!
     }
 
     private fun setupButtons() {
@@ -134,7 +137,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
                 entryGroupViewModel.addDefinition(definition, example)
             }
 
-            definitionBuilder.show()
+            definitionBuilderDialog.show()
         }
 
         // Save Button
@@ -142,10 +145,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         saveButton.setOnClickListener { button ->
             saveAlert.visibility = View.INVISIBLE
             button.isEnabled = false
-            var saveIntent = Intent()
-            saveIntent = entryGroupViewModel.addSaveDataToIntent(saveIntent)
-            setResult(RESULT_OK, saveIntent)
-            finish()
+            entryGroupViewModel.saveEntryGroup()
         }
     }
 
@@ -197,6 +197,6 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
             entryGroupViewModel.updateDefinition(position, definition, example, newDefinition, newExample)
         }
 
-        definitionBuilder.show()
+        definitionBuilderDialog.show()
     }
 }

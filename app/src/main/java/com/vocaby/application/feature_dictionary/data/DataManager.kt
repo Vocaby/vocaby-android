@@ -13,7 +13,7 @@ class DataManager(context: Context) {
     private val historyDataFileName = "hVocaby"
     private val ctx: Context = context.applicationContext
     var history: LinkedList<SimpleEntryModel>? = null
-    var numHistoryItems = 6
+    private var numHistoryItems = 6
 
     init {
         val historyFile = File(ctx.filesDir, historyDataFileName)

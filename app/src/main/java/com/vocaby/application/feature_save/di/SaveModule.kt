@@ -45,7 +45,7 @@ class SaveModule {
         userRepository: UserRepository,
         saveRepository: SaveRepository
     ): SaveCollectionUseCases = SaveCollectionUseCases(
-        GetSaveCollectionsUseCase(userRepository, saveRepository),
+        GetSaveCollectionsUseCase(saveRepository),
         AddSaveCollectionUseCase(userRepository, saveRepository),
         RemoveSaveCollectionUseCase(saveRepository),
         UpdateSaveCollectionUseCase(userRepository, saveRepository)

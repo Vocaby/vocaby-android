@@ -15,7 +15,7 @@ import java.util.*
     indices = [Index(value = ["entry", "custom_entry_id"], unique = true)]
 )
 data class CustomEntry(
-    @ColumnInfo(name = "user_id")
+    @ColumnInfo(name = "user_id", index = true)
     var userId: Int,
     var entry: String,
     var pronunciation: String?,

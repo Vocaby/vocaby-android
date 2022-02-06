@@ -19,7 +19,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.vocaby.application.R
 import com.vocaby.application.core.util.GridItemDecoration
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 

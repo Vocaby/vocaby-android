@@ -13,7 +13,7 @@ import com.google.android.material.chip.Chip
 import com.vocaby.application.R
 import com.vocaby.application.feature_save.domain.model.SaveModel
 import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.vocabywidgets.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect

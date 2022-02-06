@@ -16,7 +16,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.vocaby.application.R
 import com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.vocabywidgets.DescriptiveButtonView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect

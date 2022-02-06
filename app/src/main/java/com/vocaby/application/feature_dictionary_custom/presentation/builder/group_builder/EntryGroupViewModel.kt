@@ -2,105 +2,124 @@ package com.vocaby.application.feature_dictionary_custom.presentation.builder.gr
 
 import android.content.Intent
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
-import com.vocaby.application.core.util.SingleLiveEvent
+import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.ValidateDefinitionUpdateUseCase
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.ValidateDefinitionUseCase
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderViewModel
-import com.vocaby.application.payloads.ItemIntPayload
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EntryGroupViewModel : ViewModel() {
-    private lateinit var definitionGroup: DefinitionGroupModel
-    private var definitionChanges: ItemChangeState<DefinitionModel> = ItemChangeState()
+@HiltViewModel
+class EntryGroupViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    val validateDefinitionUseCase: ValidateDefinitionUseCase,
+    val validateDefinitionUpdateUseCase: ValidateDefinitionUpdateUseCase
+) : ViewModel() {
+    private var definitionGroup: DefinitionGroupModel = savedStateHandle.get(EntryBuilderViewModel.GROUP_KEY)!!
+    private var definitionChanges: ItemChangeState<DefinitionModel> = savedStateHandle.get(EntryBuilderViewModel.DEFINITION_CHANGES)!!
     private val initialDefinitions: HashMap<String, DefinitionModel> = HashMap()
-    private var resultState: ItemState? = null
+    private var action: ItemState = savedStateHandle.get(Constants.ITEM_PAYLOAD_KEY)!!
 
-    private val _type: SingleLiveEvent<String> = SingleLiveEvent()
-    private val _definitions: SingleLiveEvent<MutableList<DefinitionModel>> = SingleLiveEvent()
-    private val _inputState: SingleLiveEvent<UserInputState> = SingleLiveEvent()
-    private val _definitionsState: SingleLiveEvent<ItemIntPayload> = SingleLiveEvent()
+    private val _uiState = MutableStateFlow<EntryGroupBuilderUiState>(EntryGroupBuilderUiState.InProgress)
+    private val _uiEvent = MutableSharedFlow<EntryGroupBuilderUiEvent>()
 
-    val definitions: LiveData<MutableList<DefinitionModel>> get() = _definitions
-    val type: LiveData<String> get() = _type
-    val inputState: LiveData<UserInputState> get() = _inputState
-    val definitionState: LiveData<ItemIntPayload> get() = _definitionsState
+    val uiState get() = _uiState.asStateFlow()
+    val uiEvent get() = _uiEvent.asSharedFlow()
 
-    fun handleIntent(receivedIntent: Intent) {
-        definitionGroup = receivedIntent.getParcelableExtra(EntryBuilderViewModel.GROUP_KEY)!!
-        _definitions.value = definitionGroup.definitionData
-        _type.value = definitionGroup.type
-
+    init {
         val initGroup: DefinitionGroupModel =
-            receivedIntent.getParcelableExtra(EntryBuilderViewModel.INITIAL_DEFINITIONS_KEY)!!
+            savedStateHandle.get(EntryBuilderViewModel.INITIAL_DEFINITIONS_KEY)!!
 
         for (def in initGroup.definitionData) {
             initialDefinitions[def.definition] = def
         }
 
-        definitionChanges = receivedIntent.getParcelableExtra(EntryBuilderViewModel.DEFINITION_CHANGES)!!
-        resultState = receivedIntent.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
+        viewModelScope.launch {
+            _uiState.emit(EntryGroupBuilderUiState.UpdateUiState(
+                definitionGroup.type,
+                Formatter.firstLetterUpperOnly(definitionGroup.type) + " Group",
+                definitionGroup.definitionData
+            ))
+        }
     }
 
     fun addDefinition(definition: String, example: String) {
-        if (definition.isEmpty()) {
-            _inputState.value = UserInputState.EmptyInput
-        } else {
-            if (definitionGroup.hasDefinition(definition)) {
-                _inputState.value = UserInputState.InvalidInput
-            } else {
-                _inputState.value = UserInputState.Valid("")
-                var definitionToAdd = initialDefinitions[definition]
-
-                if (definitionToAdd != null) {
-                    definitionToAdd = DefinitionModel(definitionToAdd)
-                    definitionToAdd.example = example
-                    definitionGroup.addNewDefinition(definitionToAdd)
-                } else {
-                    definitionToAdd = definitionGroup.addNewDefinition(definition, example)
+        viewModelScope.launch {
+            when(validateDefinitionUseCase(definition, definitionGroup)) {
+                is UserInputState.EmptyInput -> {
+                    _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("Please enter a definition"))
                 }
+                is UserInputState.InvalidInput -> {
+                    _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("The definition already exists"))
+                }
+                else -> {
+                    var definitionToAdd = initialDefinitions[definition]
 
-                definitionChanges.addItem(definition, definitionToAdd)
-                _definitionsState.setValue(ItemIntPayload(-1, ItemState.ADD))
+                    if (definitionToAdd != null) {
+                        definitionToAdd = DefinitionModel(definitionToAdd)
+                        definitionToAdd.example = example
+                        definitionGroup.addNewDefinition(definitionToAdd)
+                    } else {
+                        definitionToAdd = definitionGroup.addNewDefinition(definition, example)
+                    }
+
+                    definitionChanges.addItem(definition, definitionToAdd)
+                    _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(0, ItemState.ADD))
+                }
             }
         }
     }
 
-    // update, remove, save - right
-    // update, save, remove, save - wrong
-    // updated item does not reorder
     fun updateDefinition(position: Int, oldDefinition: String, oldExample: String, newDefinition: String, newExample: String) {
-        if (newDefinition.isEmpty()) {
-            _definitionsState.value = ItemIntPayload(position, ItemState.DELETE)
-        } else if (oldDefinition == newDefinition && oldExample == newExample) {
-            _inputState.value = UserInputState.SameInput(Unit)
-        } else if (definitionGroup.hasDefinitionExclusive(newDefinition, position)) {
-            _inputState.value = UserInputState.InvalidInput
-        } else {
-            definitionGroup.definitionData.apply {
-                if (oldDefinition != newDefinition || oldExample != newExample) {
-                    val newModel = DefinitionModel(
-                        this[position].id,
-                        this[position].type,
-                        newDefinition,
-                        newExample,
-                        this[position].order
-                    )
+        viewModelScope.launch {
+            when(validateDefinitionUpdateUseCase(position, oldDefinition, newDefinition, oldExample, newExample, definitionGroup)) {
+                is UserInputState.EmptyInput -> {
+                    _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(position, ItemState.DELETE))
+                }
+                is UserInputState.SameInput<*> -> {
+                    _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("Enter a new definition"))
+                }
+                is UserInputState.InvalidInput -> {
+                    _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("The definition already exists"))
+                }
+                else -> {
+                    definitionGroup.definitionData.apply {
+                        if (oldDefinition != newDefinition || oldExample != newExample) {
+                            val newModel = DefinitionModel(
+                                this[position].id,
+                                this[position].type,
+                                newDefinition,
+                                newExample,
+                                this[position].order
+                            )
 
-                    this[position] = newModel
+                            this[position] = newModel
 
-                    if (this[position].id == -1) {
-                        definitionChanges.removeItemAdded(oldDefinition)
-                        definitionChanges.addItem(newDefinition, newModel)
-                    } else {
-                        definitionChanges.putItemUpdated(newDefinition, newModel)
+                            if (this[position].id == -1) {
+                                definitionChanges.removeItemAdded(oldDefinition)
+                                definitionChanges.addItem(newDefinition, newModel)
+                            } else {
+                                definitionChanges.putItemUpdated(newDefinition, newModel)
+                            }
+
+                            _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(position, ItemState.UPDATE))
+                        }
                     }
-
-                    _definitionsState.value = ItemIntPayload(position, ItemState.UPDATE)
                 }
             }
         }
@@ -113,13 +132,17 @@ class EntryGroupViewModel : ViewModel() {
         definitionChanges.removeItem(definitionRemoved.definition, definitionRemoved)
     }
 
-    fun addSaveDataToIntent(intent: Intent): Intent {
-        checkForUpdatedItems()
-        fixOrdering()
-        intent.putExtra(EntryBuilderViewModel.DEFINITION_CHANGES, definitionChanges)
-        intent.putExtra(EntryBuilderViewModel.GROUP_KEY, definitionGroup as Parcelable)
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, resultState as Parcelable)
-        return intent
+    fun saveEntryGroup() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val intent = Intent()
+            checkForUpdatedItems()
+            fixOrdering()
+
+            intent.putExtra(EntryBuilderViewModel.DEFINITION_CHANGES, definitionChanges)
+            intent.putExtra(EntryBuilderViewModel.GROUP_KEY, definitionGroup as Parcelable)
+            intent.putExtra(Constants.ITEM_PAYLOAD_KEY, action as Parcelable)
+            _uiEvent.emit(EntryGroupBuilderUiEvent.CloseBuilder(intent))
+        }
     }
 
     private fun checkForUpdatedItems() {
@@ -147,7 +170,7 @@ class EntryGroupViewModel : ViewModel() {
     // the user updates a newly created group. this is a problem because the setOrder
     // will not be reflected in definition changes. this method will fix that
     private fun fixOrdering() {
-        if (resultState == ItemState.UPDATE) {
+        if (action == ItemState.UPDATE) {
             for (def in definitionGroup.definitionData) {
                 if (definitionChanges.hasItemAdded(def.definition)) {
                     definitionChanges.putItemAdded(def.definition, def)

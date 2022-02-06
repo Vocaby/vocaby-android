@@ -19,11 +19,7 @@
     <string name="zero">0</string>
     <string name="nav_custom_entries">My Entries</string>
     <string name="add_dictionary_entry">New Entry</string>
-    <string name="update_dictionary_entry">Update Entry</string>
     <string name="definition_add_alert">You must add a definition</string>
-    <string name="definition_empty_alert">You must enter a definition</string>
-    <string name="definition_exists_alert">The definition already exists</string>
-    <string name="no_changes">No changes were made</string>
     <string name="example_header">Example</string>
     <string name="type_header_alert">Please select a type</string>
     <string name="definition_header_singular">Definition</string>
@@ -86,7 +82,6 @@
     <string name="wod_our_pick">Vocaby\'s Pick</string>
     <string name="wod_random_pick">Random Pick</string>
     <string name="entry_header">Entry</string>
-    <string name="group_header">Group Type</string>
     <string name="create_a_new_entry">Add a new entry</string>
     <string name="create_a_new_group">Add a new group</string>
     <string name="create_a_definition">Add a new definition</string>
@@ -154,5 +149,4 @@
     <string name="empty_collections">No Save Collections</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="remove_save">Remove Save</string>
-    <string name="default_custom_entry_count">- Entries</string>
 </resources>

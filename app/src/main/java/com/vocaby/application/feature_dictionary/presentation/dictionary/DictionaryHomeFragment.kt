@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter.formatDateToString
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 
