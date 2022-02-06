@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.CustomEntryUseCases
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
@@ -29,12 +30,13 @@ class MyEntryViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CustomEntryUiState>(CustomEntryUiState.InProgress)
     private val _uiEvent = MutableSharedFlow<CustomEntryUiEvent>()
 
+    private var currentUser: Int? = null
     private var realPosition: Int = -1
     private var entries: LinkedList<UserEntry> = LinkedList()
     private var filteredPosition: Int = -1
     private var filteredEntries: LinkedList<UserEntry> = LinkedList()
     private var isFilterDisplayed: Boolean = false
-    private var filterQuery: String = ""
+    private var filteredQuery: String = ""
 
     val uiState get() = _uiState.asStateFlow()
     val uiEvent get() = _uiEvent.asSharedFlow()
@@ -42,31 +44,47 @@ class MyEntryViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getCurrentUserUseCase().collect {
+                currentUser = it
                 entries = customEntryUseCases.getCustomEntriesUseCase(it)
-                _uiEvent.emit(CustomEntryUiEvent.ShowEntries(entries, getCount()))
+                _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
             }
         }
     }
 
-    // TODO: current implementation is inefficient
-    fun filterEntries(newQuery: String) {
-        viewModelScope.launch(Dispatchers.Default) {
-            if (newQuery.isEmpty()) {
-                filterQuery = ""
-                isFilterDisplayed = false
-                filteredEntries = LinkedList()
-                _uiEvent.emit(CustomEntryUiEvent.ShowEntries(entries, getCount()))
-            } else {
-                isFilterDisplayed = true
-                filteredEntries = LinkedList()
-                filterQuery = newQuery.lowercase()
-                for (entry in entries) {
-                    if (entry.entry.startsWith(filterQuery)) {
-                        filteredEntries.add(entry)
-                    }
-                }
+    private fun resetFilter() {
+        filteredQuery = ""
+        isFilterDisplayed = false
+        filteredEntries = LinkedList()
+    }
 
-                _uiEvent.emit(CustomEntryUiEvent.ShowEntries(filteredEntries, getCount()))
+    fun watchFilter(oldQuery: String, newQuery: String) {
+        viewModelScope.launch {
+            if (newQuery.isEmpty()) {
+                resetFilter()
+                _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
+            }
+        }
+    }
+
+    fun filterEntries(newQuery: String) {
+        val newFilter = newQuery.lowercase().trim()
+        if (filteredQuery != newFilter) {
+            _uiState.value = CustomEntryUiState.InProgress
+            viewModelScope.launch(Dispatchers.Default) {
+                if (newFilter.isEmpty()) {
+                    resetFilter()
+                    _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
+                } else {
+                    isFilterDisplayed = true
+                    currentUser?.let {
+                        filteredEntries = customEntryUseCases.filterCustomEntriesUseCase(it, newFilter)
+                    }
+
+                    Logger.reportToDebug(filteredEntries.hashCode().toString())
+
+                    filteredQuery = newFilter
+                    _uiState.value = CustomEntryUiState.UpdateEntries(filteredEntries, getCount())
+                }
             }
         }
     }
@@ -77,7 +95,7 @@ class MyEntryViewModel @Inject constructor(
         if (position != -1) {
             itemPayload.state = ItemState.UPDATE
             if (isFilterDisplayed) {
-                setRealPositionIfUnset(sanitizedEntry)
+                ensureRealPosition(sanitizedEntry)
                 filteredPosition = position
             } else {
                 realPosition = position
@@ -93,7 +111,7 @@ class MyEntryViewModel @Inject constructor(
             val payload: ItemEntryPayload? = result.data!!.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
             viewModelScope.launch {
                 payload?.let {
-                    val containsFilterQuery = payload.payload.entry.startsWith(filterQuery)
+                    val containsFilterQuery = payload.payload.entry.startsWith(filteredQuery)
                     val updateFilteredList = containsFilterQuery && isFilterDisplayed
 
                     if (payload.state == ItemState.ADD) {
@@ -132,7 +150,7 @@ class MyEntryViewModel @Inject constructor(
             customEntryUseCases.removeCustomEntryUseCase(sanitizedEntry)
             if (isFilterDisplayed) {
                 // user removed from filtered list
-                setRealPositionIfUnset(sanitizedEntry)
+                ensureRealPosition(sanitizedEntry)
                 filteredEntries.removeAt(position)
                 entries.removeAt(realPosition)
             } else {
@@ -180,16 +198,12 @@ class MyEntryViewModel @Inject constructor(
 
     fun clearUserEntries() {
         viewModelScope.launch {
-            val userId = getCurrentUserUseCase().first()
-            customEntryUseCases.removeUserEntriesUseCase(userId)
-            entries = LinkedList()
-            filteredEntries = LinkedList()
-            _uiEvent.emit(
-                CustomEntryUiEvent.ShowEntries(
-                    if (isFilterDisplayed) filteredEntries else entries,
-                    getCount()
-                )
-            )
+            currentUser?.let {
+                customEntryUseCases.removeUserEntriesUseCase(it)
+                entries = LinkedList()
+                filteredEntries = LinkedList()
+                _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
+            }
         }
     }
 
@@ -204,7 +218,7 @@ class MyEntryViewModel @Inject constructor(
         filteredPosition = -1
     }
 
-    private fun setRealPositionIfUnset(entry: String) {
+    private fun ensureRealPosition(entry: String) {
         if (realPosition == -1) {
             realPosition = entries.indexOfFirst { it.entry == entry }
         }

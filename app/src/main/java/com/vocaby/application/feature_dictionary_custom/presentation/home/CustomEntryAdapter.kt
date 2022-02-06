@@ -32,7 +32,7 @@ class CustomEntryAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is CustomEntryViewHolder -> holder.bind(customEntries[holder.adapterPosition])
+            is CustomEntryViewHolder -> holder.bind(customEntries[position])
         }
     }
 
@@ -75,7 +75,6 @@ class CustomEntryAdapter(
             moreButton.setOnClickListener {
                 interaction.onItemUpdate(userEntry.entry, adapterPosition)
             }
-
         }
     }
 

@@ -21,6 +21,10 @@ class CustomDictionaryRepositoryImpl constructor(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): CustomDictionaryRepository {
     override suspend fun replaceUser(newUserId: Int) = dao.replaceUser(newUserId)
+    override suspend fun filterUserEntries(userId: Int, prefix: String): LinkedList<UserEntry> {
+        val list = dao.filterUserEntries(userId, prefix)
+        return LinkedList(list)
+    }
 
     override suspend fun getUserEntries(userId: Int): LinkedList<UserEntry> = withContext(defaultDispatcher) {
         val list = dao.getUserEntries(userId)

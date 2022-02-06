@@ -21,13 +21,15 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.entry_builder.EntryBuilderActivity
+import com.vocaby.application.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.states.ItemState
 import com.vocaby.searchview.SearchView
+import com.vocaby.searchview.suggestions.model.SearchSuggestion
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-
+// TODO: Create custom swipe refresh layout for entry pagination
 @AndroidEntryPoint
 class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var entryCountView: TextView
@@ -59,6 +61,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         searchView = view.findViewById(R.id.vocaby_search)
         searchView.apply {
             setOnQueryChangeListener(queryChangeListener)
+            setOnSearchListener(searchListener)
         }
 
         setupButtons(view)
@@ -72,14 +75,21 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         super.onViewCreated(view, savedInstanceState)
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            // Just suspend on stop, do not unsubscribe onStop
+            // Just suspend and do not unsubscribe onStop
+            // onResume is called when coming back from entry builder,
+            // unnecessarily resubmitting the list
             launch {
                 entryViewModel.uiState.collect { state ->
                     when(state) {
                         is CustomEntryUiState.InProgress -> {
-                            entryCountView.text = getString(R.string.default_custom_entry_count)
                             fetchProgress.visibility = View.VISIBLE
                             emptyCard.visibility = View.INVISIBLE
+                        }
+                        is CustomEntryUiState.UpdateEntries -> {
+                            fetchProgress.visibility = View.INVISIBLE
+                            customEntryAdapter.submitList(state.entries)
+                            entryCountView.text = state.countText
+                            updateEmptyCardVisibility()
                         }
                         is CustomEntryUiState.UpdateCount -> {
                             fetchProgress.visibility = View.INVISIBLE
@@ -92,12 +102,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             launch {
                 entryViewModel.uiEvent.collect { event ->
                     when(event) {
-                        is CustomEntryUiEvent.ShowEntries -> {
-                            customEntryAdapter.submitList(event.entries)
-                            fetchProgress.visibility = View.INVISIBLE
-                            entryCountView.text = event.count
-                            updateEmptyCardVisibility()
-                        }
                         is CustomEntryUiEvent.ShowAlert -> {
                             entryAlert.text = event.message
                             entryAlert.visibility = View.VISIBLE
@@ -210,8 +214,14 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     private val queryChangeListener = object: SearchView.OnQueryChangeListener {
         override fun onSearchTextChanged(oldQuery: String, newQuery: String) {
-            recyclerView.smoothScrollToPosition(0)
-            entryViewModel.filterEntries(newQuery)
+            entryViewModel.watchFilter(oldQuery, newQuery)
+        }
+    }
+
+    private val searchListener = object: SearchView.OnSearchListener {
+        override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {  }
+        override fun onSearchAction(currentQuery: String) {
+            entryViewModel.filterEntries(currentQuery)
         }
     }
 

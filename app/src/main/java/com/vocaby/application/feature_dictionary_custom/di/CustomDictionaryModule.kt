@@ -30,6 +30,7 @@ class CustomDictionaryModule {
     ): CustomEntryUseCases {
         return CustomEntryUseCases(
             GetCustomEntriesUseCase(customDictionaryRepository),
+            FilterCustomEntriesUseCase(customDictionaryRepository),
             RemoveCustomEntryUseCase(customDictionaryRepository),
             ValidateCustomEntryUseCase(),
             RemoveUserEntriesUseCase(customDictionaryRepository)

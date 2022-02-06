@@ -21,6 +21,12 @@ interface CustomDictionaryDao {
     @Query("SELECT custom_entry_id FROM custom_user_entry WHERE user_id = :userId AND entry = :entry")
     suspend fun getUserEntryId(userId: Int, entry: String?): Int?
 
+    @Query(
+        "SELECT entry, last_updated FROM custom_user_entry WHERE user_id = :userId " +
+                "AND entry LIKE :prefix||'%' ORDER BY last_updated DESC"
+    )
+    suspend fun filterUserEntries(userId: Int, prefix: String): List<UserEntry>
+
     @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :userId")
     suspend fun getAllUserEntryData(userId: Int): List<EntryWithData>
