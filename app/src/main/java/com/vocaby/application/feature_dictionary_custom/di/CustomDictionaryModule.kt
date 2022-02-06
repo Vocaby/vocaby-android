@@ -1,6 +1,7 @@
 package com.vocaby.application.feature_dictionary_custom.di
 
 import com.vocaby.application.core.data.VocabyDatabase
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary_custom.data.CustomDictionaryRepositoryImpl
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.EntryBuilderUseCases
@@ -48,6 +49,25 @@ class CustomDictionaryModule {
         return EntryBuilderUseCases(
             GetCustomEntryUseCase(customDictionaryRepository),
             GetTypesUseCase(customDictionaryRepository)
+        )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideFactoryTypes(): List<Type> {
+        return listOf(
+            Type("noun", 0),
+            Type("verb", 1),
+            Type("adjective",2),
+            Type("adverb",3),
+            Type("idiom",4),
+            Type("proverb",5),
+            Type("phrase", 6),
+            Type("preposition",7),
+            Type("interjection",8),
+            Type("conjunction", 9),
+            Type("pronoun", 10),
         )
     }
 }

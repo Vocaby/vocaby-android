@@ -149,4 +149,10 @@
     <string name="empty_collections">No Save Collections</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="remove_save">Remove Save</string>
+    <string name="entry_type_management">Type Management</string>
+    <string name="add_type">Add type</string>
+    <string name="definition_group_type">Definition Group Type</string>
+    <string name="type_create_hint">Enter a type or part of speech…</string>
+    <string name="add_a_new_type">Add a new type</string>
+    <string name="reset_entry_types">Reset Entry Types</string>
 </resources>

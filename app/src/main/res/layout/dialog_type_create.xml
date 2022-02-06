@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/nav_header"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:text="@string/add_a_new_type"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/container_side_margin"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:id="@+id/entry_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/dark_gray"
+                android:labelFor="@+id/definition_edit"
+                android:text="@string/definition_group_type"
+                android:textSize="12sp"/>
+
+            <TextView
+                style="@style/Theme.VocabyAndroid.Alert"
+                android:id="@+id/entry_header_alert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/entry_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:hint="@string/type_create_hint"
+            android:importantForAutofill="no"
+            android:imeOptions="actionDone"
+            android:textColor="@color/black"
+            android:fontFamily="@font/sourcesanspro_regular"
+            android:background="@drawable/text_input_box"
+            android:textSize="14sp"
+            android:inputType="text"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/dialog_entry_create_button"
+            style="@style/Theme.VocabyAndroid.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/container_side_margin"
+            android:text="@string/create" />
+
+    </LinearLayout>
+</LinearLayout>

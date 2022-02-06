@@ -51,22 +51,4 @@ class MainModule {
             applicationDataStore
         )
     }
-
-    @Provides
-    @Singleton
-    fun provideAvailableTypes(): List<Type> {
-        return listOf(
-            Type("noun"),
-            Type("verb"),
-            Type("adjective"),
-            Type("adverb"),
-            Type("idiom"),
-            Type("proverb"),
-            Type("phrase"),
-            Type("preposition"),
-            Type("interjection"),
-            Type("conjunction"),
-            Type("pronoun"),
-        )
-    }
 }

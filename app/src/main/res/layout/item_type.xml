@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/type_card"
+    android:theme="@style/Theme.VocabyAndroid"
     android:layout_width="match_parent"
     android:layout_height="60dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,7 +9,6 @@
     app:cardCornerRadius="@dimen/radius"
     app:strokeColor="@color/light_gray"
     app:strokeWidth="1dp">
-
     <LinearLayout
         android:id="@+id/card_container"
         android:layout_width="match_parent"
@@ -15,13 +16,11 @@
         android:background="@color/white"
         android:orientation="horizontal"
         android:baselineAligned="false">
-
         <FrameLayout
             android:id="@+id/drag_handle"
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:background="@color/very_light_gray">
-
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -29,42 +28,19 @@
                 android:src="@drawable/ic_drag_handle"
                 android:contentDescription="@string/drag_icon" />
         </FrameLayout>
-
         <TextView
-            android:id="@+id/group_card_header"
-            android:layout_width="0dp"
+            android:id="@+id/type_card_header"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:paddingBottom="4dp"
             android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="@dimen/container_side_margin"
             android:layout_gravity="center_vertical"
             android:textAllCaps="true"
             android:textSize="18sp"
+            android:fontFamily="@font/playfairdisplay_bold"
             android:maxLines="1"
             android:ellipsize="end"
-            android:fontFamily="@font/playfairdisplay_bold"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/group_card_def_counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textSize="11sp"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/group_card_def_counter_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/definition_header_singular"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="18dp"
-            android:layout_gravity="center_vertical"
-            android:textSize="11sp"
-            android:fontFamily="@font/sourcesanspro_regular"
             android:textColor="@color/black" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

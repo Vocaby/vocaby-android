@@ -80,8 +80,6 @@ class MyEntryViewModel @Inject constructor(
                         filteredEntries = customEntryUseCases.filterCustomEntriesUseCase(it, newFilter)
                     }
 
-                    Logger.reportToDebug(filteredEntries.hashCode().toString())
-
                     filteredQuery = newFilter
                     _uiState.value = CustomEntryUiState.UpdateEntries(filteredEntries, getCount())
                 }

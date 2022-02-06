@@ -8,6 +8,8 @@ import androidx.room.PrimaryKey
 data class Type(
     @ColumnInfo(index = true)
     var type: String,
+    var order: Int,
+    var userDefined: Boolean = false,
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "type_id", index = true)
     var typeId: Int = 0

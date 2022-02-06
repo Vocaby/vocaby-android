@@ -24,7 +24,7 @@ class CustomGroupAdapter(
     private var dragStartListener: DragStartListener,
     private var itemInteractionListener: ItemInteractionListener
 ) : RecyclerView.Adapter<CustomGroupViewHolder>(), ItemTouchHelperAdapter {
-    private var groups: List<DefinitionGroupModel>
+    private var groups: List<DefinitionGroupModel> = ArrayList()
 
     interface ItemInteractionListener {
         fun onGroupCardClicked(position: Int)
@@ -102,11 +102,11 @@ class CustomGroupAdapter(
 
     class CustomGroupViewHolder(itemView: View, val ctx: Context) : RecyclerView.ViewHolder(itemView),
         ItemTouchHelperViewHolder {
-        private var groupHeader: TextView = itemView.findViewById(R.id.group_card_header)
-        private var definitionCounter: TextView = itemView.findViewById(R.id.group_card_def_counter)
-        private var definitionCounterHeader: TextView = itemView.findViewById(R.id.group_card_def_counter_header)
-        var dragHandle: FrameLayout = itemView.findViewById(R.id.drag_handle)
-        var container: View = itemView.findViewById(R.id.card_container)
+        private val groupHeader: TextView = itemView.findViewById(R.id.group_card_header)
+        private val definitionCounter: TextView = itemView.findViewById(R.id.group_card_def_counter)
+        private val definitionCounterHeader: TextView = itemView.findViewById(R.id.group_card_def_counter_header)
+        val dragHandle: FrameLayout = itemView.findViewById(R.id.drag_handle)
+        val container: View = itemView.findViewById(R.id.card_container)
 
         fun bind(header: String, count: Int) {
             groupHeader.text = header
@@ -131,9 +131,5 @@ class CustomGroupAdapter(
             (itemView as MaterialCardView).strokeColor = ctx.getColor(R.color.light_gray)
         }
 
-    }
-
-    init {
-        groups = ArrayList()
     }
 }

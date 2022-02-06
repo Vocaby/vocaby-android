@@ -22,10 +22,7 @@ import com.vocaby.application.payloads.ItemStringPayload
 import com.vocaby.application.states.ItemState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -74,16 +71,19 @@ class EntryBuilderViewModel @Inject constructor(
             // when the entryData id is -1, it's a new entry
             groupChanges.id = entryData.id
 
-            availableTypes = entryBuilderUseCases.getTypesUseCase()
             for (group in entryData.definitionGroups) {
                 val clone = DefinitionGroupModel(group)
                 initialGroups[clone.type] = clone
                 definitionChangesMap[clone.type] = ItemChangeState(clone.groupId)
-                availableTypes.remove(clone.type)
             }
 
             // In case user attempts to create a new entry but the entry already exists
             if (!entryData.isEmpty) actionPayload.state = ItemState.UPDATE
+
+            entryBuilderUseCases.getTypesUseCase().map { list -> list.map { it.type }.toMutableList() }.collect {
+                availableTypes = it
+                availableTypes.removeAll(entryData.definitionGroups.map {group -> group.type })
+            }
         }
     }
 

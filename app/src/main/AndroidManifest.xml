@@ -2,40 +2,46 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.vocaby.application">
-    <supports-screens android:smallScreens="false"
-        android:normalScreens="true"
+    <supports-screens
         android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="false"
         android:xlargeScreens="false" />
-    <uses-permission android:name="android.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.SET_ALARM" />
     <application
-        android:name="com.vocaby.application.core.VocabyApplication"
+        android:name=".core.VocabyApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="sensorPortrait"
         android:theme="@style/Theme.VocabyAndroid.Starting">
-        <meta-data android:name="com.bugsnag.android.API_KEY"
-            android:value="c50224dde34b12f79fe666d9b1b80910"/>
         <activity
-            android:theme="@style/Theme.VocabyAndroid"
-            android:name="com.vocaby.application.feature_datatransfer.presentation.DataTransferActivity"
-            android:exported="false" />
+            android:name=".feature_dictionary_custom.presentation.type.TypeManagementActivity"
+            android:exported="false"
+            android:theme="@style/Theme.VocabyAndroid"/>
+
         <activity
-            android:theme="@style/Theme.VocabyAndroid"
-            android:name="com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity"
-            android:exported="true" />
+            android:name=".feature_datatransfer.presentation.DataTransferActivity"
+            android:exported="false"
+            android:theme="@style/Theme.VocabyAndroid" />
+
         <activity
-            android:theme="@style/Theme.VocabyAndroid"
-            android:name="com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity"
-            android:exported="true" />
+            android:name=".feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity"
+            android:exported="true"
+            android:theme="@style/Theme.VocabyAndroid" />
         <activity
-            android:name="com.vocaby.application.core.presentation.MainActivity"
+            android:name=".feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity"
+            android:exported="true"
+            android:theme="@style/Theme.VocabyAndroid" />
+        <activity
+            android:name=".core.presentation.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -43,11 +49,16 @@
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="c50224dde34b12f79fe666d9b1b80910" />
+
         <receiver
-            android:name="com.vocaby.application.feature_save.widget.SavesAppWidgetProvider"
+            android:name=".feature_save.widget.SavesAppWidgetProvider"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -58,10 +69,10 @@
                 android:resource="@xml/saves_appwidget_info" />
         </receiver>
         <receiver
-            android:name="com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver"
+            android:name=".feature_profile.presentation.setting.receivers.NotificationReceiver"
             android:enabled="true" />
         <receiver
-            android:name="com.vocaby.application.feature_profile.presentation.setting.receivers.BootReceiver"
+            android:name=".feature_profile.presentation.setting.receivers.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

@@ -61,6 +61,7 @@
             android:layout_weight="1" />
 
         <com.google.android.material.button.MaterialButton
+            android:theme="@style/Theme.VocabyAndroid"
             android:id="@+id/chart_toggle_button"
             style="@style/Theme.VocabyAndroid.MaterialToggleButton"
             android:layout_width="wrap_content"
@@ -79,7 +80,7 @@
             app:iconTint="@color/colorPrimary"
             app:rippleColor="@color/colorSecondary"
             app:strokeColor="@color/colorPrimary"
-            tools:ignore="TouchTargetSizeCheck" />
+            tools:ignore="SmallSp,TouchTargetSizeCheck" />
     </LinearLayout>
     <include layout="@layout/chart_placeholder" />
     <LinearLayout
@@ -171,6 +172,13 @@
         android:text="@string/nav_support"
         android:drawableStart="@drawable/ic_boxed_support"
         android:drawableEnd="@drawable/ic_chevron_right"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/type_management_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/entry_type_management"
+        android:drawableStart="@drawable/ic_boxed_type_management" />
     <Space
         android:layout_width="wrap_content"
         android:layout_height="0dp"

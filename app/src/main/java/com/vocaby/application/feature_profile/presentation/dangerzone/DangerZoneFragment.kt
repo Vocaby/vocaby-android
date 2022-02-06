@@ -11,6 +11,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.home.MyEntryViewModel
+import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementViewModel
 import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
 import com.vocaby.application.feature_save.presentation.save.SaveViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,7 @@ class DangerZoneFragment : Fragment() {
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
     private val myEntryViewModel: MyEntryViewModel by activityViewModels()
     private val profileViewModel: ProfileViewModel by activityViewModels()
+    private val typeManagementViewModel: TypeManagementViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +68,14 @@ class DangerZoneFragment : Fragment() {
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
+        val resetEntryTypesButton = view.findViewById<Button>(R.id.reset_entry_type_button)
+        resetEntryTypesButton.setOnClickListener {
+            builder.setTitle("Are you sure you wish to reset?")
+                .setMessage("This action will revert your entry types to factory data")
+                .setPositiveButton("RESET") { _, _ -> typeManagementViewModel.resetTypes() }
+                .setNegativeButton("CANCEL", null).create().show()
+        }
+
         val eraseDataButton = view.findViewById<Button>(R.id.erase_data_button)
         eraseDataButton.setOnClickListener {
             builder.setTitle("Are you sure you wish to erase all of your data?")
@@ -75,6 +85,7 @@ class DangerZoneFragment : Fragment() {
                     saveViewModel.clearSaves()
                     dictionaryViewModel.clearHistory()
                     myEntryViewModel.clearUserEntries()
+                    typeManagementViewModel.resetTypes()
                     profileViewModel.eraseChartData()
                 }.setNegativeButton("CANCEL", null).create().show()
         }

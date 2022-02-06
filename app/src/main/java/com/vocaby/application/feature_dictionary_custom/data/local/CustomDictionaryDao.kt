@@ -7,6 +7,7 @@ import com.vocaby.application.feature_dictionary_custom.data.local.entity.Custom
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntryGroup
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.EntryWithData
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CustomDictionaryDao {
@@ -73,6 +74,18 @@ interface CustomDictionaryDao {
     @Insert
     fun insertTypes(vararg types: Type)
 
-    @Query("SELECT type from entry_type")
-    suspend fun getTypes(): List<String>
+    @Insert
+    suspend fun insertTypes(types: List<Type>)
+
+    @Delete
+    suspend fun removeTypes(types: List<Type>)
+
+    @Update
+    suspend fun updateTypes(types: List<Type>)
+
+    @Query("SELECT * from entry_type ORDER BY `order` ASC")
+    fun getTypes(): Flow<List<Type>>
+
+    @Query("DELETE FROM entry_type")
+    suspend fun clearTypes()
 }

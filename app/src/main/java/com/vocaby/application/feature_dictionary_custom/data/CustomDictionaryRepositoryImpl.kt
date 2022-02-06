@@ -1,5 +1,6 @@
 package com.vocaby.application.feature_dictionary_custom.data
 
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
@@ -13,6 +14,7 @@ import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -269,5 +271,9 @@ class CustomDictionaryRepositoryImpl constructor(
         }
     }
 
-    override suspend fun getTypes(): List<String> = dao.getTypes()
+    override suspend fun insertTypes(types: List<Type>) = dao.insertTypes(types)
+    override suspend fun removeTypes(types: List<Type>) = dao.removeTypes(types)
+    override suspend fun updateTypes(types: List<Type>) = dao.updateTypes(types)
+    override suspend fun clearTypes() = dao.clearTypes()
+    override fun getTypes(): Flow<List<Type>> = dao.getTypes()
 }

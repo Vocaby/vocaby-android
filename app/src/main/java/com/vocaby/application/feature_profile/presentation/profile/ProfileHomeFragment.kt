@@ -1,6 +1,7 @@
 package com.vocaby.application.feature_profile.presentation.profile
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -31,6 +32,7 @@ import com.vocaby.application.feature_profile.presentation.setting.SettingViewMo
 import com.vocaby.application.feature_profile.util.AxisValueFormatter
 import com.vocaby.application.feature_support.presentation.SupportFragment
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -193,6 +195,12 @@ class ProfileHomeFragment : Fragment() {
                 ).add(R.id.profile_fragment_container, SettingFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        val typeManagementButton = view.findViewById<Button>(R.id.type_management_button)
+        typeManagementButton.setOnClickListener {
+            val intent = Intent(requireActivity(), TypeManagementActivity::class.java)
+            startActivity(intent)
         }
 
         // DATA TRANSFER

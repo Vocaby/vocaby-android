@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a4efeb89fb312865d26fe6e4ca1f201b",
+    "identityHash": "2226311e085d0f4cd26eb20fabae8b73",
     "entities": [
       {
         "tableName": "vocaby_user",
@@ -284,12 +284,24 @@
       },
       {
         "tableName": "entry_type",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`type` TEXT NOT NULL, `type_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`type` TEXT NOT NULL, `order` INTEGER NOT NULL, `userDefined` INTEGER NOT NULL, `type_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "type",
             "columnName": "type",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDefined",
+            "columnName": "userDefined",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -808,7 +820,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a4efeb89fb312865d26fe6e4ca1f201b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2226311e085d0f4cd26eb20fabae8b73')"
     ]
   }
 }
