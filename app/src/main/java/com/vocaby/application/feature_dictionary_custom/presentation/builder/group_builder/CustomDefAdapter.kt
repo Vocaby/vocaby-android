@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.entry_builder
+package com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -16,7 +16,7 @@ import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchHelperAdapter
 import com.vocaby.application.core.util.ItemTouchHelperViewHolder
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
-import com.vocaby.application.feature_dictionary_custom.presentation.entry_builder.CustomDefAdapter.CustomDefViewHolder
+import com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder.CustomDefAdapter.CustomDefViewHolder
 import java.util.*
 
 class CustomDefAdapter(

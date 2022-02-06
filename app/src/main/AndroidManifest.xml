@@ -28,11 +28,11 @@
             android:exported="false" />
         <activity
             android:theme="@style/Theme.VocabyAndroid"
-            android:name="com.vocaby.application.feature_dictionary_custom.presentation.entry_builder.EntryGroupBuilderActivity"
+            android:name="com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity"
             android:exported="true" />
         <activity
             android:theme="@style/Theme.VocabyAndroid"
-            android:name="com.vocaby.application.feature_dictionary_custom.presentation.entry_builder.EntryBuilderActivity"
+            android:name="com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity"
             android:exported="true" />
         <activity
             android:name="com.vocaby.application.core.presentation.MainActivity"

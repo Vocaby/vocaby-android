@@ -3,7 +3,10 @@ package com.vocaby.application.feature_dictionary_custom.di
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.feature_dictionary_custom.data.CustomDictionaryRepositoryImpl
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
-import com.vocaby.application.feature_dictionary_custom.domain.use_case.*
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.EntryBuilderUseCases
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.GetCustomEntryUseCase
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.GetTypesUseCase
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,6 +37,17 @@ class CustomDictionaryModule {
             RemoveCustomEntryUseCase(customDictionaryRepository),
             ValidateCustomEntryUseCase(),
             RemoveUserEntriesUseCase(customDictionaryRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEntryBuilderUseCases(
+        customDictionaryRepository: CustomDictionaryRepository
+    ): EntryBuilderUseCases {
+        return EntryBuilderUseCases(
+            GetCustomEntryUseCase(customDictionaryRepository),
+            GetTypesUseCase(customDictionaryRepository)
         )
     }
 }

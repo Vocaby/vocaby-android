@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.entry_builder
+package com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder
 
 import android.content.Intent
 import android.os.Bundle

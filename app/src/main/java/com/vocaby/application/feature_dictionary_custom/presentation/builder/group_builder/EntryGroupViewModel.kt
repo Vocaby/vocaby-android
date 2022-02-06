@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.presentation.entry_builder
+package com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder
 
 import android.content.Intent
 import android.os.Parcelable
@@ -9,6 +9,7 @@ import com.vocaby.application.core.util.SingleLiveEvent
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
+import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderViewModel
 import com.vocaby.application.payloads.ItemIntPayload
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
@@ -30,18 +31,18 @@ class EntryGroupViewModel : ViewModel() {
     val definitionState: LiveData<ItemIntPayload> get() = _definitionsState
 
     fun handleIntent(receivedIntent: Intent) {
-        definitionGroup = receivedIntent.getParcelableExtra(EntryViewModel.GROUP_KEY)!!
+        definitionGroup = receivedIntent.getParcelableExtra(EntryBuilderViewModel.GROUP_KEY)!!
         _definitions.value = definitionGroup.definitionData
         _type.value = definitionGroup.type
 
         val initGroup: DefinitionGroupModel =
-            receivedIntent.getParcelableExtra(EntryViewModel.INITIAL_DEFINITIONS_KEY)!!
+            receivedIntent.getParcelableExtra(EntryBuilderViewModel.INITIAL_DEFINITIONS_KEY)!!
 
         for (def in initGroup.definitionData) {
             initialDefinitions[def.definition] = def
         }
 
-        definitionChanges = receivedIntent.getParcelableExtra(EntryViewModel.DEFINITION_CHANGES)!!
+        definitionChanges = receivedIntent.getParcelableExtra(EntryBuilderViewModel.DEFINITION_CHANGES)!!
         resultState = receivedIntent.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
     }
 
@@ -115,8 +116,8 @@ class EntryGroupViewModel : ViewModel() {
     fun addSaveDataToIntent(intent: Intent): Intent {
         checkForUpdatedItems()
         fixOrdering()
-        intent.putExtra(EntryViewModel.DEFINITION_CHANGES, definitionChanges)
-        intent.putExtra(EntryViewModel.GROUP_KEY, definitionGroup as Parcelable)
+        intent.putExtra(EntryBuilderViewModel.DEFINITION_CHANGES, definitionChanges)
+        intent.putExtra(EntryBuilderViewModel.GROUP_KEY, definitionGroup as Parcelable)
         intent.putExtra(Constants.ITEM_PAYLOAD_KEY, resultState as Parcelable)
         return intent
     }

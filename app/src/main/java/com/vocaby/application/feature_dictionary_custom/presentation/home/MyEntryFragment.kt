@@ -20,8 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
-import com.vocaby.application.feature_dictionary_custom.presentation.entry_builder.EntryBuilderActivity
-import com.vocaby.application.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.states.ItemState
 import com.vocaby.searchview.SearchView
 import com.vocaby.searchview.suggestions.model.SearchSuggestion
@@ -228,7 +227,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private fun openEditor(entry: String, position: Int = -1) {
         var startEntryBuilderIntent = Intent(requireActivity(), EntryBuilderActivity::class.java)
         startEntryBuilderIntent =
-            entryViewModel.addEntryDataToIntent(startEntryBuilderIntent, entry, position)
+            entryViewModel.addEntryDataToIntentForBuilder(startEntryBuilderIntent, entry, position)
         entryBuilderActivity.launch(startEntryBuilderIntent)
     }
 

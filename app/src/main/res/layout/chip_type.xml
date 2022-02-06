@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.chip.Chip
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/Theme.VocabyAndroid"
+    style="@style/Widget.VocabyAndroid.Chip.Choice"
+    android:clickable="true"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:maxLines="1"
+    android:ellipsize="end"
+    android:textAllCaps="true"
+    app:chipIconEnabled="true"
+    app:checkedIconEnabled="true"
+    app:chipIcon="@drawable/chip_icon_unselected"
+    app:checkedIcon="@drawable/chip_icon_selected"
+    app:chipMinTouchTargetSize="0dp"
+    app:chipCornerRadius="0dp"
+    app:chipStartPadding="@dimen/container_side_margin"
+    app:chipEndPadding="@dimen/container_side_margin"
+    app:chipStrokeWidth="0dp"
+    app:chipStrokeColor="@color/chip_stroke_colors"
+    app:chipBackgroundColor="@color/chip_backgroud"
+    android:textColor="@color/chip_text_colors" />

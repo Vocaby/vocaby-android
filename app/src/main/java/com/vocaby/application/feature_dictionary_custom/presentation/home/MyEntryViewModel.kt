@@ -9,7 +9,7 @@ import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
-import com.vocaby.application.feature_dictionary_custom.domain.use_case.CustomEntryUseCases
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.CustomEntryUseCases
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import com.vocaby.application.payloads.ItemEntryPayload
 import com.vocaby.application.payloads.ItemStringPayload
@@ -87,23 +87,6 @@ class MyEntryViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun addEntryDataToIntent(intent: Intent, sanitizedEntry: String, position: Int): Intent {
-        val itemPayload = ItemStringPayload(sanitizedEntry, ItemState.ADD)
-
-        if (position != -1) {
-            itemPayload.state = ItemState.UPDATE
-            if (isFilterDisplayed) {
-                ensureRealPosition(sanitizedEntry)
-                filteredPosition = position
-            } else {
-                realPosition = position
-            }
-        }
-
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, itemPayload)
-        return intent
     }
 
     fun handleResult(result: ActivityResult) {
@@ -194,6 +177,23 @@ class MyEntryViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun addEntryDataToIntentForBuilder(intent: Intent, sanitizedEntry: String, position: Int): Intent {
+        val itemPayload = ItemStringPayload(sanitizedEntry, ItemState.ADD)
+
+        if (position != -1) {
+            itemPayload.state = ItemState.UPDATE
+            if (isFilterDisplayed) {
+                ensureRealPosition(sanitizedEntry)
+                filteredPosition = position
+            } else {
+                realPosition = position
+            }
+        }
+
+        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, itemPayload)
+        return intent
     }
 
     fun clearUserEntries() {

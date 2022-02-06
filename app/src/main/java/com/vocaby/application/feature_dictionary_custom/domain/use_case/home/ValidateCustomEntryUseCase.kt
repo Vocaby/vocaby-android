@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary_custom.domain.use_case
+package com.vocaby.application.feature_dictionary_custom.domain.use_case.home
 
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry

@@ -5,8 +5,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "entry_type")
-class Type(var type: String) {
+data class Type(
+    @ColumnInfo(index = true)
+    var type: String,
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "type_id")
-    var typeId = 0
-}
+    @ColumnInfo(name = "type_id", index = true)
+    var typeId: Int = 0
+)
