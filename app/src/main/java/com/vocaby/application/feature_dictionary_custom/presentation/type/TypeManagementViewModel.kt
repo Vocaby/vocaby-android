@@ -1,6 +1,5 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.type
 
-import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
@@ -102,9 +101,12 @@ class TypeManagementViewModel @Inject constructor(
         viewModelScope.launch {
             fixOrdering()
             checkForUpdatedItems()
-            modifyTypesUseCase(typeChangeState)
-            val resultData = Intent().putParcelableArrayListExtra(RESULT_DATA, ArrayList(_typeState.value))
-            _uiEvent.emit(TypeUiEvent.CloseEditor(resultData))
+            val hasChanges = typeChangeState.hasChanges()
+            if (hasChanges) {
+                modifyTypesUseCase(typeChangeState)
+            }
+
+            _uiEvent.emit(TypeUiEvent.CloseEditor(hasChanges))
         }
     }
 

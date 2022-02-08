@@ -45,10 +45,14 @@ class TypeManagementActivity : AppCompatActivity(), DragStartListener, TypeAdapt
         progressBar = findViewById(R.id.save_progress_bar)
 
         val closeButton = findViewById<Button>(R.id.back_button)
-        closeButton.setOnClickListener { finish() }
+        closeButton.setOnClickListener {
+            setResult(RESULT_CANCELED)
+            finish()
+        }
+
         saveButton.setOnClickListener {
-            // saveButton.isEnabled = false
-            // progressBar.visibility = View.VISIBLE
+             saveButton.isEnabled = false
+             progressBar.visibility = View.VISIBLE
             typeManagementViewModel.save()
         }
 
@@ -70,10 +74,6 @@ class TypeManagementActivity : AppCompatActivity(), DragStartListener, TypeAdapt
                             typeCreationAlert.visibility = View.VISIBLE
                             createButton.isEnabled = true
                         }
-                        is TypeUiEvent.CloseDialog -> {
-                            setResult(RESULT_CANCELED)
-                            if (typeCreationDialog.isShowing) typeCreationDialog.dismiss()
-                        }
                         is TypeUiEvent.UpdateAdapter -> {
                             when (event.state) {
                                 ItemState.DELETE -> {
@@ -89,7 +89,8 @@ class TypeManagementActivity : AppCompatActivity(), DragStartListener, TypeAdapt
                             typeCreationDialog.dismiss()
                         }
                         is TypeUiEvent.CloseEditor -> {
-                            setResult(RESULT_OK, event.resultData)
+                            if (event.hasChanges) setResult(RESULT_OK)
+                            else setResult(RESULT_CANCELED)
                             finish()
                         }
                     }

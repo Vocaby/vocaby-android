@@ -98,7 +98,6 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                 }
                 is EntryBuilderUiEvent.ShowTypeSelectionDialog -> {
                     val dialogFragment = EntryBuilderGroupDialogFragment.newInstance(event.types)
-
                     dialogFragment.show(supportFragmentManager, SearchCollectionDialogFragment.TAG)
                 }
                 is EntryBuilderUiEvent.CloseBuilder -> {
@@ -109,6 +108,12 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                     setResult(RESULT_CANCELED)
                     finish()
                 }
+                is EntryBuilderUiEvent.OpenGroupBuilder -> {
+                    var groupBuilderActivityData = Intent(this, EntryGroupBuilderActivity::class.java)
+                    groupBuilderActivityData =
+                        entryBuilderViewModel.addNewGroupDataToIntent(groupBuilderActivityData, event.selectedType)
+                    groupBuilderActivity.launch(groupBuilderActivityData)
+                }
             }
         }
     }
@@ -117,16 +122,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         supportFragmentManager.setFragmentResultListener(
             EntryBuilderGroupDialogFragment.TAG,
             this
-        ) { _, bundle ->
-            val selectedType = bundle.getString(EntryBuilderGroupDialogFragment.SELECTED_TYPE)
-            selectedType?.let {
-                var groupBuilderActivityData =
-                    Intent(this, EntryGroupBuilderActivity::class.java)
-                groupBuilderActivityData =
-                    entryBuilderViewModel.addNewGroupDataToIntent(groupBuilderActivityData, selectedType)
-                groupBuilderActivity.launch(groupBuilderActivityData)
-            }
-        }
+        ) { _, bundle -> entryBuilderViewModel.handleDialogResult(bundle) }
     }
 
     private fun setupRecyclerView() {

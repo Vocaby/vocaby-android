@@ -8,13 +8,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.core.os.bundleOf
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.chip.Chip
 import com.vocaby.application.R
-import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.vocabywidgets.ChipGroup
@@ -34,6 +35,7 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
         const val TAG = "EntryBuilderGroupDialogFragment"
         const val AVAILABLE_TYPES = "AVAILABLE_TYPES"
         const val SELECTED_TYPE = "SELECTED_TYPE"
+        const val TYPES_CHANGED = "TYPES_CHANGED"
 
         @JvmStatic
         fun newInstance(
@@ -65,11 +67,10 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
 
         typeManagementButton.setOnClickListener {
             val intent = Intent(requireActivity(), TypeManagementActivity::class.java)
-            startActivity(intent)
-            dismiss()
+            typeManagementActivity.launch(intent)
         }
 
-        launchAndRepeatWithViewLifecycle {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             launch {
                 viewModel.uiState.collect { state ->
                     when (state) {
@@ -101,8 +102,15 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
                             groupAlert.visibility = View.VISIBLE
                         }
                         is DialogUiEvent.CloseDialog -> {
-                            val selectedType = chipGroup.findViewById<Chip>(chipGroup.checkedChipId).text
-                            setFragmentResult(TAG, bundleOf(SELECTED_TYPE to selectedType))
+                            val bundle = Bundle()
+                            if (event.selected) {
+                                val selectedType = chipGroup.findViewById<Chip>(chipGroup.checkedChipId).text.toString()
+                                bundle.putString(SELECTED_TYPE, selectedType)
+                            }
+
+                            bundle.putBoolean(TYPES_CHANGED, event.typesChanged)
+
+                            setFragmentResult(TAG, bundle)
                             dismiss()
                         }
                     }
@@ -111,5 +119,9 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
         }
 
         return view
+    }
+
+    private val typeManagementActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result: ActivityResult -> viewModel.handleResult(result)
     }
 }

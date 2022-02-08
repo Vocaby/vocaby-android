@@ -2,6 +2,7 @@ package com.vocaby.application.feature_dictionary_custom.presentation.builder.en
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.SavedStateHandle
@@ -82,12 +83,32 @@ class EntryBuilderViewModel @Inject constructor(
             // In case user attempts to create a new entry but the entry already exists
             if (!entryData.isEmpty) actionPayload.state = ItemState.UPDATE
 
-            entryBuilderUseCases.getTypesUseCase().collect { list ->
-                initTypes = list.associateBy { it.type }
-                availableTypes =ArrayList(
-                    list.filter { entryData.definitionGroups.none { group -> group.type == it.type } }
-                )
+            calculateAvailableTypes()
+        }
+    }
+
+    fun handleDialogResult(bundle: Bundle) {
+        val selectedType = bundle.getString(EntryBuilderGroupDialogFragment.SELECTED_TYPE)
+        val typesModified = bundle.getBoolean(EntryBuilderGroupDialogFragment.TYPES_CHANGED)
+
+        viewModelScope.launch {
+            if (selectedType != null) {
+                _uiEvent.emit(EntryBuilderUiEvent.OpenGroupBuilder(selectedType))
+            } else {
+                if (typesModified) {
+                    calculateAvailableTypes()
+                }
             }
+        }
+    }
+
+    private fun calculateAvailableTypes() {
+        viewModelScope.launch {
+            val list = entryBuilderUseCases.getTypesUseCase().first()
+            initTypes = list.associateBy { it.type }
+            availableTypes = ArrayList(
+                list.filter { entryData.definitionGroups.none { group -> group.type == it.type } }
+            )
         }
     }
 

@@ -11,5 +11,6 @@ sealed class EntryBuilderUiEvent {
     ): EntryBuilderUiEvent()
     data class UpdateAdapter(val position: Int, val state: ItemState): EntryBuilderUiEvent()
     data class CloseBuilder(val resultData: Intent): EntryBuilderUiEvent()
+    data class OpenGroupBuilder(val selectedType: String): EntryBuilderUiEvent()
     object CancelBuilder: EntryBuilderUiEvent()
 }

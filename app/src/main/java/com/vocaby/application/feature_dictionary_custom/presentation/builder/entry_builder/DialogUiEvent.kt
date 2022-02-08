@@ -2,5 +2,5 @@ package com.vocaby.application.feature_dictionary_custom.presentation.builder.en
 
 sealed class DialogUiEvent {
     object ShowAlert: DialogUiEvent()
-    object CloseDialog: DialogUiEvent()
+    data class CloseDialog(val selected: Boolean, val typesChanged: Boolean = false): DialogUiEvent()
 }
