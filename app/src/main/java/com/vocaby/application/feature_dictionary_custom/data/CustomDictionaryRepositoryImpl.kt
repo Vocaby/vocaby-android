@@ -243,19 +243,19 @@ class CustomDictionaryRepositoryImpl constructor(
             val groups: MutableList<DefinitionGroupModel> = ArrayList()
             for (group in data.groups) {
                 val groupModel = DefinitionGroupModel(
-                    group.entryGroup.groupId,
                     group.entryGroup.type,
-                    group.entryGroup.order
+                    group.entryGroup.order,
+                    group.entryGroup.groupId
                 )
 
                 val definitions: MutableList<DefinitionModel> = ArrayList()
                 for (definitionData in group.definitions) {
                     val definitionModel = DefinitionModel(
-                        definitionData.definitionId,
                         group.entryGroup.type,
                         definitionData.definition,
                         definitionData.example,
-                        definitionData.order
+                        definitionData.order,
+                        definitionData.definitionId
                     )
                     definitions.add(definitionModel)
                 }

@@ -71,10 +71,10 @@ interface CustomDictionaryDao {
     suspend fun updateCustomDefinitions(customDefinitions: List<CustomDefinition>)
 
     /** --------------------- TYPES -------------------- **/
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertTypes(vararg types: Type)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTypes(types: List<Type>)
 
     @Delete

@@ -1,10 +1,12 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -13,6 +15,8 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.chip.Chip
 import com.vocaby.application.R
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
+import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.vocabywidgets.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -24,6 +28,7 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
     private lateinit var groupAlert: TextView
     private lateinit var addGroupButton: Button
     private lateinit var chipGroup: ChipGroup
+    private lateinit var typeManagementButton: ImageButton
 
     companion object {
         const val TAG = "EntryBuilderGroupDialogFragment"
@@ -32,11 +37,11 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
 
         @JvmStatic
         fun newInstance(
-            types: ArrayList<String>
+            types: ArrayList<Type>
         ): EntryBuilderGroupDialogFragment {
             val fragment = EntryBuilderGroupDialogFragment()
             val args = Bundle()
-            args.putStringArrayList(AVAILABLE_TYPES, types)
+            args.putParcelableArrayList(AVAILABLE_TYPES, types)
             fragment.arguments = args
 
             return fragment
@@ -52,9 +57,16 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
         chipGroup = view.findViewById(R.id.types_chip_group)
         addGroupButton = view.findViewById(R.id.create_group_button)
         groupAlert = view.findViewById(R.id.type_creator_alert)
+        typeManagementButton = view.findViewById(R.id.type_management_button)
 
         addGroupButton.setOnClickListener {
             viewModel.validate(chipGroup.checkedChipId)
+        }
+
+        typeManagementButton.setOnClickListener {
+            val intent = Intent(requireActivity(), TypeManagementActivity::class.java)
+            startActivity(intent)
+            dismiss()
         }
 
         launchAndRepeatWithViewLifecycle {
@@ -62,14 +74,15 @@ class EntryBuilderGroupDialogFragment: DialogFragment() {
                 viewModel.uiState.collect { state ->
                     when (state) {
                         is DialogUiState.UpdateUi -> {
-                            for (type in state.types) {
+                            chipGroup.removeAllViews()
+                            for (typeModel in state.types) {
                                 val chip = layoutInflater.inflate(
                                     R.layout.chip_type,
                                     chipGroup,
                                     false
                                 ) as Chip
 
-                                chip.text = type
+                                chip.text = typeModel.type
                                 chipGroup.addView(chip)
                             }
                         }

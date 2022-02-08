@@ -1,10 +1,12 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder
 
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
+
 
 sealed class DialogUiState {
     object InProgress: DialogUiState()
     object ShowAlert: DialogUiState()
     data class UpdateUi(
-        val types: List<String>
+        val types: List<Type>
     ): DialogUiState()
 }

@@ -105,4 +105,9 @@ open class ItemChangeState<T> (
         return itemsUpdated.isNotEmpty() || itemsAdded.isNotEmpty() || itemsDeleted.isNotEmpty()
     }
 
+    override fun toString(): String {
+        return "Items Added: $itemsAdded \n" +
+                "Items Removed: $itemsDeleted \n" +
+                "Items Updated: $itemsUpdated"
+    }
 }

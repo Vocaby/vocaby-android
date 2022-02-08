@@ -1,13 +1,14 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.type
 
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.GetTypesUseCase
-import com.vocaby.application.feature_dictionary_custom.domain.use_case.type.CreateTypeUseCase
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.type.ModifyTypesUseCase
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.type.ResetTypesUseCase
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.type.ValidateTypeUseCase
 import com.vocaby.application.states.ItemState
 import com.vocaby.application.states.UserInputState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +21,7 @@ import javax.inject.Inject
 class TypeManagementViewModel @Inject constructor(
     private val resetTypesUseCase: ResetTypesUseCase,
     private val getTypesUseCase: GetTypesUseCase,
-    private val createTypeUseCase: CreateTypeUseCase,
+    private val validateTypeUseCase: ValidateTypeUseCase,
     private val modifyTypesUseCase: ModifyTypesUseCase
 ) : ViewModel() {
     private var initTypes: HashMap<String, Type> = HashMap()
@@ -31,6 +32,10 @@ class TypeManagementViewModel @Inject constructor(
 
     val typeState get() = _typeState.asStateFlow()
     val uiEvent get() = _uiEvent.asSharedFlow()
+
+    companion object {
+        const val RESULT_DATA = "TYPE_MANAGEMENT_RESULT"
+    }
 
     init {
         viewModelScope.launch {
@@ -48,7 +53,7 @@ class TypeManagementViewModel @Inject constructor(
 
     fun createType(type: String) {
         viewModelScope.launch {
-            when(val state = createTypeUseCase(type, _typeState.value)) {
+            when(val state = validateTypeUseCase(type, _typeState.value)) {
                 is UserInputState.EmptyInput -> {
                     _uiEvent.emit(TypeUiEvent.ShowAlert("Please enter a type"))
                 }
@@ -59,22 +64,19 @@ class TypeManagementViewModel @Inject constructor(
                     _uiEvent.emit(TypeUiEvent.ShowAlert("This type already exists"))
                 }
                 is UserInputState.Valid<*> -> {
-                    val newType: Type
                     val sanitized = state.data as String
+                    var typeToAdd = initTypes[sanitized]
 
-                    if (typeChangeState.hasItemDeleted(sanitized)) {
-                        // Must be one of existing types
-                        newType = typeChangeState.getItemDeleted(sanitized)!!
-                        newType.order = 0
-
-                        typeChangeState.removeItemDeleted(newType.type)
-                        typeChangeState.putItemUpdated(newType.type, newType)
+                    if (typeToAdd != null) {
+                        typeToAdd = Type(typeToAdd.type, 0, typeId = typeToAdd.typeId)
+                        typeChangeState.removeItemDeleted(typeToAdd.type)
+                        typeChangeState.putItemUpdated(typeToAdd.type, typeToAdd)
                     } else {
-                        newType = Type(sanitized, 0, true)
-                        typeChangeState.addItem(newType.type, newType)
+                        typeToAdd = Type(sanitized, 0, true)
+                        typeChangeState.addItem(typeToAdd.type, typeToAdd)
                     }
 
-                    _typeState.value.add(0, newType)
+                    _typeState.value.add(0, typeToAdd)
                     _typeState.value.forEachIndexed{ i, typeModel -> typeModel.order = i}
                     _uiEvent.emit(TypeUiEvent.UpdateAdapter(0, ItemState.ADD))
                 }
@@ -101,7 +103,8 @@ class TypeManagementViewModel @Inject constructor(
             fixOrdering()
             checkForUpdatedItems()
             modifyTypesUseCase(typeChangeState)
-            _uiEvent.emit(TypeUiEvent.CloseEditor)
+            val resultData = Intent().putParcelableArrayListExtra(RESULT_DATA, ArrayList(_typeState.value))
+            _uiEvent.emit(TypeUiEvent.CloseEditor(resultData))
         }
     }
 

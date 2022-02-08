@@ -4,6 +4,7 @@ import android.view.View
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,7 @@ class EntryBuilderDialogViewModel @Inject constructor(
 ): ViewModel() {
     private var _dialogUiState = MutableStateFlow<DialogUiState>(DialogUiState.InProgress)
     private var _dialogUiEvent = MutableSharedFlow<DialogUiEvent>()
-    private val types: ArrayList<String> = savedStateHandle.get(EntryBuilderGroupDialogFragment.AVAILABLE_TYPES)!!
+    private val types: ArrayList<Type> = savedStateHandle.get(EntryBuilderGroupDialogFragment.AVAILABLE_TYPES)!!
 
     val uiState get() = _dialogUiState.asStateFlow()
     val uiEvent get() = _dialogUiEvent.asSharedFlow()

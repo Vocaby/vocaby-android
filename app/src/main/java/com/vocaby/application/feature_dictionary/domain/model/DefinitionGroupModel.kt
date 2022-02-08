@@ -1,58 +1,26 @@
 package com.vocaby.application.feature_dictionary.domain.model
 
-import android.os.Parcel
 import android.os.Parcelable
-import android.os.Parcelable.Creator
+import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 import java.util.*
 
-class DefinitionGroupModel : Parcelable, Serializable, Comparable<DefinitionGroupModel> {
+@Parcelize
+data class DefinitionGroupModel(
+    var type: String,
+    var order: Int,
     @Transient
-    var groupId: Int
-    var type: String
-    var definitionData: MutableList<DefinitionModel>
-    var order: Int
+    var groupId: Int = -1,
+    var definitionData: MutableList<DefinitionModel> = ArrayList(),
+) : Parcelable, Serializable, Comparable<DefinitionGroupModel> {
 
-    constructor(group: DefinitionGroupModel) {
-        groupId = group.groupId
-        type = group.type
-        definitionData = ArrayList()
-
+    constructor(group: DefinitionGroupModel) : this(group.type, order = group.order, group.groupId) {
         for (def in group.definitionData) {
             definitionData.add(DefinitionModel(def))
         }
-
-        order = group.order
     }
 
-    constructor(groupId: Int, type: String, order: Int) {
-        this.groupId = groupId
-        this.type = type
-        definitionData = ArrayList()
-        this.order = order
-    }
-
-    constructor(type: String, order: Int) {
-        groupId = -1
-        this.type = type
-        definitionData = ArrayList()
-        this.order = order
-    }
-
-    constructor(type: String) {
-        groupId = -1
-        this.type = type
-        definitionData = ArrayList()
-        order = 0
-    }
-
-    private constructor(`in`: Parcel) {
-        definitionData = ArrayList()
-        groupId = `in`.readInt()
-        type = `in`.readString().toString()
-        `in`.readTypedList(definitionData, DefinitionModel)
-        order = `in`.readInt()
-    }
+    constructor(type: String) : this(type, 0)
 
     fun addNewDefinition(definition: String, example: String?): DefinitionModel {
         val definitionToAdd = DefinitionModel(type, definition, example, definitionData.size)
@@ -100,17 +68,6 @@ class DefinitionGroupModel : Parcelable, Serializable, Comparable<DefinitionGrou
         return definitionToRemove
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(parcel: Parcel, i: Int) {
-        parcel.writeInt(groupId)
-        parcel.writeString(type)
-        parcel.writeTypedList(definitionData)
-        parcel.writeInt(order)
-    }
-
     val isEmpty: Boolean
         get() = definitionData.isEmpty()
 
@@ -125,15 +82,5 @@ class DefinitionGroupModel : Parcelable, Serializable, Comparable<DefinitionGrou
 
     override fun hashCode(): Int {
         return Objects.hash(type)
-    }
-
-    companion object CREATOR : Creator<DefinitionGroupModel> {
-        override fun createFromParcel(parcel: Parcel): DefinitionGroupModel {
-            return DefinitionGroupModel(parcel)
-        }
-
-        override fun newArray(size: Int): Array<DefinitionGroupModel?> {
-            return arrayOfNulls(size)
-        }
     }
 }

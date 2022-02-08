@@ -71,6 +71,9 @@ class EntryGroupViewModel @Inject constructor(
                     var definitionToAdd = initialDefinitions[definition]
 
                     if (definitionToAdd != null) {
+                        // this case is important when the user deletes an existing definition
+                        // exits out, and add back the same definition with a potential update
+                        // preserve the id
                         definitionToAdd = DefinitionModel(definitionToAdd)
                         definitionToAdd.example = example
                         definitionGroup.addNewDefinition(definitionToAdd)
@@ -100,21 +103,13 @@ class EntryGroupViewModel @Inject constructor(
                 else -> {
                     definitionGroup.definitionData.apply {
                         if (oldDefinition != newDefinition || oldExample != newExample) {
-                            val newModel = DefinitionModel(
-                                this[position].id,
-                                this[position].type,
-                                newDefinition,
-                                newExample,
-                                this[position].order
-                            )
-
-                            this[position] = newModel
+                            this[position].definition = newDefinition
+                            this[position].example = newExample
 
                             if (this[position].id == -1) {
-                                definitionChanges.removeItemAdded(oldDefinition)
-                                definitionChanges.addItem(newDefinition, newModel)
+                                definitionChanges.putItemAdded(newDefinition, this[position])
                             } else {
-                                definitionChanges.putItemUpdated(newDefinition, newModel)
+                                definitionChanges.putItemUpdated(newDefinition, this[position])
                             }
 
                             _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(position, ItemState.UPDATE))
@@ -167,15 +162,13 @@ class EntryGroupViewModel @Inject constructor(
     }
 
     // definitionChanges map does not hold references of definitionGroup.definitions when
-    // the user updates a newly created group. this is a problem because the setOrder
+    // the user updates a group. this is a problem because the setOrder
     // will not be reflected in definition changes. this method will fix that
     private fun fixOrdering() {
         if (action == ItemState.UPDATE) {
             for (def in definitionGroup.definitionData) {
                 if (definitionChanges.hasItemAdded(def.definition)) {
                     definitionChanges.putItemAdded(def.definition, def)
-                } else if (definitionChanges.hasItemUpdated(def.definition)) {
-                    definitionChanges.putItemUpdated(def.definition, def)
                 }
             }
         }

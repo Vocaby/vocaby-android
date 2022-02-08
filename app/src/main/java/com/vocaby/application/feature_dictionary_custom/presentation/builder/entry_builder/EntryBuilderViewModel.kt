@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
@@ -42,7 +43,8 @@ class EntryBuilderViewModel @Inject constructor(
     }
     private val actionPayload: ItemStringPayload = savedStateHandle.get<ItemStringPayload>(Constants.ITEM_PAYLOAD_KEY)!!
     private lateinit var entryData: EntryModel
-    private lateinit var availableTypes: MutableList<String>
+    private var initTypes: Map<String, Type> = HashMap()
+    private var availableTypes: ArrayList<Type> = ArrayList()
     private var userId: Int = 1
     private var selectedGroup = -1
 
@@ -80,9 +82,11 @@ class EntryBuilderViewModel @Inject constructor(
             // In case user attempts to create a new entry but the entry already exists
             if (!entryData.isEmpty) actionPayload.state = ItemState.UPDATE
 
-            entryBuilderUseCases.getTypesUseCase().map { list -> list.map { it.type }.toMutableList() }.collect {
-                availableTypes = it
-                availableTypes.removeAll(entryData.definitionGroups.map {group -> group.type })
+            entryBuilderUseCases.getTypesUseCase().collect { list ->
+                initTypes = list.associateBy { it.type }
+                availableTypes =ArrayList(
+                    list.filter { entryData.definitionGroups.none { group -> group.type == it.type } }
+                )
             }
         }
     }
@@ -126,7 +130,8 @@ class EntryBuilderViewModel @Inject constructor(
                 // clear definition changes as well for the removed group
                 definitionChangesMap.remove(groupRemoved.type)
                 groupChanges.removeItem(groupRemoved.type, groupRemoved)
-                availableTypes.add(0, groupRemoved.type)
+                val initType = initTypes[groupRemoved.type]
+                initType?.let { availableTypes.add(it.order, it) }
                 _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(position, ItemState.DELETE))
             }
         }
@@ -136,7 +141,7 @@ class EntryBuilderViewModel @Inject constructor(
         viewModelScope.launch {
             entryData.addDefinitionGroup(newGroup)
             groupChanges.putItemAdded(newGroup.type, newGroup)
-            availableTypes.remove(newGroup.type)
+            availableTypes.removeIf {it.type == newGroup.type}
             _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(selectedGroup, ItemState.ADD))
         }
     }
