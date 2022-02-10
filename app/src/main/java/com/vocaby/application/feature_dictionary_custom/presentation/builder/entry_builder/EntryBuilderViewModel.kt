@@ -71,11 +71,11 @@ class EntryBuilderViewModel @Inject constructor(
                 entryData.definitionGroups
             )
 
-            // when the entryData id is -1, it's a new entry
             groupChanges.id = entryData.id
 
             for (group in entryData.definitionGroups) {
-                val clone = DefinitionGroupModel(group)
+                // shallow group copy is fine
+                val clone = group.copy()
                 initialGroups[clone.type] = clone
                 definitionChangesMap[clone.type] = ItemChangeState(clone.groupId)
             }
@@ -129,8 +129,7 @@ class EntryBuilderViewModel @Inject constructor(
     }
 
     fun addNewGroupDataToIntent(intent: Intent, type: String): Intent {
-        val newGroup = DefinitionGroupModel(type)
-        initialGroups[type] = newGroup
+        val newGroup = DefinitionGroupModel(type, order = entryData.definitionGroups.size)
 
         intent.putExtra(GROUP_KEY, newGroup as Parcelable)
         intent.putExtra(DEFINITION_CHANGES, ItemChangeState<DefinitionModel>())

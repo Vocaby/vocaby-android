@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,43 +12,54 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:background="@drawable/nav_header"
-        android:padding="16dp">
-        <TextView
-            android:id="@+id/type_creator_alert"
-            style="@style/Theme.VocabyAndroid.Alert"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/type_header_alert"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        android:padding="@dimen/nav_header_padding"
+        android:clipToPadding="false">
 
-        <TextView
-            android:id="@+id/textView2"
+        <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:text="@string/create_a_new_group"
-            android:textColor="@color/black"
-            android:textSize="14sp"
+            android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:text="@string/create_a_new_group"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/type_creator_alert"
+                style="@style/Theme.VocabyAndroid.Alert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@string/type_header_alert" />
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/type_management_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add"
             android:background="@null"
-            android:backgroundTint="@color/white"
             android:paddingStart="12dp"
+            android:contentDescription="@string/touch_to_edit"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
+            android:src="@drawable/ic_edit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/linearLayout3"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.611"
             app:tint="@color/colorPrimary" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ScrollView

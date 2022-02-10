@@ -13,15 +13,6 @@ data class DefinitionGroupModel(
     var groupId: Int = -1,
     var definitionData: MutableList<DefinitionModel> = ArrayList(),
 ) : Parcelable, Serializable, Comparable<DefinitionGroupModel> {
-
-    constructor(group: DefinitionGroupModel) : this(group.type, order = group.order, group.groupId) {
-        for (def in group.definitionData) {
-            definitionData.add(DefinitionModel(def))
-        }
-    }
-
-    constructor(type: String) : this(type, 0)
-
     fun addNewDefinition(definition: String, example: String?): DefinitionModel {
         val definitionToAdd = DefinitionModel(type, definition, example, definitionData.size)
         definitionData.add(definitionToAdd)

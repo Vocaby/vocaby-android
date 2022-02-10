@@ -52,7 +52,7 @@ class EntryModel(
     }
 
     val firstGroup: DefinitionGroupModel
-        get() = definitionGroups[0]
+        get() = definitionGroups.first()
 
     fun getDefinitionGroup(index: Int): DefinitionGroupModel {
         return definitionGroups[index]

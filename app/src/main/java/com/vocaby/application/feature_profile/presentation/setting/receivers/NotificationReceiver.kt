@@ -83,8 +83,7 @@ class NotificationReceiver : BroadcastReceiver() {
                 var message = "No definition found"
 
                 entryModel?.let { model ->
-                    val group = model.firstGroup
-                    message = group.definitionData[0].toString()
+                    message = model.firstGroup.definitionData[0].definition
                 }
 
                 sp.edit().putString("NOTIF_PREV_SELECT", entry).apply()

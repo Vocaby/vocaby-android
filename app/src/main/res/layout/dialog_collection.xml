@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/nav_header"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="@dimen/nav_header_padding"
         android:gravity="center">
         <TextView
             android:id="@+id/dialog_header"

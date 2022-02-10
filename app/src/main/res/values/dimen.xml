@@ -8,4 +8,5 @@
     <dimen name="card_elevation">6dp</dimen>
     <dimen name="fob_spacing">60dp</dimen>
     <dimen name="header_gap">12dp</dimen>
+    <dimen name="nav_header_padding">14dp</dimen>
 </resources>

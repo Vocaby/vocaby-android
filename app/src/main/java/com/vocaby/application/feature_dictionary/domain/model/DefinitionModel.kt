@@ -14,8 +14,6 @@ data class DefinitionModel(
     @Transient
     var id: Int = -1,
 ) : Parcelable, Serializable, Comparable<DefinitionModel> {
-    constructor(def: DefinitionModel): this(def.type, def.definition, def.example, def.order, def.id)
-
     override fun compareTo(other: DefinitionModel): Int {
         return order.compareTo(other.order)
     }

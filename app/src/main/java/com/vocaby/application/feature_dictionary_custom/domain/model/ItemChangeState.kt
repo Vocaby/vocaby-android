@@ -74,7 +74,7 @@ open class ItemChangeState<T> (
     }
 
     fun putItemUpdated(key: String, item: T) {
-        if (!itemsAdded.containsKey(key) && !itemsDeleted.containsKey(key)) itemsUpdated[key] = item
+        if (!itemsAdded.containsKey(key)) itemsUpdated[key] = item
     }
 
     fun removeItemUpdated(key: String) {
@@ -106,8 +106,9 @@ open class ItemChangeState<T> (
     }
 
     override fun toString(): String {
-        return "Items Added: $itemsAdded \n" +
-                "Items Removed: $itemsDeleted \n" +
-                "Items Updated: $itemsUpdated"
+        return "Here are the changes:\n\n" +
+                "Items Added: $itemsAdded\n\n" +
+                "Items Removed: $itemsDeleted\n\n" +
+                "Items Updated: $itemsUpdated\n\n"
     }
 }
