@@ -11,23 +11,28 @@ import android.widget.RemoteViews
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.util.Generators.generateRandomInt
-import com.vocaby.application.core.util.exceptions.SaveRepetitionException
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
+import com.vocaby.application.feature_save.domain.repository.SaveRepository
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SavesAppWidgetProvider : AppWidgetProvider() {
-    @Inject lateinit var dictionaryRepository: DictionaryRepository
-    @Inject lateinit var customDictionaryRepository: CustomDictionaryRepository
-    @Inject lateinit var userRepository: UserRepository
+    @Inject
+    lateinit var dictionaryRepository: DictionaryRepository
+    @Inject
+    lateinit var customDictionaryRepository: CustomDictionaryRepository
+    @Inject
+    lateinit var saveRepository: SaveRepository
+    @Inject
+    lateinit var userRepository: UserRepository
 
     companion object {
         const val WIDGET_CLICK = "widgetClick"
@@ -57,74 +62,77 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
 
     private fun updateWidgetTexts(context: Context, id: Int, remoteViews: RemoteViews?) {
         val appWidgetManager = AppWidgetManager.getInstance(context)
+        val scope = CoroutineScope(Dispatchers.Main.immediate)
         val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
 
         remoteViews?.let { view ->
             view.setViewVisibility(R.id.refresh_progress, View.VISIBLE)
             view.setBoolean(R.id.widget_refresh_button, "setEnabled", false)
 
-            CoroutineScope(Dispatchers.Main.immediate).launch(CoroutineExceptionHandler { _, throwable ->
-                when (throwable) {
-                    is SaveRepetitionException -> {
-                        /* DO NOTHING */
-                    }
-
-                    else -> {}
-                }
-            }) {
+            scope.launch {
                 val userId = userRepository.getUser()
-//                val saves = userRepository.getSavedWords(userId)
-                val saves = listOf<String>()
+                val saves = saveRepository.getAllSavedEntriesFlow(userId).first()
 
-                val prevWord = sp.getString(WIDGET_PREV_KEY + id, "")
                 if (saves.isEmpty()) {
                     val editor = sp.edit()
-                    editor.putString(WIDGET_PREV_KEY + id, "")
+                    editor.putString("${WIDGET_PREV_KEY}_$id", "")
                     editor.apply()
-                } else if (saves.size == 1) {
-                    if (prevWord == saves[0]) {
-                        throw SaveRepetitionException()
+
+                    val title = "No Saved Words"
+                    val message = "Save words in the app to display in the notification"
+                    renderWidget(view, context, appWidgetManager, id, title, message, "")
+                } else {
+                    var index = generateRandomInt(0, saves.size-1)
+                    val prevWord = sp.getString("${WIDGET_PREV_KEY}_$id", "")
+
+                    while (saves.size != 1 && saves[index] == prevWord) {
+                        index = generateRandomInt(0, saves.size-1)
                     }
+
+                    val entry = saves[index]
+                    val entryModel: EntryModel? =
+                        customDictionaryRepository.getUserEntryData(userId, entry) ?:
+                        dictionaryRepository.getEntryDataFromDatabase(entry)
+
+                    var message = "No definition found"
+                    var example = ""
+
+                    entryModel?.let { model ->
+                        message = model.firstGroup.definitionData[0].definition
+                        example = model.firstGroup.definitionData[0].example ?: ""
+                    }
+
+                    sp.edit().putString("${WIDGET_PREV_KEY}_$id", entry).apply()
+                    renderWidget(view, context, appWidgetManager, id, entry, message, example)
                 }
-
-                var index = generateRandomInt(0, saves.size - 1)
-                while (saves[index] == prevWord) {
-                    index = generateRandomInt(0, saves.size - 1)
-                }
-
-                val entryModel: EntryModel? =
-                    customDictionaryRepository.getUserEntryData(userId, saves[index]) ?:
-                    dictionaryRepository.getEntryDataFromDatabase(saves[index])
-
-                var definition = "No definition found"
-                var example = ""
-
-                entryModel?.let { wordData ->
-                    val editor = sp.edit()
-                    editor.putString(WIDGET_PREV_KEY + id, wordData.entry)
-                    editor.apply()
-
-                    val group = wordData.firstGroup
-                    definition = group.definitionData[0].toString()
-                    example = group.definitionData[0].example ?: ""
-                }
-
-                remoteViews.setTextViewText(R.id.widget_word, saves[index])
-                remoteViews.setTextViewText(R.id.widget_definition, definition)
-                remoteViews.setTextViewText(R.id.widget_sentence, example)
-
-                val openIntent = Intent(context, MainActivity::class.java)
-                openIntent.action = WIDGET_CLICK
-                openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                val openPendingIntent = PendingIntent
-                    .getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE)
-
-                remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent)
-                remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE)
-                remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true)
-                appWidgetManager.updateAppWidget(id, remoteViews)
             }
         }
+    }
+
+    private fun renderWidget(
+        remoteViews: RemoteViews,
+        context: Context,
+        appWidgetManager:
+        AppWidgetManager,
+        id: Int,
+        entry: String,
+        definition: String,
+        example: String
+    ) {
+        remoteViews.setTextViewText(R.id.widget_word, entry)
+        remoteViews.setTextViewText(R.id.widget_definition, definition)
+        remoteViews.setTextViewText(R.id.widget_sentence, example)
+
+        val openIntent = Intent(context, MainActivity::class.java)
+        openIntent.action = WIDGET_CLICK
+        openIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val openPendingIntent = PendingIntent
+            .getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE)
+
+        remoteViews.setOnClickPendingIntent(R.id.widget_container, openPendingIntent)
+        remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE)
+        remoteViews.setBoolean(R.id.widget_refresh_button, "setEnabled", true)
+        appWidgetManager.updateAppWidget(id, remoteViews)
     }
 
     private fun updateWidget(context: Context) {
@@ -151,7 +159,7 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
         val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
         val editor = sp.edit()
         for (id in appWidgetIds) {
-            editor.remove(WIDGET_PREV_KEY + id)
+            editor.remove("${WIDGET_PREV_KEY}_$id")
             editor.apply()
         }
     }

@@ -91,6 +91,7 @@ class DangerZoneFragment : Fragment() {
                 .setPositiveButton("DELETE") { _, _ ->
                     profileViewModel.reset()
                     typeManagementViewModel.resetTypes()
+                    dictionaryViewModel.clearHistory()
                 }.setNegativeButton("CANCEL", null).create().show()
         }
 
