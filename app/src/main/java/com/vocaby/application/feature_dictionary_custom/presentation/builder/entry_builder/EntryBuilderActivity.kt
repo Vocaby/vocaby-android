@@ -19,7 +19,6 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
-import com.vocaby.application.feature_dictionary.presentation.search.SearchCollectionDialogFragment
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity
 import com.vocaby.application.states.ItemState
 import dagger.hilt.android.AndroidEntryPoint
@@ -98,7 +97,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                 }
                 is EntryBuilderUiEvent.ShowTypeSelectionDialog -> {
                     val dialogFragment = EntryBuilderGroupDialogFragment.newInstance(event.types)
-                    dialogFragment.show(supportFragmentManager, SearchCollectionDialogFragment.TAG)
+                    dialogFragment.show(supportFragmentManager, EntryBuilderGroupDialogFragment.TAG)
                 }
                 is EntryBuilderUiEvent.CloseBuilder -> {
                     setResult(RESULT_OK, event.resultData)

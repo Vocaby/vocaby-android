@@ -1,5 +1,6 @@
 package com.vocaby.application.feature_profile.presentation.setting
 
+import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.feature_profile.domain.model.NotificationFrequency
@@ -34,24 +35,27 @@ class SettingViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            settingsUseCases.getNotificationSettingsUseCase().collectLatest { model ->
-                _notificationSettings.emit(model)
+            launch {
+                settingsUseCases.getNotificationSettingsUseCase().collectLatest { model ->
+                    _notificationSettings.emit(model)
+                }
             }
-        }
 
-        viewModelScope.launch {
-            val settings = settingsUseCases.getUserSettingsUseCase().first()
-            val selectedCollection = settingsUseCases.getSelectedNotificationCollectionUseCase(settings.notificationCollectionId)
-            val selectedFrequency  = settingsUseCases.getSelectedNotificationFrequencyUseCase(settings.notificationFrequency)
-            val initSettings = SettingsUiEvent.UpdateSettings(
-                settings.notificationEnabled,
-                selectedCollection.collectionName,
-                selectedFrequency.uiText,
-                settings.updateDictionaryEnabled,
-                settings.reportErrorEnabled
-            )
+            launch {
+                val settings = settingsUseCases.getUserSettingsUseCase().first()
+                val selectedCollection = settingsUseCases.getSelectedNotificationCollectionUseCase(settings.notificationCollectionId)
+                val selectedFrequency  = settingsUseCases.getSelectedNotificationFrequencyUseCase(settings.notificationFrequency)
 
-            _uiEvent.emit(initSettings)
+                val initSettings = SettingsUiEvent.UpdateSettings(
+                    settings.notificationEnabled,
+                    selectedCollection.collectionName,
+                    selectedFrequency.uiText,
+                    settings.updateDictionaryEnabled,
+                    settings.reportErrorEnabled
+                )
+
+                _uiEvent.emit(initSettings)
+            }
         }
     }
 
@@ -69,19 +73,25 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun setNotificationFrequency(position: Int) {
+    private fun setNotificationFrequency(position: Int) {
         viewModelScope.launch {
-            settingsUseCases.updateNotificationFrequencyUseCase(position, notificationFrequencies)
-            val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
-            _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
+            notificationFrequencies?.let {
+                settingsUseCases.updateNotificationFrequencyUseCase(position, notificationFrequencies)
+                val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
+                _uiEvent.emit(SettingsUiEvent.UpdateNotificationFrequency(it[position].uiText))
+                _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
+            }
         }
     }
 
-    fun setNotificationCollection(position: Int) {
+    private fun setNotificationCollection(position: Int) {
         viewModelScope.launch {
-            settingsUseCases.updateNotificationCollectionUseCase(position, notificationCollections)
-            val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
-            _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
+            notificationCollections?.let {
+                settingsUseCases.updateNotificationCollectionUseCase(position, notificationCollections)
+                val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
+                _uiEvent.emit(SettingsUiEvent.UpdateNotificationCollection(it[position].collectionName))
+                _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
+            }
         }
     }
 
@@ -104,7 +114,7 @@ class SettingViewModel @Inject constructor(
                 notificationCollections?.let {
                     _uiEvent.emit(SettingsUiEvent.ShowNotificationCollectionDialog(
                         title = "Select a save collection",
-                        items = it.map { model -> model.collectionName }.toTypedArray()
+                        items = ArrayList(it.map { model -> model.collectionName })
                     ))
                 }
             }
@@ -118,10 +128,21 @@ class SettingViewModel @Inject constructor(
                 notificationFrequencies?.let {
                     _uiEvent.emit(SettingsUiEvent.ShowNotificationFrequencyDialog(
                         title = "Select a notification frequency",
-                        items = it.map { model -> model.uiText }.toTypedArray()
+                        items = ArrayList(it.map { model -> model.uiText })
                     ))
                 }
             }
+        }
+    }
+
+    fun handleDialogResult(bundle: Bundle) {
+        val selectedPosition = bundle.getInt(NotificationSettingsDialogFragment.SELECTED_POSITION)
+        val updateCollection = bundle.getBoolean(NotificationSettingsDialogFragment.UPDATE_COLLECTION)
+
+        if (updateCollection) {
+            setNotificationCollection(selectedPosition)
+        } else {
+            setNotificationFrequency(selectedPosition)
         }
     }
 }

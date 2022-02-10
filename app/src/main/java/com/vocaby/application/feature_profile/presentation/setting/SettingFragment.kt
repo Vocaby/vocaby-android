@@ -2,7 +2,6 @@ package com.vocaby.application.feature_profile.presentation.setting
 
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +11,6 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.vocaby.application.R
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
@@ -41,6 +39,8 @@ class SettingFragment : Fragment() {
         dictionaryUpdaterSwitch = view.findViewById(R.id.connections_switch)
         dataShareSwitch = view.findViewById(R.id.data_share_switch)
         notificationSwitch = view.findViewById(R.id.notification_switch)
+
+        setupFragmentManager()
 
         notificationSwitch.setOnCheckedChangeListener { _, enabled ->
             notificationCollectionButton.isEnabled = enabled
@@ -81,22 +81,12 @@ class SettingFragment : Fragment() {
                         dataShareSwitch.isChecked = event.dataShareEnabled
                     }
                     is SettingsUiEvent.ShowNotificationCollectionDialog -> {
-                        MaterialAlertDialogBuilder(requireActivity())
-                            .setTitle(event.title)
-                            .setItems(event.items) {
-                                    _: DialogInterface, int: Int ->
-                                notificationCollectionButton.setDescription(event.items[int])
-                                settingsViewModel.setNotificationCollection(int)
-                            }.show()
+                        val dialogFragment = NotificationSettingsDialogFragment.newInstance(event.items, true)
+                        dialogFragment.show(childFragmentManager, NotificationSettingsDialogFragment.TAG)
                     }
                     is SettingsUiEvent.ShowNotificationFrequencyDialog -> {
-                        MaterialAlertDialogBuilder(requireActivity())
-                            .setTitle(event.title)
-                            .setItems(event.items) {
-                                    _: DialogInterface, int: Int ->
-                                notificationFrequencyButton.setDescription(event.items[int])
-                                settingsViewModel.setNotificationFrequency(int)
-                            }.show()
+                        val dialogFragment = NotificationSettingsDialogFragment.newInstance(event.items, false)
+                        dialogFragment.show(childFragmentManager, NotificationSettingsDialogFragment.TAG)
                     }
                     is SettingsUiEvent.UpdateNotificationCollection -> {
                         notificationCollectionButton.setDescription(event.collectionName)
@@ -131,5 +121,12 @@ class SettingFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun setupFragmentManager() {
+        childFragmentManager.setFragmentResultListener(
+            NotificationSettingsDialogFragment.TAG,
+            this
+        ) { _, bundle -> settingsViewModel.handleDialogResult(bundle) }
     }
 }

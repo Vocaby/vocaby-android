@@ -1,12 +1,10 @@
 package com.vocaby.application.feature_profile.presentation.setting
 
-import android.app.Activity
 import android.view.View
-import androidx.activity.result.ActivityResult
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vocaby.application.feature_dictionary.data.local.entity.Type
+import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,30 +19,26 @@ class NotificationSettingsDialogViewModel @Inject constructor(
 ): ViewModel() {
     private var _dialogUiState = MutableStateFlow<DialogUiState>(DialogUiState.InProgress)
     private var _dialogUiEvent = MutableSharedFlow<DialogUiEvent>()
-    private val types: ArrayList<Type> =
-        savedStateHandle.get(NotificationSettingsDialogFragment.AVAILABLE_TYPES)!!
+    private val items: ArrayList<String> =
+        savedStateHandle.get(NotificationSettingsDialogFragment.NOTIFICATION_LIST)!!
+    private val isCollection: Boolean =
+        savedStateHandle.get(NotificationSettingsDialogFragment.UPDATE_COLLECTION)!!
 
     val uiState get() = _dialogUiState.asStateFlow()
     val uiEvent get() = _dialogUiEvent.asSharedFlow()
 
     init {
-        _dialogUiState.value = DialogUiState.UpdateUi(types)
+        _dialogUiState.value = DialogUiState.UpdateUi(
+            if (isCollection) "Select a save collection" else "Update notification frequency",
+            items
+        )
     }
 
-    fun handleResult(result: ActivityResult) {
-        viewModelScope.launch {
-            if (result.resultCode == Activity.RESULT_OK) {
-                _dialogUiEvent.emit(DialogUiEvent.CloseDialog(false, typesChanged = true))
-            } else if (result.resultCode == Activity.RESULT_CANCELED) {
-                _dialogUiEvent.emit(DialogUiEvent.CloseDialog(false))
-            }
-        }
-    }
-
-    fun validate(id: Int) {
+    fun validate(id: Int, chipGroup: ChipGroup) {
         viewModelScope.launch {
             if (id != View.NO_ID) {
-                _dialogUiEvent.emit(DialogUiEvent.CloseDialog(true))
+                val selected = chipGroup.indexOfChild(chipGroup.findViewById(id))
+                _dialogUiEvent.emit(DialogUiEvent.CloseDialog(selected, isCollection))
             } else {
                 _dialogUiEvent.emit(DialogUiEvent.ShowAlert)
             }

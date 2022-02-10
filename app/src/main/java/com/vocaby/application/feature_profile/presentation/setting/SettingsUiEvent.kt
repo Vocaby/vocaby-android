@@ -9,8 +9,8 @@ sealed class SettingsUiEvent {
         val dataShareEnabled: Boolean
     ): SettingsUiEvent()
     data class UpdateNotification(val enabled: Boolean, val minutes: Int): SettingsUiEvent()
-    data class ShowNotificationFrequencyDialog(val title: String, val items: Array<String>): SettingsUiEvent()
-    data class ShowNotificationCollectionDialog(val title: String, val items: Array<String>): SettingsUiEvent()
+    data class ShowNotificationFrequencyDialog(val title: String, val items: ArrayList<String>): SettingsUiEvent()
+    data class ShowNotificationCollectionDialog(val title: String, val items: ArrayList<String>): SettingsUiEvent()
     data class UpdateNotificationCollection(val collectionName: String): SettingsUiEvent()
     data class UpdateNotificationFrequency(val frequency: String): SettingsUiEvent()
 }

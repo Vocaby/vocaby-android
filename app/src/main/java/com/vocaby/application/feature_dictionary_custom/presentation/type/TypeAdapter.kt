@@ -123,6 +123,7 @@ class TypeAdapter(
 
         override fun onItemDone() {
             card.strokeColor = ctx.getColor(R.color.light_gray)
+            card.elevation = 0f
             card.alpha = 1f
         }
     }

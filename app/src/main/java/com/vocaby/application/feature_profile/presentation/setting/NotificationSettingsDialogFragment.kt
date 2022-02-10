@@ -1,23 +1,17 @@
 package com.vocaby.application.feature_profile.presentation.setting
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.chip.Chip
 import com.vocaby.application.R
-import com.vocaby.application.feature_dictionary.data.local.entity.Type
-import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.vocabywidgets.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -26,24 +20,26 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class NotificationSettingsDialogFragment: DialogFragment() {
     private val viewModel: NotificationSettingsDialogViewModel by viewModels()
+    private lateinit var header: TextView
     private lateinit var groupAlert: TextView
     private lateinit var addGroupButton: Button
     private lateinit var chipGroup: ChipGroup
-    private lateinit var typeManagementButton: ImageButton
 
     companion object {
-        const val TAG = "EntryBuilderGroupDialogFragment"
-        const val AVAILABLE_TYPES = "AVAILABLE_TYPES"
-        const val SELECTED_TYPE = "SELECTED_TYPE"
-        const val TYPES_CHANGED = "TYPES_CHANGED"
+        const val TAG = "NotificationSettingsDialogFragment"
+        const val NOTIFICATION_LIST = "NOTIFICATION_LIST"
+        const val UPDATE_COLLECTION = "UPDATE_COLLECTION"
+        const val SELECTED_POSITION = "SELECTED_POSITION"
 
         @JvmStatic
         fun newInstance(
-            types: ArrayList<Type>
+            list: ArrayList<String>,
+            updateCollection: Boolean,
         ): NotificationSettingsDialogFragment {
             val fragment = NotificationSettingsDialogFragment()
             val args = Bundle()
-            args.putParcelableArrayList(AVAILABLE_TYPES, types)
+            args.putStringArrayList(NOTIFICATION_LIST, list)
+            args.putBoolean(UPDATE_COLLECTION, updateCollection)
             fragment.arguments = args
 
             return fragment
@@ -55,14 +51,14 @@ class NotificationSettingsDialogFragment: DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.dialog_fragment_entry_type_picker, container, false)
+        val view = inflater.inflate(R.layout.dialog_fragment_notification_settings, container, false)
+        header = view.findViewById(R.id.notification_dialog_header)
         chipGroup = view.findViewById(R.id.types_chip_group)
-        addGroupButton = view.findViewById(R.id.create_group_button)
+        addGroupButton = view.findViewById(R.id.update_settings_button)
         groupAlert = view.findViewById(R.id.type_creator_alert)
-        typeManagementButton = view.findViewById(R.id.type_management_button)
 
         addGroupButton.setOnClickListener {
-            viewModel.validate(chipGroup.checkedChipId)
+            viewModel.validate(chipGroup.checkedChipId, chipGroup)
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
@@ -70,15 +66,17 @@ class NotificationSettingsDialogFragment: DialogFragment() {
                 viewModel.uiState.collect { state ->
                     when (state) {
                         is DialogUiState.UpdateUi -> {
+                            header.text = state.header
+
                             chipGroup.removeAllViews()
-                            for (typeModel in state.types) {
+                            for (item in state.items) {
                                 val chip = layoutInflater.inflate(
-                                    R.layout.chip_type,
+                                    R.layout.chip_notification,
                                     chipGroup,
                                     false
                                 ) as Chip
 
-                                chip.text = typeModel.type
+                                chip.text = item
                                 chipGroup.addView(chip)
                             }
                         }
@@ -98,12 +96,8 @@ class NotificationSettingsDialogFragment: DialogFragment() {
                         }
                         is DialogUiEvent.CloseDialog -> {
                             val bundle = Bundle()
-                            if (event.selected) {
-                                val selectedType = chipGroup.findViewById<Chip>(chipGroup.checkedChipId).text.toString()
-                                bundle.putString(SELECTED_TYPE, selectedType)
-                            }
-
-                            bundle.putBoolean(TYPES_CHANGED, event.typesChanged)
+                            bundle.putInt(SELECTED_POSITION, event.selected)
+                            bundle.putBoolean(UPDATE_COLLECTION, event.updateCollection)
 
                             setFragmentResult(TAG, bundle)
                             dismiss()

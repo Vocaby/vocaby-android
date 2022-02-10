@@ -25,10 +25,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
             <TextView
+                android:id="@+id/notification_dialog_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/sourcesanspro_semibold"
-                android:text="@string/create_a_new_group"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 
@@ -38,26 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                android:text="@string/type_header_alert" />
+                android:text="@string/notification_alert" />
         </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/type_management_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:paddingStart="12dp"
-            android:contentDescription="@string/touch_to_edit"
-            android:scaleX="0.9"
-            android:scaleY="0.9"
-            android:src="@drawable/ic_edit"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout3"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.611"
-            app:tint="@color/colorPrimary" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ScrollView
         android:layout_width="match_parent"
@@ -77,10 +59,10 @@
         android:orientation="vertical"
         android:background="@color/white">
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/create_group_button"
+            android:id="@+id/update_settings_button"
             style="@style/Theme.VocabyAndroid.Button.Positive"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/create_group" />
+            android:text="@string/update_notification" />
     </LinearLayout>
 </LinearLayout>

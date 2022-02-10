@@ -123,7 +123,7 @@ class EntryBuilderViewModel @Inject constructor(
 
         intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position) as Parcelable)
         intent.putExtra(DEFINITION_CHANGES, definitionChangesMap[type])
-        intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups[type] as Parcelable)
+        intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups[type] ?: DefinitionGroupModel(type, entryData.definitionGroups.size) as Parcelable)
         intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.UPDATE as Parcelable)
         return intent
     }
@@ -151,7 +151,12 @@ class EntryBuilderViewModel @Inject constructor(
                 definitionChangesMap.remove(groupRemoved.type)
                 groupChanges.removeItem(groupRemoved.type, groupRemoved)
                 val initType = initTypes[groupRemoved.type]
-                initType?.let { availableTypes.add(it.order, it) }
+                initType?.let { availableTypes.add(
+                        if (availableTypes.size < it.order) availableTypes.size else it.order,
+                        it
+                    )
+                }
+
                 _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(position, ItemState.DELETE))
             }
         }

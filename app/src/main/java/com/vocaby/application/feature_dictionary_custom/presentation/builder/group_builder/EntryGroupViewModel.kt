@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeState
@@ -70,7 +69,6 @@ class EntryGroupViewModel @Inject constructor(
                 }
                 else -> {
                     var definitionToAdd = initialDefinitions[definition]
-                    Logger.reportToDebug("To Add: ${definitionToAdd.toString()}")
 
                     if (definitionToAdd != null) {
                         // this case is important when the user deletes an existing definition
@@ -104,10 +102,8 @@ class EntryGroupViewModel @Inject constructor(
                 else -> {
                     definitionGroup.definitionData.apply {
                         if (oldDefinition != newDefinition || oldExample != newExample) {
-                            Logger.reportToDebug("Updating item...")
                             this[position].definition = newDefinition
                             this[position].example = newExample
-                            Logger.reportToDebug(this[position].toString())
                             if (this[position].id == -1) {
                                 definitionChanges.removeItemAdded(oldDefinition)
                                 definitionChanges.putItemAdded(newDefinition, this[position])
@@ -137,7 +133,6 @@ class EntryGroupViewModel @Inject constructor(
             checkForUpdatedItems()
             fixOrdering()
 
-            Logger.reportToDebug(definitionChanges.toString())
             intent.putExtra(EntryBuilderViewModel.DEFINITION_CHANGES, definitionChanges)
             intent.putExtra(EntryBuilderViewModel.GROUP_KEY, definitionGroup as Parcelable)
             intent.putExtra(Constants.ITEM_PAYLOAD_KEY, action as Parcelable)
@@ -149,9 +144,8 @@ class EntryGroupViewModel @Inject constructor(
         if (definitionGroup.definitionData.isNotEmpty() && initialDefinitions.isNotEmpty()) {
             for (i in definitionGroup.definitionData.indices) {
                 val currentDefinition = definitionGroup.definitionData[i]
-                Logger.reportToDebug("Current: ${currentDefinition.toString()}")
                 val originalDefinition = initialDefinitions[currentDefinition.definition]
-                Logger.reportToDebug("Original: ${initialDefinitions[currentDefinition.definition]}")
+
                 if (originalDefinition != null) {
                     if (originalDefinition.order == currentDefinition.order
                         && originalDefinition.example == currentDefinition.example
