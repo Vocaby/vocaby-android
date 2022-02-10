@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import com.vocaby.application.feature_datatransfer.data.DataTransferRepositoryImpl
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_datatransfer.domain.use_case.*
-import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
@@ -23,11 +22,10 @@ class DataTransferModule {
         userRepository: UserRepository,
         customDictionaryRepository: CustomDictionaryRepository,
         saveRepository: SaveRepository,
-        dataTransferRepository: DataTransferRepository,
-        availableTypes: List<Type>
+        dataTransferRepository: DataTransferRepository
     ): DataTransferUseCases = DataTransferUseCases(
         ImportSavesUseCase(userRepository, saveRepository, dataTransferRepository),
-        ImportCustomEntriesUseCase(userRepository, customDictionaryRepository, dataTransferRepository, availableTypes),
+        ImportCustomEntriesUseCase(userRepository, customDictionaryRepository, dataTransferRepository),
         ExportSavesUseCase(userRepository, saveRepository, dataTransferRepository),
         ExportCustomEntriesUseCase(userRepository, customDictionaryRepository, dataTransferRepository)
     )

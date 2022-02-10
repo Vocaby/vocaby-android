@@ -68,4 +68,10 @@ class ProfileViewModel @Inject constructor(
             profileUseCases.eraseChartDataUseCase()
         }
     }
+
+    fun reset() {
+        viewModelScope.launch {
+            profileUseCases.resetUseCase()
+        }
+    }
 }

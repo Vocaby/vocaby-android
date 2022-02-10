@@ -14,6 +14,14 @@ interface SaveDao {
     @Query("SELECT COUNT(save_id) FROM saves WHERE user_id = :userId")
     fun getAllSavesCount(userId: Int): Flow<Int>
 
+    @Transaction
+    @Query("UPDATE saves SET user_id = :newUserId")
+    suspend fun replaceSavesUser(newUserId: Int)
+
+    @Transaction
+    @Query("UPDATE save_collection SET user_id = :newUserId")
+    suspend fun replaceCollectionsUser(newUserId: Int)
+
     @Query("SELECT save_id FROM saves s WHERE user_id = :userId AND entry = :entry")
     suspend fun getSaveId(userId: Int, entry: String): Int?
 

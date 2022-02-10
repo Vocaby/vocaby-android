@@ -68,11 +68,11 @@
     <string name="data_transfer_import_error_generic">Failed to import…</string>
     <string name="data_transfer_import_error_invalid_file">Failed to import: file is invalid…</string>
     <string name="data_transfer_import_error_wrong_backup_file">Failed to import: backup file is invalid…</string>
-    <string name="danger_clear_chart">Erase Chart Data</string>
-    <string name="danger_clear_search_history">Erase Search History</string>
-    <string name="danger_clear_saves">Erase Saves</string>
-    <string name="danger_clear_custom_entries">Erase Custom Entries</string>
-    <string name="danger_erase_all_data">Erase All Data</string>
+    <string name="danger_clear_chart">Delete Chart Data</string>
+    <string name="danger_clear_search_history">Delete Search History</string>
+    <string name="danger_clear_saves">Delete Saves</string>
+    <string name="danger_clear_custom_entries">Delete Custom Entries</string>
+    <string name="danger_erase_all_data">Delete All Data</string>
     <string name="danger_zone">Danger Zone</string>
     <string name="data_export">Export Data</string>
     <string name="data_import">Import Backup Data</string>
@@ -156,4 +156,6 @@
     <string name="reset_entry_types">Reset Entry Types</string>
     <string name="update_notification">Update Notification</string>
     <string name="notification_alert">Please pick an option</string>
+    <string name="cancel">Cancel</string>
+    <string name="danger_clear_save_collections">Delete Save Collections</string>
 </resources>

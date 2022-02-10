@@ -63,6 +63,14 @@
         android:textColor="@color/colorHeadline"/>
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/erase_save_collections_button"
+        style="@style/Theme.VocabyAndroid.ProfileButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/danger_clear_save_collections"
+        android:textColor="@color/colorHeadline"/>
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/erase_custom_entries_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
         android:layout_width="match_parent"

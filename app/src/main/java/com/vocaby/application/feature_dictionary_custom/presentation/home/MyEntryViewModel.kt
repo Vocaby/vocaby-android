@@ -50,6 +50,15 @@ class MyEntryViewModel @Inject constructor(
         }
     }
 
+    fun initializeCustomEntries() {
+        viewModelScope.launch {
+            currentUser?.let {
+                entries = customEntryUseCases.getCustomEntriesUseCase(it)
+                _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
+            }
+        }
+    }
+
     private fun resetFilter() {
         filteredQuery = ""
         isFilterDisplayed = false

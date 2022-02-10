@@ -23,12 +23,6 @@ class UserRepositoryImpl constructor(
     private val userSettingsDataStore: DataStore<UserSettings>,
 ): UserRepository {
     override fun getCurrentUser(): Flow<Int> = dao.getCurrentUser().map { it?.toInt() ?: 1 }
-    override suspend fun replaceOwnership(oldUserId: Int, newUserId: Int) {
-        dao.replaceCustomDictionaryUser(newUserId)
-        dao.replaceDictionaryVisitUser(newUserId)
-        dao.replaceCustomDictionaryVisitUser(newUserId)
-        dao.deleteUser(User(oldUserId))
-    }
 
     override val settingsFlow: Flow<UserSettings> = userSettingsDataStore.data.catch { exception ->
         if (exception is IOException) {

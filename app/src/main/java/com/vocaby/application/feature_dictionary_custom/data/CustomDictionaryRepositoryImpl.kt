@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import java.util.*
 
 class CustomDictionaryRepositoryImpl constructor(
@@ -179,9 +180,10 @@ class CustomDictionaryRepositoryImpl constructor(
         return entryId
     }
 
-    override suspend fun insertNewEntries(userId: Int, data: List<EntryModel>) {
+    override suspend fun insertNewEntries(userId: Int, data: List<EntryModel>) = withContext(defaultDispatcher) {
         val customEntries = mutableListOf<CustomEntry>()
         for (entryData in data) {
+            yield()
             customEntries.add(
                 CustomEntry(
                     userId,
@@ -192,11 +194,11 @@ class CustomDictionaryRepositoryImpl constructor(
             )
         }
 
-        clearUserEntries(userId)
         val entryIds = dao.insertCustomEntries(customEntries)
         val addedGroups = mutableListOf<CustomEntryGroup>()
         for ((i, entryId) in entryIds.withIndex()) {
             for (group in data[i].definitionGroups) {
+                yield()
                 addedGroups.add(
                     CustomEntryGroup(
                         entryId.toInt(),
@@ -214,6 +216,7 @@ class CustomDictionaryRepositoryImpl constructor(
             for (group in entryModel.definitionGroups) {
                 val definitionModels = group.definitionData
                 for (definitionModel in definitionModels) {
+                    yield()
                     addedDefinitions.add(
                         CustomDefinition(
                             groupIds[j].toInt(),

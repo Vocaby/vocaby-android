@@ -33,7 +33,6 @@ class TypeManagementViewModel @Inject constructor(
     val uiEvent get() = _uiEvent.asSharedFlow()
 
     companion object {
-        const val RESULT_DATA = "TYPE_MANAGEMENT_RESULT"
     }
 
     init {

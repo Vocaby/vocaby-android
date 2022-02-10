@@ -1,3 +1,5 @@
+@file:Suppress("LiftReturnOrAssignment")
+
 package com.vocaby.application.core.util
 
 import com.vocaby.application.core.Constants
@@ -22,17 +24,17 @@ object Formatter {
     }
 
     fun formatDateToString(milli: Long, forDisplay:Boolean = false, showDay:Boolean = false, precise: Boolean = true): String {
-        if (forDisplay) {
+        return if (forDisplay) {
             if (showDay) {
-                return SimpleDateFormat("EEE MM.dd.yyyy", Locale.getDefault()).format(milli)
+                SimpleDateFormat("EEE MM.dd.yyyy", Locale.getDefault()).format(milli)
             } else {
-                return SimpleDateFormat("MM.dd.yyyy", Locale.getDefault()).format(milli)
+                SimpleDateFormat("MM.dd.yyyy", Locale.getDefault()).format(milli)
             }
         } else {
             if (precise) {
-                return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(milli)
+                SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(milli)
             } else {
-                return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(milli)
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(milli)
             }
         }
 

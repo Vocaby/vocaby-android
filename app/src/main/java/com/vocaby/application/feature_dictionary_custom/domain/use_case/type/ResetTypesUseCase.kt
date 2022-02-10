@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class ResetTypesUseCase @Inject constructor(
     val customDictionaryRepository: CustomDictionaryRepository,
-    val factoryTypes: List<Type>
+    private val factoryTypes: List<Type>
 ) {
     suspend operator fun invoke() {
         customDictionaryRepository.clearTypes()

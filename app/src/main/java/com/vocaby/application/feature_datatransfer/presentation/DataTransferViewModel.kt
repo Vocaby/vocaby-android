@@ -25,6 +25,7 @@ class DataTransferViewModel @Inject constructor(
     private val dataTransferUseCases: DataTransferUseCases,
     private val cleanUpUserUseCase: CleanUpUserUseCase
 ) : ViewModel() {
+
     companion object {
         const val EXPORT_SAVE_BACKUP = 1
         const val EXPORT_ENTRY_BACKUP = 2
@@ -139,6 +140,7 @@ class DataTransferViewModel @Inject constructor(
     }
 
     fun cancelJob() {
+        _transferState.value = DataTransferState.Error(uiText = UiText(text = "Successfully cancelled!"))
         if (transferScope.isActive) {
             transferScope.cancel("User cancelled the job")
             cleanupImport()

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SaveRepository {
     suspend fun getSaveId(userId: Int, entry: String): Int?
+    suspend fun replaceUser(newUserId: Int)
     fun getAllSavesCount(userId: Int): Flow<Int>
     fun getAllSavedEntriesFlow(userId: Int): Flow<List<String>>
     fun hasSaved(userId: Int, entry: String): Flow<SaveModel>

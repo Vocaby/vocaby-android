@@ -12,7 +12,6 @@ import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.model.EntryTransferModel
 import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferModel
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
-import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
@@ -102,7 +101,7 @@ class DataTransferRepositoryImpl(
         return@withContext SaveTransferModel(saves, collectionMap)
     }
 
-    override suspend fun importEntriesBackupFromExternalStorage(uri: Uri, availableTypes: List<Type>): List<EntryModel> = withContext(defaultDispatcher)  {
+    override suspend fun importEntriesBackupFromExternalStorage(uri: Uri): List<EntryModel> = withContext(defaultDispatcher)  {
         val entryModels: MutableList<EntryModel> = ArrayList()
         val inputStream = contentResolver.openInputStream(uri)
         inputStream.use { ins ->
@@ -115,9 +114,10 @@ class DataTransferRepositoryImpl(
                             == Constants.EXPORT_ENTRY_TYPE
                         ) {
                             for (i in jsonObject.getAsJsonArray("data")) {
+                                yield()
                                 val item = i.asJsonObject
-                                val entry = item.getAsJsonPrimitive("entry").asString.lowercase()
-                                val pronunciation = item.getAsJsonPrimitive("pronunciation").asString
+                                val entry = item.getAsJsonPrimitive("entry").asString.lowercase().trim()
+                                val pronunciation = item.getAsJsonPrimitive("pronunciation").asString.trim()
                                 val lastUpdated = item.getAsJsonPrimitive("lastUpdated").asString
 
                                 // Validations
@@ -140,23 +140,25 @@ class DataTransferRepositoryImpl(
                                 if (!exists) {
                                     val entryModel = EntryModel(entry = entry, pronunciation = pronunciation)
                                     for (g in item.getAsJsonArray("definitionGroups")) {
+                                        yield()
                                         val group = g.asJsonObject
-                                        val type = group.getAsJsonPrimitive("type").asString.lowercase()
+                                        val type = group.getAsJsonPrimitive("type").asString.lowercase().trim()
                                         val order = group.getAsJsonPrimitive("order").asInt
                                         val groupModel = DefinitionGroupModel(type, order)
 
                                         val parsedDefinitions = mutableListOf<String>()
-                                        if (type.isNotEmpty() && availableTypes.any { it.type == type } && !parsedGroups.contains(type)) {
+                                        if (type.isNotEmpty() && !parsedGroups.contains(type)) {
                                             for (d in group.getAsJsonArray("definitionData")) {
+                                                yield()
                                                 val definitionData = d.asJsonObject
                                                 val definition =
-                                                    definitionData.getAsJsonPrimitive("definition").asString
+                                                    definitionData.getAsJsonPrimitive("definition").asString.trim()
 
                                                 val exampleJsonPrimitive =
                                                     definitionData.getAsJsonPrimitive("example")
                                                 val example: String? =
                                                     if (exampleJsonPrimitive.isString) {
-                                                        exampleJsonPrimitive.asString
+                                                        exampleJsonPrimitive.asString.trim()
                                                     } else null
 
                                                 val definitionOrder =

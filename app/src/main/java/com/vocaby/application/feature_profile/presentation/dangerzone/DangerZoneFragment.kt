@@ -36,9 +36,9 @@ class DangerZoneFragment : Fragment() {
 
         val eraseHistoryButton = view.findViewById<Button>(R.id.erase_history_button)
         eraseHistoryButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to erase your search history?")
+            builder.setTitle("Are you sure you wish to delete your search history?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("ERASE") { _, _ -> dictionaryViewModel.clearHistory() }
+                .setPositiveButton("DELETE") { _, _ -> dictionaryViewModel.clearHistory() }
                 .setNegativeButton("CANCEL", null)
             val alert = builder.create()
             alert.show()
@@ -46,47 +46,51 @@ class DangerZoneFragment : Fragment() {
 
         val eraseSavesButton = view.findViewById<Button>(R.id.erase_saves_button)
         eraseSavesButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to erase your saves?")
+            builder.setTitle("Are you sure you wish to delete your saves?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("ERASE") { _, _ -> saveViewModel.clearSaves()}
+                .setPositiveButton("DELETE") { _, _ -> saveViewModel.clearSaves()}
+                .setNegativeButton("CANCEL", null).create().show()
+        }
+
+        val eraseSaveCollectionsButton = view.findViewById<Button>(R.id.erase_save_collections_button)
+        eraseSaveCollectionsButton.setOnClickListener {
+            builder.setTitle("Are you sure you wish to delete your save collections?")
+                .setMessage("This action is irreversible.")
+                .setPositiveButton("DELETE") { _, _ -> saveViewModel.clearSaveCollections()}
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
         val eraseEntriesButton = view.findViewById<Button>(R.id.erase_custom_entries_button)
         eraseEntriesButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to erase your entries?")
+            builder.setTitle("Are you sure you wish to delete your entries?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("ERASE") { _, _ -> myEntryViewModel.clearUserEntries() }
+                .setPositiveButton("DELETE") { _, _ -> myEntryViewModel.clearUserEntries() }
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
         val eraseChartDataButton = view.findViewById<Button>(R.id.erase_chart_button)
         eraseChartDataButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to erase your chart data?")
+            builder.setTitle("Are you sure you wish to delete your chart data?")
                 .setMessage("This action is irreversible.")
-                .setPositiveButton("ERASE") { _, _ -> profileViewModel.eraseChartData() }
+                .setPositiveButton("DELETE") { _, _ -> profileViewModel.eraseChartData() }
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
         val resetEntryTypesButton = view.findViewById<Button>(R.id.reset_entry_type_button)
         resetEntryTypesButton.setOnClickListener {
             builder.setTitle("Are you sure you wish to reset?")
-                .setMessage("This action will revert your entry types to factory data")
+                .setMessage("This action will reset your entry types to factory data")
                 .setPositiveButton("RESET") { _, _ -> typeManagementViewModel.resetTypes() }
                 .setNegativeButton("CANCEL", null).create().show()
         }
 
         val eraseDataButton = view.findViewById<Button>(R.id.erase_data_button)
         eraseDataButton.setOnClickListener {
-            builder.setTitle("Are you sure you wish to erase all of your data?")
+            builder.setTitle("Are you sure you wish to delete all of your data?")
                 .setMessage("All of your data will be deleted. This action is irreversible.")
-                .setPositiveButton("ERASE") { _, _ ->
-                    // TODO: REPLACE WITH NEW USER
-                    saveViewModel.clearSaves()
-                    dictionaryViewModel.clearHistory()
-                    myEntryViewModel.clearUserEntries()
+                .setPositiveButton("DELETE") { _, _ ->
+                    profileViewModel.reset()
                     typeManagementViewModel.resetTypes()
-                    profileViewModel.eraseChartData()
                 }.setNegativeButton("CANCEL", null).create().show()
         }
 

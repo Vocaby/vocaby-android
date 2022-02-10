@@ -14,6 +14,11 @@ class SaveRepositoryImpl(
     private val saveDao: SaveDao
 ): SaveRepository {
     override suspend fun getSaveId(userId: Int, entry: String): Int? = saveDao.getSaveId(userId, entry)
+    override suspend fun replaceUser(newUserId: Int) {
+        saveDao.replaceCollectionsUser(newUserId)
+        saveDao.replaceSavesUser(newUserId)
+    }
+
     override fun getAllSavesCount(userId: Int): Flow<Int>
         = saveDao.getAllSavesCount(userId)
     override fun getAllSavedEntriesFlow(userId: Int): Flow<List<String>> = saveDao.getSavesFlow(userId)

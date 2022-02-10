@@ -21,6 +21,7 @@ class DataTransferActivity : AppCompatActivity() {
     private val dataTransferViewModel: DataTransferViewModel by viewModels()
     private lateinit var progressBar: ProgressBar
     private lateinit var closeButton: Button
+    private lateinit var cancelButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +32,12 @@ class DataTransferActivity : AppCompatActivity() {
             dataTransferViewModel.cancelJob()
             setResult(Activity.RESULT_CANCELED, dataTransferViewModel.addResult())
             finish()
+        }
+
+
+        cancelButton = findViewById(R.id.cancel_button)
+        cancelButton.setOnClickListener {
+            dataTransferViewModel.cancelJob()
         }
 
         progressBar = findViewById(R.id.progress_bar)
@@ -45,6 +52,7 @@ class DataTransferActivity : AppCompatActivity() {
                 when (transferState) {
                     is DataTransferState.Success -> {
                         setProgressBar(true)
+                        cancelButton.visibility = View.GONE
                         transferState.message.text?.let { progressText.text = it }
                             ?: transferState.message.textResource?.let { progressText.setText(it) }
 
@@ -69,6 +77,7 @@ class DataTransferActivity : AppCompatActivity() {
                     }
                     is DataTransferState.Error -> {
                         setProgressBar(false)
+                        cancelButton.visibility = View.GONE
                         transferState.uiText.text?.let { progressText.text = it }
                             ?: transferState.uiText.textResource?.let { progressText.setText(it) }
 

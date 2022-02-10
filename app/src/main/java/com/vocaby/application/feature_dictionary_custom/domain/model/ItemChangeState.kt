@@ -65,24 +65,12 @@ open class ItemChangeState<T> (
         return itemsDeleted.remove(key)
     }
 
-    fun hasItemDeleted(key: String): Boolean {
-        return itemsDeleted.containsKey(key)
-    }
-
-    fun getItemDeleted(key: String): T? {
-        return itemsDeleted.get(key)
-    }
-
     fun putItemUpdated(key: String, item: T) {
         if (!itemsAdded.containsKey(key)) itemsUpdated[key] = item
     }
 
     fun removeItemUpdated(key: String) {
         itemsUpdated.remove(key)
-    }
-
-    fun hasItemUpdated(key: String): Boolean {
-        return itemsUpdated.containsKey(key)
     }
 
     fun addItem(key: String, item: T): T? {

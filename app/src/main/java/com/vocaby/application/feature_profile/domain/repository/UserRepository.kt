@@ -9,7 +9,6 @@ interface UserRepository {
 
     /** --------------------- USER -------------------- **/
     fun getCurrentUser(): Flow<Int>
-    suspend fun replaceOwnership(oldUserId: Int, newUserId: Int)
     suspend fun setupBaseUser(): Boolean
     suspend fun getUser(): Int
     suspend fun createUser(): Int

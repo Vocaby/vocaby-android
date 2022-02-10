@@ -10,11 +10,14 @@ import android.widget.Button
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
+import com.vocaby.application.feature_dictionary_custom.presentation.home.MyEntryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DataTransferFragment : Fragment() {
+    private val myEntryViewModel: MyEntryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +60,7 @@ class DataTransferFragment : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             when (result.data!!.getIntExtra("TYPE", -1)) {
                 DataTransferViewModel.IMPORT_ENTRY -> {
-//                    entryViewModel.initializeEntries()
+                    myEntryViewModel.initializeCustomEntries()
                 }
             }
         }

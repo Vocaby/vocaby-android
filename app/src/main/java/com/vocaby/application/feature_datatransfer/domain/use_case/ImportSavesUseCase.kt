@@ -4,6 +4,7 @@ import android.net.Uri
 import com.vocaby.application.R
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.core.util.exceptions.IllegalFileException
+import com.vocaby.application.feature_datatransfer.common.Constants
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferState
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
@@ -12,6 +13,7 @@ import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
 import com.vocaby.application.feature_save.data.local.entity.UserSave
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -91,9 +93,20 @@ class ImportSavesUseCase @Inject constructor(
                 )
             }
         }
+
         saveRepository.addSaveCollectionItems(collectionItems)
 
-        userRepository.replaceOwnership(userId, newUser)
+        emit(
+            DataTransferState.InProgress(
+                message = UiText(text = "Finalizing..."),
+                count = transferModel.savedEntries.size
+            )
+        )
+        delay(Constants.GRACE_PERIOD)
+
+        saveRepository.clearSaveCollections(userId)
+        saveRepository.clearSaves(userId)
+        saveRepository.replaceUser(userId)
         emit(DataTransferState.Success(message = UiText(textResource = R.string.data_transfer_import_complete)))
     }.flowOn(Dispatchers.Default)
 }
