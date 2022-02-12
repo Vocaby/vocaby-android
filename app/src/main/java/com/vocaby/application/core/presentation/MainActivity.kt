@@ -18,7 +18,7 @@ import com.vocaby.application.feature_dictionary.presentation.dictionary.Diction
 import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 open class MainActivity : AppCompatActivity() {
@@ -55,8 +55,9 @@ open class MainActivity : AppCompatActivity() {
 
     private fun collect() {
         launchAndRepeatWithViewLifecycle {
-            val enabled = settingViewModel.dataSettings.first()
-            if (enabled) Bugsnag.start(this@MainActivity)
+            settingViewModel.dataSettings.collect { enabled ->
+                if (enabled) Bugsnag.start(this@MainActivity)
+            }
         }
     }
 

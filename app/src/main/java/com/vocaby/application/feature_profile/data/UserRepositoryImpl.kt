@@ -39,7 +39,7 @@ class UserRepositoryImpl constructor(
             dao.createUser(User()).toInt()
             userSettingsDataStore.updateData { preferences ->
                 preferences.toBuilder()
-                    .setReportErrorEnabled(true)
+                    .setReportErrorEnabled(false)
                     .setUpdateDictionaryEnabled(true)
                     .setChartMode(UserSettings.ChartMode.MONTHLY)
                     .setNotificationCollectionId(-1)

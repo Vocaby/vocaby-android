@@ -38,26 +38,25 @@ class SupportRepositoryImpl(
             ),
             FaqModel(
                 "Why are some definitions outdated?",
-                "Vocaby is powered by Princeton's Wordnet. " +
-                        "At Vocaby, we are maintaining and updating definitions so that " +
-                        "you are provided with the most up-to-date definition. " +
+                "Vocaby's dictionary initially derived definitions from public domain sources and Wordnets. " +
+                        "We are constantly maintaining and updating the dictionary so that " +
+                        "you are provided with the most up-to-date definitions. " +
                         "If you would like to help improve the dictionary, please submit the form below."
             ),
             FaqModel(
                 "Will definitions automatically update on my app?",
-                "Yup! Once we make updates to our dictionary, your will retrieve the " +
-                        "most up to date definitions on your app. This does require an " +
-                        "internet connection though."
+                "Yup! Once we make updates to the dictionary, your will retrieve the " +
+                        "most up to date definitions on your app. You can disable this feature in the settings page."
             ),
             FaqModel(
                 "Does Vocaby collect data from me?",
-                "We only collect error related data to improve the app and better your experience with Vocaby. " +
-                        "If you don't feel comfortable sharing this data, you can opt out in the Data Management page."
+                "Vocaby collects data locally to provide you with statistics. " +
+                        "This data is only available on your device and is not shared with anyone."
             ),
             FaqModel(
-                "If I do share my data, can it be traced back to me?",
+                "If I opt in to share error related data, can it be traced back to me?",
                 "No, the data does not contain any personally identifiable information that can trace back to you. " +
-                        "The data does contain some information about your device but anything shared with us is securely encrypted."
+                        "The data does contain information about the device but anything shared with us is securely encrypted."
             ),
             FaqModel(
                 "Why does my import keep failing?",
