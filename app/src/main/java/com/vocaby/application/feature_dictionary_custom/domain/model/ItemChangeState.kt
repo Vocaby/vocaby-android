@@ -6,9 +6,13 @@ import android.os.Parcelable
 open class ItemChangeState<T> (
     var id: Int = -1,
     private var itemsAdded: LinkedHashMap<String, T> = LinkedHashMap(),
-    private var itemsDeleted: LinkedHashMap<String, T> = LinkedHashMap(),
-    private var itemsUpdated: LinkedHashMap<String, T> = LinkedHashMap()
+    private var itemsDeleted: LinkedHashMap<Int, T> = LinkedHashMap(),
+    private var itemsUpdated: LinkedHashMap<Int, T> = LinkedHashMap()
 ): Parcelable {
+    val deletedItems get() = itemsDeleted.values.toList()
+    val addedItems get() = itemsAdded.values.toList()
+    val updatedItems get() = itemsUpdated.values.toList()
+
     override fun describeContents(): Int {
         return 0
     }
@@ -41,10 +45,6 @@ open class ItemChangeState<T> (
         }
     }
 
-    val addedItems: List<T> get() = ArrayList(itemsAdded.values)
-    val deletedItems: List<T> get() = ArrayList(itemsDeleted.values)
-    val updatedItems: List<T> get() = ArrayList(itemsUpdated.values)
-
     fun putItemAdded(key: String, item: T): T? {
         return itemsAdded.put(key, item)
     }
@@ -57,35 +57,45 @@ open class ItemChangeState<T> (
         return itemsAdded.containsKey(key)
     }
 
-    private fun putItemDeleted(key: String, item: T): T? {
+    private fun putItemDeleted(key: Int, item: T): T? {
         return itemsDeleted.put(key, item)
     }
 
-    fun removeItemDeleted(key: String): T? {
+    fun removeItemDeleted(key: Int): T? {
         return itemsDeleted.remove(key)
     }
 
-    fun putItemUpdated(key: String, item: T) {
-        if (!itemsAdded.containsKey(key)) itemsUpdated[key] = item
+    fun putItemUpdated(key: Int, item: T): T? {
+        return itemsUpdated.put(key, item)
     }
 
-    fun removeItemUpdated(key: String) {
-        itemsUpdated.remove(key)
+    fun removeItemUpdated(key: Int): T? {
+        return itemsUpdated.remove(key)
     }
 
-    fun addItem(key: String, item: T): T? {
-        if (itemsDeleted.containsKey(key)) {
-            return removeItemDeleted(key)
-        }
-        itemsUpdated.remove(key)
+    fun addNew(key: String, item: T): T? {
         return putItemAdded(key, item)
     }
 
-    fun removeItem(key: String, item: T): T? {
-        if (itemsAdded.containsKey(key)) {
-            return removeItemAdded(key)
-        }
-        itemsUpdated.remove(key)
+    fun updateNew(oldKey: String, item: T, newKey: String = oldKey): T? {
+        if (itemsAdded.containsKey(oldKey))
+            removeItemAdded(oldKey)
+        return putItemAdded(newKey, item)
+    }
+
+    fun removeNew(key: String): T? {
+        return removeItemAdded(key)
+    }
+
+    fun updateExisting(oldKey: Int, item: T, newKey: Int = oldKey): T? {
+        if (itemsDeleted.containsKey(oldKey))
+            removeItemDeleted(oldKey)
+        return putItemUpdated(newKey, item)
+    }
+
+    fun removeExisting(key: Int, item: T): T? {
+        if (itemsUpdated.containsKey(key))
+            removeItemUpdated(key)
         return putItemDeleted(key, item)
     }
 

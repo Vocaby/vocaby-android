@@ -33,7 +33,7 @@ class DataTransferViewModel @Inject constructor(
         const val IMPORT_ENTRY = 4
     }
 
-    private val transferScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val transferScope = CoroutineScope(Dispatchers.Default + CoroutineName("Data Transfer Coroutine"))
     private var actionType: Int = -1
     private val _transferState = MutableStateFlow<DataTransferState>(DataTransferState.InProgress(UiText()))
 
@@ -140,9 +140,9 @@ class DataTransferViewModel @Inject constructor(
     }
 
     fun cancelJob() {
-        _transferState.value = DataTransferState.Error(uiText = UiText(text = "Successfully cancelled!"))
         if (transferScope.isActive) {
             transferScope.cancel("User cancelled the job")
+            _transferState.value = DataTransferState.Error(uiText = UiText(text = "Successfully cancelled!"))
             cleanupImport()
         }
     }

@@ -25,6 +25,7 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
+@Suppress("BlockingMethodInNonBlockingContext")
 class DataTransferRepositoryImpl(
     private val contentResolver: ContentResolver,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
@@ -85,7 +86,7 @@ class DataTransferRepositoryImpl(
                         }
                     } else {
                         throw IllegalFileException(
-                            "Backup file has the wrong entry type",
+                            "Backup file has the wrong backup type",
                             IllegalFileException.INVALID_FILE
                         )
                     }
@@ -113,7 +114,8 @@ class DataTransferRepositoryImpl(
                         if (jsonObject.getAsJsonPrimitive(Constants.EXPORT_TYPE_FIELD).asString
                             == Constants.EXPORT_ENTRY_TYPE
                         ) {
-                            for (i in jsonObject.getAsJsonArray("data")) {
+                            val data = jsonObject.getAsJsonObject("data")
+                            for (i in data.getAsJsonArray("customEntries")) {
                                 yield()
                                 val item = i.asJsonObject
                                 val entry = item.getAsJsonPrimitive("entry").asString.lowercase().trim()
@@ -131,6 +133,7 @@ class DataTransferRepositoryImpl(
 
                                 if (!Formatter.dateIsValid(lastUpdated)) {
                                     throw IllegalFileException(
+                                        "The file is malformed",
                                         IllegalFileException.INVALID_FILE
                                     )
                                 }
@@ -194,7 +197,7 @@ class DataTransferRepositoryImpl(
                             }
                         } else {
                             throw IllegalFileException(
-                                "Backup file has the wrong entry type",
+                                "Backup file has the wrong backup type",
                                 IllegalFileException.INVALID_FILE
                             )
                         }
@@ -206,7 +209,7 @@ class DataTransferRepositoryImpl(
                     }
                 } catch (e: JsonSyntaxException) {
                     throw IllegalFileException(
-                        e.stackTraceToString(),
+                        "Invalid file format...",
                         IllegalFileException.INVALID_FORMAT
                     )
                 }

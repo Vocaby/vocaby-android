@@ -68,19 +68,8 @@ class EntryGroupViewModel @Inject constructor(
                     _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("The definition already exists"))
                 }
                 else -> {
-                    var definitionToAdd = initialDefinitions[definition]
-
-                    if (definitionToAdd != null) {
-                        // this case is important when the user deletes an existing definition
-                        // exits out, and add back the same definition with a potential update
-                        // preserve the id
-                        definitionToAdd = definitionToAdd.copy(example = example, order = definitionGroup.definitionData.size)
-                        definitionGroup.addNewDefinition(definitionToAdd)
-                    } else {
-                        definitionToAdd = definitionGroup.addNewDefinition(definition, example)
-                    }
-
-                    definitionChanges.addItem(definition, definitionToAdd)
+                    val definitionToAdd = definitionGroup.addNewDefinition(definition, example)
+                    definitionChanges.addNew(definition, definitionToAdd)
                     _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(0, ItemState.ADD))
                 }
             }
@@ -104,13 +93,15 @@ class EntryGroupViewModel @Inject constructor(
                         if (oldDefinition != newDefinition || oldExample != newExample) {
                             this[position].definition = newDefinition
                             this[position].example = newExample
-                            if (this[position].id == -1) {
-                                definitionChanges.removeItemAdded(oldDefinition)
-                                definitionChanges.putItemAdded(newDefinition, this[position])
-                            } else {
-                                definitionChanges.removeItemUpdated(oldDefinition)
-                                definitionChanges.putItemUpdated(newDefinition, this[position])
-                            }
+
+                            if (this[position].isNew) definitionChanges.updateNew(
+                                oldDefinition,
+                                this[position],
+                                newDefinition
+                            ) else definitionChanges.updateExisting(
+                                this[position].id,
+                                this[position],
+                            )
 
                             _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(position, ItemState.UPDATE))
                         }
@@ -124,7 +115,8 @@ class EntryGroupViewModel @Inject constructor(
         // Remove the definition
         val definitionRemoved = definitionGroup.removeDefinition(position)
         // Add the removed definition to the changes model
-        definitionChanges.removeItem(definitionRemoved.definition, definitionRemoved)
+        if (definitionRemoved.isNew) definitionChanges.removeNew(definitionRemoved.definition)
+        else definitionChanges.removeExisting(definitionRemoved.id, definitionRemoved) // once removed, removed forever
     }
 
     fun saveEntryGroup() {
@@ -146,15 +138,14 @@ class EntryGroupViewModel @Inject constructor(
                 val currentDefinition = definitionGroup.definitionData[i]
                 val originalDefinition = initialDefinitions[currentDefinition.definition]
 
-                if (originalDefinition != null) {
+                if (originalDefinition != null && originalDefinition.id == currentDefinition.id) {
                     if (originalDefinition.order == currentDefinition.order
                         && originalDefinition.example == currentDefinition.example
-                        && originalDefinition.id == currentDefinition.id
                     ) {
-                        definitionChanges.removeItemUpdated(currentDefinition.definition)
+                        definitionChanges.removeItemUpdated(originalDefinition.id)
                     } else {
                         definitionChanges.putItemUpdated(
-                            currentDefinition.definition,
+                            originalDefinition.id,
                             currentDefinition
                         )
                     }

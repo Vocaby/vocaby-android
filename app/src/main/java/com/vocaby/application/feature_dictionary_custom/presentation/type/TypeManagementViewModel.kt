@@ -32,9 +32,6 @@ class TypeManagementViewModel @Inject constructor(
     val typeState get() = _typeState.asStateFlow()
     val uiEvent get() = _uiEvent.asSharedFlow()
 
-    companion object {
-    }
-
     init {
         viewModelScope.launch {
             val types = getTypesUseCase().first()
@@ -67,11 +64,10 @@ class TypeManagementViewModel @Inject constructor(
 
                     if (typeToAdd != null) {
                         typeToAdd = Type(typeToAdd.type, 0, typeId = typeToAdd.typeId)
-                        typeChangeState.removeItemDeleted(typeToAdd.type)
-                        typeChangeState.putItemUpdated(typeToAdd.type, typeToAdd)
+                        typeChangeState.updateExisting(typeToAdd.typeId, typeToAdd)
                     } else {
                         typeToAdd = Type(sanitized, 0, true)
-                        typeChangeState.addItem(typeToAdd.type, typeToAdd)
+                        typeChangeState.addNew(typeToAdd.type, typeToAdd)
                     }
 
                     _typeState.value.add(0, typeToAdd)
@@ -91,7 +87,9 @@ class TypeManagementViewModel @Inject constructor(
                 _typeState.value[i].order = i
             }
 
-            typeChangeState.removeItem(typeToRemove.type, typeToRemove)
+            if (typeToRemove.typeId == -1) typeChangeState.removeNew(typeToRemove.type)
+            else typeChangeState.removeExisting(typeToRemove.typeId, typeToRemove)
+
             _uiEvent.emit(TypeUiEvent.UpdateAdapter(position, ItemState.DELETE))
         }
     }
@@ -124,10 +122,10 @@ class TypeManagementViewModel @Inject constructor(
             val originalType = initTypes[currentType.type]
             if (originalType != null) {
                 if (originalType.order == currentType.order) {
-                    typeChangeState.removeItemUpdated(currentType.type)
+                    typeChangeState.removeItemUpdated(originalType.typeId)
                 } else {
                     typeChangeState.putItemUpdated(
-                        currentType.type,
+                        originalType.typeId,
                         currentType
                     )
                 }

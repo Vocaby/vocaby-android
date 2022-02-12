@@ -14,6 +14,8 @@ data class DefinitionModel(
     @Transient
     var id: Int = -1,
 ) : Parcelable, Serializable, Comparable<DefinitionModel> {
+    val isNew get() = id == -1
+
     override fun compareTo(other: DefinitionModel): Int {
         return order.compareTo(other.order)
     }

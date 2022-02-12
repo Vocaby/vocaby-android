@@ -9,7 +9,10 @@ import com.vocaby.application.feature_profile.domain.use_case.SettingsUseCases
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.use_cases.collection.GetAllCollectionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

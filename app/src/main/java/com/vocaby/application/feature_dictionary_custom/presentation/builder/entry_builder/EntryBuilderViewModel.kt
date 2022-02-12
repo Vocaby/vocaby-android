@@ -93,7 +93,7 @@ class EntryBuilderViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (selectedType != null) {
-                _uiEvent.emit(EntryBuilderUiEvent.OpenGroupBuilder(selectedType))
+                openGroupCreator(selectedType)
             } else {
                 if (typesModified) {
                     calculateAvailableTypes()
@@ -118,53 +118,61 @@ class EntryBuilderViewModel @Inject constructor(
         }
     }
 
-    fun addExistingGroupDataToIntent(intent: Intent, position: Int): Intent {
-        val type = entryData.getDefinitionGroup(position).type
-
-        intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position) as Parcelable)
-        intent.putExtra(DEFINITION_CHANGES, definitionChangesMap[type])
-        intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups[type] ?: DefinitionGroupModel(type, entryData.definitionGroups.size) as Parcelable)
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.UPDATE as Parcelable)
-        return intent
-    }
-
-    fun addNewGroupDataToIntent(intent: Intent, type: String): Intent {
-        val newGroup = DefinitionGroupModel(type, order = entryData.definitionGroups.size)
-
-        intent.putExtra(GROUP_KEY, newGroup as Parcelable)
-        intent.putExtra(DEFINITION_CHANGES, ItemChangeState<DefinitionModel>())
-        intent.putExtra(INITIAL_DEFINITIONS_KEY, newGroup as Parcelable)
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.ADD as Parcelable)
-        return intent
-    }
-
-    fun setSelectedGroup(selectedGroup: Int) {
-        this.selectedGroup = selectedGroup
-    }
-
-    fun removeGroup(groupDefinitionState: ItemState, position: Int) {
+    fun openGroupEditor(position: Int) {
         viewModelScope.launch {
-            if (groupDefinitionState == ItemState.UPDATE) {
-                val groupRemoved = entryData.removeGroup(position)
+            selectedGroup = position
+            val type = entryData.getDefinitionGroup(position).type
 
-                // clear definition changes as well for the removed group
-                definitionChangesMap.remove(groupRemoved.type)
-                groupChanges.removeItem(groupRemoved.type, groupRemoved)
-                val initType = initTypes[groupRemoved.type]
-                initType?.let { availableTypes.add(
-                        if (availableTypes.size < it.order) availableTypes.size else it.order,
-                        it
-                    )
-                }
+            val intent = Intent()
+            intent.putExtra(GROUP_KEY, entryData.getDefinitionGroup(position) as Parcelable)
+            intent.putExtra(DEFINITION_CHANGES, definitionChangesMap[type])
+            intent.putExtra(INITIAL_DEFINITIONS_KEY, initialGroups[type] ?: DefinitionGroupModel(type, entryData.definitionGroups.size) as Parcelable)
+            intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.UPDATE as Parcelable)
 
-                _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(position, ItemState.DELETE))
+            _uiEvent.emit(EntryBuilderUiEvent.OpenGroupBuilder(type, intent))
+        }
+    }
+
+    private fun openGroupCreator(type: String) {
+        viewModelScope.launch {
+            val newGroup = DefinitionGroupModel(type, order = entryData.definitionGroups.size)
+
+            val intent = Intent()
+            intent.putExtra(GROUP_KEY, newGroup as Parcelable)
+            intent.putExtra(DEFINITION_CHANGES, ItemChangeState<DefinitionModel>())
+            intent.putExtra(INITIAL_DEFINITIONS_KEY, newGroup as Parcelable)
+            intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemState.ADD as Parcelable)
+
+            _uiEvent.emit(EntryBuilderUiEvent.OpenGroupBuilder(type, intent))
+        }
+    }
+
+    fun removeGroup(position: Int) {
+        viewModelScope.launch {
+            val groupRemoved = entryData.removeGroup(position)
+
+            // clear definition changes as well for the removed group
+            definitionChangesMap.remove(groupRemoved.type)
+
+            if (groupRemoved.isNew) groupChanges.removeNew(groupRemoved.type)
+            else groupChanges.removeExisting(groupRemoved.groupId, groupRemoved)
+
+            val initType = initTypes[groupRemoved.type]
+            initType?.let { availableTypes.add(
+                    if (availableTypes.size < it.order) availableTypes.size else it.order,
+                    it
+                )
             }
+
+            _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(position, ItemState.DELETE))
         }
     }
 
     private fun addGroup(newGroup: DefinitionGroupModel) {
+        // addGroup will always be new
         viewModelScope.launch {
             entryData.addDefinitionGroup(newGroup)
+            groupChanges.addNew(newGroup.type, newGroup)
             groupChanges.putItemAdded(newGroup.type, newGroup)
             availableTypes.removeIf {it.type == newGroup.type}
             _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(selectedGroup, ItemState.ADD))
@@ -174,7 +182,10 @@ class EntryBuilderViewModel @Inject constructor(
     private fun updateGroup(definitionGroup: DefinitionGroupModel) {
         viewModelScope.launch {
             entryData.replaceDefinitionGroup(definitionGroup.type, definitionGroup)
-            groupChanges.putItemUpdated(definitionGroup.type, definitionGroup)
+
+            if (definitionGroup.isNew) groupChanges.updateNew(definitionGroup.type, definitionGroup)
+            else groupChanges.updateExisting(definitionGroup.groupId, definitionGroup)
+
             _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(selectedGroup, ItemState.UPDATE))
         }
     }
@@ -185,11 +196,12 @@ class EntryBuilderViewModel @Inject constructor(
                 val definitionGroup: DefinitionGroupModel? = data.getParcelableExtra(GROUP_KEY)
 
                 definitionGroup?.let {
-                    val groupDefinitionState: ItemState = data.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)!!
+                    val groupBuilderResult: ItemState = data.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)!!
                     if (definitionGroup.isEmpty) {
-                        removeGroup(groupDefinitionState, selectedGroup)
+                        if (groupBuilderResult == ItemState.UPDATE)
+                            removeGroup(selectedGroup)
                     } else {
-                        if (groupDefinitionState == ItemState.UPDATE) {
+                        if (groupBuilderResult == ItemState.UPDATE) {
                             updateGroup(definitionGroup)
                         } else {
                             addGroup(definitionGroup)
@@ -275,9 +287,9 @@ class EntryBuilderViewModel @Inject constructor(
 
                 originalGroup?.let {
                     if (originalGroup.order == currentGroup.order) {
-                        groupChanges.removeItemUpdated(currentGroup.type)
+                        groupChanges.removeItemUpdated(originalGroup.groupId)
                     } else {
-                        groupChanges.putItemUpdated(currentGroup.type, currentGroup)
+                        groupChanges.putItemUpdated(originalGroup.groupId, currentGroup)
                     }
                 }
             }

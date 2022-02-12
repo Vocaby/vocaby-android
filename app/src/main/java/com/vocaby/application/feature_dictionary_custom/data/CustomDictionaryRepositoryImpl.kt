@@ -65,7 +65,7 @@ class CustomDictionaryRepositoryImpl constructor(
         groupChanges: ItemChangeState<DefinitionGroupModel>,
         definitionChangesMap: MutableMap<String, ItemChangeState<DefinitionModel>>,
         saveTime: Date
-    ): Int {
+    ): Int = withContext(defaultDispatcher) {
         val entryId: Int = if (groupChanges.id == -1) {
             dao.insertCustomEntry(
                 CustomEntry(
@@ -177,7 +177,7 @@ class CustomDictionaryRepositoryImpl constructor(
         dao.updateCustomDefinitions(updatedDefinitions)
         dao.deleteCustomDefinitions(deletedDefinitions)
 
-        return entryId
+        return@withContext entryId
     }
 
     override suspend fun insertNewEntries(userId: Int, data: List<EntryModel>) = withContext(defaultDispatcher) {

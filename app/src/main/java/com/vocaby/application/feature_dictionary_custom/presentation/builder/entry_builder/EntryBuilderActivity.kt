@@ -108,9 +108,9 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                     finish()
                 }
                 is EntryBuilderUiEvent.OpenGroupBuilder -> {
-                    var groupBuilderActivityData = Intent(this, EntryGroupBuilderActivity::class.java)
-                    groupBuilderActivityData =
-                        entryBuilderViewModel.addNewGroupDataToIntent(groupBuilderActivityData, event.selectedType)
+                    val groupBuilderActivityData =
+                        Intent(this, EntryGroupBuilderActivity::class.java)
+                    groupBuilderActivityData.replaceExtras(event.intent)
                     groupBuilderActivity.launch(groupBuilderActivityData)
                 }
             }
@@ -176,17 +176,12 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     }
 
     override fun onGroupCardClicked(position: Int) {
-        entryBuilderViewModel.setSelectedGroup(position)
-        var groupBuilderActivityData = Intent(this, EntryGroupBuilderActivity::class.java)
-        groupBuilderActivityData =
-            entryBuilderViewModel.addExistingGroupDataToIntent(groupBuilderActivityData, position)
-
-        groupBuilderActivity.launch(groupBuilderActivityData)
+        entryBuilderViewModel.openGroupEditor(position)
     }
 
     override fun onItemRemoved(position: Int) {
         val holder = recyclerView.findViewHolderForAdapterPosition(position)
-        entryBuilderViewModel.removeGroup(ItemState.UPDATE, position)
+        entryBuilderViewModel.removeGroup(position)
 
         // Google's Implementation of ItemTouchHelper assumes that
         // the swiped items are cleaned up. Because the view is recycled
