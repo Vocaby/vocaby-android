@@ -113,7 +113,7 @@ class DataTransferViewModel @Inject constructor(
     }
 
     private fun importEntries(uri: Uri) {
-        transferScope.launch {
+        transferScope.launch(importExceptionHandler) {
             dataTransferUseCases.importCustomEntriesUseCase(uri)
                 .collectLatest { transferState ->
                     _transferState.emit(transferState)
@@ -122,7 +122,7 @@ class DataTransferViewModel @Inject constructor(
     }
 
     private fun writeSaves(uri: Uri) {
-        transferScope.launch {
+        transferScope.launch(exportExceptionHandler) {
             dataTransferUseCases.exportSavesUseCase(uri)
                 .collectLatest { transferState ->
                     _transferState.emit(transferState)
@@ -131,7 +131,7 @@ class DataTransferViewModel @Inject constructor(
     }
 
     private fun writeEntries(uri: Uri) {
-        transferScope.launch {
+        transferScope.launch(exportExceptionHandler) {
             dataTransferUseCases.exportCustomEntriesUseCase(uri)
                 .collectLatest { transferState ->
                     _transferState.emit(transferState)
@@ -151,7 +151,7 @@ class DataTransferViewModel @Inject constructor(
         cleanupImport()
         when (e) {
             is IllegalFileException -> {
-                _transferState.value = DataTransferState.Error(uiText = UiText(text = e.message))
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = e.message, prefix = "Failed to import"))
             }
             is StreamCorruptedException -> {
                 _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_file))
@@ -160,18 +160,23 @@ class DataTransferViewModel @Inject constructor(
                 _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_wrong_backup_file))
             }
             is SQLiteConstraintException -> {
-                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file has invalid data"))
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file has invalid data", prefix = "Failed to import"))
             }
             is JsonSyntaxException -> {
-                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file is invalid"))
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file is invalid", prefix = "Failed to import"))
             }
             is ClassCastException -> {
-                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file is invalid"))
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file is invalid", prefix = "Failed to import"))
             }
             else -> {
                 _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_generic))
             }
         }
+    }
+
+    private val exportExceptionHandler = CoroutineExceptionHandler { _, _ ->
+        _transferState.value =
+            DataTransferState.Error(uiText = UiText(text = "Failed to export..."))
     }
 
     private fun cleanupImport() {
