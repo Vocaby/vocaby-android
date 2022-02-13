@@ -41,7 +41,7 @@ class SupportRepositoryImpl(
                 "Vocaby's dictionary initially derived definitions from public domain sources and Wordnets. " +
                         "We are constantly maintaining and updating the dictionary so that " +
                         "you are provided with the most up-to-date definitions. " +
-                        "If you would like to help improve the dictionary, please submit the form below."
+                        "If you would like to help improve the dictionary, please submit the form below!"
             ),
             FaqModel(
                 "Will definitions automatically update on my app?",
@@ -56,11 +56,11 @@ class SupportRepositoryImpl(
             FaqModel(
                 "If I opt in to share error related data, can it be traced back to me?",
                 "No, the data does not contain any personally identifiable information that can trace back to you. " +
-                        "The data does contain information about the device but anything shared with us is securely encrypted."
+                        "The data does contain generic information about your device but anything shared with us is securely encrypted."
             ),
             FaqModel(
                 "Why does my import keep failing?",
-                "Please make sure that your exported backup json " +
+                "Please make sure that your imported backup json " +
                         "file was indeed created by the app and was not tampered with. " +
                         "If you continue to experience this issue, please feel " +
                         "free to reach out to us!"
