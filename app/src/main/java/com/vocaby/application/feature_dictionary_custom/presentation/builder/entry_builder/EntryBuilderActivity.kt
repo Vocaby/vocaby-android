@@ -3,10 +3,8 @@ package com.vocaby.application.feature_dictionary_custom.presentation.builder.en
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.view.animation.AlphaAnimation
+import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
@@ -14,7 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
@@ -24,6 +24,7 @@ import com.vocaby.application.states.ItemState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
@@ -37,6 +38,8 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     private lateinit var groupAlert: TextView
     private lateinit var pronunciationInput: EditText
     private lateinit var helpDialogBuilder: BottomSheetDialog
+    private lateinit var appBar: AppBarLayout
+    private lateinit var emptyCard: LinearLayout
 
     private val entryBuilderViewModel: EntryBuilderViewModel by viewModels()
 
@@ -46,8 +49,12 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         entryView = findViewById(R.id.entry_header)
         editorHeader = findViewById(R.id.editor_header)
         groupAlert = findViewById(R.id.group_header_alert)
-        pronunciationInput = findViewById(R.id.feedback_input)
-
+        pronunciationInput = findViewById(R.id.pronunciation_input)
+        emptyCard = findViewById(R.id.empty_card)
+        appBar = findViewById(R.id.entry_app_bar)
+        appBar.addLiftOnScrollListener { elevation: Float, _: Int ->
+            appBar.elevation = elevation
+        }
 
         setUpBottomSheet()
         setupRecyclerView()
@@ -63,6 +70,19 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
             }
         }
     }
+
+    private fun updateEmptyCardVisibility() {
+        if (customGroupAdapter.itemCount == 0) {
+            val show = AlphaAnimation(0f, 1.0f)
+            show.duration = 300
+
+            emptyCard.visibility = View.VISIBLE
+            emptyCard.startAnimation(show)
+        } else {
+            emptyCard.visibility = View.INVISIBLE
+        }
+    }
+
     private suspend fun collectUiState() {
         entryBuilderViewModel.uiState.collect { state ->
             when (state) {
@@ -72,6 +92,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                     entryView.text = state.entry
                     pronunciationInput.setText(state.pronunciation, TextView.BufferType.EDITABLE)
                     customGroupAdapter.setList(state.groups)
+                    updateEmptyCardVisibility()
                 }
             }
 
@@ -86,9 +107,11 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                         ItemState.ADD -> {
                             groupAlert.visibility = View.INVISIBLE
                             customGroupAdapter.addItem()
+                            updateEmptyCardVisibility()
                         }
                         ItemState.DELETE -> {
                             customGroupAdapter.removeItem(event.position)
+                            updateEmptyCardVisibility()
                         }
                         ItemState.UPDATE -> {
                             customGroupAdapter.editItem(event.position)
@@ -153,7 +176,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         }
 
         // Add new group button
-        val addGroupButton = findViewById<Button>(R.id.add_def_group_button)
+        val addGroupButton = findViewById<ExtendedFloatingActionButton>(R.id.add_def_group_button)
         addGroupButton.setOnClickListener { entryBuilderViewModel.getAvailableTypes() }
 
         val helpButton = findViewById<TextView>(R.id.help_button)

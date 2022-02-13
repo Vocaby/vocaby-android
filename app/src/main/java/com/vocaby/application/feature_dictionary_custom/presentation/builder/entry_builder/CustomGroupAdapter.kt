@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
+import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.ItemTouchHelperAdapter
 import com.vocaby.application.core.util.ItemTouchHelperViewHolder
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
@@ -105,19 +106,12 @@ class CustomGroupAdapter(
         private val card: MaterialCardView = itemView.findViewById(R.id.group_card)
         private val groupHeader: TextView = itemView.findViewById(R.id.group_card_header)
         private val definitionCounter: TextView = itemView.findViewById(R.id.group_card_def_counter)
-        private val definitionCounterHeader: TextView = itemView.findViewById(R.id.group_card_def_counter_header)
         val dragHandle: FrameLayout = itemView.findViewById(R.id.drag_handle)
         val container: View = itemView.findViewById(R.id.card_container)
 
         fun bind(header: String, count: Int) {
             groupHeader.text = header
-            definitionCounter.text = "$count"
-
-            if (count > 1) {
-                definitionCounterHeader.setText(R.string.definition_header_plural)
-            } else {
-                definitionCounterHeader.setText(R.string.definition_header_singular)
-            }
+            definitionCounter.text = Formatter.cleanNumber(count, "Definition", "Definitions")
         }
 
         override fun onItemDragged() {

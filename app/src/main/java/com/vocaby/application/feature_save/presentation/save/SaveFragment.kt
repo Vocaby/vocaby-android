@@ -4,25 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.vocaby.application.R
-import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_save.presentation.collection.SaveCollectionBaseFragment
-import kotlinx.coroutines.flow.collect
 
 class SaveFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
     private lateinit var appBar: AppBarLayout
-    private lateinit var saveCount: TextView
     private lateinit var tabs: TabLayout
-    private val savesViewModel: SaveViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,7 +24,6 @@ class SaveFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_save, container, false)
         tabs = view.findViewById(R.id.save_tab)
-        saveCount = view.findViewById(R.id.save_count)
         appBar = view.findViewById(R.id.save_app_bar)
         appBar.outlineProvider = null
 
@@ -38,12 +31,6 @@ class SaveFragment : Fragment() {
         viewPager.offscreenPageLimit = 1
         viewPager.adapter = SaveFragmentPagerAdapter(this)
         viewPager.isUserInputEnabled = false
-
-        launchAndRepeatWithViewLifecycle {
-            savesViewModel.saveCount.collect {
-                saveCount.text = it
-            }
-        }
 
         return view
     }
@@ -53,9 +40,9 @@ class SaveFragment : Fragment() {
 
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             if (position == 0) {
-                tab.text = "ALL SAVES"
-            } else {
                 tab.text = "COLLECTIONS"
+            } else {
+                tab.text = "ALL SAVES"
             }
         }.attach()
     }
@@ -66,8 +53,8 @@ class SaveFragment : Fragment() {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                1 -> SaveCollectionBaseFragment()
-                else -> AllSavesFragment()
+                1 -> AllSavesFragment()
+                else -> SaveCollectionBaseFragment()
             }
         }
     }

@@ -2,8 +2,10 @@ package com.vocaby.application.feature_dictionary_custom.presentation.builder.gr
 
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AlphaAnimation
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +13,9 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
@@ -36,6 +40,8 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
     private lateinit var dialogExampleInput: EditText
     private lateinit var dialogHeader: TextView
     private lateinit var dialogSaveButton: AppCompatButton
+    private lateinit var appBar: AppBarLayout
+    private lateinit var emptyCard: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +49,17 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         saveAlert = findViewById(R.id.definition_add_alert)
         val activityHeader = findViewById<TextView>(R.id.custom_group_activity_header)
         val typeHeader = findViewById<TextView>(R.id.type_header)
+        emptyCard = findViewById(R.id.empty_card)
+        appBar = findViewById(R.id.entry_app_bar)
+        appBar.addLiftOnScrollListener { elevation: Float, _: Int ->
+            appBar.elevation = elevation
+        }
 
 
         setupDefinitionBuilder()
         setupButtons()
         setupRecyclerView()
+
         launchAndRepeatWithViewLifecycle {
             launch {
                 entryGroupViewModel.uiState.collect { state ->
@@ -56,6 +68,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
                             customDefAdapter.setList(state.definitions)
                             activityHeader.text = state.typeHeader
                             typeHeader.text = state.type
+                            updateEmptyCardVisibility()
                         }
                         is EntryGroupBuilderUiState.InProgress -> {}
                     }
@@ -69,13 +82,14 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
                             when (event.state) {
                                 ItemState.ADD -> {
                                     customDefAdapter.addItem()
+                                    updateEmptyCardVisibility()
                                 }
                                 ItemState.UPDATE -> {
                                     customDefAdapter.updateItem(event.position)
                                 }
                                 ItemState.DELETE -> {
-                                    entryGroupViewModel.removeDefinition(event.position)
                                     customDefAdapter.notifyItemRemoved(event.position)
+                                    updateEmptyCardVisibility()
                                 }
                             }
 
@@ -94,6 +108,18 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
                     }
                 }
             }
+        }
+    }
+
+    private fun updateEmptyCardVisibility() {
+        if (customDefAdapter.itemCount == 0) {
+            val show = AlphaAnimation(0f, 1.0f)
+            show.duration = 300
+
+            emptyCard.visibility = View.VISIBLE
+            emptyCard.startAnimation(show)
+        } else {
+            emptyCard.visibility = View.INVISIBLE
         }
     }
 
@@ -124,7 +150,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         }
 
         // Add Definition Button
-        val addDefinitionButton = findViewById<Button>(R.id.add_definition_button)
+        val addDefinitionButton = findViewById<ExtendedFloatingActionButton>(R.id.add_definition_button)
         addDefinitionButton.setOnClickListener {
             dialogDefinitionInput.text.clear()
             dialogExampleInput.text.clear()
@@ -167,7 +193,6 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
     override fun onItemRemoved(position: Int) {
         val holder = recyclerView.findViewHolderForAdapterPosition(position)
         entryGroupViewModel.removeDefinition(position)
-        customDefAdapter.notifyItemRemoved(position)
 
         // Google's Implementation of ItemTouchHelper assumes that
         // the swiped items are cleaned up. Because the view is recycled

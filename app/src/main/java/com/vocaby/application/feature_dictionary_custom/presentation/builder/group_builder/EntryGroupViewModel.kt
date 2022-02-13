@@ -80,7 +80,7 @@ class EntryGroupViewModel @Inject constructor(
         viewModelScope.launch {
             when(validateDefinitionUpdateUseCase(position, oldDefinition, newDefinition, oldExample, newExample, definitionGroup)) {
                 is UserInputState.EmptyInput -> {
-                    _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(position, ItemState.DELETE))
+                    removeDefinition(position)
                 }
                 is UserInputState.SameInput<*> -> {
                     _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("Enter a new definition"))
@@ -112,11 +112,14 @@ class EntryGroupViewModel @Inject constructor(
     }
 
     fun removeDefinition(position: Int) {
-        // Remove the definition
-        val definitionRemoved = definitionGroup.removeDefinition(position)
-        // Add the removed definition to the changes model
-        if (definitionRemoved.isNew) definitionChanges.removeNew(definitionRemoved.definition)
-        else definitionChanges.removeExisting(definitionRemoved.id, definitionRemoved) // once removed, removed forever
+        viewModelScope.launch {
+            // Remove the definition
+            val definitionRemoved = definitionGroup.removeDefinition(position)
+            // Add the removed definition to the changes model
+            if (definitionRemoved.isNew) definitionChanges.removeNew(definitionRemoved.definition)
+            else definitionChanges.removeExisting(definitionRemoved.id, definitionRemoved) // once removed, removed forever
+            _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(position, ItemState.DELETE))
+        }
     }
 
     fun saveEntryGroup() {

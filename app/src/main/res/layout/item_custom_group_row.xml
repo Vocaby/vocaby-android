@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/group_card"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="8dp"
     app:cardCornerRadius="@dimen/radius"
     app:cardElevation="0dp"
     app:strokeColor="@color/light_gray"
     app:strokeWidth="1dp">
-
     <LinearLayout
         android:id="@+id/card_container"
         android:layout_width="match_parent"
@@ -17,42 +17,44 @@
         android:background="@color/white"
         android:orientation="horizontal"
         android:baselineAligned="false">
-        <TextView
-            android:id="@+id/group_card_header"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingBottom="4dp"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="12dp"
-            android:layout_gravity="center_vertical"
-            android:textAllCaps="true"
-            android:textSize="18sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:fontFamily="@font/playfairdisplay_bold"
-            android:textColor="@color/colorPrimaryAccent" />
-
-        <TextView
-            android:id="@+id/group_card_def_counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textSize="11sp"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/group_card_def_counter_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/definition_header_singular"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="18dp"
-            android:layout_gravity="center_vertical"
-            android:textSize="11sp"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:textColor="@color/black" />
+            android:paddingStart="@dimen/container_side_margin"
+            android:paddingEnd="@dimen/container_side_margin"
+            android:paddingTop="@dimen/container_gap_margin"
+            android:paddingBottom="@dimen/container_gap_margin">
+            <TextView
+                android:id="@+id/group_card_header"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="@font/playfairdisplay_bold"
+                android:maxLines="1"
+                android:paddingBottom="4dp"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimaryAccent"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/group_card_def_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/sourcesanspro_regular"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/group_card_header" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
         <FrameLayout
             android:id="@+id/drag_handle"
             android:layout_width="60dp"
