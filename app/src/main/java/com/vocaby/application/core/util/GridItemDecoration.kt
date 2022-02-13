@@ -2,6 +2,7 @@ package com.vocaby.application.core.util
 
 import android.graphics.Rect
 import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 
@@ -14,10 +15,13 @@ class GridItemDecoration(private val margin: Int): RecyclerView.ItemDecoration()
     ) {
         super.getItemOffsets(outRect, view, parent, state)
         val position = parent.getChildAdapterPosition(view)
-        outRect.bottom = margin
+        val layoutParams = view.layoutParams as GridLayoutManager.LayoutParams
+        layoutParams.bottomMargin = margin
 
         if (position % 2 == 0) {
-            outRect.right = margin
+            layoutParams.rightMargin = margin
         }
+
+        view.layoutParams = layoutParams
     }
 }
