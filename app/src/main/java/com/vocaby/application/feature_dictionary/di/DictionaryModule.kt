@@ -91,9 +91,9 @@ class DictionaryModule {
 
         val okHttpClient = OkHttpClient.Builder()
 //            .addInterceptor(httpLoggingInterceptor)
-            .connectTimeout(2, TimeUnit.SECONDS)
-            .readTimeout(2, TimeUnit.SECONDS)
-            .writeTimeout(2, TimeUnit.SECONDS)
+            .connectTimeout(1, TimeUnit.SECONDS)
+            .readTimeout(1, TimeUnit.SECONDS)
+            .writeTimeout(1, TimeUnit.SECONDS)
             .build()
 
         return Retrofit.Builder()

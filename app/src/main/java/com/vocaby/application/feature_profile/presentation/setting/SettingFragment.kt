@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.vocaby.application.R
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.feature_profile.presentation.dangerzone.DangerZoneFragment
 import com.vocaby.application.feature_profile.presentation.setting.receivers.NotificationReceiver
 import com.vocaby.vocabywidgets.DescriptiveButtonView
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,6 +69,20 @@ class SettingFragment : Fragment() {
 
         notificationFrequencyButton.setOnClickListener {
             settingsViewModel.getNotificationFrequencies(notificationSwitch.isEnabled)
+        }
+
+        // DANGER ZONE
+        val dangerButton = view.findViewById<Button>(R.id.danger_zone_button)
+        dangerButton.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_right_to_left,
+                    R.anim.enter_right_to_left,
+                    R.anim.exit_left_to_right
+                ).add(R.id.profile_fragment_container, DangerZoneFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         launchAndRepeatWithViewLifecycle {

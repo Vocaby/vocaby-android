@@ -1,6 +1,7 @@
 package com.vocaby.application.feature_profile.domain.repository
 
 import com.vocaby.app.UserSettings
+import com.vocaby.application.feature_profile.domain.model.ProfileModel
 import com.vocaby.application.feature_profile.domain.model.VisitData
 import kotlinx.coroutines.flow.Flow
 
@@ -9,6 +10,7 @@ interface UserRepository {
 
     /** --------------------- USER -------------------- **/
     fun getCurrentUser(): Flow<Int>
+    fun getProfileData(userId: Int): Flow<ProfileModel?>
     suspend fun setupBaseUser(): Boolean
     suspend fun getUser(): Int
     suspend fun createUser(): Int

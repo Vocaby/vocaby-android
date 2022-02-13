@@ -21,6 +21,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
+import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.application.states.ItemState
 import com.vocaby.searchview.SearchView
 import com.vocaby.searchview.suggestions.model.SearchSuggestion
@@ -61,6 +62,12 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         searchView.apply {
             setOnQueryChangeListener(queryChangeListener)
             setOnSearchListener(searchListener)
+        }
+
+        val typeManagementButton = view.findViewById<Button>(R.id.type_management_button)
+        typeManagementButton.setOnClickListener {
+            val intent = Intent(requireActivity(), TypeManagementActivity::class.java)
+            startActivity(intent)
         }
 
         setupButtons(view)
@@ -105,7 +112,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                             entryAlert.text = event.message
                             entryAlert.visibility = View.VISIBLE
                         }
-                        is CustomEntryUiEvent.StartEntryBuilder -> {
+                        is CustomEntryUiEvent.OpenEntryBuilder -> {
                             entryEdit.text.clear()
                             entryAlert.visibility = View.INVISIBLE
                             entryCreateDialog.dismiss()
@@ -188,7 +195,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     }
 
     private fun updateEmptyCardVisibility() {
-        if (customEntryAdapter.itemCount > 0 ) emptyCard.visibility = View.INVISIBLE
+        if (customEntryAdapter.itemCount > 0) emptyCard.visibility = View.INVISIBLE
         else emptyCard.visibility = View.VISIBLE
     }
 

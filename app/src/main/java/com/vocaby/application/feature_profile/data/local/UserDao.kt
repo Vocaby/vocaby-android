@@ -4,13 +4,17 @@ import androidx.room.*
 import com.vocaby.application.feature_profile.data.local.entity.CustomDictionaryViewCount
 import com.vocaby.application.feature_profile.data.local.entity.DictionaryViewCount
 import com.vocaby.application.feature_profile.data.local.entity.User
+import com.vocaby.application.feature_profile.domain.model.ProfileModel
 import com.vocaby.application.feature_profile.domain.model.VisitData
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
     @Query("SELECT user_id FROM vocaby_user ORDER BY user_id ASC LIMIT 1")
-    fun getCurrentUser(): Flow<Long?>
+    fun getCurrentUserFlow(): Flow<Long?>
+
+    @Query("SELECT user_id FROM vocaby_user ORDER BY user_id ASC LIMIT 1")
+    suspend fun getCurrentUser(): Long?
 
     @Query("SELECT EXISTS(SELECT 1 FROM vocaby_user WHERE user_id = :id)")
     suspend fun checkUserExists(id: Int): Boolean
@@ -35,6 +39,12 @@ interface UserDao {
 
     @Query("DELETE FROM vocaby_user WHERE user_id != :userId")
     suspend fun cleanupUser(userId: Int)
+
+    @Query("SELECT u.user_id as userId, u.email, u.firstName, u.lastName, (SELECT COUNT(save_id) FROM saves WHERE user_id = :userId) as saveCount," +
+            "(SELECT COUNT(collection_id) FROM save_collection WHERE user_id = :userId) as collectionCount, " +
+            "(SELECT COUNT(custom_entry_id) FROM custom_user_entry WHERE user_id = :userId) as entryCount " +
+            "FROM vocaby_user u WHERE user_id = :userId")
+    fun getProfileData(userId: Int): Flow<ProfileModel?>
 
     /** --------------------- DATA -------------------- **/
     @Insert

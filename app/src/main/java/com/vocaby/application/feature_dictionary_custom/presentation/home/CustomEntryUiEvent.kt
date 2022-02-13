@@ -5,6 +5,6 @@ import com.vocaby.application.states.ItemState
 
 sealed class CustomEntryUiEvent {
     data class ShowAlert(val message: String): CustomEntryUiEvent()
-    data class StartEntryBuilder(val entry: String, val position: Int = -1): CustomEntryUiEvent()
+    data class OpenEntryBuilder(val entry: String, val position: Int = -1): CustomEntryUiEvent()
     data class UpdateAdapter(val position: Int, val state: ItemState): CustomEntryUiEvent()
 }

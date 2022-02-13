@@ -9,4 +9,5 @@
     <dimen name="fob_spacing">60dp</dimen>
     <dimen name="header_gap">12dp</dimen>
     <dimen name="nav_header_padding">16dp</dimen>
+    <dimen name="profile_counter_size">14sp</dimen>
 </resources>

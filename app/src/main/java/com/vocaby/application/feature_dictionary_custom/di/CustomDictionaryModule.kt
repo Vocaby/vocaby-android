@@ -8,6 +8,7 @@ import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.GetCustomEntryUseCase
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.GetTypesUseCase
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.*
+import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,14 +31,15 @@ class CustomDictionaryModule {
     @Provides
     @Singleton
     fun provideCustomEntryUseCases(
+        userRepository: UserRepository,
         customDictionaryRepository: CustomDictionaryRepository
     ): CustomEntryUseCases {
         return CustomEntryUseCases(
             GetCustomEntriesUseCase(customDictionaryRepository),
-            FilterCustomEntriesUseCase(customDictionaryRepository),
+            FilterCustomEntriesUseCase(userRepository, customDictionaryRepository),
             RemoveCustomEntryUseCase(customDictionaryRepository),
             ValidateCustomEntryUseCase(),
-            RemoveUserEntriesUseCase(customDictionaryRepository)
+            RemoveUserEntriesUseCase(userRepository, customDictionaryRepository)
         )
     }
 

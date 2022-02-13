@@ -7,5 +7,5 @@ object Constants {
     const val PROFILE_CHART_LABEL_LENGTH = 10
     const val ALL_SAVES_COLLECTION_NAME = "All Saves"
     const val MAX_BARS = 5
-    const val MIN_BARS = 2
+    const val MIN_BARS = 1
 }

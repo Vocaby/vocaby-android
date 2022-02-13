@@ -9,12 +9,10 @@ import com.vocaby.application.feature_profile.data.local.entity.CustomDictionary
 import com.vocaby.application.feature_profile.data.local.entity.DictionaryViewCount
 import com.vocaby.application.feature_profile.data.local.entity.User
 import com.vocaby.application.feature_profile.domain.model.NotificationFrequency
+import com.vocaby.application.feature_profile.domain.model.ProfileModel
 import com.vocaby.application.feature_profile.domain.model.VisitData
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import java.io.IOException
 import java.util.*
 
@@ -22,7 +20,7 @@ class UserRepositoryImpl constructor(
     private val dao: UserDao,
     private val userSettingsDataStore: DataStore<UserSettings>,
 ): UserRepository {
-    override fun getCurrentUser(): Flow<Int> = dao.getCurrentUser().map { it?.toInt() ?: 1 }
+    override fun getProfileData(userId: Int): Flow<ProfileModel?> = dao.getProfileData(userId)
 
     override val settingsFlow: Flow<UserSettings> = userSettingsDataStore.data.catch { exception ->
         if (exception is IOException) {
@@ -32,6 +30,8 @@ class UserRepositoryImpl constructor(
             throw exception
         }
     }
+
+    override fun getCurrentUser(): Flow<Int> = dao.getCurrentUserFlow().filter { it != null }.map { it!!.toInt() }
 
     override suspend fun setupBaseUser(): Boolean {
         val exists = dao.checkAnyUserExists()
@@ -52,7 +52,7 @@ class UserRepositoryImpl constructor(
         return true
     }
 
-    override suspend fun getUser(): Int = dao.getCurrentUser().first()?.toInt() ?: 1
+    override suspend fun getUser(): Int = dao.getCurrentUser()?.toInt() ?: 1
 
     override suspend fun createUser(): Int = dao.createUser(User()).toInt()
 

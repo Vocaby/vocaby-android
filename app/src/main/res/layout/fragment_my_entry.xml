@@ -44,55 +44,67 @@
             android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/empty_card"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="@dimen/container_side_margin"
-        android:layout_marginTop="@dimen/container_side_margin"
-        android:layout_marginEnd="@dimen/container_side_margin"
-        android:background="@drawable/box_gray_stroked_dash_gray"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="invisible"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocaby_header">
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/empty_custom_entry"
-            android:textAllCaps="true"
-            android:textColor="@color/gray" />
-    </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/fetch_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/colorPrimary"
-        android:scaleY="1.2"
-        android:visibility="visible"
-        app:layout_constraintVertical_bias="0.07"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocaby_header" />
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocaby_header">
+        app:layout_constraintTop_toBottomOf="@+id/vocaby_header"
+        android:elevation="0dp">
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/box_white_top_bottom_stroke_gray"
+            android:theme="@style/Theme.VocabyAndroid">
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/type_management_button"
+                    style="@style/Theme.VocabyAndroid.ProfileButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/entry_type_management"
+                    android:drawableStart="@drawable/ic_boxed_type_management" />
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+        <LinearLayout
+            android:id="@+id/empty_card"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginTop="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:background="@drawable/box_gray_stroked_dash_gray"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="invisible"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_custom_entry"
+                android:textAllCaps="true"
+                android:textColor="@color/gray" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/fetch_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/colorPrimary"
+            android:scaleY="1.2"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="@dimen/container_side_margin"
+            android:visibility="visible"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/custom_entry_container"
             android:layout_width="match_parent"
@@ -102,7 +114,8 @@
             android:paddingStart="@dimen/container_side_margin"
             android:paddingEnd="@dimen/container_side_margin"
             android:paddingTop="@dimen/container_side_margin"
-            android:paddingBottom="@dimen/fob_spacing" />
+            android:paddingBottom="@dimen/fob_spacing"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/add_entry_button"
@@ -123,7 +136,6 @@
             app:iconPadding="4dp"
             app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
     <com.vocaby.searchview.SearchView
         android:id="@+id/vocaby_search"
         android:layout_width="match_parent"

@@ -45,6 +45,7 @@ class UserModule {
         chartColors: List<Int>
     ): ProfileUseCases = ProfileUseCases(
         UpdateChartUseCase(userRepository, placeholderColors, chartColors),
+        GetProfileDataUseCase(userRepository),
         GetChartSettingsUseCase(userRepository),
         EraseChartDataUseCase(userRepository),
         SetupBaseUserUseCase(userRepository),

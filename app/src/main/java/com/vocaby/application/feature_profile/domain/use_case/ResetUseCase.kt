@@ -8,7 +8,7 @@ class ResetUseCase @Inject  constructor(
 ) {
     suspend operator fun invoke() {
         val userId = userRepository.getUser()
-        userRepository.createUser()
         userRepository.deleteUser(userId)
+        userRepository.createUser()
     }
 }

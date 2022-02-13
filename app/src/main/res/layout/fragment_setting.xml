@@ -212,6 +212,23 @@
                     android:checked="true"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/container_side_margin"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
+                android:text="@string/nav_danger_zone" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/danger_zone_button"
+                style="@style/Theme.VocabyAndroid.ProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/nav_danger_zone"
+                android:drawableStart="@drawable/ic_boxed_danger_zone"
+                android:drawableEnd="@drawable/ic_chevron_right"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

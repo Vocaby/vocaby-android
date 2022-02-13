@@ -45,17 +45,18 @@ class CustomDictionaryRepositoryImpl constructor(
 
     override suspend fun clearUserEntries(userId: Int) = dao.clearUserEntries(userId)
 
-    override suspend fun getAllUserEntries(userId: Int): List<EntryModel> {
+    override suspend fun getAllUserEntries(userId: Int): List<EntryModel> = withContext(defaultDispatcher) {
         val entries = dao.getAllUserEntryData(userId)
         val entryModels = mutableListOf<EntryModel>()
         entries.forEach { entryWithData ->
+            yield()
             val model = convertCustomToEntryModel(entryWithData)
             model?.let {
                 entryModels.add(model)
             }
         }
 
-        return entryModels
+        return@withContext entryModels
     }
 
     override suspend fun insertOrUpdateEntry(
@@ -234,7 +235,7 @@ class CustomDictionaryRepositoryImpl constructor(
     }
 
     private suspend fun convertCustomToEntryModel(data: EntryWithData?): EntryModel? =
-        withContext(Dispatchers.Default) {
+        withContext(defaultDispatcher) {
         data?.let {
             val entryData = EntryModel(
                 data.customEntry.entryId,

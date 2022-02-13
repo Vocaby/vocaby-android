@@ -141,7 +141,7 @@ class DataTransferRepositoryImpl(
                                 val exists = entryModels.any { it.entry == entry }
                                 val parsedGroups = mutableListOf<String>()
                                 if (!exists) {
-                                    val entryModel = EntryModel(entry = entry, pronunciation = pronunciation)
+                                    val entryModel = EntryModel(entry = entry, pronunciation = pronunciation, lastUpdated = Formatter.formatStringToDate(lastUpdated))
                                     for (g in item.getAsJsonArray("definitionGroups")) {
                                         yield()
                                         val group = g.asJsonObject

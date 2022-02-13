@@ -52,7 +52,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/chart_header"
-            android:layout_marginEnd="6dp"
             android:textColor="@color/gray" />
 
         <Space
@@ -96,6 +95,7 @@
             android:layout_height="28dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:textColor="@color/colorPrimaryAccent"
             android:layout_marginStart="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin"
             app:autoSizeMinTextSize="16sp"
@@ -115,6 +115,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:paddingStart="@dimen/container_gap_margin"
+        android:paddingEnd="@dimen/container_gap_margin"
         android:layout_marginBottom="6dp"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin">
@@ -148,6 +150,103 @@
             android:text="@string/chart_guide"
             tools:ignore="SmallSp" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:weightSum="3"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/box_white_top_bottom_stroke_gray"
+        android:layout_marginTop="@dimen/container_gap_margin"
+        android:layout_marginBottom="@dimen/container_gap_margin"
+        android:layout_marginStart="@dimen/container_side_margin"
+        android:layout_marginEnd="@dimen/container_side_margin">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/save_counter"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/dash"
+                android:textColor="@color/black"
+                android:textSize="@dimen/profile_counter_size"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:textColor="@color/black"
+                android:gravity="center_horizontal"
+                android:text="@string/nav_saves"/>
+        </LinearLayout>
+        <Space
+            android:layout_width="6dp"
+            android:layout_height="match_parent" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:id="@+id/collection_counter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:gravity="center_horizontal"
+                android:textSize="@dimen/profile_counter_size"
+                android:text="@string/dash"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:gravity="center_horizontal"
+                android:text="@string/collections"/>
+        </LinearLayout>
+        <Space
+            android:layout_width="6dp"
+            android:layout_height="match_parent" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:id="@+id/entry_counter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:gravity="center_horizontal"
+                android:textSize="@dimen/profile_counter_size"
+                android:text="@string/dash"
+                android:maxLines="1"
+                android:ellipsize="end" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:textSize="11sp"
+                android:gravity="center_horizontal"
+                android:text="@string/custom_entries"/>
+        </LinearLayout>
+    </LinearLayout>
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/notification_button"
         style="@style/Theme.VocabyAndroid.ProfileButton"
@@ -172,24 +271,8 @@
         android:text="@string/nav_support"
         android:drawableStart="@drawable/ic_boxed_support"
         android:drawableEnd="@drawable/ic_chevron_right"/>
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/type_management_button"
-        style="@style/Theme.VocabyAndroid.ProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/entry_type_management"
-        android:drawableStart="@drawable/ic_boxed_type_management" />
     <Space
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1" />
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/danger_zone_button"
-        style="@style/Theme.VocabyAndroid.ProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/nav_danger_zone"
-        android:drawableStart="@drawable/ic_boxed_danger_zone"
-        android:drawableEnd="@drawable/ic_chevron_right"/>
 </LinearLayout>

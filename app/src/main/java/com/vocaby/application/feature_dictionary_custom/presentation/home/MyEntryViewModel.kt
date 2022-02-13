@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.CustomEntryUseCases
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
@@ -23,13 +24,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyEntryViewModel @Inject constructor(
-    private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val customEntryUseCases: CustomEntryUseCases,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ): ViewModel() {
     private val _uiState = MutableStateFlow<CustomEntryUiState>(CustomEntryUiState.InProgress)
     private val _uiEvent = MutableSharedFlow<CustomEntryUiEvent>()
 
-    private var currentUser: Int? = null
     private var realPosition: Int = -1
     private var entries: LinkedList<UserEntry> = LinkedList()
     private var filteredPosition: Int = -1
@@ -42,9 +42,8 @@ class MyEntryViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getCurrentUserUseCase().collect {
-                currentUser = it
-                entries = customEntryUseCases.getCustomEntriesUseCase(it)
+            getCurrentUserUseCase().distinctUntilChanged().collectLatest { userId ->
+                entries = customEntryUseCases.getCustomEntriesUseCase(userId)
                 _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
             }
         }
@@ -52,10 +51,9 @@ class MyEntryViewModel @Inject constructor(
 
     fun initializeCustomEntries() {
         viewModelScope.launch {
-            currentUser?.let {
-                entries = customEntryUseCases.getCustomEntriesUseCase(it)
-                _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
-            }
+            val userId = getCurrentUserUseCase().first()
+            entries = customEntryUseCases.getCustomEntriesUseCase(userId)
+            _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
         }
     }
 
@@ -84,9 +82,7 @@ class MyEntryViewModel @Inject constructor(
                     _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
                 } else {
                     isFilterDisplayed = true
-                    currentUser?.let {
-                        filteredEntries = customEntryUseCases.filterCustomEntriesUseCase(it, newFilter)
-                    }
+                    filteredEntries = customEntryUseCases.filterCustomEntriesUseCase(newFilter)
 
                     filteredQuery = newFilter
                     _uiState.value = CustomEntryUiState.UpdateEntries(filteredEntries, getCount())
@@ -160,7 +156,7 @@ class MyEntryViewModel @Inject constructor(
                     if (event.data is Int){
                         realPosition = event.data
                         if (isFilterDisplayed) filteredPosition = filteredEntries.indexOfFirst { it.entry == entry }
-                        _uiEvent.emit(CustomEntryUiEvent.StartEntryBuilder(sanitizedEntry, realPosition))
+                        _uiEvent.emit(CustomEntryUiEvent.OpenEntryBuilder(sanitizedEntry, realPosition))
                     }
                 }
                 is UserInputState.LongInput -> {
@@ -177,7 +173,7 @@ class MyEntryViewModel @Inject constructor(
                 }
                 is UserInputState.Valid<*> -> {
                     if (event.data is String){
-                        _uiEvent.emit(CustomEntryUiEvent.StartEntryBuilder(event.data))
+                        _uiEvent.emit(CustomEntryUiEvent.OpenEntryBuilder(event.data))
                         resetSelections()
                     }
                 }
@@ -204,12 +200,10 @@ class MyEntryViewModel @Inject constructor(
 
     fun clearUserEntries() {
         viewModelScope.launch {
-            currentUser?.let {
-                customEntryUseCases.removeUserEntriesUseCase(it)
-                entries = LinkedList()
-                filteredEntries = LinkedList()
-                _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
-            }
+            customEntryUseCases.removeUserEntriesUseCase()
+            entries = LinkedList()
+            filteredEntries = LinkedList()
+            _uiState.value = CustomEntryUiState.UpdateEntries(entries, getCount())
         }
     }
 

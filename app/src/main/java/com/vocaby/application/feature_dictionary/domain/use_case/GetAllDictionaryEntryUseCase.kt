@@ -15,7 +15,8 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val customDictionaryRepository: CustomDictionaryRepository,
 ) {
-    suspend operator fun invoke(userId: Int , entry: String): SearchState {
+    suspend operator fun invoke(entry: String): SearchState {
+        val userId = userRepository.getUser()
         var originalData = dictionaryRepository.getEntryDataFromDatabase(entry)
         val customData = customDictionaryRepository.getUserEntryData(userId, entry)
 
