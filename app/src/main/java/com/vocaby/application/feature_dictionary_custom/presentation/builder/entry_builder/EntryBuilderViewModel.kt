@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
@@ -26,8 +27,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 import kotlin.collections.set
 
 @HiltViewModel
@@ -44,7 +48,7 @@ class EntryBuilderViewModel @Inject constructor(
     }
     private val actionPayload: ItemStringPayload = savedStateHandle.get<ItemStringPayload>(Constants.ITEM_PAYLOAD_KEY)!!
     private lateinit var entryData: EntryModel
-    private var initTypes: Map<String, Type> = HashMap()
+    private var initTypes: LinkedHashMap<String, Type> = LinkedHashMap()
     private var availableTypes: ArrayList<Type> = ArrayList()
     private var userId: Int = 1
     private var selectedGroup = -1
@@ -104,8 +108,9 @@ class EntryBuilderViewModel @Inject constructor(
 
     private fun calculateAvailableTypes() {
         viewModelScope.launch {
+            initTypes.clear()
             val list = entryBuilderUseCases.getTypesUseCase().first()
-            initTypes = list.associateBy { it.type }
+            list.forEach { initTypes.put(it.type, it) }
             availableTypes = ArrayList(
                 list.filter { entryData.definitionGroups.none { group -> group.type == it.type } }
             )
@@ -158,14 +163,37 @@ class EntryBuilderViewModel @Inject constructor(
             else groupChanges.removeExisting(groupRemoved.groupId, groupRemoved)
 
             val initType = initTypes[groupRemoved.type]
-            initType?.let { availableTypes.add(
-                    if (availableTypes.size < it.order) availableTypes.size else it.order,
-                    it
-                )
+            initType?.let {
+                val order = if (availableTypes.size < it.order) {
+                    availableTypes.size
+                } else {
+                    val offset = calculateTypeOffset(groupRemoved.type)
+                    it.order - offset
+                }
+
+                availableTypes.add(order, it)
             }
 
             _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(position, ItemState.DELETE))
         }
+    }
+
+    private suspend fun calculateTypeOffset(targetType: String): Int = withContext(Dispatchers.Default) {
+        var offset = 0
+        var initPointer = 0
+        var currentPointer = 0
+        val init = ArrayList(initTypes.values)
+        while (init[initPointer].type != targetType) {
+            if (init[initPointer].type != availableTypes[currentPointer].type) {
+                initPointer++
+                offset++
+            } else {
+                initPointer++
+                currentPointer++
+            }
+        }
+
+        return@withContext offset
     }
 
     private fun addGroup(newGroup: DefinitionGroupModel) {
