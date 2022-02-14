@@ -49,7 +49,8 @@ class MyEntryViewModel @Inject constructor(
                 entries = customEntryUseCases.getCustomEntriesUseCase(userId)
                 Logger.reportToDebug("New Entries: $entries")
                 Logger.reportToDebug("New entries: ${entries.hashCode()}")
-                _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries, getCount()))
+                _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
+                _uiState.value = CustomEntryUiState.UpdateCount(getCount())
             }
         }
     }
@@ -58,7 +59,8 @@ class MyEntryViewModel @Inject constructor(
         viewModelScope.launch {
             val userId = getCurrentUserUseCase().first()
             entries = customEntryUseCases.getCustomEntriesUseCase(userId)
-            _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries, getCount()))
+            _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
+            _uiState.value = CustomEntryUiState.UpdateCount(getCount())
         }
     }
 
@@ -72,7 +74,8 @@ class MyEntryViewModel @Inject constructor(
         viewModelScope.launch {
             if (newQuery.isEmpty()) {
                 resetFilter()
-                _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries, getCount()))
+                _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
+                _uiState.value = CustomEntryUiState.UpdateCount(getCount())
             }
         }
     }
@@ -84,14 +87,16 @@ class MyEntryViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.Default) {
                 if (newFilter.isEmpty()) {
                     resetFilter()
-                    _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries, getCount()))
+                    _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
                 } else {
                     isFilterDisplayed = true
                     filteredEntries = customEntryUseCases.filterCustomEntriesUseCase(newFilter)
 
                     filteredQuery = newFilter
-                    _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(filteredEntries, getCount()))
+                    _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(filteredEntries))
                 }
+
+                _uiState.value = CustomEntryUiState.UpdateCount(getCount())
             }
         }
     }
@@ -211,7 +216,8 @@ class MyEntryViewModel @Inject constructor(
             customEntryUseCases.removeUserEntriesUseCase()
             entries = LinkedList()
             filteredEntries = LinkedList()
-            _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries, getCount()))
+            _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
+            _uiState.value = CustomEntryUiState.UpdateCount(getCount())
         }
     }
 

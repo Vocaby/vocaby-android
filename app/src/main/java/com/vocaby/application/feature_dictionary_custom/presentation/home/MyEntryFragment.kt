@@ -93,6 +93,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                             emptyCard.visibility = View.INVISIBLE
                         }
                         is CustomEntryUiState.UpdateCount -> {
+                            Logger.reportToDebug("Updating count... ${state.count}")
                             fetchProgress.visibility = View.INVISIBLE
                             entryCountView.text = state.count
                         }
@@ -118,7 +119,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                             fetchProgress.visibility = View.INVISIBLE
                             Logger.reportToDebug("Updating entry list...")
                             customEntryAdapter.submitList(event.entries)
-                            entryCountView.text = event.countText
                             updateEmptyCardVisibility()
                         }
                         is CustomEntryUiEvent.UpdateAdapter -> {

@@ -11,6 +11,5 @@ sealed class CustomEntryUiEvent {
     data class UpdateAdapter(val position: Int, val state: ItemState): CustomEntryUiEvent()
     data class UpdateEntries(
         val entries: LinkedList<UserEntry> = LinkedList(),
-        val countText: String = "0 Entry"
     ): CustomEntryUiEvent()
 }
