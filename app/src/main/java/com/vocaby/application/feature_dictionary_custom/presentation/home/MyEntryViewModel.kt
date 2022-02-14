@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.CustomEntryUseCases
@@ -45,10 +44,7 @@ class MyEntryViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getCurrentUserUseCase().collectLatest { userId ->
-                Logger.reportToDebug("New user: $userId")
                 entries = customEntryUseCases.getCustomEntriesUseCase(userId)
-                Logger.reportToDebug("New Entries: $entries")
-                Logger.reportToDebug("New entries: ${entries.hashCode()}")
                 _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
                 _uiState.value = CustomEntryUiState.UpdateCount(getCount())
             }
@@ -110,13 +106,10 @@ class MyEntryViewModel @Inject constructor(
 
                 if (payload.state == ItemState.ADD) {
                     if (updateFilteredList) filteredEntries.add(0, payload.payload)
-                    Logger.reportToDebug("Handling add...: ${entries.hashCode()}")
                     entries.add(0, payload.payload)
-                    Logger.reportToDebug("Handling add done: ${entries.hashCode()}")
                 } else if (payload.state == ItemState.DELETE && realPosition != -1) {
                     if (updateFilteredList) filteredEntries.removeAt(filteredPosition)
                     entries.removeAt(realPosition)
-                    Logger.reportToDebug("Handling delete...: ${entries.hashCode()}")
                 } else if (payload.state == ItemState.UPDATE) {
                     if (updateFilteredList) {
                         filteredEntries.removeAt(filteredPosition)

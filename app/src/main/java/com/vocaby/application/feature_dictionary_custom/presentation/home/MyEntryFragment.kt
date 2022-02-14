@@ -20,7 +20,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
@@ -95,7 +94,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                             emptyCard.visibility = View.INVISIBLE
                         }
                         is CustomEntryUiState.UpdateCount -> {
-                            Logger.reportToDebug("Updating count... ${state.count}")
                             fetchProgress.visibility = View.INVISIBLE
                             entryCountView.text = state.count
                         }
@@ -119,7 +117,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                         }
                         is CustomEntryUiEvent.UpdateEntries -> {
                             fetchProgress.visibility = View.INVISIBLE
-                            Logger.reportToDebug("Updating entry list...")
                             customEntryAdapter.submitList(event.entries)
                             updateEmptyCardVisibility()
                         }
@@ -199,7 +196,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     }
 
     private fun updateEmptyCardVisibility() {
-        Logger.reportToDebug("Updating empty card visibility...")
         if (customEntryAdapter.itemCount > 0) emptyCard.visibility = View.INVISIBLE
         else emptyCard.visibility = View.VISIBLE
     }

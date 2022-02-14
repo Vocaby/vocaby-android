@@ -37,16 +37,15 @@ class SupportRepositoryImpl(
                 "Yup! Vocaby is completely free and has no hidden fees or advertisements."
             ),
             FaqModel(
-                "Why are some definitions outdated?",
-                "Vocaby's dictionary initially derived definitions from public domain sources and Wordnets. " +
-                        "We are constantly maintaining and updating the dictionary so that " +
-                        "you are provided with the most up-to-date definitions. " +
-                        "If you would like to help improve the dictionary, please submit the form below!"
+                "Why are some definitions wrong?",
+                "Vocaby initially derived definitions from wordnets and outdated public domain dictionaries. " +
+                        "We are constantly updating the dictionary to provide you with the most up-to-date definitions. " +
+                        "If you would like to help, please submit the form below!"
             ),
             FaqModel(
                 "Will definitions automatically update on my app?",
-                "Yup! Once we make updates to the dictionary, your will retrieve the " +
-                        "most up to date definitions on your app. You can disable this feature in the settings page."
+                "Yup! Once we make updates to the dictionary, you will retrieve the " +
+                        "most up-to-date definitions on your app. You can disable this feature in the settings page."
             ),
             FaqModel(
                 "Does Vocaby collect data from me?",

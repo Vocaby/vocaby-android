@@ -60,7 +60,9 @@ class EntryGroupViewModel @Inject constructor(
 
     fun addDefinition(definition: String, example: String) {
         viewModelScope.launch {
-            when(validateDefinitionUseCase(definition, definitionGroup)) {
+            val sanitizedDefinition = definition.trim()
+            val sanitizedExample = example.trim()
+            when(validateDefinitionUseCase(sanitizedDefinition, definitionGroup)) {
                 is UserInputState.EmptyInput -> {
                     _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("Please enter a definition"))
                 }
@@ -68,7 +70,7 @@ class EntryGroupViewModel @Inject constructor(
                     _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("The definition already exists"))
                 }
                 else -> {
-                    val definitionToAdd = definitionGroup.addNewDefinition(definition, example)
+                    val definitionToAdd = definitionGroup.addNewDefinition(sanitizedDefinition, sanitizedExample)
                     definitionChanges.addNew(definition, definitionToAdd)
                     _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(0, ItemState.ADD))
                 }
@@ -78,7 +80,12 @@ class EntryGroupViewModel @Inject constructor(
 
     fun updateDefinition(position: Int, oldDefinition: String, oldExample: String, newDefinition: String, newExample: String) {
         viewModelScope.launch {
-            when(validateDefinitionUpdateUseCase(position, oldDefinition, newDefinition, oldExample, newExample, definitionGroup)) {
+            val od = oldDefinition.trim()
+            val nd = newDefinition.trim()
+            val oe = oldExample.trim()
+            val ne = newExample.trim()
+
+            when(validateDefinitionUpdateUseCase(position, od, nd, oe, ne, definitionGroup)) {
                 is UserInputState.EmptyInput -> {
                     removeDefinition(position)
                 }
@@ -90,18 +97,12 @@ class EntryGroupViewModel @Inject constructor(
                 }
                 else -> {
                     definitionGroup.definitionData.apply {
-                        if (oldDefinition != newDefinition || oldExample != newExample) {
-                            this[position].definition = newDefinition
-                            this[position].example = newExample
+                        if (od != nd || oe != ne) {
+                            this[position].definition = nd
+                            this[position].example = ne
 
-                            if (this[position].isNew) definitionChanges.updateNew(
-                                oldDefinition,
-                                this[position],
-                                newDefinition
-                            ) else definitionChanges.updateExisting(
-                                this[position].id,
-                                this[position],
-                            )
+                            if (this[position].isNew) definitionChanges.updateNew(od, this[position], nd)
+                            else definitionChanges.updateExisting(this[position].id, this[position])
 
                             _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(position, ItemState.UPDATE))
                         }

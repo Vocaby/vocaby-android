@@ -1,7 +1,6 @@
 package com.vocaby.application.feature_profile.presentation.profile
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,9 +25,7 @@ import com.google.android.material.button.MaterialButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferFragment
-import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.application.feature_profile.common.Constants
-import com.vocaby.application.feature_profile.presentation.dangerzone.DangerZoneFragment
 import com.vocaby.application.feature_profile.presentation.setting.SettingFragment
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
 import com.vocaby.application.feature_profile.util.AxisValueFormatter

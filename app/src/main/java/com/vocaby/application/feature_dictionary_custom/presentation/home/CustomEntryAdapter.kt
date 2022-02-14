@@ -10,7 +10,6 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import java.util.*
 
@@ -41,16 +40,13 @@ class CustomEntryAdapter(
     fun submitList(list: LinkedList<UserEntry>) {
         customEntries = list
         notifyDataSetChanged()
-        Logger.reportToDebug("Dataset Changed: ${customEntries.hashCode()}")
     }
 
     fun addEntry() {
-        Logger.reportToDebug("Adding item to adapter...: ${customEntries.hashCode()}")
         notifyItemInserted(0)
     }
 
     fun deleteEntry(position: Int) {
-        Logger.reportToDebug("Removing item from adapter...: ${customEntries.hashCode()}")
         notifyItemRemoved(position)
     }
 
