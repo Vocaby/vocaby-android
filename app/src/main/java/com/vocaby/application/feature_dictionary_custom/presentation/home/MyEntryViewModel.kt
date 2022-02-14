@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.CustomEntryUseCases
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
@@ -27,7 +26,6 @@ class MyEntryViewModel @Inject constructor(
     private val customEntryUseCases: CustomEntryUseCases,
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ): ViewModel() {
-    private val _customEntries = MutableStateFlow<LinkedList<CustomEntry>>(LinkedList())
     private val _uiState = MutableStateFlow<CustomEntryUiState>(CustomEntryUiState.InProgress)
     private val _uiEvent = MutableSharedFlow<CustomEntryUiEvent>(replay = 1)
 
@@ -53,10 +51,12 @@ class MyEntryViewModel @Inject constructor(
 
     fun initializeCustomEntries() {
         viewModelScope.launch {
+            resetFilter()
             val userId = getCurrentUserUseCase().first()
             entries = customEntryUseCases.getCustomEntriesUseCase(userId)
             _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
             _uiState.value = CustomEntryUiState.UpdateCount(getCount())
+            _uiEvent.emit(CustomEntryUiEvent.ResetFilter)
         }
     }
 
@@ -67,11 +67,13 @@ class MyEntryViewModel @Inject constructor(
     }
 
     fun watchFilter(oldQuery: String, newQuery: String) {
-        viewModelScope.launch {
-            if (newQuery.isEmpty()) {
-                resetFilter()
-                _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
-                _uiState.value = CustomEntryUiState.UpdateCount(getCount())
+        if (oldQuery.isNotEmpty()) {
+            viewModelScope.launch {
+                if (newQuery.isEmpty()) {
+                    resetFilter()
+                    _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
+                    _uiState.value = CustomEntryUiState.UpdateCount(getCount())
+                }
             }
         }
     }
@@ -162,7 +164,10 @@ class MyEntryViewModel @Inject constructor(
                     if (event.data is Int){
                         realPosition = event.data
                         if (isFilterDisplayed) filteredPosition = filteredEntries.indexOfFirst { it.entry == entry }
-                        _uiEvent.emit(CustomEntryUiEvent.OpenEntryBuilder(sanitizedEntry, realPosition))
+                        _uiEvent.emit(CustomEntryUiEvent.OpenEntryBuilder(
+                            sanitizedEntry,
+                            if (isFilterDisplayed) filteredPosition else realPosition
+                        ))
                     }
                 }
                 is UserInputState.LongInput -> {

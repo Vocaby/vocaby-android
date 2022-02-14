@@ -6,6 +6,7 @@ import java.util.*
 
 
 sealed class CustomEntryUiEvent {
+    object ResetFilter: CustomEntryUiEvent()
     data class ShowAlert(val message: String): CustomEntryUiEvent()
     data class OpenEntryBuilder(val entry: String, val position: Int = -1): CustomEntryUiEvent()
     data class UpdateAdapter(val position: Int, val state: ItemState): CustomEntryUiEvent()

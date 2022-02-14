@@ -141,6 +141,9 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                             entryUpdateDialog.dismiss()
                             dictionaryViewModel.resetSearchSuggestion()
                         }
+                        is CustomEntryUiEvent.ResetFilter -> {
+                            searchView.clearQuery()
+                        }
                     }
                 }
             }

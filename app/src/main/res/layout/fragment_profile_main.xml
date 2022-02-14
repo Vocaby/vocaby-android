@@ -185,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
-                android:fontFamily="@font/sourcesanspro_semibold"
+                android:fontFamily="@font/sourcesanspro_regular"
                 android:textColor="@color/black"
                 android:gravity="center_horizontal"
                 android:text="@string/nav_saves"/>
@@ -214,7 +214,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="11sp"
-                android:fontFamily="@font/sourcesanspro_semibold"
+                android:fontFamily="@font/sourcesanspro_regular"
                 android:gravity="center_horizontal"
                 android:text="@string/collections"/>
         </LinearLayout>
@@ -241,7 +241,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
-                android:fontFamily="@font/sourcesanspro_semibold"
+                android:fontFamily="@font/sourcesanspro_regular"
                 android:textSize="11sp"
                 android:gravity="center_horizontal"
                 android:text="@string/custom_entries"/>
