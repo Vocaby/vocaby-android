@@ -1,8 +1,9 @@
-package com.vocaby.searchview.util.view
+package com.vocaby.vocabywidgets.searchview.util.view
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.KeyEvent
+import android.view.View.OnKeyListener
 import androidx.appcompat.widget.AppCompatEditText
 
 class SearchInputView @JvmOverloads constructor(

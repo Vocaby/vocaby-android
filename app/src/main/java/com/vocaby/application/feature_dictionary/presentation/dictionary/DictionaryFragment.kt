@@ -11,8 +11,8 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary.presentation.search.SearchResultsFragment
-import com.vocaby.searchview.SearchView
-import com.vocaby.searchview.suggestions.model.SearchSuggestion
+import com.vocaby.vocabywidgets.searchview.SearchView
+import com.vocaby.vocabywidgets.searchview.suggestions.model.SearchSuggestion
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

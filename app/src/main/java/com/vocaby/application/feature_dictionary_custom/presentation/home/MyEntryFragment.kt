@@ -24,8 +24,8 @@ import com.vocaby.application.feature_dictionary.presentation.dictionary.Diction
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.application.states.ItemState
-import com.vocaby.searchview.SearchView
-import com.vocaby.searchview.suggestions.model.SearchSuggestion
+import com.vocaby.vocabywidgets.searchview.SearchView
+import com.vocaby.vocabywidgets.searchview.suggestions.model.SearchSuggestion
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

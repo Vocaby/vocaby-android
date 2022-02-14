@@ -1,7 +1,7 @@
-package com.vocaby.searchview.util.adapter
+package com.vocaby.vocabywidgets.searchview.util.adapter
 
-import android.text.TextWatcher
-import android.text.Editable
+import android.view.MotionEvent
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Copyright (C) 2015 Ari C.
@@ -21,12 +21,15 @@ import android.text.Editable
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-abstract class TextWatcherAdapter : TextWatcher {
-    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-    override fun afterTextChanged(s: Editable) {}
+abstract class OnItemTouchListenerAdapter : RecyclerView.OnItemTouchListener {
+    override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+        return false
+    }
+
+    override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+    override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
 
     companion object {
-        private const val TAG = "TextWatcherAdapter"
+        private const val TAG = "OnItemTouchListenerAdapter"
     }
 }

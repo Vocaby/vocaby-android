@@ -1,7 +1,6 @@
-package com.vocaby.searchview.util.adapter
+package com.vocaby.vocabywidgets.searchview.suggestions.model
 
-import androidx.recyclerview.widget.RecyclerView
-import android.view.MotionEvent
+import android.os.Parcelable
 
 /**
  * Copyright (C) 2015 Ari C.
@@ -21,15 +20,12 @@ import android.view.MotionEvent
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-abstract class OnItemTouchListenerAdapter : RecyclerView.OnItemTouchListener {
-    override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-        return false
-    }
-
-    override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
-    override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
-
-    companion object {
-        private const val TAG = "OnItemTouchListenerAdapter"
-    }
+interface SearchSuggestion : Parcelable {
+    /**
+     * Returns the text that should be displayed
+     * for the suggestion represented by this object.
+     *
+     * @return the text for this suggestion
+     */
+    val body: String
 }

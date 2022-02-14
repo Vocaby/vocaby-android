@@ -2,6 +2,7 @@ package com.vocaby.application.feature_dictionary.data
 
 import android.content.Context
 import android.util.Log
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import java.io.File
 import java.io.IOException
@@ -25,9 +26,9 @@ class DataManager(context: Context) {
                     ois.close()
                 }
             } catch (e: IOException) {
-                Log.d("DataManager", "Something went wrong in getInstance")
+                Logger.reportErrorToBugsnag(e)
             } catch (e: ClassNotFoundException) {
-                Log.d("DataManager", "Something went wrong in getInstance")
+                Logger.reportErrorToBugsnag(e)
             }
         } else {
             history = LinkedList()

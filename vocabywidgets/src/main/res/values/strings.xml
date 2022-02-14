@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_view_suggestion_icon">Search Suggestion Action</string>
+    <string name="search_view_suggestion_alt_icon">Search Suggestion Icon</string>
+    <string name="search_view_action">Search View Action</string>
+    <string name="search_view_clear">Search View Clear</string>
+</resources>
