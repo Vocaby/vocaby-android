@@ -171,10 +171,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:layout_marginTop="@dimen/container_gap_margin"
-                android:layout_marginBottom="@dimen/container_gap_margin"
-                android:layout_marginStart="@dimen/container_side_margin"
-                android:layout_marginEnd="@dimen/container_side_margin"
+                android:paddingTop="@dimen/container_gap_margin"
+                android:paddingBottom="@dimen/container_gap_margin"
+                android:paddingStart="@dimen/container_side_margin"
+                android:paddingEnd="@dimen/container_side_margin"
                 android:orientation="horizontal">
                 <TextView
                     style="@style/Theme.VocabyAndroid.TextHeadline"

@@ -40,6 +40,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     private lateinit var helpDialogBuilder: BottomSheetDialog
     private lateinit var appBar: AppBarLayout
     private lateinit var emptyCard: LinearLayout
+    private lateinit var addGroupButton: ExtendedFloatingActionButton
 
     private val entryBuilderViewModel: EntryBuilderViewModel by viewModels()
 
@@ -150,6 +151,18 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.custom_entry_group_container)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (!recyclerView.canScrollVertically(-1)
+                    && newState==RecyclerView.SCROLL_STATE_IDLE
+                    && addGroupButton.translationY > 100f) {
+                    val show = AlphaAnimation(0f, 1.0f)
+                    show.duration = 300
+                    addGroupButton.startAnimation(show)
+                    addGroupButton.translationY = 0f
+                }
+            }
+        })
         customGroupAdapter = CustomGroupAdapter(this, this, this)
         recyclerView.adapter = customGroupAdapter
 
@@ -176,7 +189,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         }
 
         // Add new group button
-        val addGroupButton = findViewById<ExtendedFloatingActionButton>(R.id.add_def_group_button)
+        addGroupButton = findViewById(R.id.add_def_group_button)
         addGroupButton.setOnClickListener { entryBuilderViewModel.getAvailableTypes() }
 
         val helpButton = findViewById<TextView>(R.id.help_button)
@@ -216,5 +229,10 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
             customGroupAdapter.notifyItemChanged(position)
             itemTouchHelper.startSwipe(holder)
         }
+    }
+
+    override fun onDestroy() {
+        recyclerView.clearOnScrollListeners()
+        super.onDestroy()
     }
 }

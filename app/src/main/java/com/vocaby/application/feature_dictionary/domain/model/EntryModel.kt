@@ -36,6 +36,7 @@ class EntryModel(
                 definitionGroups[i].order = i
             }
         }
+
         return groupToRemove
     }
 

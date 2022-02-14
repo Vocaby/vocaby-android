@@ -152,6 +152,19 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     private fun setupRecyclerView(view: View) {
         recyclerView = view.findViewById(R.id.custom_entry_container)
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (!recyclerView.canScrollVertically(-1)
+                    && newState==RecyclerView.SCROLL_STATE_IDLE
+                    && addFab.translationY > 100f) {
+                    val show = AlphaAnimation(0f, 1.0f)
+                    show.duration = 300
+                    addFab.startAnimation(show)
+                    addFab.translationY = 0f
+                }
+            }
+        })
+
         customEntryAdapter = CustomEntryAdapter( this)
         recyclerView.adapter = customEntryAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
@@ -268,5 +281,10 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     override fun onItemTouch(entry: String, position: Int) {
         openEditor(entry, position)
+    }
+
+    override fun onDestroy() {
+        recyclerView.clearOnScrollListeners()
+        super.onDestroy()
     }
 }

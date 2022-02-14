@@ -42,6 +42,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
     private lateinit var dialogSaveButton: AppCompatButton
     private lateinit var appBar: AppBarLayout
     private lateinit var emptyCard: LinearLayout
+    private lateinit var addDefinitionButton: ExtendedFloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,7 +151,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         }
 
         // Add Definition Button
-        val addDefinitionButton = findViewById<ExtendedFloatingActionButton>(R.id.add_definition_button)
+        addDefinitionButton = findViewById(R.id.add_definition_button)
         addDefinitionButton.setOnClickListener {
             dialogDefinitionInput.text.clear()
             dialogExampleInput.text.clear()
@@ -178,6 +179,18 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.custom_entry_definition_container)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (!recyclerView.canScrollVertically(-1)
+                    && newState==RecyclerView.SCROLL_STATE_IDLE
+                    && addDefinitionButton.translationY > 100f) {
+                    val show = AlphaAnimation(0f, 1.0f)
+                    show.duration = 300
+                    addDefinitionButton.startAnimation(show)
+                    addDefinitionButton.translationY = 0f
+                }
+            }
+        })
 
         customDefAdapter = CustomDefAdapter(this, this, this)
         recyclerView.adapter = customDefAdapter
@@ -223,5 +236,10 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         }
 
         definitionBuilderDialog.show()
+    }
+
+    override fun onDestroy() {
+        recyclerView.clearOnScrollListeners()
+        super.onDestroy()
     }
 }

@@ -62,7 +62,7 @@ class EntryBuilderViewModel @Inject constructor(
     val uiEvent get() = _uiEvent.asSharedFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             userId = userDictionaryRepository.getUser()
             entryData = entryBuilderUseCases.getCustomEntryUseCase(userId, actionPayload.payload)
             _uiState.value = EntryBuilderUiState.UpdateUiState(
@@ -175,7 +175,7 @@ class EntryBuilderViewModel @Inject constructor(
         }
     }
 
-    private suspend fun calculateTypeOffset(targetType: String): Int = withContext(Dispatchers.Default) {
+    private fun calculateTypeOffset(targetType: String): Int {
         var offset = 0
         var initPointer = 0
         var currentPointer = 0
@@ -190,7 +190,7 @@ class EntryBuilderViewModel @Inject constructor(
             }
         }
 
-        return@withContext offset
+        return offset
     }
 
     private fun addGroup(newGroup: DefinitionGroupModel) {
