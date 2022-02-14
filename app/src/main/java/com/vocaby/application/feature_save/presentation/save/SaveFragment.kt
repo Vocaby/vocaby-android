@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
@@ -30,7 +32,7 @@ class SaveFragment : Fragment() {
         viewPager = view.findViewById(R.id.save_fragment_container)
         viewPager.offscreenPageLimit = 1
         viewPager.adapter = SaveFragmentPagerAdapter(this)
-        viewPager.isUserInputEnabled = false
+        viewPager.addItemDecoration(DividerItemDecoration(requireActivity(), RecyclerView.HORIZONTAL))
 
         return view
     }
