@@ -4,6 +4,7 @@ import com.vocaby.application.feature_save.data.local.SaveDao
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
 import com.vocaby.application.feature_save.data.local.entity.UserSave
+import com.vocaby.application.feature_save.domain.model.CollectionItemModel
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.model.SaveModel
 import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
@@ -23,6 +24,7 @@ class SaveRepositoryImpl(
         = saveDao.getAllSavesCount(userId)
     override fun getAllSavedEntriesFlow(userId: Int): Flow<List<String>> = saveDao.getSavesFlow(userId)
     override fun hasSaved(userId: Int, entry: String): Flow<SaveModel> = saveDao.hasSave(userId, entry)
+    override suspend fun getSaveData(userId: Int): List<UserSave> = saveDao.getSaveData(userId)
     override suspend fun addSaveItem(userSave: UserSave): Long = saveDao.addSave(userSave)
     override suspend fun addSaveItems(userSaves: List<UserSave>): List<Long> = saveDao.addSaves(userSaves)
 
@@ -31,7 +33,7 @@ class SaveRepositoryImpl(
     override suspend fun clearSaveCollections(userId: Int) = saveDao.clearSaveCollections(userId)
     override fun getSaveCollections(userId: Int): Flow<List<SaveCollectionModel>> = saveDao.getSaveCollectionsFlow(userId)
     override fun getCollectionItems(userId: Int, collectionName: String): Flow<List<String>> = saveDao.getCollectionItemsFlow(userId, collectionName)
-    override suspend fun getCollectionItems(collectionId: Int): List<String> = saveDao.getCollectionItems(collectionId)
+    override suspend fun getCollectionItems(collectionId: Int): List<CollectionItemModel> = saveDao.getCollectionItems(collectionId)
     override fun getSaveCollectionsForUpdate(userId: Int, entry: String): Flow<List<UpdateSaveCollectionModel>> = saveDao.getSaveCollectionsToUpdate(userId, entry)
     override suspend fun getSaveCollectionWithId(collectionId: Int): SaveCollectionModel? = saveDao.getSaveCollectionsWithId(collectionId)
     override suspend fun addSaveCollection(saveCollection: SaveCollection) = saveDao.addSaveCollection(saveCollection)

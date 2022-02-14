@@ -30,7 +30,7 @@ class ImportSavesUseCase @Inject constructor(
         val newUser = userRepository.createUser()
 
         emit(DataTransferState.InProgress(message = UiText(textResource = R.string.data_transfer_reading_import)))
-        val transferModel = dataTransferRepository.importSavesFromExternalStorage(uri)
+        val transferModel = dataTransferRepository.importSavesFromExternalStorage(uri, userId)
 
         emit(DataTransferState.InProgress(
             message = UiText(text = "Importing save data..."),
@@ -40,7 +40,7 @@ class ImportSavesUseCase @Inject constructor(
         val userSaves = mutableListOf<UserSave>()
         for (save in transferModel.savedEntries) {
             yield()
-            userSaves.add(UserSave(newUser, save))
+            userSaves.add(UserSave(newUser, save.entry, lastSaved = save.lastSaved))
         }
 
         val saveIds = saveRepository.addSaveItems(userSaves)
@@ -51,7 +51,10 @@ class ImportSavesUseCase @Inject constructor(
             )
         }
 
-        val saveIdMap: Map<String, Long> = transferModel.savedEntries.zip(saveIds).toMap()
+        val saveIdMap: Map<String, Long> = transferModel.savedEntries.zip(saveIds){
+                userSave: UserSave, id: Long ->
+            Pair(userSave.entry, id)
+        }.toMap()
 
         emit(DataTransferState.InProgress(
             message = UiText(text = "Importing collection data..."),
@@ -78,9 +81,9 @@ class ImportSavesUseCase @Inject constructor(
                 IllegalFileException.INVALID_FILE
             )
 
-            for (entry in item.value) {
+            for (collectionItem in item.value) {
                 yield()
-                val saveId = saveIdMap[entry]?.toInt() ?: throw IllegalFileException(
+                val saveId = saveIdMap[collectionItem.entry]?.toInt() ?: throw IllegalFileException(
                     "Backup file has invalid collection data",
                     IllegalFileException.INVALID_FILE
                 )
@@ -88,7 +91,8 @@ class ImportSavesUseCase @Inject constructor(
                 collectionItems.add(
                     SaveCollectionItem(
                         saveId,
-                        collectionId
+                        collectionId,
+                        lastAdded = collectionItem.lastAdded
                     )
                 )
             }

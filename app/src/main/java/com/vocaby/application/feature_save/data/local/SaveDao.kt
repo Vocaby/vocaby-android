@@ -4,6 +4,7 @@ import androidx.room.*
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
 import com.vocaby.application.feature_save.data.local.entity.UserSave
+import com.vocaby.application.feature_save.domain.model.CollectionItemModel
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.model.SaveModel
 import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
@@ -27,6 +28,9 @@ interface SaveDao {
 
     @Query("SELECT entry FROM saves WHERE user_id = :userId ORDER BY last_saved DESC")
     fun getSavesFlow(userId: Int): Flow<List<String>>
+
+    @Query("SELECT * FROM saves WHERE user_id = :userId")
+    fun getSaveData(userId: Int): List<UserSave>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSave(userSave: UserSave): Long
@@ -62,8 +66,8 @@ interface SaveDao {
     @Query("SELECT entry FROM save_collection_item i INNER JOIN save_collection c ON c.collection_name = :collectionName AND i.collection_id = c.collection_id AND c.user_id = :userId INNER JOIN saves s ON i.save_id = s.save_id ORDER BY last_added DESC")
     fun getCollectionItemsFlow(userId: Int, collectionName: String): Flow<List<String>>
 
-    @Query("SELECT entry FROM save_collection_item i INNER JOIN save_collection c ON c.collection_id = :collectionId AND i.collection_id = c.collection_id INNER JOIN saves s ON i.save_id = s.save_id ORDER BY last_updated DESC")
-    suspend fun getCollectionItems(collectionId: Int): List<String>
+    @Query("SELECT entry, last_added AS lastAdded FROM save_collection_item i INNER JOIN save_collection c ON c.collection_id = :collectionId AND i.collection_id = c.collection_id INNER JOIN saves s ON i.save_id = s.save_id ORDER BY last_updated DESC")
+    suspend fun getCollectionItems(collectionId: Int): List<CollectionItemModel>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSaveCollection(collection: SaveCollection)

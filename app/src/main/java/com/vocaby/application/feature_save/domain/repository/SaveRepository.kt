@@ -3,6 +3,7 @@ package com.vocaby.application.feature_save.domain.repository
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.data.local.entity.SaveCollectionItem
 import com.vocaby.application.feature_save.data.local.entity.UserSave
+import com.vocaby.application.feature_save.domain.model.CollectionItemModel
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.model.SaveModel
 import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
@@ -14,6 +15,7 @@ interface SaveRepository {
     fun getAllSavesCount(userId: Int): Flow<Int>
     fun getAllSavedEntriesFlow(userId: Int): Flow<List<String>>
     fun hasSaved(userId: Int, entry: String): Flow<SaveModel>
+    suspend fun getSaveData(userId: Int): List<UserSave>
     suspend fun addSaveItem(userSave: UserSave): Long
     suspend fun addSaveItems(userSaves: List<UserSave>): List<Long>
     suspend fun removeSaveItem(userId: Int, entry: String)
@@ -22,7 +24,7 @@ interface SaveRepository {
     fun getSaveCollections(userId: Int): Flow<List<SaveCollectionModel>>
     fun getCollectionItems(userId: Int, collectionName: String): Flow<List<String>>
     fun getSaveCollectionsForUpdate(userId: Int, entry: String): Flow<List<UpdateSaveCollectionModel>>
-    suspend fun getCollectionItems(collectionId: Int): List<String>
+    suspend fun getCollectionItems(collectionId: Int): List<CollectionItemModel>
     suspend fun getSaveCollectionWithId(collectionId: Int): SaveCollectionModel?
     suspend fun addSaveCollection(saveCollection: SaveCollection)
     suspend fun addSaveCollections(saveCollections: List<SaveCollection>): List<Long>

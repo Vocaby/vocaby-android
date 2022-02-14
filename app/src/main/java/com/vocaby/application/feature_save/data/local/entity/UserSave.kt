@@ -19,10 +19,12 @@ import java.util.*
 )
 class UserSave(
     @ColumnInfo(name = "user_id")
+    @Transient
     val userId: Int,
     val entry: String,
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "save_id")
+    @Transient
     var id: Int = 0,
     @ColumnInfo(name="last_saved")
     val lastSaved: String = Formatter.formatDateToString(Date().time)

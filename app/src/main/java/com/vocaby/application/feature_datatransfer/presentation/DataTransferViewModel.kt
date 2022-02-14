@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.vocaby.application.R
+import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.use_case.DataTransferUseCases
@@ -47,7 +48,7 @@ class DataTransferViewModel @Inject constructor(
                 intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "application/json"
-                    putExtra(Intent.EXTRA_TITLE, "my_vocaby_saves.json")
+                    putExtra(Intent.EXTRA_TITLE, Formatter.addDatePrefix("saves_vocaby.json"))
                 }
             }
 
@@ -55,7 +56,7 @@ class DataTransferViewModel @Inject constructor(
                 intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "application/json"
-                    putExtra(Intent.EXTRA_TITLE, "my_vocaby_entries.json")
+                    putExtra(Intent.EXTRA_TITLE, Formatter.addDatePrefix("entries_vocaby.json"))
                 }
             }
 

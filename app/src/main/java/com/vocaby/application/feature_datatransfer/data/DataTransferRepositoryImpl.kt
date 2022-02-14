@@ -17,6 +17,8 @@ import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_profile.common.Constants
 import com.vocaby.application.feature_profile.domain.model.ExportModel
+import com.vocaby.application.feature_save.data.local.entity.UserSave
+import com.vocaby.application.feature_save.domain.model.CollectionItemModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,9 +32,9 @@ class DataTransferRepositoryImpl(
     private val contentResolver: ContentResolver,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): DataTransferRepository {
-    override suspend fun importSavesFromExternalStorage(uri: Uri): SaveTransferModel = withContext(defaultDispatcher) {
-        val saves: MutableList<String> = mutableListOf()
-        val collectionMap: MutableMap<String, List<String>> = mutableMapOf()
+    override suspend fun importSavesFromExternalStorage(uri: Uri, userId: Int): SaveTransferModel = withContext(defaultDispatcher) {
+        val saves: MutableList<UserSave> = mutableListOf()
+        val collectionMap: MutableMap<String, List<CollectionItemModel>> = mutableMapOf()
         val inputStream = contentResolver.openInputStream(uri)
         inputStream.use { ins ->
             JsonReader(InputStreamReader(ins)).use { jsonReader ->
@@ -45,12 +47,26 @@ class DataTransferRepositoryImpl(
                         val data = jsonObject.getAsJsonObject("data")
                         val allSaves = data.getAsJsonArray("savedEntries")
                         val collections = data.getAsJsonObject("collections")
-                        for (item in allSaves) {
+                        for (i in allSaves) {
                             yield()
-                            val entry = item.asString.lowercase().trim()
+                            val item = i.asJsonObject
+                            val entry = item.getAsJsonPrimitive("entry").asString.lowercase().trim()
+                            val lastUpdated = item.getAsJsonPrimitive("lastSaved").asString
+
+                            if (!Formatter.dateIsValid(lastUpdated)) {
+                                throw IllegalFileException(
+                                    "The file is malformed",
+                                    IllegalFileException.INVALID_FILE
+                                )
+                            }
+
                             val entryIsValid = Formatter.validateEntry(entry)
                             if (entryIsValid) {
-                                saves.add(entry)
+                                saves.add(UserSave(
+                                    userId,
+                                    entry,
+                                    lastSaved = lastUpdated
+                                ))
                             } else {
                                 throw IllegalFileException(
                                     "$entry is not valid",
@@ -62,13 +78,24 @@ class DataTransferRepositoryImpl(
                         for (collection in collections.keySet()) {
                             val sanitizedCollection = collection.trim()
                             yield()
-                            val savesInCollection = mutableListOf<String>()
-                            for (save in collections.getAsJsonArray(collection)) {
+                            val savesInCollection = mutableListOf<CollectionItemModel>()
+                            for (i in collections.getAsJsonArray(collection)) {
                                 yield()
-                                val entry = save.asString.lowercase().trim()
+                                val collectionItem = i.asJsonObject
+                                val entry = collectionItem.getAsJsonPrimitive("entry").asString.lowercase().trim()
+                                val lastAdded = collectionItem.getAsJsonPrimitive("lastAdded").asString
+
                                 val entryIsValid = Formatter.validateEntry(entry)
+
+                                if (!Formatter.dateIsValid(lastAdded)) {
+                                    throw IllegalFileException(
+                                        "The file is malformed",
+                                        IllegalFileException.INVALID_FILE
+                                    )
+                                }
+
                                 if (entryIsValid) {
-                                    savesInCollection.add(entry)
+                                    savesInCollection.add(CollectionItemModel(entry, lastAdded = lastAdded))
                                 } else {
                                     throw IllegalFileException(
                                         "$entry is not valid",

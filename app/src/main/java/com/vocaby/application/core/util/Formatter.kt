@@ -23,6 +23,11 @@ object Formatter {
         }
     }
 
+    fun addDatePrefix(name: String): String {
+        val prefix = SimpleDateFormat("MM_dd_yyyy", Locale.getDefault()).format(Date())
+        return "${prefix}_$name"
+    }
+
     fun formatDateToString(milli: Long, forDisplay:Boolean = false, showDay:Boolean = false, precise: Boolean = true): String {
         return if (forDisplay) {
             if (showDay) {

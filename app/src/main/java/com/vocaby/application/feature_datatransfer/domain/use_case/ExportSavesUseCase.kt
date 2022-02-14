@@ -7,6 +7,7 @@ import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferMode
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferState
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
+import com.vocaby.application.feature_save.domain.model.CollectionItemModel
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ class ExportSavesUseCase @Inject constructor(
     operator fun invoke(uri: Uri): Flow<DataTransferState> = flow {
         emit(DataTransferState.InProgress(message = UiText(textResource = R.string.data_transfer_fetching_data)))
         val userId = userRepository.getUser()
-        val saves = saveRepository.getAllSavedEntriesFlow(userId).first()
+        val saves = saveRepository.getSaveData(userId)
 
         if (saves.isEmpty()) {
             emit(DataTransferState.Error(
@@ -32,7 +33,7 @@ class ExportSavesUseCase @Inject constructor(
             ))
         } else {
             val collections = saveRepository.getSaveCollections(userId).first()
-            val collectionMap = mutableMapOf<String, List<String>>()
+            val collectionMap = mutableMapOf<String, List<CollectionItemModel>>()
             for (collection in collections) {
                 yield()
                 val collectionItems = saveRepository.getCollectionItems(collection.id)

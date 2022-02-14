@@ -41,13 +41,16 @@ class CustomEntryAdapter(
     fun submitList(list: LinkedList<UserEntry>) {
         customEntries = list
         notifyDataSetChanged()
+        Logger.reportToDebug("Dataset Changed: ${customEntries.hashCode()}")
     }
 
     fun addEntry() {
+        Logger.reportToDebug("Adding item to adapter...: ${customEntries.hashCode()}")
         notifyItemInserted(0)
     }
 
     fun deleteEntry(position: Int) {
+        Logger.reportToDebug("Removing item from adapter...: ${customEntries.hashCode()}")
         notifyItemRemoved(position)
     }
 

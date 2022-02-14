@@ -31,7 +31,8 @@ class UserRepositoryImpl constructor(
         }
     }
 
-    override fun getCurrentUser(): Flow<Int> = dao.getCurrentUserFlow().filter { it != null }.map { it!!.toInt() }
+    override fun getCurrentUser(): Flow<Int> = dao.getCurrentUserFlow()
+        .filter { it != null }.map { it!!.toInt() }.distinctUntilChanged()
 
     override suspend fun setupBaseUser(): Boolean {
         val exists = dao.checkAnyUserExists()

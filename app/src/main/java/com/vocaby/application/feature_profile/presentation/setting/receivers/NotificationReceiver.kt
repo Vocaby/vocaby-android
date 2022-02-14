@@ -46,7 +46,7 @@ class NotificationReceiver : BroadcastReceiver() {
             val selectedCollectionId = settings.notificationCollectionId
             val collection = saveRepository.getSaveCollectionWithId(selectedCollectionId)
             var isFromCollection = true
-            var saves = saveRepository.getCollectionItems(selectedCollectionId)
+            var saves = saveRepository.getCollectionItems(selectedCollectionId).map { it.entry }
             if (collection == null || selectedCollectionId < 1) {
                 isFromCollection = false
                 saves = saveRepository.getAllSavedEntriesFlow(userId).first()

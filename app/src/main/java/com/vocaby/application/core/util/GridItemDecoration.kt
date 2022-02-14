@@ -20,6 +20,8 @@ class GridItemDecoration(private val margin: Int): RecyclerView.ItemDecoration()
 
         if (position % 2 == 0) {
             layoutParams.rightMargin = margin
+        } else {
+            layoutParams.rightMargin = 0
         }
 
         view.layoutParams = layoutParams
