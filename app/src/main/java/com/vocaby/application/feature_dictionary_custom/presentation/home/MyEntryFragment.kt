@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -35,6 +36,7 @@ import kotlinx.coroutines.launch
 class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var entryCountView: TextView
     private lateinit var customEntryAdapter: CustomEntryAdapter
+    private lateinit var addFab: ExtendedFloatingActionButton
     private lateinit var emptyCard: LinearLayout
     private lateinit var entryCreateDialog: BottomSheetDialog
     private lateinit var entryUpdateDialog: BottomSheetDialog
@@ -156,8 +158,8 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     }
 
     private fun setupButtons(view: View) {
-        val addButton = view.findViewById<ExtendedFloatingActionButton>(R.id.add_entry_button)
-        addButton.setOnClickListener { entryCreateDialog.show() }
+        addFab = view.findViewById(R.id.add_entry_button)
+        addFab.setOnClickListener { entryCreateDialog.show() }
     }
 
     private fun setupEntryBuilderDialog() {
@@ -231,6 +233,12 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {  }
         override fun onSearchAction(currentQuery: String) {
             entryViewModel.filterEntries(currentQuery)
+            if (addFab.translationY != 0f) {
+                val show = AlphaAnimation(0f, 1.0f)
+                show.duration = 300
+                addFab.startAnimation(show)
+                addFab.translationY = 0f
+            }
         }
     }
 
