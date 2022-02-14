@@ -2,6 +2,7 @@ package com.vocaby.application.feature_datatransfer.domain.use_case
 
 import android.net.Uri
 import com.vocaby.application.R
+import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferModel
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
@@ -40,9 +41,11 @@ class ExportSavesUseCase @Inject constructor(
                 collectionMap[collection.collectionName] = collectionItems
             }
 
+            val countMessage = Formatter.cleanNumber(saves.size, "Saved Entry", "Saved Entries") + "\n" +
+                        Formatter.cleanNumber(collections.size, "Save Collection", "Save Collections")
             emit(DataTransferState.InProgress(
                 message = UiText(textResource = R.string.data_transfer_exporting_saves),
-                count = saves.size
+                countMessage = countMessage
             ))
 
             val exportModel = SaveTransferModel(

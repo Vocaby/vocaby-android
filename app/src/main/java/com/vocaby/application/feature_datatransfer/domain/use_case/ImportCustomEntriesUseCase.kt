@@ -2,6 +2,7 @@ package com.vocaby.application.feature_datatransfer.domain.use_case
 
 import android.net.Uri
 import com.vocaby.application.R
+import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.feature_datatransfer.common.Constants.GRACE_PERIOD
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
@@ -25,10 +26,11 @@ class ImportCustomEntriesUseCase @Inject constructor(
         emit(DataTransferState.InProgress(message = UiText(textResource = R.string.data_transfer_reading_import)))
         val entryImportData = dataTransferRepository.importEntriesBackupFromExternalStorage(uri)
 
+        val countMessage = Formatter.cleanNumber(entryImportData.size, "Entry", "Entries")
         emit(
             DataTransferState.InProgress(
                 message = UiText(textResource = R.string.data_transfer_importing),
-                count = entryImportData.size
+                countMessage = countMessage
             )
         )
 
@@ -37,7 +39,7 @@ class ImportCustomEntriesUseCase @Inject constructor(
         emit(
             DataTransferState.InProgress(
                 message = UiText(text = "Finalizing..."),
-                count = entryImportData.size
+                countMessage = countMessage
             )
         )
         delay(GRACE_PERIOD)

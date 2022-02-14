@@ -2,6 +2,7 @@ package com.vocaby.application.feature_datatransfer.domain.use_case
 
 import android.net.Uri
 import com.vocaby.application.R
+import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.common.Constants
@@ -32,9 +33,15 @@ class ImportSavesUseCase @Inject constructor(
         emit(DataTransferState.InProgress(message = UiText(textResource = R.string.data_transfer_reading_import)))
         val transferModel = dataTransferRepository.importSavesFromExternalStorage(uri, userId)
 
+        var countMessage = Formatter.cleanNumber(
+            transferModel.savedEntries.size,
+            "Saved Entry",
+            "Saved Entries"
+        )
+
         emit(DataTransferState.InProgress(
             message = UiText(text = "Importing save data..."),
-            count = transferModel.savedEntries.size
+            countMessage = countMessage
         ))
 
         val userSaves = mutableListOf<UserSave>()
@@ -56,9 +63,15 @@ class ImportSavesUseCase @Inject constructor(
             Pair(userSave.entry, id)
         }.toMap()
 
+        countMessage += "\n" + Formatter.cleanNumber(
+            transferModel.collections.size,
+            "Save Collection",
+            "Save Collections"
+        )
+
         emit(DataTransferState.InProgress(
             message = UiText(text = "Importing collection data..."),
-            count = transferModel.savedEntries.size
+            countMessage = countMessage
         ))
 
         val collectionModels = mutableListOf<SaveCollection>()
@@ -103,7 +116,7 @@ class ImportSavesUseCase @Inject constructor(
         emit(
             DataTransferState.InProgress(
                 message = UiText(text = "Finalizing..."),
-                count = transferModel.savedEntries.size
+                countMessage = countMessage
             )
         )
         delay(Constants.GRACE_PERIOD)

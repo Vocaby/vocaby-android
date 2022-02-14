@@ -65,14 +65,8 @@ class DataTransferActivity : AppCompatActivity() {
                         transferState.message.text?.let { progressText.text = it }
                             ?: transferState.message.textResource?.let { progressText.setText(it) }
 
-                        transferState.count?.let {
-                            val text = if (it < 2) {
-                                "$it entry"
-                            } else {
-                                "$it entries"
-                            }
-
-                            progressCounter.text = text
+                        transferState.countMessage?.let {
+                            progressCounter.text = it
                         }
                     }
                     is DataTransferState.Error -> {

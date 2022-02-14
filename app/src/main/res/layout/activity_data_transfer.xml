@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".feature_datatransfer.presentation.DataTransferActivity">
-
     <LinearLayout
         android:id="@+id/linearLayout8"
         android:layout_width="match_parent"
@@ -36,6 +35,22 @@
             tools:ignore="SmallSp" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/sourcesanspro_semibold"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/progress_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout8"
+        app:layout_constraintVertical_bias="1.0" />
+
     <ProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -46,38 +61,22 @@
         android:indeterminate="true"
         android:indeterminateTint="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout8" />
 
-    <LinearLayout
-        android:layout_width="300dp"
+    <TextView
+        android:id="@+id/progress_counter"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progress_bar">
-        <TextView
-            android:id="@+id/progress_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:layout_gravity="center" />
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-        <TextView
-            android:id="@+id/progress_counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="11sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:layout_gravity="center" />
-    </LinearLayout>
+        android:layout_gravity="end"
+        android:fontFamily="@font/sourcesanspro_regular"
+        android:textColor="@color/black"
+        android:textSize="11sp"
+        app:layout_constraintEnd_toEndOf="@+id/progress_bar"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/progress_bar"
+        app:layout_constraintTop_toBottomOf="@+id/progress_bar" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/cancel_button"
@@ -92,6 +91,5 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout8"
-        app:layout_constraintVertical_bias="0.957" />
-
+        app:layout_constraintVertical_bias="0.95" />
 </androidx.constraintlayout.widget.ConstraintLayout>

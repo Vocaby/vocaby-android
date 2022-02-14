@@ -2,6 +2,7 @@ package com.vocaby.application.feature_datatransfer.data
 
 import android.content.ContentResolver
 import android.net.Uri
+import android.webkit.MimeTypeMap
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -33,6 +34,14 @@ class DataTransferRepositoryImpl(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): DataTransferRepository {
     override suspend fun importSavesFromExternalStorage(uri: Uri, userId: Int): SaveTransferModel = withContext(defaultDispatcher) {
+        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri))
+        if (extension != "json") {
+            throw IllegalFileException(
+                "The file has the wrong extension",
+                IllegalFileException.INVALID_FILE
+            )
+        }
+
         val saves: MutableList<UserSave> = mutableListOf()
         val collectionMap: MutableMap<String, List<CollectionItemModel>> = mutableMapOf()
         val inputStream = contentResolver.openInputStream(uri)
@@ -130,6 +139,14 @@ class DataTransferRepositoryImpl(
     }
 
     override suspend fun importEntriesBackupFromExternalStorage(uri: Uri): List<EntryModel> = withContext(defaultDispatcher)  {
+        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri))
+        if (extension != "json") {
+            throw IllegalFileException(
+                "The file has the wrong extension",
+                IllegalFileException.INVALID_FILE
+            )
+        }
+
         val entryModels: MutableList<EntryModel> = ArrayList()
         val inputStream = contentResolver.openInputStream(uri)
         inputStream.use { ins ->

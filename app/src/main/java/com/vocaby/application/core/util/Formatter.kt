@@ -28,6 +28,10 @@ object Formatter {
         return "${prefix}_$name"
     }
 
+    fun formatString(string: String, prefix: String = "", suffix: String = ""): String {
+        return "$prefix $string $suffix".trim()
+    }
+
     fun formatDateToString(milli: Long, forDisplay:Boolean = false, showDay:Boolean = false, precise: Boolean = true): String {
         return if (forDisplay) {
             if (showDay) {
