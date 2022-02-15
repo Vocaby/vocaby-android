@@ -1,6 +1,5 @@
 package com.vocaby.application.feature_profile.domain.use_case
 
-import androidx.test.core.app.ApplicationProvider
 import com.vocaby.application.feature_profile.data.FakeUserRepository
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import dagger.hilt.android.testing.HiltAndroidTest

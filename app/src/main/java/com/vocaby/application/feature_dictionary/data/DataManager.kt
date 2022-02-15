@@ -1,7 +1,6 @@
 package com.vocaby.application.feature_dictionary.data
 
 import android.content.Context
-import android.util.Log
 import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import java.io.File

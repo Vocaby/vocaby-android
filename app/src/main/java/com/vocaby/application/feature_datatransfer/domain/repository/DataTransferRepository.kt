@@ -6,8 +6,8 @@ import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferMode
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 
 interface DataTransferRepository {
-    suspend fun importSavesFromExternalStorage(uri: Uri, userId: Int): SaveTransferModel
-    suspend fun importEntriesBackupFromExternalStorage(uri: Uri): List<EntryModel>
+    suspend fun readSavesFromExternalStorage(uri: Uri, userId: Int): SaveTransferModel
+    suspend fun readCustomEntriesFromExternalStorage(uri: Uri): List<EntryModel>
     suspend fun writeSavesToExternalStorage(transferModel: SaveTransferModel, uri: Uri)
     suspend fun writeEntriesToExternalStorage(exportModel: EntryTransferModel, uri: Uri)
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.use_case.DataTransferUseCases
@@ -170,6 +171,7 @@ class DataTransferViewModel @Inject constructor(
                 _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file is invalid", prefix = "Failed to import"))
             }
             else -> {
+                Logger.reportErrorToBugsnag(Exception("Import Error: ${e.message}", e))
                 _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_generic))
             }
         }

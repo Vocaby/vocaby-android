@@ -28,10 +28,6 @@ object Formatter {
         return "${prefix}_$name"
     }
 
-    fun formatString(string: String, prefix: String = "", suffix: String = ""): String {
-        return "$prefix $string $suffix".trim()
-    }
-
     fun formatDateToString(milli: Long, forDisplay:Boolean = false, showDay:Boolean = false, precise: Boolean = true): String {
         return if (forDisplay) {
             if (showDay) {
@@ -83,6 +79,26 @@ object Formatter {
             if (pluralSuffix.isNotEmpty()) formatted += " $pluralSuffix"
             formatted
         }
+    }
+
+    fun formatString(
+        string: String,
+        addPrefix: Boolean = false,
+        prefix: String = "",
+        addSuffix: Boolean = false,
+        suffix: String = ""
+    ): String {
+        var result = string
+
+        if (addPrefix) {
+            result = prefix + string
+        }
+
+        if (addSuffix) {
+            result += suffix
+        }
+
+        return result
     }
 
     fun validateEmail(email: String): Boolean {

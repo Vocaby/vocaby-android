@@ -31,7 +31,7 @@ class ImportSavesUseCase @Inject constructor(
         val newUser = userRepository.createUser()
 
         emit(DataTransferState.InProgress(message = UiText(textResource = R.string.data_transfer_reading_import)))
-        val transferModel = dataTransferRepository.importSavesFromExternalStorage(uri, userId)
+        val transferModel = dataTransferRepository.readSavesFromExternalStorage(uri, userId)
 
         var countMessage = Formatter.cleanNumber(
             transferModel.savedEntries.size,

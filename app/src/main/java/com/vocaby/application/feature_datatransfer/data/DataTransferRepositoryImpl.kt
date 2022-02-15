@@ -2,13 +2,13 @@ package com.vocaby.application.feature_datatransfer.data
 
 import android.content.ContentResolver
 import android.net.Uri
-import android.webkit.MimeTypeMap
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.Parser
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.model.EntryTransferModel
 import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferModel
@@ -33,13 +33,16 @@ class DataTransferRepositoryImpl(
     private val contentResolver: ContentResolver,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): DataTransferRepository {
-    override suspend fun importSavesFromExternalStorage(uri: Uri, userId: Int): SaveTransferModel = withContext(defaultDispatcher) {
-        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri))
+    override suspend fun readSavesFromExternalStorage(uri: Uri, userId: Int): SaveTransferModel = withContext(defaultDispatcher) {
+        val extension = Parser.parseFileExtensionFromUri(uri, contentResolver)
         if (extension != "json") {
-            throw IllegalFileException(
-                "The file has the wrong extension",
-                IllegalFileException.INVALID_FILE
-            )
+            // Process files without an extension as well
+            if (extension.isNotEmpty()) {
+                throw IllegalFileException(
+                    "The file has the wrong extension - $extension",
+                    IllegalFileException.INVALID_FILE
+                )
+            }
         }
 
         val saves: MutableList<UserSave> = mutableListOf()
@@ -138,13 +141,16 @@ class DataTransferRepositoryImpl(
         return@withContext SaveTransferModel(saves, collectionMap)
     }
 
-    override suspend fun importEntriesBackupFromExternalStorage(uri: Uri): List<EntryModel> = withContext(defaultDispatcher)  {
-        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri))
+    override suspend fun readCustomEntriesFromExternalStorage(uri: Uri): List<EntryModel> = withContext(defaultDispatcher)  {
+        val extension = Parser.parseFileExtensionFromUri(uri, contentResolver)
         if (extension != "json") {
-            throw IllegalFileException(
-                "The file has the wrong extension",
-                IllegalFileException.INVALID_FILE
-            )
+            // Process files without an extension as well
+            if (extension.isNotEmpty()) {
+                throw IllegalFileException(
+                    "The file has the wrong extension - $extension",
+                    IllegalFileException.INVALID_FILE
+                )
+            }
         }
 
         val entryModels: MutableList<EntryModel> = ArrayList()

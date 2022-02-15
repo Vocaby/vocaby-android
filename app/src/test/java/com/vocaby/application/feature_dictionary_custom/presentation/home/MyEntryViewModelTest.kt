@@ -6,7 +6,6 @@ import com.vocaby.application.feature_profile.data.FakeUserRepository
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import com.vocaby.application.feature_profile.domain.use_case.SetupBaseUserUseCase
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
 import org.junit.Before
 
 class MyEntryViewModelTest {

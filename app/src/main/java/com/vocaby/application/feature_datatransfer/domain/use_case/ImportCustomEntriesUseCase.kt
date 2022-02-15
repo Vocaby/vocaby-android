@@ -24,7 +24,7 @@ class ImportCustomEntriesUseCase @Inject constructor(
         val newUser = userRepository.createUser()
 
         emit(DataTransferState.InProgress(message = UiText(textResource = R.string.data_transfer_reading_import)))
-        val entryImportData = dataTransferRepository.importEntriesBackupFromExternalStorage(uri)
+        val entryImportData = dataTransferRepository.readCustomEntriesFromExternalStorage(uri)
 
         val countMessage = Formatter.cleanNumber(entryImportData.size, "Entry", "Entries")
         emit(
