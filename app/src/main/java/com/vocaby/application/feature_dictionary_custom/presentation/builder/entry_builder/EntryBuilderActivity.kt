@@ -20,7 +20,7 @@ import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity
-import com.vocaby.application.states.ItemState
+import com.vocaby.application.core.states.ItemState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

@@ -2,7 +2,7 @@ package com.vocaby.application.feature_dictionary_custom.domain.use_case.type
 
 import com.vocaby.application.core.util.Validator
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
-import com.vocaby.application.states.UserInputState
+import com.vocaby.application.core.states.UserInputState
 import javax.inject.Inject
 
 class ValidateTypeUseCase @Inject constructor() {

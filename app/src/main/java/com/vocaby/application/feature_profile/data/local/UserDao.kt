@@ -25,15 +25,6 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createUser(user: User): Long
 
-    @Query("UPDATE custom_user_entry SET user_id = :newUserId")
-    suspend fun replaceCustomDictionaryUser(newUserId: Int)
-
-    @Query("UPDATE custom_dictionary_view_count SET user_id = :newUserId")
-    suspend fun replaceDictionaryVisitUser(newUserId: Int)
-
-    @Query("UPDATE dictionary_view_count SET user_id = :newUserId")
-    suspend fun replaceCustomDictionaryVisitUser(newUserId: Int)
-
     @Delete
     suspend fun deleteUser(user: User)
 
@@ -47,6 +38,15 @@ interface UserDao {
     fun getProfileData(userId: Int): Flow<ProfileModel?>
 
     /** --------------------- DATA -------------------- **/
+    @Query("UPDATE custom_user_entry SET user_id = :newUserId")
+    suspend fun replaceCustomDictionaryUser(newUserId: Int)
+
+    @Query("UPDATE custom_dictionary_view_count SET user_id = :newUserId")
+    suspend fun replaceDictionaryVisitUser(newUserId: Int)
+
+    @Query("UPDATE dictionary_view_count SET user_id = :newUserId")
+    suspend fun replaceCustomDictionaryVisitUser(newUserId: Int)
+
     @Insert
     suspend fun recordVisit(dictionaryViewCount: DictionaryViewCount)
 
@@ -62,9 +62,6 @@ interface UserDao {
             "ORDER BY count DESC " +
             "LIMIT :size")
     suspend fun getAllSearchData(size: Int): List<VisitData>
-
-    @Query("SELECT DATE('now', 'start of month')")
-    suspend fun getDate(): String
 
     @Query("SELECT word as entry, COUNT(entry_id) AS count FROM dictionary_view_count " +
             "JOIN dictionary_word ON dictionary_view_count.entry_id = dictionary_word.id " +

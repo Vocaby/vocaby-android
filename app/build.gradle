@@ -19,7 +19,7 @@ android {
         versionCode 5
         versionName "0.19.3"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.vocaby.application.core.HiltTestRunner"
 
         kapt {
             arguments {

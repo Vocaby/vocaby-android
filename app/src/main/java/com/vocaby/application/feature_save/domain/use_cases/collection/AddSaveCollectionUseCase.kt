@@ -4,7 +4,7 @@ import com.vocaby.application.feature_save.common.Constants
 import com.vocaby.application.feature_save.data.local.entity.SaveCollection
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.repository.SaveRepository
-import com.vocaby.application.states.UserInputState
+import com.vocaby.application.core.states.UserInputState
 import javax.inject.Inject
 
 class AddSaveCollectionUseCase @Inject constructor(

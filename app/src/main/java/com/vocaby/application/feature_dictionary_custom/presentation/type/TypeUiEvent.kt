@@ -1,6 +1,6 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.type
 
-import com.vocaby.application.states.ItemState
+import com.vocaby.application.core.states.ItemState
 
 sealed class TypeUiEvent {
     data class ShowAlert(val message: String): TypeUiEvent()

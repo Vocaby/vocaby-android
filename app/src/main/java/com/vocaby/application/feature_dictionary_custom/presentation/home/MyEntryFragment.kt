@@ -23,7 +23,7 @@ import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
-import com.vocaby.application.states.ItemState
+import com.vocaby.application.core.states.ItemState
 import com.vocaby.vocabywidgets.searchview.SearchView
 import com.vocaby.vocabywidgets.searchview.suggestions.model.SearchSuggestion
 import dagger.hilt.android.AndroidEntryPoint

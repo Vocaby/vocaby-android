@@ -1,7 +1,7 @@
-package com.vocaby.application.payloads
+package com.vocaby.application.core.payloads
 
 import android.os.Parcelable
-import com.vocaby.application.states.ItemState
+import com.vocaby.application.core.states.ItemState
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

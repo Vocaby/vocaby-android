@@ -1,4 +1,4 @@
-package com.vocaby.application.states
+package com.vocaby.application.core.states
 
 sealed class UserInputState {
     data class Valid<out T: Any>(val data: T): UserInputState()

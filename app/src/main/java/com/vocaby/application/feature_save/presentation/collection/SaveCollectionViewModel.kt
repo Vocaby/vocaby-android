@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.use_cases.collection.SaveCollectionUseCases
-import com.vocaby.application.states.UserInputState
+import com.vocaby.application.core.states.UserInputState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*

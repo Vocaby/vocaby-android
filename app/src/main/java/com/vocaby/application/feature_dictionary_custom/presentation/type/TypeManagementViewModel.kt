@@ -8,8 +8,8 @@ import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.type.ModifyTypesUseCase
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.type.ResetTypesUseCase
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.type.ValidateTypeUseCase
-import com.vocaby.application.states.ItemState
-import com.vocaby.application.states.UserInputState
+import com.vocaby.application.core.states.ItemState
+import com.vocaby.application.core.states.UserInputState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

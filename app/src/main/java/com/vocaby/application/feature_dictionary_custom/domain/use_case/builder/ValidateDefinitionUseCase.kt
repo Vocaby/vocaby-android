@@ -1,7 +1,7 @@
 package com.vocaby.application.feature_dictionary_custom.domain.use_case.builder
 
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
-import com.vocaby.application.states.UserInputState
+import com.vocaby.application.core.states.UserInputState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

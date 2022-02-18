@@ -1,7 +1,7 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.home
 
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
-import com.vocaby.application.states.ItemState
+import com.vocaby.application.core.states.ItemState
 import java.util.*
 
 

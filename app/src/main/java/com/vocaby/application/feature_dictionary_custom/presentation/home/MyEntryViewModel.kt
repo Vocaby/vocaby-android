@@ -10,10 +10,10 @@ import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.CustomEntryUseCases
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
-import com.vocaby.application.payloads.ItemEntryPayload
-import com.vocaby.application.payloads.ItemStringPayload
-import com.vocaby.application.states.ItemState
-import com.vocaby.application.states.UserInputState
+import com.vocaby.application.core.payloads.ItemEntryPayload
+import com.vocaby.application.core.payloads.ItemStringPayload
+import com.vocaby.application.core.states.ItemState
+import com.vocaby.application.core.states.UserInputState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
