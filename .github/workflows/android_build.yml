@@ -1,17 +1,31 @@
 name: Android Build
 
-on: push
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  build:
+  unitTest:
+    name: Run Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - name: Set Up JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Run Tests
+      - name: Unit Tests
         run: ./gradlew testReleaseUnitTest
+
+  androidTest:
+    name: Run Instrumentation Tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Instrumentation Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 26
+          script: ./gradlew connectedDebugAndroidTest
