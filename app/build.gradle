@@ -11,13 +11,14 @@ plugins {
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
+    ndkVersion "23.1.7779620"
 
     defaultConfig {
         applicationId "com.vocaby.application"
         minSdkVersion 26
         targetSdkVersion 31
-        versionCode 5
-        versionName "0.19.3"
+        versionCode 8
+        versionName "0.19.4"
 
         testInstrumentationRunner "com.vocaby.application.core.HiltTestRunner"
 
@@ -35,6 +36,10 @@ android {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
         }
     }
     compileOptions {
