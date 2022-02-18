@@ -14,16 +14,17 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@drawable/box_white_bottom_stroke_gray"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
         android:paddingTop="@dimen/container_gap_margin"
         android:paddingBottom="@dimen/container_gap_margin"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
         android:gravity="center">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginEnd="@dimen/container_gap_margin"
             android:orientation="vertical">
 
             <TextView
@@ -38,7 +39,7 @@
             <TextView
                 android:id="@+id/save_item"
                 style="@style/Theme.VocabyAndroid.TextHeader"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:paddingTop="12dp"
@@ -53,6 +54,8 @@
             android:layout_width="24dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="-4dp"
+            android:paddingTop="@dimen/container_gap_margin"
+            android:paddingBottom="@dimen/container_gap_margin"
             android:background="@drawable/ic_bookmark_saved"
             android:contentDescription="@string/unsave_button_desc" />
     </LinearLayout>

@@ -132,41 +132,37 @@
             app:liftOnScrollTargetViewId="@id/custom_entry_group_container"
             app:elevation="0dp"
             android:gravity="center_vertical">
-            <com.google.android.material.appbar.CollapsingToolbarLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
+                android:paddingBottom="@dimen/container_side_margin"
+                android:orientation="vertical"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
                 android:background="@drawable/box_white_bottom_stroke_gray"
                 android:paddingStart="@dimen/container_side_margin"
                 android:paddingEnd="@dimen/container_side_margin">
-                <LinearLayout
+                <TextView
+                    style="@style/Theme.VocabyAndroid.TextHeadline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pronunciation"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="12sp" />
+                <EditText
+                    android:id="@+id/pronunciation_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/container_side_margin"
-                    android:orientation="vertical">
-                    <TextView
-                        style="@style/Theme.VocabyAndroid.TextHeadline"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pronunciation"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="12sp" />
-                    <EditText
-                        android:id="@+id/pronunciation_input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/container_gap_margin"
-                        android:autofillHints="Enter a pronunciation"
-                        android:background="@drawable/text_input_box"
-                        android:fontFamily="@font/sourcesanspro_regular"
-                        android:hint="@string/enter_a_pronunciation"
-                        android:imeOptions="actionDone"
-                        android:inputType="text"
-                        android:padding="12dp"
-                        android:textColor="@color/black"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
+                    android:layout_marginTop="@dimen/container_gap_margin"
+                    android:autofillHints="Enter a pronunciation"
+                    android:background="@drawable/text_input_box"
+                    android:fontFamily="@font/sourcesanspro_regular"
+                    android:hint="@string/enter_a_pronunciation"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:padding="12dp"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

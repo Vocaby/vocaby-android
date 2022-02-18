@@ -202,6 +202,10 @@
                         android:textColor="@color/colorHeadline"
                         android:fontFamily="@font/sourcesanspro_semibold"
                         android:textSize="12sp" />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
                     <ProgressBar
                         android:id="@+id/submit_progress_bar"
                         style="?android:attr/progressBarStyle"

@@ -43,9 +43,10 @@
                 android:padding="@dimen/square_button_padding"
                 android:visibility="gone" />
         </FrameLayout>
+
         <FrameLayout
             android:id="@+id/search_input_parent"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
@@ -67,6 +68,7 @@
                 android:minHeight="@dimen/square_button_size"
                 android:textSize="@dimen/search_bar_text_size" />
         </FrameLayout>
+
         <ImageView
             android:id="@+id/clear_btn"
             android:layout_width="@dimen/square_button_size"
@@ -76,7 +78,7 @@
             android:alpha="1"
             android:background="@drawable/oval_btn_selector"
             android:clickable="true"
-            android:padding="@dimen/square_button_padding"
-            android:contentDescription="@string/search_view_clear" />
+            android:contentDescription="@string/search_view_clear"
+            android:padding="@dimen/square_button_padding" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

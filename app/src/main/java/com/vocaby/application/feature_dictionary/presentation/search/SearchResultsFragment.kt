@@ -6,15 +6,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
@@ -41,6 +40,7 @@ class SearchResultsFragment : Fragment() {
     private lateinit var saveButton: Button
     private lateinit var searchProgress: ProgressBar
     private lateinit var contextView: CoordinatorLayout
+    private lateinit var header: TextView
 
     private val searchResultsViewModel: SearchResultsViewModel by viewModels()
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
@@ -77,7 +77,10 @@ class SearchResultsFragment : Fragment() {
         val saveProgress = view.findViewById<ProgressBar>(R.id.save_progress)
         saveProgress.visibility = GONE
 
+        header = view.findViewById(R.id.entry_header)
+        header.text = searchedEntry
         viewPager = view.findViewById(R.id.search_results_body_pager)
+        viewPager.addItemDecoration(DividerItemDecoration(requireActivity(), RecyclerView.HORIZONTAL))
         dictionarySelector = view.findViewById(R.id.dictionary_selector)
         saveButton = view.findViewById(R.id.save_button)
         searchProgress = view.findViewById(R.id.search_progress)

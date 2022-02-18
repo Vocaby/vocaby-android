@@ -12,7 +12,7 @@ class AxisValueFormatter(private val values: List<String>, private val maxLength
         else {
             var selected = values[index]
             if (selected.length > maxLength) {
-                selected = selected.substring(0, maxLength) + ".."
+                selected = selected.substring(0, maxLength) + "-"
             }
 
             return selected

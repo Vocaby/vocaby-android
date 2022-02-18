@@ -2,17 +2,15 @@ package com.vocaby.application.feature_dictionary.presentation.search
 
 import android.content.Context
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DefinitionsAdapter
@@ -21,11 +19,10 @@ import com.vocaby.application.feature_dictionary.presentation.dictionary.Definit
 class SearchResultsBodyFragment : Fragment() {
     private lateinit var ctx: Context
     private var entryData: EntryModel? = null
-    private lateinit var header: TextView
     private lateinit var pronunciation: TextView
-    private lateinit var pronunciationScroll: HorizontalScrollView
+    private lateinit var pronunciationScroll: LinearLayout
     private lateinit var recyclerView: RecyclerView
-    private lateinit var entryBox: LinearLayout
+    private lateinit var entryBox: AppBarLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +40,6 @@ class SearchResultsBodyFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_search_results_body, container, false)
         entryBox = view.findViewById(R.id.entry_box)
-        header = view.findViewById(R.id.entry_header)
         pronunciation = view.findViewById(R.id.pronunciation)
         pronunciationScroll = view.findViewById(R.id.pronunciation_scroll)
         recyclerView = view.findViewById(R.id.definitions_recycler_container)
@@ -55,33 +51,25 @@ class SearchResultsBodyFragment : Fragment() {
                 isEnabled = false
                 adapter = definitionsAdapter
                 layoutManager = LinearLayoutManager(ctx)
-
-                if (data.definitionGroups.size > 1)
-                    recyclerView.addItemDecoration(DividerItemDecoration(ctx, LinearLayoutManager.VERTICAL))
             }
 
             populateView(data)
         } ?: populateNoDefinition()
 
 
+
         return view
     }
 
     private fun populateView(entryData: EntryModel) {
-        header.text = entryData.entry
         if (!entryData.pronunciation.isNullOrEmpty()) {
             pronunciationScroll.visibility = View.VISIBLE
             pronunciation.text = entryData.pronunciation
-        } else {
-            entryBox.setPadding(0, -ctx.resources.getDimensionPixelSize(R.dimen.header_gap), 0, 0)
-            entryBox.gravity = Gravity.CENTER
         }
     }
 
     private fun populateNoDefinition() {
-        header.text = resources.getString(R.string.no_definition_found)
-        entryBox.setPadding(0, -ctx.resources.getDimensionPixelSize(R.dimen.header_gap), 0, 0)
-        entryBox.gravity = Gravity.CENTER
+        pronunciation.text = resources.getString(R.string.no_definition_found)
         pronunciationScroll.visibility = View.GONE
         recyclerView.visibility = View.GONE
     }

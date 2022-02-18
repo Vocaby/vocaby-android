@@ -81,6 +81,7 @@ class ProfileViewModel @Inject constructor(
     fun eraseChartData() {
         viewModelScope.launch(Dispatchers.IO) {
             profileUseCases.eraseChartDataUseCase()
+            updateChart()
         }
     }
 

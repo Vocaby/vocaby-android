@@ -29,6 +29,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewPropertyAnimatorListenerAdapter
 import androidx.core.view.children
+import androidx.core.view.marginEnd
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator
@@ -299,9 +300,9 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
             )
 
             dividerLP.setMargins(
-                searchBarLeftMargin + cardPadding + 1,
+                searchBarLeftMargin + cardPadding + 2,
                 0,
-                searchBarRightMargin + cardPadding + 1,
+                searchBarRightMargin + cardPadding + 2,
                 (mDivider.layoutParams as MarginLayoutParams).bottomMargin
             )
 
@@ -461,6 +462,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
                         )
                     }
                 }
+
                 query = mSearchInput.text.toString()
             }
         })
@@ -490,11 +492,13 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
                 mSearchListener?.onSearchAction(query)
                 mSkipTextChangeEvent = true
                 mSkipTextChangeEvent = true
+
                 if (mIsTitleSet) {
                     setSearchBarTitle(query)
                 } else {
                     setSearchText(query)
                 }
+
                 setSearchFocusedInternal(false)
             }
         })
@@ -928,6 +932,8 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
 
     private fun setSearchFocusedInternal(focused: Boolean) {
         isSearchBarFocused = focused
+        val params = mSearchInput.layoutParams as LayoutParams
+
         if (focused) {
             mSearchInput.requestFocus()
             moveSuggestListToInitialPos()
@@ -949,6 +955,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
 
             mSearchInput.isLongClickable = true
             mClearButton.visibility = if (mSearchInput.text.toString().isEmpty()) View.INVISIBLE else View.VISIBLE
+            params.marginEnd = resources.getDimensionPixelSize(R.dimen.square_button_size)
 
             if (mFocusChangeListener != null) {
                 mFocusChangeListener!!.onFocus()
@@ -962,6 +969,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
 
             changeLeftIcon(mLeftAction, mIconSearch)
             mClearButton.visibility = View.GONE
+            params.marginEnd = 24
 
             if (mHostActivity != null) {
                 Util.closeSoftKeyboard(mHostActivity!!)
@@ -978,6 +986,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
             }
         }
 
+        mSearchInput.layoutParams = params
         //if we don't have focus, we want to allow the client's views below our invisible
         //screen-covering view to handle touches
         mSuggestionsSection.isEnabled = focused

@@ -18,6 +18,7 @@ class AllSavesFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var recyclerView: RecyclerView
     private lateinit var savesAdapter: SaveListAdapter
     private lateinit var emptyCard: LinearLayout
+    private lateinit var dataObserver: RecyclerView.AdapterDataObserver
 
     private val savesViewModel: SaveViewModel by activityViewModels()
 
@@ -32,6 +33,13 @@ class AllSavesFragment : Fragment(), SaveListAdapter.Interaction {
         savesAdapter = SaveListAdapter(requireActivity(), this)
         recyclerView.adapter = savesAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+        dataObserver = object: RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                recyclerView.smoothScrollToPosition(0)
+            }
+        }
+        savesAdapter.registerAdapterDataObserver(dataObserver)
 
         launchAndRepeatWithViewLifecycle {
             savesViewModel.savedWords.collectLatest { saves ->
@@ -52,5 +60,10 @@ class AllSavesFragment : Fragment(), SaveListAdapter.Interaction {
 
     override fun onItemTouch(entry: String) {
         (requireActivity() as MainActivity).showDefinition(entry)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        savesAdapter.unregisterAdapterDataObserver(dataObserver)
     }
 }

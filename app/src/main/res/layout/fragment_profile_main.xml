@@ -59,27 +59,6 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <com.google.android.material.button.MaterialButton
-            android:theme="@style/Theme.VocabyAndroid"
-            android:id="@+id/chart_toggle_button"
-            style="@style/Theme.VocabyAndroid.MaterialToggleButton"
-            android:layout_width="wrap_content"
-            android:minWidth="74dp"
-            android:layout_height="wrap_content"
-            android:checkable="true"
-            android:gravity="center"
-            android:text="@string/chart_toggle_monthly"
-            android:textSize="8sp"
-            android:textColor="@color/colorPrimary"
-            app:backgroundTint="@color/white"
-            app:cornerRadius="@dimen/radius"
-            app:icon="@drawable/toggle_chart"
-            app:iconPadding="4dp"
-            app:iconSize="12dp"
-            app:iconTint="@color/colorPrimary"
-            app:rippleColor="@color/colorSecondary"
-            app:strokeColor="@color/colorPrimary"
-            tools:ignore="SmallSp,TouchTargetSizeCheck" />
     </LinearLayout>
     <include layout="@layout/chart_placeholder" />
     <LinearLayout
@@ -118,7 +97,6 @@
         android:paddingStart="@dimen/container_gap_margin"
         android:paddingEnd="@dimen/container_gap_margin"
         android:gravity="center_vertical"
-        android:layout_marginBottom="6dp"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin">
         <View
@@ -141,14 +119,27 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
-        <TextView
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/chart_toggle_button"
+            style="@style/Theme.VocabyAndroid.MaterialToggleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checkable="true"
+            android:gravity="center"
+            android:minWidth="74dp"
+            android:text="@string/chart_toggle_monthly"
+            android:textColor="@color/colorPrimary"
             android:textSize="8sp"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:textColor="@color/black"
-            android:text="@string/chart_guide"
-            tools:ignore="SmallSp" />
+            android:theme="@style/Theme.VocabyAndroid"
+            app:backgroundTint="@color/white"
+            app:cornerRadius="@dimen/radius"
+            app:icon="@drawable/toggle_chart"
+            app:iconPadding="4dp"
+            app:iconSize="12dp"
+            app:iconTint="@color/colorPrimary"
+            app:rippleColor="@color/colorSecondary"
+            app:strokeColor="@color/colorPrimary"
+            tools:ignore="SmallSp,TouchTargetSizeCheck" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"

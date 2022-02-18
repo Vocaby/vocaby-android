@@ -26,6 +26,9 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     private lateinit var collectionHeader: TextView
     private lateinit var collectionSaveCounter: TextView
     private lateinit var emptyCard: LinearLayout
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var dataObserver: RecyclerView.AdapterDataObserver
+
     private val collectionItemsViewModel: SaveCollectionItemsViewModel by viewModels()
 
     companion object {
@@ -72,7 +75,6 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
             collectionItemsViewModel.savedWords.collectLatest { saves ->
                 if (saves.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
                 else emptyCard.visibility = View.VISIBLE
-
                 savesAdapter.submitList(saves)
             }
         }
@@ -86,10 +88,23 @@ class SaveCollectionItemsFragment : Fragment(), SaveListAdapter.Interaction {
     }
 
     private fun setupRecyclerView(view: View) {
-        val recyclerView: RecyclerView = view.findViewById(R.id.saves_container)
+        recyclerView = view.findViewById(R.id.saves_container)
         savesAdapter = SaveListAdapter(requireActivity(), this, true)
         recyclerView.adapter = savesAdapter
         recyclerView.layoutManager = LinearLayoutManager(ctx)
+        dataObserver = object: RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                recyclerView.smoothScrollToPosition(0)
+            }
+        }
+
+        savesAdapter.registerAdapterDataObserver(dataObserver)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        savesAdapter.unregisterAdapterDataObserver(dataObserver)
     }
 
     override fun onItemDelete(entry: String) {

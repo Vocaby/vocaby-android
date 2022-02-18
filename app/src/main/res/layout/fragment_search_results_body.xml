@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,65 +9,53 @@
     android:clipToPadding="false"
     android:background="@color/white"
     tools:context=".feature_dictionary.presentation.search.SearchResultsBodyFragment">
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:theme="@style/Theme.VocabyAndroid"
         android:id="@+id/entry_box"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:background="@drawable/box_white_bottom_stroke_gray">
-        <TextView
-            android:id="@+id/entry_header"
-            style="@style/Theme.VocabyAndroid.TextHeader"
-            android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:gravity="center"
-            android:maxLines="3"
-            android:textAllCaps="true"
-            android:textColor="@color/colorPrimaryAccent"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            app:autoSizeMinTextSize="12sp"
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform" />
-
-        <HorizontalScrollView
+        android:background="@color/white"
+        app:elevation="0dp">
+        <LinearLayout
             android:id="@+id/pronunciation_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollIndicators="none"
-            android:scrollbars="none"
-            android:scrollbarThumbVertical="@null"
             android:visibility="gone"
-            android:clipToPadding="false"
-            android:paddingStart="@dimen/container_side_margin"
-            android:paddingEnd="@dimen/container_side_margin"
-            android:fillViewport="true">
+            android:orientation="vertical"
+            android:layout_marginStart="@dimen/definition_side_margin"
+            android:layout_marginEnd="@dimen/definition_side_margin"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
             <TextView
-                android:id="@+id/pronunciation"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/container_side_margin"
+                android:text="@string/pronunciation"
+                android:textColor="@color/colorHeadline" />
+            <TextView
+                android:id="@+id/pronunciation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:fontFamily="@font/sourcesanspro_semibold"
-                android:gravity="center"
                 android:scrollIndicators="none"
+                android:paddingTop="@dimen/container_gap_margin"
                 android:scrollbars="none"
                 android:scrollbarThumbVertical="@null"
                 android:textColor="@color/black"
-                android:textSize="12sp" />
-        </HorizontalScrollView>
-    </LinearLayout>
+                android:textSize="14sp" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/definitions_recycler_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
         android:background="@color/white"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
+        android:paddingStart="@dimen/definition_side_margin"
+        android:paddingEnd="@dimen/definition_side_margin"
         android:scrollbars="none"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/word_box" />
-</LinearLayout>
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
