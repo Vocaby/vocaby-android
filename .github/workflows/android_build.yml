@@ -18,7 +18,7 @@ jobs:
           java-version: '11'
       - name: Restore gradle cache
         uses: actions/cache@v2
-        id: avd-cache
+        id: grade-cache
         with:
           path: |
             ~/.gradle/caches
@@ -44,7 +44,7 @@ jobs:
           java-version: '11'
       - name: Restore gradle cache
         uses: actions/cache@v2
-        id: avd-cache
+        id: gradle-cache
         with:
           path: |
             ~/.gradle/caches
