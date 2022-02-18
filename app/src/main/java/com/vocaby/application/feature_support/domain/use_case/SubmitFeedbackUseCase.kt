@@ -4,6 +4,7 @@ import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.core.util.UiText
+import com.vocaby.application.core.util.Validator
 import com.vocaby.application.feature_support.domain.model.FeedbackModel
 import com.vocaby.application.feature_support.domain.repository.SupportRepository
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,7 @@ class SubmitFeedbackUseCase(
         } else if (sanitizedMessage.isEmpty()) {
             emit(ResourceState.Error(UiText(textResource =  R.string.feedback_input_alert_message)))
         } else {
-            if (email.isNotEmpty() && !Formatter.validateEmail(email)) {
+            if (email.isNotEmpty() && !Validator.emailIsValid(email)) {
                 emit(ResourceState.Error(UiText(textResource = R.string.feedback_input_alert_email)))
             } else {
                 emit(ResourceState.InProgress)

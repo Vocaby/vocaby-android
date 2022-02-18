@@ -1,30 +1,14 @@
-@file:Suppress("LiftReturnOrAssignment")
-
 package com.vocaby.application.core.util
 
-import com.vocaby.application.core.Constants
+import com.vocaby.application.core.Constants.SPECIAL_CHARACTERS
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object Formatter {
-    fun dateIsValid(date: String): Boolean {
-        return try {
-            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(date)
-            true
-        } catch (e: ParseException) {
-            return try {
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
-                true
-            } catch (e: ParseException) {
-                false
-            }
-        }
-    }
-
-    fun addDatePrefix(name: String): String {
-        val prefix = SimpleDateFormat("MM_dd_yyyy", Locale.getDefault()).format(Date())
+    fun addDatePrefix(name: String, date: Date = Date()): String {
+        val prefix = SimpleDateFormat("MM_dd_yyyy", Locale.getDefault()).format(date)
         return "${prefix}_$name"
     }
 
@@ -46,22 +30,18 @@ object Formatter {
     }
 
     fun formatStringToDate(date: String): Date {
-        try {
-            return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(date)!!
+        return try {
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(date)!!
         } catch (e: ParseException) {
-            return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)!!
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)!!
         }
     }
 
     fun cleanText(text: String): String {
-        return text.trim { it <= ' ' }.replace("[\\\\{}]".toRegex(), "").lowercase()
+        return text.trim { it <= ' ' }.replace(SPECIAL_CHARACTERS.toRegex(), "").lowercase()
     }
 
-    fun containsSpecialCharacter(text: String): Boolean {
-        return text.contains("[\\\\{}]".toRegex())
-    }
-
-    fun firstLetterUpperOnly(text: String): String {
+    fun firstLetterUpperCase(text: String): String {
         var newString: String = text
         if (text.length == 1) newString =  text.uppercase(Locale.getDefault())
         else if (text.length > 1) newString = text.substring(0, 1).uppercase(Locale.getDefault()) + text.substring(1).lowercase()
@@ -79,33 +59,5 @@ object Formatter {
             if (pluralSuffix.isNotEmpty()) formatted += " $pluralSuffix"
             formatted
         }
-    }
-
-    fun formatString(
-        string: String,
-        addPrefix: Boolean = false,
-        prefix: String = "",
-        addSuffix: Boolean = false,
-        suffix: String = ""
-    ): String {
-        var result = string
-
-        if (addPrefix) {
-            result = prefix + string
-        }
-
-        if (addSuffix) {
-            result += suffix
-        }
-
-        return result
-    }
-
-    fun validateEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
-
-    fun validateEntry(entry: String): Boolean {
-        return !containsSpecialCharacter(entry) && entry.length <= Constants.ENTRY_MAX_LENGTH
     }
 }

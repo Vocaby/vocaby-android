@@ -9,6 +9,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.Parser
+import com.vocaby.application.core.util.Validator
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.model.EntryTransferModel
 import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferModel
@@ -65,14 +66,14 @@ class DataTransferRepositoryImpl(
                             val entry = item.getAsJsonPrimitive("entry").asString.lowercase().trim()
                             val lastUpdated = item.getAsJsonPrimitive("lastSaved").asString
 
-                            if (!Formatter.dateIsValid(lastUpdated)) {
+                            if (!Validator.dateIsValid(lastUpdated)) {
                                 throw IllegalFileException(
                                     "The file is malformed",
                                     IllegalFileException.INVALID_FILE
                                 )
                             }
 
-                            val entryIsValid = Formatter.validateEntry(entry)
+                            val entryIsValid = Validator.entryIsValid(entry)
                             if (entryIsValid) {
                                 saves.add(UserSave(
                                     userId,
@@ -97,9 +98,9 @@ class DataTransferRepositoryImpl(
                                 val entry = collectionItem.getAsJsonPrimitive("entry").asString.lowercase().trim()
                                 val lastAdded = collectionItem.getAsJsonPrimitive("lastAdded").asString
 
-                                val entryIsValid = Formatter.validateEntry(entry)
+                                val entryIsValid = Validator.entryIsValid(entry)
 
-                                if (!Formatter.dateIsValid(lastAdded)) {
+                                if (!Validator.dateIsValid(lastAdded)) {
                                     throw IllegalFileException(
                                         "The file is malformed",
                                         IllegalFileException.INVALID_FILE
@@ -173,7 +174,7 @@ class DataTransferRepositoryImpl(
                                 val lastUpdated = item.getAsJsonPrimitive("lastUpdated").asString
 
                                 // Validations
-                                val entryIsValid = Formatter.validateEntry(entry)
+                                val entryIsValid = Validator.entryIsValid(entry)
                                 if (!entryIsValid) {
                                     throw IllegalFileException(
                                         "$entry is not valid",
@@ -181,7 +182,7 @@ class DataTransferRepositoryImpl(
                                     )
                                 }
 
-                                if (!Formatter.dateIsValid(lastUpdated)) {
+                                if (!Validator.dateIsValid(lastUpdated)) {
                                     throw IllegalFileException(
                                         "The file is malformed",
                                         IllegalFileException.INVALID_FILE

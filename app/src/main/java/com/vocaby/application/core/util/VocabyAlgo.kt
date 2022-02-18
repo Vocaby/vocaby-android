@@ -1,39 +1,39 @@
 package com.vocaby.application.core.util
 
+import kotlinx.coroutines.yield
+
 object VocabyAlgo {
-    fun binarySearchPrefix(list: List<String>, search: String): Int {
-        return binarySearchPrefix(0, list.size - 1, search, list)
-    }
+    suspend fun binarySearchPrefix(list: List<String>, search: String): Int {
+        var low = 0
+        var high = list.size-1
+        var index = -1
 
-    private fun binarySearchPrefix(start: Int, end: Int, search: String, list: List<String>): Int {
-        if (start <= end) {
-            val mid = (start + end) / 2
-            val midEntry = list[mid]
-            val compResult = search.compareTo(midEntry)
+        while (search.isNotEmpty() && low <= high) {
+            yield()
+            val mid = (low + high) / 2
 
-            if (compResult == 0) {
-                return mid
+            if (list[mid] == search) {
+                index = mid
+                break
             }
 
-            if (midEntry.startsWith(search)) {
-                if (mid - 1 == -1) {
-                    return 0
-                } else if (mid - 1 > -1) {
-                    return if (list[mid - 1].startsWith(search)) {
-                        binarySearchPrefix(start, mid - 1, search, list)
-                    } else {
-                        mid
-                    }
+            if (list[mid].startsWith(search)) {
+                if (mid > 0 && list[mid - 1].startsWith(search)) {
+                    high = mid - 1
+                    continue
+                } else {
+                    index = mid
+                    break
                 }
             }
 
-            return if (compResult < 0) {
-                binarySearchPrefix(start, mid - 1, search, list)
-            } else {
-                binarySearchPrefix(mid + 1, end, search, list)
+            if (list[mid] < search) {
+                low = mid + 1
+            } else if (list[mid] > search) {
+                high = mid - 1
             }
         }
 
-        return -1
+        return index
     }
 }

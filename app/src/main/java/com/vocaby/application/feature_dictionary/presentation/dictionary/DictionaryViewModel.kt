@@ -83,9 +83,14 @@ class DictionaryViewModel @Inject constructor(
     }
 
     private fun setSearchSuggestionItems(searchQuery: String) {
-        dictionaryUseCases.getSearchSuggestionsUseCase(searchQuery, entriesByCharacter).onEach { searchSuggestions ->
-            _searchSuggestions.emit(GenericState.Success(searchSuggestions))
-        }.launchIn(suggestionScope)
+        suggestionScope.coroutineContext.cancelChildren()
+
+        suggestionScope.launch {
+            launch(Dispatchers.Default) {
+                val newSuggestions = dictionaryUseCases.getSearchSuggestionsUseCase(searchQuery, entriesByCharacter)
+                _searchSuggestions.emit(GenericState.Success(newSuggestions))
+            }
+        }
     }
 
     fun resetSearchSuggestion() {
