@@ -35,17 +35,19 @@
         <activity
             android:name=".feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.VocabyAndroid" />
         <activity
             android:name=".feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.VocabyAndroid" />
         <activity
             android:name=".core.presentation.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
+            android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

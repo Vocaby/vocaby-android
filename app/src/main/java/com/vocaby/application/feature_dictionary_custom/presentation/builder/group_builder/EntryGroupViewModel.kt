@@ -71,7 +71,7 @@ class EntryGroupViewModel @Inject constructor(
                 }
                 else -> {
                     val definitionToAdd = definitionGroup.addNewDefinition(sanitizedDefinition, sanitizedExample)
-                    definitionChanges.addNew(definition, definitionToAdd)
+                    definitionChanges.addNew(sanitizedDefinition, definitionToAdd)
                     _uiEvent.emit(EntryGroupBuilderUiEvent.UpdateAdapter(0, ItemState.ADD))
                 }
             }

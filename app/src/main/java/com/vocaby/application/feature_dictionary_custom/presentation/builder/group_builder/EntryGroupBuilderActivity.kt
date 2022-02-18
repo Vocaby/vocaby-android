@@ -1,8 +1,10 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AlphaAnimation
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
@@ -24,6 +27,7 @@ import com.vocaby.application.states.ItemState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
@@ -125,8 +129,9 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
     }
 
     private fun setupDefinitionBuilder() {
-        definitionBuilderDialog = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
-        definitionBuilderDialog.setContentView(R.layout.dialog_custom_entry_definition_builder)
+        definitionBuilderDialog = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog).apply {
+            setContentView(R.layout.dialog_custom_entry_definition_builder)
+        }
 
         dialogDefinitionInput = definitionBuilderDialog.findViewById(R.id.definition_edit)!!
         dialogExampleInput = definitionBuilderDialog.findViewById(R.id.example_edit)!!
@@ -137,6 +142,14 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
             definitionAlertView.text = ""
             dialogDefinitionInput.clearFocus()
             dialogExampleInput.clearFocus()
+            definitionBuilderDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+
+        definitionBuilderDialog.findViewById<LinearLayout>(R.id.dialog_container)?.setOnClickListener {
+            definitionBuilderDialog.currentFocus?.let { view ->
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(view.windowToken, 0)
+            }
         }
 
         // Add New Definition

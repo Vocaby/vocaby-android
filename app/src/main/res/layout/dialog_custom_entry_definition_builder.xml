@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
+<LinearLayout
+    android:id="@+id/dialog_container"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_background"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
@@ -19,7 +20,6 @@
             android:textColor="@color/black"
             android:textSize="14sp" />
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,9 +55,8 @@
             android:background="@drawable/text_input_box"
             android:fontFamily="@font/sourcesanspro_regular"
             android:hint="@string/enter_a_definition"
-            android:imeOptions="actionDone"
             android:importantForAutofill="no"
-            android:inputType="text"
+            android:inputType="textMultiLine"
             android:padding="12dp"
             android:textSize="14sp" />
 
@@ -79,9 +78,10 @@
             android:importantForAutofill="no"
             android:imeOptions="actionDone"
             android:padding="12dp"
+            android:inputType="textMultiLine"
+            android:fontFamily="@font/sourcesanspro_regular"
             android:background="@drawable/text_input_box"
-            android:textSize="14sp"
-            android:inputType="text" />
+            android:textSize="14sp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_definition_button"
