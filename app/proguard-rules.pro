@@ -44,6 +44,7 @@
 # Application classes that will be serialized/deserialized over Gson
 -keep class com.vocaby.application.feature_dictionary.domain.model.** { <fields>; }
 -keep class com.vocaby.application.feature_save.data.local.entity.** { <fields>; }
+-keep class com.vocaby.application.feature_save.domain.model.CollectionItemModel { <fields>; }
 -keep class com.vocaby.application.feature_datatransfer.domain.model.** { <fields>; }
 
 # Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,

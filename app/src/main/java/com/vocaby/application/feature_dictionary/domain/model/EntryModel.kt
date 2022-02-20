@@ -6,7 +6,7 @@ import java.io.Serializable
 import java.util.*
 
 @Parcelize
-class EntryModel(
+data class EntryModel(
     @Transient
     var id: Int = -1,
     val entry: String = "",
@@ -64,9 +64,5 @@ class EntryModel(
             if (definitionGroups[i].type == type) return i
         }
         return -1
-    }
-
-    override fun toString(): String {
-        return "$entry with ${definitionGroups.size} type groups"
     }
 }

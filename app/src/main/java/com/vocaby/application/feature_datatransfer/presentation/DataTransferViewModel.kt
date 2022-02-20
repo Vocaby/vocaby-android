@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.use_case.DataTransferUseCases
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.io.StreamCorruptedException
+import java.lang.IllegalStateException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -155,6 +155,9 @@ class DataTransferViewModel @Inject constructor(
             is IllegalFileException -> {
                 _transferState.value = DataTransferState.Error(uiText = UiText(text = e.message, prefix = "Failed to import"))
             }
+            is IllegalStateException -> {
+                _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file has invalid data", prefix = "Failed to import"))
+            }
             is StreamCorruptedException -> {
                 _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_invalid_file))
             }
@@ -171,15 +174,13 @@ class DataTransferViewModel @Inject constructor(
                 _transferState.value = DataTransferState.Error(uiText = UiText(text = "Backup file is invalid", prefix = "Failed to import"))
             }
             else -> {
-                Logger.reportErrorToBugsnag(Exception("Import Error: ${e.message}", e))
                 _transferState.value = DataTransferState.Error(uiText = UiText(textResource = R.string.data_transfer_import_error_generic))
             }
         }
     }
 
     private val exportExceptionHandler = CoroutineExceptionHandler { _, _ ->
-        _transferState.value =
-            DataTransferState.Error(uiText = UiText(text = "Failed to export..."))
+        _transferState.value = DataTransferState.Error(uiText = UiText(text = "Failed to export..."))
     }
 
     private fun cleanupImport() {
