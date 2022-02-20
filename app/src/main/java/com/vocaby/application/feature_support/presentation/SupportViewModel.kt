@@ -30,7 +30,7 @@ class SupportViewModel @Inject constructor(
             supportUseCases.submitFeedbackUseCase(selected, message, email).collectLatest { state ->
                 when (state) {
                     is ResourceState.InProgress -> {
-                        _feedbackState.emit(ResourceState.InProgress)
+                        _feedbackState.emit(state)
                     }
                     is ResourceState.Success -> {
                         _feedbackState.emit(ResourceState.Success())

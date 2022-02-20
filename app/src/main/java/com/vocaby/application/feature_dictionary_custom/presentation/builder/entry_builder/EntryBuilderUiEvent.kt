@@ -1,8 +1,8 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder
 
 import android.content.Intent
-import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.core.states.ItemState
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 
 
 sealed class EntryBuilderUiEvent {

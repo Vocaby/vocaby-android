@@ -8,7 +8,7 @@ import java.util.*
 
 object Formatter {
     fun addDatePrefix(name: String, date: Date = Date()): String {
-        val prefix = SimpleDateFormat("MM_dd_yyyy", Locale.getDefault()).format(date)
+        val prefix = SimpleDateFormat("MMddyyyy", Locale.getDefault()).format(date)
         return "${prefix}_$name"
     }
 

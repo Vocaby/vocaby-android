@@ -64,7 +64,8 @@
                     android:gravity="center"
                     android:text="@string/custom"
                     android:textColor="@color/dark_gray"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    tools:ignore="SmallSp" />
 
                 <RadioButton
                     android:id="@+id/selection_original"
@@ -78,7 +79,8 @@
                     android:gravity="center"
                     android:text="@string/original"
                     android:textColor="@color/dark_gray"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    tools:ignore="SmallSp" />
             </RadioGroup>
 
             <LinearLayout
@@ -100,6 +102,7 @@
                     android:layout_marginEnd="4dp"
                     android:indeterminateTint="@color/colorPrimary"
                     tools:ignore="InefficientWeight" />
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/save_button"
                     style="@style/Theme.VocabyAndroid.NavButton"
@@ -107,14 +110,15 @@
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_save"
                     android:enabled="false"
-                    android:textColor="@color/button_colors" />
+                    android:textColor="@color/button_colors"
+                    tools:ignore="SpeakableTextPresentCheck" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
         <FrameLayout
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/box_white_bottom_stroke_gray"
+            android:background="@color/white"
             android:paddingBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -146,6 +150,21 @@
             app:layout_constraintEnd_toEndOf="@+id/search_results_body_pager"
             app:layout_constraintStart_toStartOf="@+id/search_results_body_pager"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <TextView
+            android:id="@+id/search_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sourcesanspro_regular"
+            android:textSize="11sp"
+            android:textColor="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintTop_toBottomOf="@+id/search_progress">
+
+        </TextView>
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/search_results_body_pager"
             android:layout_width="0dp"

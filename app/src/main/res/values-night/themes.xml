@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.VocabyAndroid" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/colorPrimaryAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryAccent</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="android:textColorHint">@color/gray</item>
@@ -29,6 +29,12 @@
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
         <item name="windowSplashScreenAnimationDuration">500</item>
         <item name="postSplashScreenTheme">@style/Theme.VocabyAndroid</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.BottomNavigation.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sourcesanspro_regular</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/gray</item>
     </style>
 
     <style name="Theme.VocabyAndroid.Snackbar" parent="Widget.MaterialComponents.Snackbar">

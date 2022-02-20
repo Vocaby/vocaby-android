@@ -1,8 +1,8 @@
 package com.vocaby.application.feature_dictionary_custom.domain.use_case.home
 
+import com.vocaby.application.core.states.UserInputState
 import com.vocaby.application.core.util.Validator
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
-import com.vocaby.application.core.states.UserInputState
 
 class ValidateCustomEntryUseCase {
     operator fun invoke(entry: String, customEntries: List<UserEntry>): UserInputState {
@@ -11,14 +11,14 @@ class ValidateCustomEntryUseCase {
         } else if (Validator.containsSpecialCharacter(entry)) {
             return UserInputState.InvalidInput
         } else {
-            if (entry.length > com.vocaby.application.core.Constants.ENTRY_MAX_LENGTH) {
-                return UserInputState.LongInput
+            return if (entry.length > com.vocaby.application.core.Constants.ENTRY_MAX_LENGTH) {
+                UserInputState.LongInput
             } else {
                 val index = customEntries.indexOfFirst { it.entry == entry }
                 if (index != -1) {
-                    return UserInputState.SameInput(index)
+                    UserInputState.SameInput(index)
                 } else {
-                    return UserInputState.Valid(entry)
+                    UserInputState.Valid(entry)
                 }
             }
         }

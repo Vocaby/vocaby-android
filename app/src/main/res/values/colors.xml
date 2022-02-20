@@ -6,6 +6,7 @@
     <color name="colorPrimary_selected">#F3FFF4</color>
     <color name="colorHeadline">#BA2D46</color>
     <color name="colorHeadlineSoft">#FACFCC</color>
+    <color name="standby">#FF6D3F</color>
     <color name="very_light_gray">#FAFAFA</color>
     <color name="light_gray">#EAEAEA</color>
     <color name="gray">#C1C1C1</color>

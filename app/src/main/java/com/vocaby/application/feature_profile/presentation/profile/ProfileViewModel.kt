@@ -7,10 +7,8 @@ import com.vocaby.application.feature_profile.domain.model.ProfileModel
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import com.vocaby.application.feature_profile.domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,6 +22,9 @@ class ProfileViewModel @Inject constructor(
     private val _chartState = MutableSharedFlow<ChartState>(replay = 1)
     private val _chartModeAll = MutableStateFlow(false)
     private val _profileState = MutableStateFlow<ProfileModel?>(null)
+
+    private val chartScope = CoroutineScope(Job() + Dispatchers.Main.immediate)
+    private var chartJob: Job? = null
 
     val chartState get() = _chartState.asSharedFlow()
     val chartModeAll get() = _chartModeAll.asStateFlow()
@@ -65,13 +66,15 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun updateChart() {
+        chartJob?.cancel()
+
         val mode = if (_chartModeAll.value) {
             UserSettings.ChartMode.ALL
         } else {
             UserSettings.ChartMode.MONTHLY
         }
 
-        viewModelScope.launch(Dispatchers.Default) {
+        chartJob = chartScope.launch {
             profileUseCases.updateChartUseCase(mode).collectLatest { chartState ->
                 _chartState.emit(chartState)
             }
@@ -79,9 +82,8 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun eraseChartData() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             profileUseCases.eraseChartDataUseCase()
-            updateChart()
         }
     }
 
@@ -90,5 +92,10 @@ class ProfileViewModel @Inject constructor(
             profileUseCases.resetUseCase()
             profileUseCases.eraseChartDataUseCase()
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        chartScope.cancel()
     }
 }

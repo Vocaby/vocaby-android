@@ -9,13 +9,16 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation_view"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="52dp"
         android:background="@color/white"
         app:itemIconTint="@color/nav_colors"
+        app:itemTextColor="@color/nav_colors"
+        app:itemTextAppearanceActive="@style/Theme.VocabyAndroid.BottomNavigation.TextAppearance"
+        app:itemTextAppearanceInactive="@style/Theme.VocabyAndroid.BottomNavigation.TextAppearance"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:labelVisibilityMode="unlabeled"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/navigation" />
 
     <androidx.viewpager2.widget.ViewPager2

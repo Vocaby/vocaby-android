@@ -149,7 +149,8 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/sourcesanspro_black"
                         android:textSize="12sp"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black"
+                        tools:ignore="Deprecated" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <EditText
                     android:id="@+id/feedback_input_email"

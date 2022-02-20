@@ -18,6 +18,8 @@ class DictionaryViewModel @Inject constructor(
 ) : ViewModel() {
     private var entriesByCharacter: List<String> = ArrayList()
     private val suggestionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private var suggestionJob: Job? = null
+
     private val _searchedEntry = MutableSharedFlow<String>()
     private val _dailyPick = MutableStateFlow<DailyPickState>(DailyPickState.InProgress)
     private val _searchSuggestions = MutableSharedFlow<GenericState<List<SearchSuggestionItem>>>()
@@ -83,13 +85,11 @@ class DictionaryViewModel @Inject constructor(
     }
 
     private fun setSearchSuggestionItems(searchQuery: String) {
-        suggestionScope.coroutineContext.cancelChildren()
+        suggestionJob?.cancel()
 
-        suggestionScope.launch {
-            launch(Dispatchers.Default) {
-                val newSuggestions = dictionaryUseCases.getSearchSuggestionsUseCase(searchQuery, entriesByCharacter)
-                _searchSuggestions.emit(GenericState.Success(newSuggestions))
-            }
+        suggestionJob = suggestionScope.launch {
+            val newSuggestions = dictionaryUseCases.getSearchSuggestionsUseCase(searchQuery, entriesByCharacter)
+            _searchSuggestions.emit(GenericState.Success(newSuggestions))
         }
     }
 

@@ -61,7 +61,7 @@ interface UserDao {
             "GROUP BY custom_dictionary_view_count.custom_entry_id " +
             "ORDER BY count DESC " +
             "LIMIT :size")
-    suspend fun getAllSearchData(size: Int): List<VisitData>
+    fun getAllSearchData(size: Int): Flow<List<VisitData>>
 
     @Query("SELECT word as entry, COUNT(entry_id) AS count FROM dictionary_view_count " +
             "JOIN dictionary_word ON dictionary_view_count.entry_id = dictionary_word.id " +
@@ -74,7 +74,7 @@ interface UserDao {
             "GROUP BY custom_dictionary_view_count.custom_entry_id " +
             "ORDER BY count DESC " +
             "LIMIT :size")
-    suspend fun getMonthlySearchData(size: Int): List<VisitData>
+    fun getMonthlySearchData(size: Int): Flow<List<VisitData>>
 
     @Query("DELETE FROM dictionary_view_count WHERE user_id = :userId")
     suspend fun deleteVisit(userId: Int)

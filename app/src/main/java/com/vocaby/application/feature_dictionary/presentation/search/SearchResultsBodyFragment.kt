@@ -21,6 +21,8 @@ class SearchResultsBodyFragment : Fragment() {
     private var entryData: EntryModel? = null
     private lateinit var pronunciation: TextView
     private lateinit var pronunciationScroll: LinearLayout
+    private lateinit var pronunciationHeader: TextView
+    private lateinit var noDefinitionAlert: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var entryBox: AppBarLayout
 
@@ -37,11 +39,12 @@ class SearchResultsBodyFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_search_results_body, container, false)
         entryBox = view.findViewById(R.id.entry_box)
         pronunciation = view.findViewById(R.id.pronunciation)
+        pronunciationHeader = view.findViewById(R.id.pronunciation_header)
         pronunciationScroll = view.findViewById(R.id.pronunciation_scroll)
+        noDefinitionAlert = view.findViewById(R.id.no_definition)
         recyclerView = view.findViewById(R.id.definitions_recycler_container)
         entryData?.let { data ->
             val definitionsAdapter = DefinitionsAdapter(ctx)
@@ -63,15 +66,18 @@ class SearchResultsBodyFragment : Fragment() {
 
     private fun populateView(entryData: EntryModel) {
         if (!entryData.pronunciation.isNullOrEmpty()) {
-            pronunciationScroll.visibility = View.VISIBLE
+            pronunciation.visibility = View.VISIBLE
+            pronunciationHeader.visibility = View.VISIBLE
             pronunciation.text = entryData.pronunciation
+            noDefinitionAlert.visibility = View.GONE
         }
     }
 
     private fun populateNoDefinition() {
-        pronunciation.text = resources.getString(R.string.no_definition_found)
-        pronunciationScroll.visibility = View.GONE
+        pronunciation.visibility = View.GONE
+        pronunciationHeader.visibility = View.GONE
         recyclerView.visibility = View.GONE
+        noDefinitionAlert.visibility = View.VISIBLE
     }
 
     companion object {

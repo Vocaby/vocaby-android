@@ -20,10 +20,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
+import com.vocaby.application.core.states.ItemState
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
-import com.vocaby.application.core.states.ItemState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -56,10 +56,6 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         val typeHeader = findViewById<TextView>(R.id.type_header)
         emptyCard = findViewById(R.id.empty_card)
         appBar = findViewById(R.id.entry_app_bar)
-        appBar.addLiftOnScrollListener { elevation: Float, _: Int ->
-            appBar.elevation = elevation
-        }
-
 
         setupDefinitionBuilder()
         setupButtons()

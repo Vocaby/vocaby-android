@@ -12,8 +12,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
@@ -41,6 +39,7 @@ class SearchResultsFragment : Fragment() {
     private lateinit var searchProgress: ProgressBar
     private lateinit var contextView: CoordinatorLayout
     private lateinit var header: TextView
+    private lateinit var searchProgressText: TextView
 
     private val searchResultsViewModel: SearchResultsViewModel by viewModels()
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
@@ -80,10 +79,10 @@ class SearchResultsFragment : Fragment() {
         header = view.findViewById(R.id.entry_header)
         header.text = searchedEntry
         viewPager = view.findViewById(R.id.search_results_body_pager)
-        viewPager.addItemDecoration(DividerItemDecoration(requireActivity(), RecyclerView.HORIZONTAL))
         dictionarySelector = view.findViewById(R.id.dictionary_selector)
         saveButton = view.findViewById(R.id.save_button)
         searchProgress = view.findViewById(R.id.search_progress)
+        searchProgressText = view.findViewById(R.id.search_progress_text)
         contextView = view.findViewById(R.id.search_results_coordinator_layout)
 
         setupFragmentManager()
@@ -169,7 +168,10 @@ class SearchResultsFragment : Fragment() {
     private suspend fun collectSearchState() {
         searchResultsViewModel.entryData.collectLatest { searchState ->
             when (searchState) {
-                is ResourceState.InProgress -> searchProgress.visibility = View.VISIBLE
+                is ResourceState.InProgress -> {
+                    searchProgress.visibility = View.VISIBLE
+                    searchProgressText.text = searchState.uiText?.text
+                }
                 is ResourceState.Success -> {
                     searchState.data?.let { dictionaryResult ->
                         setupDictionary(dictionaryResult)
@@ -177,6 +179,7 @@ class SearchResultsFragment : Fragment() {
                         viewPager.adapter = FragmentAdapter(this@SearchResultsFragment, dictionaryResult)
                         dictionarySelector.visibility = View.VISIBLE
                         searchProgress.visibility = GONE
+                        searchProgressText.text = ""
                     }
                 }
                 else -> {}

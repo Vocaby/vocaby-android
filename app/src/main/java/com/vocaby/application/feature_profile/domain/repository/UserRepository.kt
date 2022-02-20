@@ -21,7 +21,7 @@ interface UserRepository {
     suspend fun recordVisit(userId: Int, entryId: Int)
     suspend fun recordCustomVisit(userId: Int, entryId: Int)
     suspend fun updateChartMode(mode: UserSettings.ChartMode)
-    suspend fun getChartData(size: Int, chartMode: UserSettings.ChartMode): List<VisitData>
+    fun getChartData(size: Int, chartMode: UserSettings.ChartMode): Flow<List<VisitData>>
     suspend fun eraseVisitData(userId: Int)
     suspend fun isDictionaryUpdateEnabled(): Boolean
     suspend fun setNotificationSettings(enabled: Boolean)

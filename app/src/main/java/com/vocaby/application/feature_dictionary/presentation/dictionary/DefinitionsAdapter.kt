@@ -28,6 +28,7 @@ class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<Defini
         notifyDataSetChanged()
     }
 
+    @SuppressLint("InflateParams")
     override fun onBindViewHolder(holder: DefinitionsViewHolder, position: Int) {
         val group = entryData.definitionGroups[position]
         val definitions: List<DefinitionModel> = group.definitionData

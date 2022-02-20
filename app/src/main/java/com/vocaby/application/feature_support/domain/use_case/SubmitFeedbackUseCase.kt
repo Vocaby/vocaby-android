@@ -27,7 +27,7 @@ class SubmitFeedbackUseCase(
             if (email.isNotEmpty() && !Validator.emailIsValid(email)) {
                 emit(ResourceState.Error(UiText(textResource = R.string.feedback_input_alert_email)))
             } else {
-                emit(ResourceState.InProgress)
+                emit(ResourceState.InProgress())
                 val type: String = when (selected) {
                     "Error Report" -> "ER"
                     "Dictionary Update" -> "DI"

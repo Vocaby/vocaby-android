@@ -9,6 +9,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
+import com.vocaby.application.core.payloads.ItemEntryPayload
+import com.vocaby.application.core.payloads.ItemStringPayload
+import com.vocaby.application.core.states.ItemState
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
@@ -19,9 +22,6 @@ import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.EntryBuilderUseCases
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
-import com.vocaby.application.core.payloads.ItemEntryPayload
-import com.vocaby.application.core.payloads.ItemStringPayload
-import com.vocaby.application.core.states.ItemState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -105,7 +105,7 @@ class EntryBuilderViewModel @Inject constructor(
         viewModelScope.launch {
             initTypes.clear()
             val list = entryBuilderUseCases.getTypesUseCase().first()
-            list.forEach { initTypes.put(it.type, it) }
+            list.forEach { initTypes[it.type] = it }
             availableTypes = ArrayList(
                 list.filter { entryData.definitionGroups.none { group -> group.type == it.type } }
             )

@@ -16,23 +16,28 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:background="@color/white"
-        app:elevation="0dp">
+        app:elevation="1dp"
+        android:background="@color/white">
         <LinearLayout
             android:id="@+id/pronunciation_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="visible"
             android:orientation="vertical"
             android:layout_marginStart="@dimen/definition_side_margin"
             android:layout_marginEnd="@dimen/definition_side_margin"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="2dp" />
             <TextView
+                android:id="@+id/pronunciation_header"
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/container_side_margin"
+                android:layout_marginTop="@dimen/container_gap_margin"
                 android:text="@string/pronunciation"
+                android:visibility="gone"
                 android:textColor="@color/colorHeadline" />
             <TextView
                 android:id="@+id/pronunciation"
@@ -43,6 +48,7 @@
                 android:paddingTop="@dimen/container_gap_margin"
                 android:scrollbars="none"
                 android:scrollbarThumbVertical="@null"
+                android:visibility="gone"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -58,4 +64,13 @@
         android:scrollbars="none"
         android:overScrollMode="never"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    <TextView
+        android:id="@+id/no_definition"
+        style="@style/Theme.VocabyAndroid.TextHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/no_definition_found"
+        android:visibility="gone"
+        android:textColor="@color/black" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -49,7 +49,7 @@ open class ItemChangeState<T> (
         return itemsAdded.put(key, item)
     }
 
-    fun removeItemAdded(key: String): T? {
+    private fun removeItemAdded(key: String): T? {
         return itemsAdded.remove(key)
     }
 
@@ -61,7 +61,7 @@ open class ItemChangeState<T> (
         return itemsDeleted.put(key, item)
     }
 
-    fun removeItemDeleted(key: Int): T? {
+    private fun removeItemDeleted(key: Int): T? {
         return itemsDeleted.remove(key)
     }
 

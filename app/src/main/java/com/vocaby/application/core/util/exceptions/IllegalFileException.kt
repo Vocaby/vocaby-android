@@ -3,10 +3,6 @@ package com.vocaby.application.core.util.exceptions
 class IllegalFileException : Exception {
     val code: Int
 
-    constructor(code: Int) : super() {
-        this.code = code
-    }
-
     constructor(message: String?, code: Int) : super(message) {
         this.code = code
     }

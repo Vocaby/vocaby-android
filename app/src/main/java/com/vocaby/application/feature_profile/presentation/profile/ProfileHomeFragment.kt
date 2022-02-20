@@ -25,7 +25,6 @@ import com.google.android.material.button.MaterialButton
 import com.vocaby.application.R
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferFragment
-import com.vocaby.application.feature_profile.common.Constants
 import com.vocaby.application.feature_profile.presentation.setting.SettingFragment
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
 import com.vocaby.application.feature_profile.util.AxisValueFormatter
@@ -130,6 +129,7 @@ class ProfileHomeFragment : Fragment() {
                     } else {
                         indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorPrimary))
                         chartAlert.text = getString(R.string.chart_dictionary_data)
+                        chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimary))
                     }
 
                     val dataSet: BarDataSet = BarDataSet(state.chartData.entries, "").apply {
@@ -155,18 +155,18 @@ class ProfileHomeFragment : Fragment() {
                     }
 
                     barChart.data = data
-                    barChart.xAxis.valueFormatter = AxisValueFormatter(state.chartData.values, Constants.PROFILE_CHART_LABEL_LENGTH)
+                    barChart.xAxis.valueFormatter = AxisValueFormatter(state.chartData.values)
                     barChart.invalidate()
 
                     favoriteEntry.text = state.favourite
                 }
 
                 is ChartState.InProgress -> {
-                    indicator.background.setTint(ContextCompat.getColor(ctx, R.color.colorPrimary))
+                    indicator.background.setTint(ContextCompat.getColor(ctx, R.color.standby))
                     chartContainer.visibility = View.GONE
                     placeholder.visibility = View.VISIBLE
                     chartAlert.text = getString(R.string.chart_placeholder_fetching)
-                    chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimary))
+                    chartAlert.setTextColor(ContextCompat.getColor(ctx, R.color.standby))
                 }
 
                 is ChartState.Error -> {

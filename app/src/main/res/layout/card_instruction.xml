@@ -25,7 +25,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/box_top_stroke_white"
+        android:background="@color/white"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
         android:paddingTop="20dp"

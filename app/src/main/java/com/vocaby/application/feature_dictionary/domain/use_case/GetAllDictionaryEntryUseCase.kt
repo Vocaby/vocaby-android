@@ -8,6 +8,8 @@ import com.vocaby.application.feature_dictionary.presentation.search.DictionaryS
 import com.vocaby.application.feature_dictionary.presentation.search.SearchState
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class GetAllDictionaryEntryUseCase @Inject constructor(
@@ -15,7 +17,7 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val customDictionaryRepository: CustomDictionaryRepository,
 ) {
-    suspend operator fun invoke(entry: String): SearchState {
+    suspend operator fun invoke(entry: String): Flow<SearchState> = flow {
         val userId = userRepository.getUser()
         var originalData = dictionaryRepository.getEntryDataFromDatabase(entry)
         val customData = customDictionaryRepository.getUserEntryData(userId, entry)
@@ -24,11 +26,14 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
             val isCached = dictionaryRepository.checkApiCache(entry)
             val connectionEnabled = userRepository.isDictionaryUpdateEnabled()
             if (!isCached && connectionEnabled) {
+                emit(SearchState.InProgress("Checking update..."))
                 val retrievedEntry = dictionaryRepository.checkAndGetEntryDataFromApi(
                     entry,
                     Formatter.formatDateToString(og.lastUpdated.time,  precise=false)
                 )
+
                 retrievedEntry?.let { newEntry ->
+                    emit(SearchState.InProgress("Updating entry..."))
                     newEntry.id = dictionaryRepository.replaceEntry(og, retrievedEntry)
                     originalData = newEntry
                 }
@@ -59,6 +64,6 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
             dictionarySelectorState.hideId = R.id.selection_custom
         }
 
-        return SearchState(dictionarySearchResult, dictionarySelectorState, removeSave)
+        emit(SearchState.Fetched(dictionarySearchResult, dictionarySelectorState, removeSave))
     }
 }

@@ -6,6 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
+import com.vocaby.application.core.states.ItemState
+import com.vocaby.application.core.states.UserInputState
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
@@ -13,8 +15,6 @@ import com.vocaby.application.feature_dictionary_custom.domain.model.ItemChangeS
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.ValidateDefinitionUpdateUseCase
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.builder.ValidateDefinitionUseCase
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderViewModel
-import com.vocaby.application.core.states.ItemState
-import com.vocaby.application.core.states.UserInputState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

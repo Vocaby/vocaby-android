@@ -12,13 +12,13 @@ import com.vocaby.application.core.util.Parser
 import com.vocaby.application.core.util.Validator
 import com.vocaby.application.core.util.exceptions.IllegalFileException
 import com.vocaby.application.feature_datatransfer.domain.model.EntryTransferModel
+import com.vocaby.application.feature_datatransfer.domain.model.ExportModel
 import com.vocaby.application.feature_datatransfer.domain.model.SaveTransferModel
 import com.vocaby.application.feature_datatransfer.domain.repository.DataTransferRepository
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_profile.common.Constants
-import com.vocaby.application.feature_profile.domain.model.ExportModel
 import com.vocaby.application.feature_save.data.local.entity.UserSave
 import com.vocaby.application.feature_save.domain.model.CollectionItemModel
 import kotlinx.coroutines.CoroutineDispatcher

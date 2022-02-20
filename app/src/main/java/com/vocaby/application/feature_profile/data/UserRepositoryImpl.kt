@@ -75,7 +75,7 @@ class UserRepositoryImpl constructor(
         }
     }
 
-    override suspend fun getChartData(size: Int, chartMode: UserSettings.ChartMode): List<VisitData> {
+    override fun getChartData(size: Int, chartMode: UserSettings.ChartMode): Flow<List<VisitData>> {
         return when(chartMode) {
             UserSettings.ChartMode.ALL -> {
                 dao.getAllSearchData(size)

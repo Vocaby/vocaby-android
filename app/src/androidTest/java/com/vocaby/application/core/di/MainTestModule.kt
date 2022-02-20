@@ -10,20 +10,11 @@ import com.vocaby.application.core.data.ApplicationRepositoryImpl
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.core.domain.repository.ApplicationRepository
 import com.vocaby.application.core.presentation.ApplicationDataSerializer
-import com.vocaby.application.feature_datatransfer.di.DataTransferModule
-import com.vocaby.application.feature_dictionary.di.DictionaryModule
-import com.vocaby.application.feature_dictionary_custom.di.CustomDictionaryModule
-import com.vocaby.application.feature_profile.di.UserModule
-import com.vocaby.application.feature_save.di.SaveModule
-import com.vocaby.application.feature_support.di.SupportModule
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import javax.inject.Named
-import javax.inject.Singleton
 
 @Module
 @TestInstallIn(

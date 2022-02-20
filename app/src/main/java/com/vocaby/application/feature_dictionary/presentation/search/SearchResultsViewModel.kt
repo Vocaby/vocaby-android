@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.util.ResourceState
+import com.vocaby.application.core.util.UiText
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.use_case.GetAllDictionaryEntryUseCase
 import com.vocaby.application.feature_save.domain.model.SaveModel
@@ -33,7 +34,7 @@ class SearchResultsViewModel @Inject constructor(
     private var saveCollections: List<UpdateSaveCollectionModel> = ArrayList()
     private var saveModel: SaveModel? = null
 
-    private var _entryData = MutableStateFlow<ResourceState<DictionarySearchResult>>(ResourceState.InProgress)
+    private var _entryData = MutableStateFlow<ResourceState<DictionarySearchResult>>(ResourceState.InProgress())
     private var _saveState = MutableStateFlow<SaveState>(SaveState.InProgress)
     private var _dictionarySelectorState = MutableStateFlow(DictionarySelectorState())
     private var _uiEvent = MutableSharedFlow<SearchUiEvent>()
@@ -52,13 +53,23 @@ class SearchResultsViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val searchState = getAllDictionaryEntryUseCase(entry)
-            if (searchState.removeSave) {
-                _saveState.value = SaveState.Remove
-            }
+            getAllDictionaryEntryUseCase(entry).collect { state ->
+                when (state) {
+                    is SearchState.InProgress -> {
+                        _entryData.value = ResourceState.InProgress(UiText(
+                            text = state.message
+                        ))
+                    }
+                    is SearchState.Fetched -> {
+                        if (state.removeSave) {
+                            _saveState.value = SaveState.Remove
+                        }
 
-            _dictionarySelectorState.value = searchState.dictionarySelectorState
-            _entryData.value = ResourceState.Success(searchState.data)
+                        _dictionarySelectorState.value = state.dictionarySelectorState
+                        _entryData.value = ResourceState.Success(state.data)
+                    }
+                }
+            }
         }
 
         updateCollections()
