@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true"
-    tools:context=".feature_save.presentation.collection.SaveCollectionItemsFragment"
     android:orientation="vertical"
-    android:background="@drawable/box_gray_bottom_straight">
+    android:background="@color/white"
+    tools:context=".feature_save.presentation.collection.SaveCollectionItemsFragment"
+    android:clickable="true">
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/container_side_margin"
-        android:paddingEnd="@dimen/container_side_margin"
-        android:background="@drawable/box_white_bottom_stroke_gray"
+        android:paddingTop="@dimen/container_gap_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,9 +21,9 @@
             android:id="@+id/back_button"
             style="@style/Theme.VocabyAndroid.NavButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/container_side_margin"
+            android:background="@android:color/transparent"
             android:text="@string/close"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -36,74 +33,115 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/collection_header"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:textColor="@color/black"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="12sp"
+            android:id="@+id/collection_header_small"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
             android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="12sp"
             android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
+            android:ellipsize="end"
+            android:fontFamily="@font/sourcesanspro_semibold"
+            android:gravity="center"
+            android:maxLines="1"
             android:paddingStart="@dimen/container_side_margin"
             android:paddingEnd="@dimen/container_side_margin"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/save_counter"
-            app:layout_constraintStart_toEndOf="@+id/back_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
-            android:id="@+id/save_counter"
+            android:id="@+id/save_counter_small"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:fontFamily="@font/sourcesanspro_semibold"
+            android:gravity="center_vertical"
             android:text="@string/collection_default_count"
             android:textColor="@color/dark_gray"
             android:textSize="12sp"
+            android:paddingEnd="@dimen/container_side_margin"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/empty_card"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="@dimen/container_side_margin"
-        android:layout_marginStart="@dimen/container_side_margin"
-        android:layout_marginEnd="@dimen/container_side_margin"
-        android:background="@drawable/box_gray_stroked_dash_gray"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/box_gray_bottom_straight">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_layout"
+            android:theme="@style/Theme.VocabyAndroid"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/empty_collection"
-            android:textAllCaps="true"
-            android:textColor="@color/gray" />
-    </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/saves_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.0" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:paddingBottom="@dimen/container_gap_margin"
+            android:background="@color/white"
+            android:gravity="center"
+            app:elevation="2dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingBottom="@dimen/container_gap_margin"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+                <TextView
+                    android:id="@+id/collection_header"
+                    android:layout_width="300dp"
+                    android:layout_height="32dp"
+                    android:fontFamily="@font/playfairdisplay_black"
+                    android:textColor="@color/colorPrimaryAccent"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:autoSizeTextType="uniform"
+                    android:autoSizeMinTextSize="14sp"
+                    android:autoSizeStepGranularity="1sp" />
+                <TextView
+                    android:id="@+id/save_counter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/sourcesanspro_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/collection_default_count"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+        <LinearLayout
+            android:id="@+id/empty_card"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/container_side_margin"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
+            android:background="@drawable/box_gray_stroked_dash_gray"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <TextView
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_collection"
+                android:textAllCaps="true"
+                android:textColor="@color/gray" />
+        </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/saves_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

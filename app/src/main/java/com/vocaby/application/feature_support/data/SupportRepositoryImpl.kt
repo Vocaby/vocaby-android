@@ -44,8 +44,8 @@ class SupportRepositoryImpl(
             ),
             FaqModel(
                 "Will definitions automatically update on my app?",
-                "Yup! Once we make updates to the dictionary, you will retrieve the " +
-                        "most up-to-date definitions on your app. You can disable this feature in the settings page."
+                "Yup! The dictionary is automatically modified as we make updates to the dictionary. " +
+                        "You will retrieve up-to-date definitions provided that this feature is enabled in the settings page."
             ),
             FaqModel(
                 "Does Vocaby collect data from me?",
@@ -59,7 +59,7 @@ class SupportRepositoryImpl(
             ),
             FaqModel(
                 "Why does my import keep failing?",
-                "Please make sure that your imported backup json " +
+                "Please make sure that your imported json " +
                         "file was indeed created by the app and was not tampered with. " +
                         "If you continue to experience this issue, please feel " +
                         "free to reach out to us!"

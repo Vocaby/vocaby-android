@@ -214,15 +214,15 @@
             android:id="@+id/custom_entry_group_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/white"
             android:clipToPadding="false"
             android:overScrollMode="never"
-            android:background="@color/white"
             android:paddingStart="@dimen/container_side_margin"
             android:paddingTop="@dimen/container_gap_margin"
             android:paddingEnd="@dimen/container_side_margin"
             android:paddingBottom="@dimen/container_gap_margin"
             android:requiresFadingEdge="none"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <LinearLayout
             android:id="@+id/empty_card"

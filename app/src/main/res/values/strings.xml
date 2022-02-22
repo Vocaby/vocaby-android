@@ -126,7 +126,8 @@
     <string name="notification_save_collection">Save Collection</string>
     <string name="data_transfer">Data Transfer</string>
     <string name="collection_name_header">Collection Name</string>
-    <string name="collection_default_count">0 Saved</string>
+    <string name="collection_default_count">0 Save</string>
+    <string name="collection_count_text">Saved</string>
     <string name="add_save_collection">NEW COLLECTION</string>
     <string name="empty_collection">Empty Collection</string>
     <string name="add_a_save_collection">Add a save collection</string>

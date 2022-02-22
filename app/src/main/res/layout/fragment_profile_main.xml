@@ -103,15 +103,15 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_save"
+                        android:src="@drawable/ic_bookmark_saved"
                         app:tint="@color/gray"
-                        android:layout_marginEnd="@dimen/container_gap_margin"
+                        android:layout_marginEnd="@dimen/icon_gap_margin"
                         android:contentDescription="@string/user_saves" />
                     <TextView
                         android:id="@+id/save_counter"
-                        style="@style/Theme.VocabyAndroid.TextHeadline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/sourcesanspro_semibold"
                         android:gravity="center_horizontal"
                         android:text="@string/dash"
                         android:textColor="@color/black"
@@ -135,11 +135,11 @@
                         android:backgroundTint="@color/black"
                         android:background="@drawable/indicator"/>
                     <TextView
-                        style="@style/Theme.VocabyAndroid.TextHeadline"
                         android:id="@+id/collection_counter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
+                        android:fontFamily="@font/sourcesanspro_semibold"
                         android:gravity="center_horizontal"
                         android:textSize="@dimen/profile_counter_size"
                         android:text="@string/dash"
@@ -194,14 +194,14 @@
                         android:scaleX="0.9"
                         android:scaleY="0.9"
                         app:tint="@color/gray"
-                        android:layout_marginEnd="@dimen/container_gap_margin"
+                        android:layout_marginEnd="@dimen/icon_gap_margin"
                         android:contentDescription="@string/user_entries" />
                     <TextView
-                        style="@style/Theme.VocabyAndroid.TextHeadline"
                         android:id="@+id/entry_counter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
+                        android:fontFamily="@font/sourcesanspro_semibold"
                         android:gravity="center_horizontal"
                         android:textSize="@dimen/profile_counter_size"
                         android:text="@string/dash"

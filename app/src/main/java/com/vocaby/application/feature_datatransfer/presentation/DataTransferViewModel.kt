@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.io.StreamCorruptedException
-import java.lang.IllegalStateException
 import javax.inject.Inject
 
 @HiltViewModel

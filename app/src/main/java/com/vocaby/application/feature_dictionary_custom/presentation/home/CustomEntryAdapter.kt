@@ -62,11 +62,13 @@ class CustomEntryAdapter(
         private val card: CardView = itemView.findViewById(R.id.card_container)
         private val header: TextView = itemView.findViewById(R.id.custom_entry_item_header)
         private val lastUpdated: TextView = itemView.findViewById(R.id.custom_entry_item_updated)
+        private val entryType: TextView = itemView.findViewById(R.id.custom_entry_type)
         private val moreButton: ImageButton = itemView.findViewById(R.id.more_button)
 
         fun bind(userEntry: UserEntry) {
             header.text = userEntry.entry
             lastUpdated.text = Formatter.formatDateToString(userEntry.lastUpdated.time, forDisplay = true, showDay = false)
+            entryType.text = Formatter.firstLetterUpperCase(userEntry.type)
 
             card.setOnClickListener {
                 interaction.onItemTouch(userEntry.entry, adapterPosition)

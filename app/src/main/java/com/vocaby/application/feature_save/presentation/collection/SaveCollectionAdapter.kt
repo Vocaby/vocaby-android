@@ -73,8 +73,7 @@ class SaveCollectionAdapter(
 
         fun bind(collectionModel: SaveCollectionModel) {
             collectionHeader.text = collectionModel.collectionName
-            val countText = "${Formatter.cleanNumber(collectionModel.count)} Saved"
-            collectionCounter.text = countText
+            collectionCounter.text = Formatter.cleanNumber(collectionModel.count)
 
             cardView.setOnClickListener {
                 interaction.onItemTouch(collectionModel.collectionName, collectionModel.id)

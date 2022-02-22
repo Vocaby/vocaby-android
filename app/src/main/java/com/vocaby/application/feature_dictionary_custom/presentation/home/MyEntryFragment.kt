@@ -81,7 +81,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             // Just suspend and do not unsubscribe onStop
             // onResume is called when coming back from entry builder,

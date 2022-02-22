@@ -36,7 +36,7 @@ class DataTransferRepositoryImpl(
 ): DataTransferRepository {
     override suspend fun readSavesFromExternalStorage(uri: Uri, userId: Int): SaveTransferModel = withContext(defaultDispatcher) {
         val extension = Parser.parseFileExtensionFromUri(uri, contentResolver)
-        if (extension != "json") {
+        if (!extension.startsWith("json")) {
             // Process files without an extension as well
             if (extension.isNotEmpty()) {
                 throw IllegalFileException(
@@ -144,7 +144,7 @@ class DataTransferRepositoryImpl(
 
     override suspend fun readCustomEntriesFromExternalStorage(uri: Uri): List<EntryModel> = withContext(defaultDispatcher)  {
         val extension = Parser.parseFileExtensionFromUri(uri, contentResolver)
-        if (extension != "json") {
+        if (!extension.startsWith("json")) {
             // Process files without an extension as well
             if (extension.isNotEmpty()) {
                 throw IllegalFileException(

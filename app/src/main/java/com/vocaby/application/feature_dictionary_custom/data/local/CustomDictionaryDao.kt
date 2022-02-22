@@ -22,12 +22,6 @@ interface CustomDictionaryDao {
     @Query("SELECT custom_entry_id FROM custom_user_entry WHERE user_id = :userId AND entry = :entry")
     suspend fun getUserEntryId(userId: Int, entry: String?): Int?
 
-    @Query(
-        "SELECT entry, last_updated FROM custom_user_entry WHERE user_id = :userId " +
-                "AND entry LIKE :prefix||'%' ORDER BY last_updated DESC"
-    )
-    suspend fun filterUserEntries(userId: Int, prefix: String): List<UserEntry>
-
     @Transaction
     @Query("SELECT * FROM custom_user_entry WHERE user_id = :userId")
     suspend fun getAllUserEntryData(userId: Int): List<EntryWithData>
@@ -38,8 +32,16 @@ interface CustomDictionaryDao {
     @Query("DELETE FROM custom_user_entry WHERE custom_entry_id = :entryId")
     suspend fun deleteUserEntry(entryId: Int)
 
-    @Query("SELECT entry, last_updated FROM custom_user_entry WHERE user_id = :id ORDER BY last_updated DESC")
+    @Query("SELECT entry, last_updated, type FROM custom_user_entry e INNER JOIN custom_entry_group g " +
+            "ON e.user_id = :id AND g.custom_entry_id = e.custom_entry_id AND g.`order` = 0 ORDER BY last_updated DESC")
     suspend fun getUserEntries(id: Int): List<UserEntry>
+
+    @Query(
+        "SELECT entry, last_updated, type FROM custom_user_entry e INNER JOIN custom_entry_group g " +
+                "ON e.user_id = :userId AND g.custom_entry_id = e.custom_entry_id AND g.`order` = 0 " +
+                "AND e.entry LIKE :prefix||'%' ORDER BY last_updated DESC"
+    )
+    suspend fun filterUserEntries(userId: Int, prefix: String): List<UserEntry>
 
     @Query("DELETE FROM custom_user_entry WHERE user_id = :id")
     suspend fun clearUserEntries(id: Int)

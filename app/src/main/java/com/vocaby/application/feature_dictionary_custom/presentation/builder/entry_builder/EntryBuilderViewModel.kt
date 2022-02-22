@@ -243,7 +243,7 @@ class EntryBuilderViewModel @Inject constructor(
     private fun closeBuilder() {
         viewModelScope.launch {
             val intent = Intent()
-            val userEntry = UserEntry(actionPayload.payload, saveTime)
+            val userEntry = UserEntry(actionPayload.payload, entryData.firstGroup?.type ?: "-", saveTime)
             intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemEntryPayload(userEntry, actionPayload.state))
             _uiEvent.emit(EntryBuilderUiEvent.CloseBuilder(intent))
         }

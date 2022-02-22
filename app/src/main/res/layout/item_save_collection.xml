@@ -39,13 +39,29 @@
             android:gravity="center_vertical"
             android:background="@drawable/box_gray_top_straight"
             android:orientation="horizontal">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:contentDescription="@string/custom_entry_edit"
+                android:src="@drawable/ic_bookmark_saved"
+                android:layout_marginEnd="4dp"
+                app:tint="@color/gray" />
             <TextView
                 android:id="@+id/collection_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_regular"
+                android:fontFamily="@font/sourcesanspro_semibold"
                 android:textSize="12sp"
                 android:textColor="@color/black" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:layout_marginStart="6dp"
+                android:fontFamily="@font/sourcesanspro_regular"
+                android:gravity="center_horizontal"
+                android:text="@string/collection_count_text"/>
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
