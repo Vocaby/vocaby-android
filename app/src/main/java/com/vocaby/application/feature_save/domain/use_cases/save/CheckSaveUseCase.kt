@@ -10,8 +10,7 @@ class CheckSaveUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val saveRepository: SaveRepository
 ) {
-    suspend operator fun invoke(entry: String): Flow<SaveModel> {
-        val userId = userRepository.getUser()
+    operator fun invoke(userId: Int, entry: String): Flow<SaveModel> {
         return saveRepository.hasSaved(userId, entry)
     }
 }

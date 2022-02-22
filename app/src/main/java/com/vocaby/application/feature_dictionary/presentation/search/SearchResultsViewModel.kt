@@ -7,6 +7,7 @@ import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.core.util.UiText
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.use_case.GetAllDictionaryEntryUseCase
+import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import com.vocaby.application.feature_save.domain.model.SaveModel
 import com.vocaby.application.feature_save.domain.model.UpdateSaveCollectionModel
 import com.vocaby.application.feature_save.domain.use_cases.collection.GetSaveCollectionsForUpdateUseCase
@@ -29,6 +30,7 @@ class SearchResultsViewModel @Inject constructor(
     private val removeSaveItemUseCase: RemoveSaveItemUseCase,
     private val getAllDictionaryEntryUseCase: GetAllDictionaryEntryUseCase,
     private val getSaveCollectionsUseCase: GetSaveCollectionsForUpdateUseCase,
+    private val getCurrentUserUserCase: GetCurrentUserUseCase
 ): ViewModel() {
     private val entry: String = savedStateHandle.get(SearchResultsFragment.ENTRY)!!
     private var saveCollections: List<UpdateSaveCollectionModel> = ArrayList()
@@ -46,7 +48,9 @@ class SearchResultsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            checkSaveUseCase(entry).collect {
+            getCurrentUserUserCase().flatMapLatest {
+                checkSaveUseCase(it, entry)
+            }.collect {
                 saveModel = it
                 _saveState.value = SaveState.Processed(it.saved)
             }

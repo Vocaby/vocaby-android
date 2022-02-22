@@ -98,8 +98,10 @@ class SavesAppWidgetProvider : AppWidgetProvider() {
                     var example = ""
 
                     entryModel?.let { model ->
-                        message = model.firstGroup.definitionData[0].definition
-                        example = model.firstGroup.definitionData[0].example ?: ""
+                        model.firstGroup?.let {
+                            message = it.definitionData[0].definition
+                            example = it.definitionData[0].example ?: ""
+                        }
                     }
 
                     sp.edit().putString("${WIDGET_PREV_KEY}_$id", entry).apply()

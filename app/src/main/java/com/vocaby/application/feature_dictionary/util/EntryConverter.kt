@@ -18,7 +18,8 @@ object EntryConverter: EntityConverter<WordDefinitions, EntryModel> {
         )
 
         for (data in entity.definitions) {
-            wordData.addDefinition(data.pos, data.definition, data.sentence)
+            if (data.definition.isNotEmpty())
+                wordData.addDefinition(data.pos, data.definition, data.sentence)
         }
 
         return wordData

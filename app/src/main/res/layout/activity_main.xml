@@ -9,7 +9,7 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation_view"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="54dp"
         android:background="@color/white"
         app:itemIconTint="@color/nav_colors"
         app:itemTextColor="@color/nav_colors"
@@ -18,7 +18,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="auto"
         app:menu="@menu/navigation" />
 
     <androidx.viewpager2.widget.ViewPager2

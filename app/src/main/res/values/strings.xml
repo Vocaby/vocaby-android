@@ -85,7 +85,7 @@
     <string name="create_a_new_group">Add a new group</string>
     <string name="create_a_definition">Add a new definition</string>
     <string name="update_a_definition">Update a definition</string>
-    <string name="chart_header">Your favorite entry</string>
+    <string name="chart_header">Frequently Searched</string>
     <string name="chart_placeholder_alert">Need more data</string>
     <string name="chart_placeholder_fetching">Fetching your data…</string>
     <string name="chart_placeholder_error">Something went wrong…</string>

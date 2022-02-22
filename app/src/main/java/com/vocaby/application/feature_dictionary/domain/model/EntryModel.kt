@@ -4,6 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 import java.util.*
+import kotlin.NoSuchElementException
 
 @Parcelize
 data class EntryModel(
@@ -52,8 +53,8 @@ data class EntryModel(
         }
     }
 
-    val firstGroup: DefinitionGroupModel
-        get() = definitionGroups.first()
+    val firstGroup: DefinitionGroupModel?
+        get() = try { definitionGroups.first() } catch (e: NoSuchElementException) { null }
 
     fun getDefinitionGroup(index: Int): DefinitionGroupModel {
         return definitionGroups[index]

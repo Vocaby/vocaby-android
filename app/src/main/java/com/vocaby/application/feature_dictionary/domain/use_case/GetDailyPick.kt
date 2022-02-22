@@ -25,14 +25,22 @@ class GetDailyPick(
             return if (pick.isEmpty()) {
                 getRandomPick()
             } else {
-                val entryModel = dictionaryRepository.getEntryDataFromDatabase(pick)!!
-                DailyPickState.Picked(DailyPick(
-                    entryModel.entry,
-                    entryModel.firstGroup.type,
-                    entryModel.firstGroup.definitionData[0].definition,
-                    entryModel.firstGroup.definitionData[0].example,
-                    random
-                ))
+                var dailyPickState: DailyPickState = DailyPickState.InProgress
+                val entryModel = dictionaryRepository.getEntryDataFromDatabase(pick)
+
+                entryModel?.firstGroup?.let {
+                    dailyPickState = DailyPickState.Picked(DailyPick(
+                        entryModel.entry,
+                        it.type,
+                        it.definitionData[0].definition,
+                        it.definitionData[0].example,
+                        random
+                    ))
+                } ?: run {
+                    dailyPickState = getRandomPick()
+                }
+
+                return dailyPickState
             }
         }
     }
@@ -42,25 +50,31 @@ class GetDailyPick(
         applicationRepository.setLastStarted(today)
         return apiPick?.let {
             dictionaryRepository.cacheDailyPick(it.entry, false)
-            DailyPickState.Picked(DailyPick(
-                it.entry,
-                it.firstGroup.type,
-                it.firstGroup.definitionData[0].definition,
-                it.firstGroup.definitionData[0].example,
-                false
-            ))
+            return if (it.firstGroup != null) {
+                DailyPickState.Picked(DailyPick(
+                    it.entry,
+                    it.firstGroup!!.type,
+                    it.firstGroup!!.definitionData[0].definition,
+                    it.firstGroup!!.definitionData[0].example,
+                    false
+                ))
+            } else null
         }
     }
 
     private suspend fun getRandomPick(): DailyPickState {
         val randomPick = dictionaryRepository.getRandomEntry()
-        dictionaryRepository.cacheDailyPick(randomPick.entry, true)
-        return DailyPickState.Picked(DailyPick(
-            randomPick.entry,
-            randomPick.firstGroup.type,
-            randomPick.firstGroup.definitionData[0].definition,
-            randomPick.firstGroup.definitionData[0].example,
-            true
-        ))
+        return if (randomPick.firstGroup == null) {
+            getRandomPick()
+        } else {
+            dictionaryRepository.cacheDailyPick(randomPick.entry, true)
+            DailyPickState.Picked(DailyPick(
+                randomPick.entry,
+                randomPick.firstGroup!!.type,
+                randomPick.firstGroup!!.definitionData[0].definition,
+                randomPick.firstGroup!!.definitionData[0].example,
+                true
+            ))
+        }
     }
 }

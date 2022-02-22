@@ -47,16 +47,18 @@ class SearchResultsBodyFragment : Fragment() {
         noDefinitionAlert = view.findViewById(R.id.no_definition)
         recyclerView = view.findViewById(R.id.definitions_recycler_container)
         entryData?.let { data ->
-            val definitionsAdapter = DefinitionsAdapter(ctx)
-            definitionsAdapter.setWordData(data)
+            data.firstGroup?.let {
+                val definitionsAdapter = DefinitionsAdapter(ctx)
+                definitionsAdapter.setWordData(data)
 
-            recyclerView.apply {
-                isEnabled = false
-                adapter = definitionsAdapter
-                layoutManager = LinearLayoutManager(ctx)
-            }
+                recyclerView.apply {
+                    isEnabled = false
+                    adapter = definitionsAdapter
+                    layoutManager = LinearLayoutManager(ctx)
+                }
 
-            populateView(data)
+                populateView(data)
+            } ?: populateNoDefinition()
         } ?: populateNoDefinition()
 
 
@@ -70,6 +72,8 @@ class SearchResultsBodyFragment : Fragment() {
             pronunciationHeader.visibility = View.VISIBLE
             pronunciation.text = entryData.pronunciation
             noDefinitionAlert.visibility = View.GONE
+        } else {
+            entryBox.setExpanded(false)
         }
     }
 

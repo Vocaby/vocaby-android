@@ -1,178 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/search_results_coordinator_layout"
-    android:background="@drawable/box_white_bottom_straight"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clickable="true">
+    android:layout_height="match_parent">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:orientation="horizontal"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:background="@drawable/box_white_bottom_straight">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/back_button"
+            style="@style/Theme.VocabyAndroid.NavButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:paddingStart="@dimen/container_side_margin"
-            android:paddingEnd="@dimen/container_side_margin"
-            android:background="@drawable/box_white_bottom_straight"
+            android:paddingTop="12dp"
+            android:paddingEnd="4dp"
+            android:text="@string/close"
+            android:textColor="@color/black"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/dictionary_selector"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5" />
+        <RadioGroup
+            android:id="@+id/dictionary_selector"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:background="@drawable/box_gray"
+            android:checkedButton="@+id/selection_custom"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.8">
+            <RadioButton
+                android:id="@+id/selection_custom"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/toggle_widget_background"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/custom"
+                android:textColor="@color/dark_gray"
+                android:textSize="10sp"
+                tools:ignore="SmallSp" />
+
+            <RadioButton
+                android:id="@+id/selection_original"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/toggle_widget_background"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/original"
+                android:textColor="@color/dark_gray"
+                android:textSize="10sp"
+                tools:ignore="SmallSp" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/dictionary_selector"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.76">
+            <ProgressBar
+                android:id="@+id/save_progress"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="4dp"
+                android:indeterminateTint="@color/colorPrimary"
+                tools:ignore="InefficientWeight" />
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/back_button"
+                android:id="@+id/save_button"
                 style="@style/Theme.VocabyAndroid.NavButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:text="@string/close"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/dictionary_selector"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.68" />
-
-            <RadioGroup
-                android:id="@+id/dictionary_selector"
-                android:layout_width="150dp"
-                android:layout_height="30dp"
-                android:background="@drawable/box_gray"
-                android:checkedButton="@+id/selection_custom"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.8">
-
-                <RadioButton
-                    android:id="@+id/selection_custom"
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="1dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/toggle_widget_background"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:text="@string/custom"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="10sp"
-                    tools:ignore="SmallSp" />
-
-                <RadioButton
-                    android:id="@+id/selection_original"
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="1dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/toggle_widget_background"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:text="@string/original"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="10sp"
-                    tools:ignore="SmallSp" />
-            </RadioGroup>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/dictionary_selector"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.72">
-                <ProgressBar
-                    android:id="@+id/save_progress"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="4dp"
-                    android:indeterminateTint="@color/colorPrimary"
-                    tools:ignore="InefficientWeight" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/save_button"
-                    style="@style/Theme.VocabyAndroid.NavButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/ic_save"
-                    android:enabled="false"
-                    android:textColor="@color/button_colors"
-                    tools:ignore="SpeakableTextPresentCheck" />
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-        <FrameLayout
-            android:id="@+id/frameLayout"
+                android:drawableEnd="@drawable/ic_save"
+                android:enabled="false"
+                android:textColor="@color/button_colors"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="16dp">
+        <TextView
+            android:id="@+id/entry_header"
+            style="@style/Theme.VocabyAndroid.TextHeader"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:paddingBottom="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-            <TextView
-                android:id="@+id/entry_header"
-                style="@style/Theme.VocabyAndroid.TextHeader"
-                android:layout_marginStart="18dp"
-                android:layout_marginEnd="18dp"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:gravity="center"
-                android:textAllCaps="true"
-                android:textColor="@color/colorPrimaryAccent"
-                app:autoSizeMinTextSize="10sp"
-                app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform" />
-        </FrameLayout>
+            android:layout_height="56dp"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimaryAccent"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform" />
+    </FrameLayout>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/search_results_coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
         <ProgressBar
             android:id="@+id/search_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="140dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:indeterminate="true"
             android:indeterminateTint="@color/colorPrimary"
-            android:scaleY="1.2"
-            app:layout_constraintVertical_bias="0.3"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/search_results_body_pager"
-            app:layout_constraintStart_toStartOf="@+id/search_results_body_pager"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
+            android:scaleY="1.2" />
         <TextView
             android:id="@+id/search_progress_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:fontFamily="@font/sourcesanspro_regular"
             android:textSize="11sp"
-            android:textColor="@color/colorPrimary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintTop_toBottomOf="@+id/search_progress">
-
+            android:layout_marginTop="16dp"
+            android:textColor="@color/colorPrimary">
         </TextView>
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/search_results_body_pager"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>
