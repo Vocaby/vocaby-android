@@ -39,8 +39,11 @@ class DictionaryRepositoryImpl(
         return EntryConverter.convertFromEntity(dao.getRandomWord())
     }
 
-    override suspend fun replaceEntry(original: EntryModel, remote: EntryModel): Int = withContext(defaultDispatcher){
-        dao.deleteEntry(Word(original.id))
+    override suspend fun replaceEntry(originalId: Int?, remote: EntryModel): Int = withContext(defaultDispatcher){
+        originalId?.let {
+            dao.deleteEntry(Word(it))
+        }
+
         val id = dao.insertEntry(Word(remote.entry, remote.pronunciation, remote.lastUpdated)).toInt()
         val definitions = mutableListOf<Definition>()
         for(groupData in remote.definitionGroups) {

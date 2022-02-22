@@ -14,7 +14,7 @@ class FormatterTest {
         val name = "test_name.txt"
         val localdate = LocalDate.of( 2022 , 1 , 1)
         val formatted = Formatter.addDatePrefix(name, Date.from(localdate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))
-        assertThat(formatted).isEqualTo("01_01_2022_test_name.txt")
+        assertThat(formatted).isEqualTo("01012022_test_name.txt")
     }
 
     @Test

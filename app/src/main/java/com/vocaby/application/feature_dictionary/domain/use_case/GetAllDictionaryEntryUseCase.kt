@@ -19,47 +19,57 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(entry: String): Flow<SearchState> = flow {
         val userId = userRepository.getUser()
-        var originalData = dictionaryRepository.getEntryDataFromDatabase(entry)
+
+        var currentEntryModel = dictionaryRepository.getEntryDataFromDatabase(entry)
         val customData = customDictionaryRepository.getUserEntryData(userId, entry)
 
-        originalData?.let { og ->
-            val isCached = dictionaryRepository.checkApiCache(entry)
-            val connectionEnabled = userRepository.isDictionaryUpdateEnabled()
-            if (!isCached && connectionEnabled) {
-                emit(SearchState.InProgress("Checking update..."))
-                val retrievedEntry = dictionaryRepository.checkAndGetEntryDataFromApi(
-                    entry,
-                    Formatter.formatDateToString(og.lastUpdated.time,  precise=false)
+        val isCached = dictionaryRepository.checkApiCache(entry)
+        val connectionEnabled = userRepository.isDictionaryUpdateEnabled()
+        if (!isCached && connectionEnabled) {
+            emit(SearchState.InProgress("Checking update..."))
+            val lastUpdated = currentEntryModel?.lastUpdated?.time
+                ?: Formatter.formatStringToDate("2022-01-01").time
+            val retrievedEntry = dictionaryRepository.checkAndGetEntryDataFromApi(
+                entry,
+                Formatter.formatDateToString(
+                    lastUpdated,
+                    precise=false
                 )
+            )
 
-                retrievedEntry?.let { newEntry ->
+            retrievedEntry?.let { newEntry ->
+                if (currentEntryModel == null) {
                     emit(SearchState.InProgress("Updating entry..."))
-                    newEntry.id = dictionaryRepository.replaceEntry(og, retrievedEntry)
-                    originalData = newEntry
+                } else {
+                    emit(SearchState.InProgress("Adding entry..."))
                 }
-            }
 
-            userRepository.recordVisit(userId, originalData!!.id)
+                newEntry.id = dictionaryRepository.replaceEntry(currentEntryModel?.id, newEntry)
+                currentEntryModel = newEntry
+            }
         }
 
         val dictionarySearchResult = DictionarySearchResult()
         val dictionarySelectorState = DictionarySelectorState()
         var removeSave = false
-        if (customData != null && originalData != null) {
+        if (customData != null && currentEntryModel != null) {
             dictionarySearchResult.customModel = customData
-            dictionarySearchResult.originalModel = originalData
+            dictionarySearchResult.originalModel = currentEntryModel
             dictionarySelectorState.displayAll = true
+            currentEntryModel?.let { userRepository.recordVisit(userId, it.id) }
         } else if (customData != null) {
             // Only Custom Available
             userRepository.recordCustomVisit(userId, customData.id)
             dictionarySearchResult.customModel = customData
         } else {
             // No definition
-            if (originalData == null) {
+            if (currentEntryModel == null) {
                 removeSave = true
+            } else {
+                currentEntryModel?.let { userRepository.recordVisit(userId, it.id) }
             }
 
-            dictionarySearchResult.originalModel = originalData
+            dictionarySearchResult.originalModel = currentEntryModel
             dictionarySelectorState.displayId = R.id.selection_original
             dictionarySelectorState.hideId = R.id.selection_custom
         }

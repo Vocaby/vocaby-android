@@ -9,7 +9,7 @@ interface DictionaryRepository {
     suspend fun getEntryIdFromDatabase(entry: String): Long?
     suspend fun getEntriesByCharacterFromDB(character: String): List<String>
     suspend fun getRandomEntry(): EntryModel
-    suspend fun replaceEntry(original: EntryModel, remote: EntryModel): Int
+    suspend fun replaceEntry(originalId: Int?, remote: EntryModel): Int
     suspend fun checkAndGetEntryDataFromApi(entry: String, date: String): EntryModel?
     suspend fun checkApiCache(entry: String): Boolean
     suspend fun clearDictionaryCache()
