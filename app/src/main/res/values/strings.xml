@@ -160,7 +160,7 @@
     <string name="empty">Empty</string>
     <string name="dash">-</string>
     <string name="custom_entries">Custom Entries</string>
-    <string name="chart_dictionary_data">Dictionary Search Data</string>
+    <string name="chart_dictionary_data">Search Statistic</string>
     <string name="user_saves">User Saves</string>
     <string name="user_entries">User Entries</string>
     <string name="loading_data">Loading data…</string>

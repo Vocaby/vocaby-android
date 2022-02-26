@@ -46,7 +46,7 @@ abstract class VocabyDatabase : RoomDatabase() {
                 context,
                 VocabyDatabase::class.java,
                 "database"
-            ).createFromAsset("databases/database.db")
+            ).createFromAsset("databases/base_dictionary.db")
             .setJournalMode(JournalMode.AUTOMATIC)
             .addCallback(object: Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
