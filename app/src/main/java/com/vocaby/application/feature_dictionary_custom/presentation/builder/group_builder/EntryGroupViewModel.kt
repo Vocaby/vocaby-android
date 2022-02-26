@@ -90,7 +90,7 @@ class EntryGroupViewModel @Inject constructor(
                     removeDefinition(position)
                 }
                 is UserInputState.SameInput<*> -> {
-                    _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("Enter a new definition"))
+                    _uiEvent.emit(EntryGroupBuilderUiEvent.CloseDialog)
                 }
                 is UserInputState.InvalidInput -> {
                     _uiEvent.emit(EntryGroupBuilderUiEvent.ShowAlert("The definition already exists"))

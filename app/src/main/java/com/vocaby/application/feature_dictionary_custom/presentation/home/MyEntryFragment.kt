@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -33,7 +34,6 @@ import kotlinx.coroutines.launch
 // TODO: Create custom swipe refresh layout for entry pagination
 @AndroidEntryPoint
 class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
-    private lateinit var entryCountView: TextView
     private lateinit var customEntryAdapter: CustomEntryAdapter
     private lateinit var addFab: ExtendedFloatingActionButton
     private lateinit var emptyCard: LinearLayout
@@ -47,6 +47,8 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var recyclerView: RecyclerView
     private lateinit var fetchProgress: ProgressBar
     private lateinit var alertDialogBuilder: MaterialAlertDialogBuilder
+    private lateinit var counter: TextView
+    private lateinit var appBarLayout: AppBarLayout
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
     private val entryViewModel: MyEntryViewModel by activityViewModels()
@@ -57,10 +59,10 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_entry, container, false)
         alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
-        entryCountView = view.findViewById(R.id.entry_count)
         emptyCard = view.findViewById(R.id.empty_card)
         fetchProgress = view.findViewById(R.id.fetch_progress)
         searchView = view.findViewById(R.id.vocaby_search)
+        appBarLayout = view.findViewById(R.id.app_layout)
         searchView.apply {
             setOnQueryChangeListener(queryChangeListener)
             setOnSearchListener(searchListener)
@@ -86,15 +88,20 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             // onResume is called when coming back from entry builder,
             // unnecessarily resubmitting the list
             launch {
-                entryViewModel.uiState.collect { state ->
-                    when(state) {
-                        is CustomEntryUiState.InProgress -> {
+                entryViewModel.entryListState.collect { state ->
+                    when (state) {
+                        is CustomEntryListState.InProgress -> {
+                            recyclerView.visibility = View.INVISIBLE
                             fetchProgress.visibility = View.VISIBLE
                             emptyCard.visibility = View.INVISIBLE
                         }
-                        is CustomEntryUiState.UpdateCount -> {
+                        is CustomEntryListState.UpdateEntries -> {
                             fetchProgress.visibility = View.INVISIBLE
-                            entryCountView.text = state.count
+                            customEntryAdapter.submitList(state.entries)
+                            recyclerView.visibility = View.VISIBLE
+                            updateEmptyCardVisibility()
+                            recyclerView.scrollToPosition(0)
+                            appBarLayout.setExpanded(true)
                         }
                     }
                 }
@@ -113,11 +120,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                             entryCreateDialog.dismiss()
 
                             openEditor(event.entry, event.position)
-                        }
-                        is CustomEntryUiEvent.UpdateEntries -> {
-                            fetchProgress.visibility = View.INVISIBLE
-                            customEntryAdapter.submitList(event.entries)
-                            updateEmptyCardVisibility()
                         }
                         is CustomEntryUiEvent.UpdateAdapter -> {
                             when(event.state) {
@@ -143,6 +145,13 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                         is CustomEntryUiEvent.ResetFilter -> {
                             searchView.clearQuery()
                         }
+                        is CustomEntryUiEvent.ShowMoreProgress -> {
+                            customEntryAdapter.addEntryLast()
+                            if (event.scroll) recyclerView.scrollToPosition(customEntryAdapter.itemCount - 1)
+                        }
+                        is CustomEntryUiEvent.AddMoreEntries -> {
+                            customEntryAdapter.addEntryRange(event.low, event.high)
+                        }
                     }
                 }
             }
@@ -167,6 +176,14 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         customEntryAdapter = CustomEntryAdapter( this)
         recyclerView.adapter = customEntryAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (!recyclerView.canScrollVertically(1) && dy > 0) {
+                    entryViewModel.loadMoreEntries(true)
+                }
+            }
+        })
     }
 
     private fun setupButtons(view: View) {
@@ -195,19 +212,19 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             entryAlert.visibility = View.INVISIBLE
         }
 
-        val counter = entryCreateDialog.findViewById<TextView>(R.id.character_counter)!!
-        val textWatcher: TextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            }
+        counter = entryCreateDialog.findViewById(R.id.character_counter)!!
+        entryEdit.addTextChangedListener(textWatcher)
+    }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                counter.text = s.length.toString()
-            }
-
-            override fun afterTextChanged(s: Editable) {}
+    private val textWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
         }
 
-        entryEdit.addTextChangedListener(textWatcher)
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            counter.text = s.length.toString()
+        }
+
+        override fun afterTextChanged(s: Editable) {}
     }
 
     private fun updateEmptyCardVisibility() {
@@ -284,6 +301,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     override fun onDestroy() {
         recyclerView.clearOnScrollListeners()
+        entryEdit.removeTextChangedListener(textWatcher)
         super.onDestroy()
     }
 }

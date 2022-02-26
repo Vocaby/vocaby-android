@@ -1,11 +1,6 @@
 package com.vocaby.application.core.util.exceptions
 
-class IllegalFileException : Exception {
-    val code: Int
-
-    constructor(message: String?, code: Int) : super(message) {
-        this.code = code
-    }
+class IllegalFileException(message: String?, val code: Int) : Exception(message) {
 
     companion object {
         const val INVALID_FORMAT = 0

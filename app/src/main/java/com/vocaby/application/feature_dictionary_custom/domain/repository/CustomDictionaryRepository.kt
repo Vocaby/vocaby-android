@@ -11,8 +11,9 @@ import java.util.*
 
 interface CustomDictionaryRepository {
     suspend fun replaceUser(newUserId: Int)
-    suspend fun filterUserEntries(userId: Int, prefix: String): LinkedList<UserEntry>
-    suspend fun getUserEntries(userId: Int): LinkedList<UserEntry>
+    suspend fun filterUserEntries(userId: Int, prefix: String): LinkedList<UserEntry?>
+    suspend fun getUserEntries(userId: Int, limit: Int, offset: Int): LinkedList<UserEntry?>
+    fun getUserEntriesCount(userId: Int): Flow<Int>
     suspend fun getUserEntryId(userId: Int, entry: String): Int?
     suspend fun getUserEntryData(userId: Int, entry: String): EntryModel?
     suspend fun removeUserEntry(entryId: Int)

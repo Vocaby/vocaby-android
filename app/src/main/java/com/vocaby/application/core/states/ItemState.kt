@@ -5,5 +5,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 enum class ItemState: Parcelable {
-    ADD, DELETE, UPDATE
+    ADD, DELETE, UPDATE, NOTHING
 }

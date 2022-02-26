@@ -16,34 +16,59 @@ import java.util.*
 class CustomEntryAdapter(
     private val interaction: Interaction
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-    private var customEntries: List<UserEntry> = LinkedList()
-
+    private var customEntries: List<UserEntry?> = LinkedList()
+    private val VIEW_TYPE_LOADING = 0
+    private val VIEW_TYPE_ITEM = 1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return CustomEntryViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_custom_entry,
-                parent,
-                false
-            ),
-            interaction
-        )
+        if (viewType == VIEW_TYPE_ITEM) {
+            return CustomEntryViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_custom_entry,
+                    parent,
+                    false
+                ),
+                interaction
+            )
+        } else {
+            return CustomEntryLoadingViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_custom_entry_loading,
+                    parent,
+                    false
+                )
+            )
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (customEntries[position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is CustomEntryViewHolder -> holder.bind(customEntries[position])
+            is CustomEntryViewHolder -> customEntries[position]?.let {
+                holder.bind(it)
+            }
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun submitList(list: LinkedList<UserEntry>) {
+    fun submitList(list: LinkedList<UserEntry?>) {
         customEntries = list
         notifyDataSetChanged()
     }
 
     fun addEntry() {
         notifyItemInserted(0)
+    }
+
+    fun addEntryLast() {
+        notifyItemInserted(itemCount-1)
+    }
+
+    fun addEntryRange(low: Int, high: Int) {
+        notifyItemRangeChanged(low, high)
     }
 
     fun deleteEntry(position: Int) {
@@ -78,6 +103,12 @@ class CustomEntryAdapter(
                 interaction.onItemUpdate(userEntry.entry, adapterPosition)
             }
         }
+    }
+
+    class CustomEntryLoadingViewHolder
+    constructor(
+        itemView: View,
+    ): RecyclerView.ViewHolder(itemView) {
     }
 
     interface Interaction {

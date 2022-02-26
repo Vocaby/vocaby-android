@@ -19,10 +19,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/container_side_margin"
+            android:layout_marginEnd="@dimen/container_side_margin"
             android:paddingBottom="@dimen/container_gap_margin"
-            android:paddingStart="@dimen/container_side_margin"
-            android:paddingEnd="@dimen/container_side_margin"
             android:orientation="vertical">
+
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
@@ -30,7 +31,7 @@
                 android:text="@string/entry"
                 android:textColor="@color/gray"
                 android:textSize="10sp"
-                autofit:ignore="SmallSp" />
+                autofit:ignore="SmallSp,TextContrastCheck" />
 
             <TextView
                 android:id="@+id/custom_entry_item_header"
@@ -45,16 +46,18 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/container_side_margin"
             android:gravity="center_vertical"
             android:orientation="horizontal">
+
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:layout_marginStart="@dimen/container_side_margin"
                 android:layout_marginEnd="@dimen/icon_gap_margin"
                 android:contentDescription="@string/custom_entry_edit"
                 android:src="@drawable/ic_entry"
-                app:tint="@color/gray" />
+                app:tint="@color/gray"
+                autofit:ignore="ImageContrastCheck" />
             <TextView
                 android:id="@+id/custom_entry_type"
                 android:layout_width="wrap_content"
@@ -87,14 +90,14 @@
 
             <ImageButton
                 android:id="@+id/more_button"
-                android:layout_width="40dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
                 android:background="@null"
                 android:backgroundTint="@color/white"
                 android:contentDescription="@string/unsave_button_desc"
                 android:paddingTop="0dp"
-                android:src="@drawable/ic_more" />
+                android:src="@drawable/ic_more"
+                autofit:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

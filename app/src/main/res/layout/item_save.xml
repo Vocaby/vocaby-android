@@ -34,7 +34,7 @@
                 android:text="@string/entry"
                 android:textColor="@color/gray"
                 android:textSize="10sp"
-                autofit:ignore="SmallSp" />
+                autofit:ignore="SmallSp,TextContrastCheck" />
 
             <TextView
                 android:id="@+id/save_item"
@@ -54,9 +54,10 @@
             android:layout_width="24dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="-4dp"
+            android:background="@drawable/ic_bookmark_saved"
+            android:contentDescription="@string/unsave_button_desc"
             android:paddingTop="@dimen/container_gap_margin"
             android:paddingBottom="@dimen/container_gap_margin"
-            android:background="@drawable/ic_bookmark_saved"
-            android:contentDescription="@string/unsave_button_desc" />
+            autofit:ignore="TouchTargetSizeCheck,ImageContrastCheck" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

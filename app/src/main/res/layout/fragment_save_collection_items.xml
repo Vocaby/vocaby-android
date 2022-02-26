@@ -22,15 +22,16 @@
             style="@style/Theme.VocabyAndroid.NavButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingStart="@dimen/container_side_margin"
             android:background="@android:color/transparent"
+            android:paddingStart="@dimen/container_side_margin"
             android:text="@string/close"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/collection_header_small"
@@ -44,34 +45,56 @@
             android:fontFamily="@font/sourcesanspro_semibold"
             android:gravity="center"
             android:maxLines="1"
-            android:paddingStart="@dimen/container_side_margin"
-            android:paddingEnd="@dimen/container_side_margin"
             android:textColor="@color/black"
             android:textSize="14sp"
-            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
-        <TextView
-            android:id="@+id/save_counter_small"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fontFamily="@font/sourcesanspro_semibold"
-            android:gravity="center_vertical"
-            android:text="@string/collection_default_count"
-            android:textColor="@color/dark_gray"
-            android:textSize="12sp"
-            android:paddingEnd="@dimen/container_side_margin"
-            android:visibility="invisible"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginEnd="@dimen/container_side_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/collection_header_small"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="4dp"
+                android:contentDescription="@string/user_saves"
+                android:src="@drawable/ic_saved_open"
+                app:tint="@color/gray"
+                tools:ignore="ImageContrastCheck" />
+
+            <TextView
+                android:id="@+id/save_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/save_counter_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/sourcesanspro_regular"
+                android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -83,37 +106,39 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/container_gap_margin"
-            android:background="@color/white"
+            android:background="@drawable/box_white_bottom_stroke_gray"
             android:gravity="center"
-            app:elevation="2dp">
+            app:elevation="1dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingBottom="@dimen/container_gap_margin"
+                android:paddingBottom="@dimen/container_side_margin"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
-                <TextView
-                    android:id="@+id/collection_header"
-                    android:layout_width="300dp"
-                    android:layout_height="32dp"
-                    android:fontFamily="@font/playfairdisplay_black"
-                    android:textColor="@color/colorPrimaryAccent"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:autoSizeTextType="uniform"
-                    android:autoSizeMinTextSize="14sp"
-                    android:autoSizeStepGranularity="1sp" />
-                <TextView
-                    android:id="@+id/save_counter"
+                <FrameLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/sourcesanspro_regular"
-                    android:gravity="center_vertical"
-                    android:text="@string/collection_default_count"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/container_side_margin"
+                    android:layout_marginEnd="@dimen/container_side_margin"
+                    tools:ignore="UselessParent">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="3dp"
+                        android:layout_gravity="center_horizontal|bottom"
+                        android:src="@drawable/collection_header_background"
+                        tools:ignore="ContentDescription,ImageContrastCheck" />
+                    <TextView
+                        android:id="@+id/collection_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:fontFamily="@font/playfairdisplay_black"
+                        android:textColor="@color/colorPrimaryAccent"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textSize="22sp"/>
+                </FrameLayout>
             </LinearLayout>
         </com.google.android.material.appbar.AppBarLayout>
         <LinearLayout
@@ -127,13 +152,15 @@
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_collection"
                 android:textAllCaps="true"
-                android:textColor="@color/gray" />
+                android:textColor="@color/gray"
+                tools:ignore="TextContrastCheck" />
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/saves_container"

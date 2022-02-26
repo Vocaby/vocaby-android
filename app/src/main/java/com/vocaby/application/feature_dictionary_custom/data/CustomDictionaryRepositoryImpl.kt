@@ -24,15 +24,17 @@ class CustomDictionaryRepositoryImpl constructor(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): CustomDictionaryRepository {
     override suspend fun replaceUser(newUserId: Int) = dao.replaceUser(newUserId)
-    override suspend fun filterUserEntries(userId: Int, prefix: String): LinkedList<UserEntry> {
+    override suspend fun filterUserEntries(userId: Int, prefix: String): LinkedList<UserEntry?> {
         val list = dao.filterUserEntries(userId, prefix)
         return LinkedList(list)
     }
 
-    override suspend fun getUserEntries(userId: Int): LinkedList<UserEntry> = withContext(defaultDispatcher) {
-        val list = dao.getUserEntries(userId)
+    override suspend fun getUserEntries(userId: Int, limit: Int, offset: Int): LinkedList<UserEntry?> = withContext(defaultDispatcher) {
+        val list = dao.getUserEntries(userId, limit, offset)
         LinkedList(list)
     }
+
+    override fun getUserEntriesCount(userId: Int): Flow<Int> = dao.getUserEntriesCount(userId)
 
     override suspend fun getUserEntryId(userId: Int, entry: String): Int? = dao.getUserEntryId(userId, entry)
 

@@ -9,6 +9,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +20,6 @@ import com.vocaby.application.R
 import com.vocaby.application.core.states.ItemState
 import com.vocaby.application.core.util.DragStartListener
 import com.vocaby.application.core.util.ItemTouchCallback
-import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -59,12 +59,13 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         setupButtons()
         setupFragmentManager()
 
-        launchAndRepeatWithViewLifecycle {
-            launch {
-                collectUiState()
-            }
+        lifecycleScope.launchWhenStarted {
             launch {
                 collectUiEvent()
+            }
+
+            launch {
+                collectUiState()
             }
         }
     }
@@ -114,6 +115,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                         ItemState.UPDATE -> {
                             customGroupAdapter.editItem(event.position)
                         }
+                        else -> {}
                     }
                 }
                 is EntryBuilderUiEvent.ShowTypeSelectionDialog -> {

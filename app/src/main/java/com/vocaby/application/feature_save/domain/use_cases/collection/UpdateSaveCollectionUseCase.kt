@@ -32,7 +32,7 @@ class UpdateSaveCollectionUseCase @Inject constructor(
 
                 saveRepository.updateSaveCollection(SaveCollection(
                     userId = userId,
-                    collectionName = newName,
+                    collectionName = sanitized,
                     id = collectionId
                 ))
 

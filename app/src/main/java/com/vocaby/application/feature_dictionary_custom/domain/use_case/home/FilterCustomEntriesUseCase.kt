@@ -9,7 +9,7 @@ class FilterCustomEntriesUseCase(
     private val userRepository: UserRepository,
     private val customDictionaryRepository: CustomDictionaryRepository
 ) {
-    suspend operator fun invoke(prefix: String): LinkedList<UserEntry> {
+    suspend operator fun invoke(prefix: String): LinkedList<UserEntry?> {
         val userId = userRepository.getUser()
         return customDictionaryRepository.filterUserEntries(userId, prefix)
     }

@@ -41,12 +41,14 @@ class EntryBuilderViewModel @Inject constructor(
         const val INITIAL_DEFINITIONS_KEY = "IDK"
         const val DEFINITION_CHANGES = "DEFCK"
     }
-    private val actionPayload: ItemStringPayload = savedStateHandle.get<ItemStringPayload>(Constants.ITEM_PAYLOAD_KEY)!!
+
+    private val entry: String = savedStateHandle.get<String>(Constants.ENTRY_KEY)!!
+    private val resultActionPayload = ItemStringPayload(entry, ItemState.ADD)
     private lateinit var entryData: EntryModel
     private var initTypes: LinkedHashMap<String, Type> = LinkedHashMap()
     private var availableTypes: ArrayList<Type> = ArrayList()
     private var userId: Int = 1
-    private var selectedGroup = -1
+    private var selectedGroupPosition = -1
 
     private val initialGroups: HashMap<String, DefinitionGroupModel> = HashMap()
     private val groupChanges: ItemChangeState<DefinitionGroupModel> = ItemChangeState()
@@ -62,9 +64,13 @@ class EntryBuilderViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             userId = userDictionaryRepository.getUser()
-            entryData = entryBuilderUseCases.getCustomEntryUseCase(userId, actionPayload.payload)
+            entryData = entryBuilderUseCases.getCustomEntryUseCase(userId, entry)
+
+            if (entryData.id == -1) resultActionPayload.state = ItemState.ADD
+            else resultActionPayload.state = ItemState.UPDATE
+
             _uiState.value = EntryBuilderUiState.UpdateUiState(
-                if (actionPayload.state == ItemState.ADD) "New Entry" else "Update Entry",
+                if (resultActionPayload.state == ItemState.ADD) "New Entry" else "Update Entry",
                 entryData.entry,
                 entryData.pronunciation ?: "",
                 entryData.definitionGroups
@@ -78,9 +84,6 @@ class EntryBuilderViewModel @Inject constructor(
                 initialGroups[clone.type] = clone
                 definitionChangesMap[clone.type] = ItemChangeState(clone.groupId)
             }
-
-            // In case user attempts to create a new entry but the entry already exists
-            if (!entryData.isEmpty) actionPayload.state = ItemState.UPDATE
 
             calculateAvailableTypes()
         }
@@ -120,7 +123,7 @@ class EntryBuilderViewModel @Inject constructor(
 
     fun openGroupEditor(position: Int) {
         viewModelScope.launch {
-            selectedGroup = position
+            selectedGroupPosition = position
             val type = entryData.getDefinitionGroup(position).type
 
             val intent = Intent()
@@ -198,7 +201,7 @@ class EntryBuilderViewModel @Inject constructor(
             groupChanges.addNew(newGroup.type, newGroup)
             groupChanges.putItemAdded(newGroup.type, newGroup)
             availableTypes.removeIf {it.type == newGroup.type}
-            _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(selectedGroup, ItemState.ADD))
+            _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(selectedGroupPosition, ItemState.ADD))
         }
     }
 
@@ -209,7 +212,7 @@ class EntryBuilderViewModel @Inject constructor(
             if (definitionGroup.isNew) groupChanges.updateNew(definitionGroup.type, definitionGroup)
             else groupChanges.updateExisting(definitionGroup.groupId, definitionGroup)
 
-            _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(selectedGroup, ItemState.UPDATE))
+            _uiEvent.emit(EntryBuilderUiEvent.UpdateAdapter(selectedGroupPosition, ItemState.UPDATE))
         }
     }
 
@@ -222,7 +225,7 @@ class EntryBuilderViewModel @Inject constructor(
                     val groupBuilderResult: ItemState = data.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)!!
                     if (definitionGroup.isEmpty) {
                         if (groupBuilderResult == ItemState.UPDATE)
-                            removeGroup(selectedGroup)
+                            removeGroup(selectedGroupPosition)
                     } else {
                         if (groupBuilderResult == ItemState.UPDATE) {
                             updateGroup(definitionGroup)
@@ -243,8 +246,8 @@ class EntryBuilderViewModel @Inject constructor(
     private fun closeBuilder() {
         viewModelScope.launch {
             val intent = Intent()
-            val userEntry = UserEntry(actionPayload.payload, entryData.firstGroup?.type ?: "-", saveTime)
-            intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemEntryPayload(userEntry, actionPayload.state))
+            val userEntry = UserEntry(resultActionPayload.payload, entryData.firstGroup?.type ?: "-", saveTime)
+            intent.putExtra(Constants.ITEM_PAYLOAD_KEY, ItemEntryPayload(userEntry, resultActionPayload.state))
             _uiEvent.emit(EntryBuilderUiEvent.CloseBuilder(intent))
         }
     }
@@ -261,14 +264,14 @@ class EntryBuilderViewModel @Inject constructor(
         checkForUpdatedItems()
 
         if (entryData.definitionGroups.isEmpty()) {
-            if (actionPayload.state == ItemState.ADD) {
+            if (resultActionPayload.state == ItemState.ADD) {
                 // NEW ENTRY IS EMPTY SO CANCEL
                 cancelBuilder()
             } else {
                 // DELETE THE EXISTING ENTRY BECAUSE THE USER DELETED ALL GROUPS
                 viewModelScope.launch {
                     customDictionaryRepository.removeUserEntry(entryData.id)
-                    actionPayload.state = ItemState.DELETE
+                    resultActionPayload.state = ItemState.DELETE
                     closeBuilder()
                 }
             }
@@ -303,7 +306,7 @@ class EntryBuilderViewModel @Inject constructor(
     }
 
     private fun checkForUpdatedItems() {
-        if (entryData.definitionGroups.isNotEmpty() && actionPayload.state == ItemState.UPDATE) {
+        if (entryData.definitionGroups.isNotEmpty() && resultActionPayload.state == ItemState.UPDATE) {
             for (i in entryData.definitionGroups.indices) {
                 val currentGroup = entryData.definitionGroups[i]
                 val originalGroup = initialGroups[currentGroup.type]

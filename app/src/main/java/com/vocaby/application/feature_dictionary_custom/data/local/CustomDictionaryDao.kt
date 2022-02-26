@@ -33,8 +33,11 @@ interface CustomDictionaryDao {
     suspend fun deleteUserEntry(entryId: Int)
 
     @Query("SELECT entry, last_updated, type FROM custom_user_entry e INNER JOIN custom_entry_group g " +
-            "ON e.user_id = :id AND g.custom_entry_id = e.custom_entry_id AND g.`order` = 0 ORDER BY last_updated DESC")
-    suspend fun getUserEntries(id: Int): List<UserEntry>
+            "ON e.user_id = :id AND g.custom_entry_id = e.custom_entry_id AND g.`order` = 0 ORDER BY last_updated DESC LIMIT :offset, :limit")
+    suspend fun getUserEntries(id: Int, limit: Int, offset: Int): List<UserEntry>
+
+    @Query("SELECT COUNT(custom_entry_id) FROM custom_user_entry WHERE user_id = :id")
+    fun getUserEntriesCount(id: Int): Flow<Int>
 
     @Query(
         "SELECT entry, last_updated, type FROM custom_user_entry e INNER JOIN custom_entry_group g " +

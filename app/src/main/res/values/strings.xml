@@ -126,7 +126,6 @@
     <string name="notification_save_collection">Save Collection</string>
     <string name="data_transfer">Data Transfer</string>
     <string name="collection_name_header">Collection Name</string>
-    <string name="collection_default_count">0 Save</string>
     <string name="collection_count_text">Saved</string>
     <string name="add_save_collection">NEW COLLECTION</string>
     <string name="empty_collection">Empty Collection</string>
@@ -164,4 +163,5 @@
     <string name="chart_dictionary_data">Dictionary Search Data</string>
     <string name="user_saves">User Saves</string>
     <string name="user_entries">User Entries</string>
+    <string name="loading_data">Loading data…</string>
 </resources>

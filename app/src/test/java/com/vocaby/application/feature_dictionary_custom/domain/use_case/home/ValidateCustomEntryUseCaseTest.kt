@@ -20,6 +20,7 @@ class ValidateCustomEntryUseCaseTest {
             listToTest.add(
                 UserEntry(
                     c.toString(),
+                    "-",
                     Date()
                 )
             )

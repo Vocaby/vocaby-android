@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="11sp"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="4dp"
                 android:fontFamily="@font/sourcesanspro_regular"
                 android:gravity="center_horizontal"
                 android:text="@string/collection_count_text"/>

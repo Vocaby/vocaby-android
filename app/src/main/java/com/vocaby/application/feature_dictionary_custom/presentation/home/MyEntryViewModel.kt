@@ -7,44 +7,66 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.payloads.ItemEntryPayload
-import com.vocaby.application.core.payloads.ItemStringPayload
 import com.vocaby.application.core.states.ItemState
 import com.vocaby.application.core.states.UserInputState
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.feature_dictionary_custom.common.Constants.ENTRY_LIMIT
 import com.vocaby.application.feature_dictionary_custom.domain.model.UserEntry
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.CustomEntryUseCases
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MyEntryViewModel @Inject constructor(
     private val customEntryUseCases: CustomEntryUseCases,
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ): ViewModel() {
-    private val _uiState = MutableStateFlow<CustomEntryUiState>(CustomEntryUiState.InProgress)
-    private val _uiEvent = MutableSharedFlow<CustomEntryUiEvent>(replay = 1)
-
+    private var isLoading:Boolean = false
+    private var entryCount:Int = 0
     private var realPosition: Int = -1
-    private var entries: LinkedList<UserEntry> = LinkedList()
+    private var entries: LinkedList<UserEntry?> = LinkedList()
     private var filteredPosition: Int = -1
-    private var filteredEntries: LinkedList<UserEntry> = LinkedList()
+    private var filteredEntries: LinkedList<UserEntry?> = LinkedList()
     private var isFilterDisplayed: Boolean = false
     private var filteredQuery: String = ""
 
-    val uiState get() = _uiState.asStateFlow()
+    private val _entryListState = MutableSharedFlow<CustomEntryListState>(replay = 1)
+    private val _uiEvent = MutableSharedFlow<CustomEntryUiEvent>()
+
+    val entryListState get() = _entryListState.asSharedFlow()
     val uiEvent get() = _uiEvent.asSharedFlow()
 
     init {
         viewModelScope.launch {
-            getCurrentUserUseCase().collectLatest { userId ->
-                entries = customEntryUseCases.getCustomEntriesUseCase(userId)
-                _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
-                _uiState.value = CustomEntryUiState.UpdateCount(getCount())
+            launch {
+                getCurrentUserUseCase().collectLatest { userId ->
+                    _entryListState.emit(CustomEntryListState.InProgress)
+
+                    entries = customEntryUseCases.getCustomEntriesUseCase(userId, 0)
+
+                    if (isFilterDisplayed) {
+                        filteredEntries = customEntryUseCases.filterCustomEntriesUseCase(filteredQuery)
+                    }
+
+                    _entryListState.emit(CustomEntryListState.UpdateEntries(
+                        if (isFilterDisplayed) filteredEntries else entries
+                    ))
+                }
+            }
+
+            launch {
+                getCurrentUserUseCase().flatMapLatest {
+                    customEntryUseCases.getCustomEntriesCountUseCase(it)
+                }.collectLatest { count ->
+                    entryCount = count
+                }
             }
         }
     }
@@ -53,11 +75,35 @@ class MyEntryViewModel @Inject constructor(
         viewModelScope.launch {
             resetFilter()
             val userId = getCurrentUserUseCase().first()
-            entries = customEntryUseCases.getCustomEntriesUseCase(userId)
-            _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
-            _uiState.value = CustomEntryUiState.UpdateCount(getCount())
+            entries = customEntryUseCases.getCustomEntriesUseCase(userId, 0)
+            _entryListState.emit(CustomEntryListState.UpdateEntries(entries))
             _uiEvent.emit(CustomEntryUiEvent.ResetFilter)
         }
+    }
+
+    fun loadMoreEntries(scroll: Boolean) {
+        viewModelScope.launch {
+            val userId = getCurrentUserUseCase().first()
+            // Ignore filtered
+            if (!isFilterDisplayed && !isLoading && entries.size < entryCount) {
+                isLoading = true
+                entries.add(null)
+                _uiEvent.emit(CustomEntryUiEvent.ShowMoreProgress(scroll))
+
+                val moreEntries = customEntryUseCases.getCustomEntriesUseCase(userId, entries.size-1)
+                val oldSize = entries.size
+                entries.removeLast()
+                entries.addAll(moreEntries)
+
+                _uiEvent.emit(CustomEntryUiEvent.AddMoreEntries(oldSize, oldSize + moreEntries.size))
+            }
+
+            isLoading = false
+        }
+    }
+
+    private fun checkEntryLimit() {
+        if (entries.size < ENTRY_LIMIT) loadMoreEntries(false)
     }
 
     private fun resetFilter() {
@@ -71,8 +117,7 @@ class MyEntryViewModel @Inject constructor(
             viewModelScope.launch {
                 if (newQuery.isEmpty()) {
                     resetFilter()
-                    _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
-                    _uiState.value = CustomEntryUiState.UpdateCount(getCount())
+                    _entryListState.emit(CustomEntryListState.UpdateEntries(entries))
                 }
             }
         }
@@ -81,20 +126,19 @@ class MyEntryViewModel @Inject constructor(
     fun filterEntries(newQuery: String) {
         val newFilter = newQuery.lowercase().trim()
         if (filteredQuery != newFilter) {
-            _uiState.value = CustomEntryUiState.InProgress
             viewModelScope.launch(Dispatchers.Default) {
+                _entryListState.emit(CustomEntryListState.InProgress)
+
                 if (newFilter.isEmpty()) {
                     resetFilter()
-                    _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
+                    _entryListState.emit(CustomEntryListState.UpdateEntries(entries))
                 } else {
                     isFilterDisplayed = true
                     filteredEntries = customEntryUseCases.filterCustomEntriesUseCase(newFilter)
 
                     filteredQuery = newFilter
-                    _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(filteredEntries))
+                    _entryListState.emit(CustomEntryListState.UpdateEntries(filteredEntries))
                 }
-
-                _uiState.value = CustomEntryUiState.UpdateCount(getCount())
             }
         }
     }
@@ -102,27 +146,39 @@ class MyEntryViewModel @Inject constructor(
     fun handleResult(result: ActivityResult) {
         if (result.data != null && result.resultCode == Activity.RESULT_OK) {
             val payload: ItemEntryPayload? = result.data!!.getParcelableExtra(Constants.ITEM_PAYLOAD_KEY)
+
             payload?.let {
                 val containsFilterQuery = payload.payload.entry.startsWith(filteredQuery)
                 val updateFilteredList = containsFilterQuery && isFilterDisplayed
+                viewModelScope.launch {
+                    if (payload.state == ItemState.ADD) {
+                        if (updateFilteredList) filteredEntries.add(0, payload.payload)
+                        entries.add(0, payload.payload)
+                    } else if (payload.state == ItemState.DELETE) {
+                        if (updateFilteredList) filteredEntries.removeAt(filteredPosition)
+                        if (realPosition != -1) {
+                            entries.removeAt(realPosition)
+                        } else {
+                            if (!updateFilteredList) payload.state = ItemState.NOTHING
+                        }
 
-                if (payload.state == ItemState.ADD) {
-                    if (updateFilteredList) filteredEntries.add(0, payload.payload)
-                    entries.add(0, payload.payload)
-                } else if (payload.state == ItemState.DELETE && realPosition != -1) {
-                    if (updateFilteredList) filteredEntries.removeAt(filteredPosition)
-                    entries.removeAt(realPosition)
-                } else if (payload.state == ItemState.UPDATE) {
-                    if (updateFilteredList) {
-                        filteredEntries.removeAt(filteredPosition)
-                        filteredEntries.add(0, payload.payload)
+                        checkEntryLimit()
+                    } else if (payload.state == ItemState.UPDATE) {
+                        if (updateFilteredList) {
+                            filteredEntries.removeAt(filteredPosition)
+                            filteredEntries.add(0, payload.payload)
+                        }
+
+                        if (realPosition != -1) {
+                            entries.removeAt(realPosition)
+                            entries.add(0, payload.payload)
+                        } else {
+                            entries.add(0, payload.payload)
+                            if (!updateFilteredList) payload.state = ItemState.ADD
+                        }
                     }
 
-                    entries.removeAt(realPosition)
-                    entries.add(0, payload.payload)
-                }
 
-                viewModelScope.launch {
                     if (isFilterDisplayed) {
                         if (containsFilterQuery) {
                             _uiEvent.emit(CustomEntryUiEvent.UpdateAdapter(filteredPosition, payload.state))
@@ -132,7 +188,6 @@ class MyEntryViewModel @Inject constructor(
                     }
                 }
 
-                _uiState.value = CustomEntryUiState.UpdateCount(getCount())
                 resetSelections()
             }
         }
@@ -145,12 +200,13 @@ class MyEntryViewModel @Inject constructor(
                 // user removed from filtered list
                 ensureRealPosition(sanitizedEntry)
                 filteredEntries.removeAt(position)
-                entries.removeAt(realPosition)
+                if (realPosition != -1) entries.removeAt(realPosition)
             } else {
                 entries.removeAt(position)
+
+                checkEntryLimit()
             }
 
-            _uiState.value = CustomEntryUiState.UpdateCount(getCount())
             _uiEvent.emit(CustomEntryUiEvent.UpdateAdapter(position, ItemState.DELETE))
             resetSelections()
         }
@@ -163,7 +219,7 @@ class MyEntryViewModel @Inject constructor(
                 is UserInputState.SameInput<*> -> {
                     if (event.data is Int){
                         realPosition = event.data
-                        if (isFilterDisplayed) filteredPosition = filteredEntries.indexOfFirst { it.entry == entry }
+                        if (isFilterDisplayed) filteredPosition = filteredEntries.indexOfFirst { it?.entry == entry }
                         _uiEvent.emit(CustomEntryUiEvent.OpenEntryBuilder(
                             sanitizedEntry,
                             if (isFilterDisplayed) filteredPosition else realPosition
@@ -193,10 +249,7 @@ class MyEntryViewModel @Inject constructor(
     }
 
     fun addEntryDataToIntentForBuilder(intent: Intent, sanitizedEntry: String, position: Int): Intent {
-        val itemPayload = ItemStringPayload(sanitizedEntry, ItemState.ADD)
-
         if (position != -1) {
-            itemPayload.state = ItemState.UPDATE
             if (isFilterDisplayed) {
                 ensureRealPosition(sanitizedEntry)
                 filteredPosition = position
@@ -205,7 +258,7 @@ class MyEntryViewModel @Inject constructor(
             }
         }
 
-        intent.putExtra(Constants.ITEM_PAYLOAD_KEY, itemPayload)
+        intent.putExtra(Constants.ENTRY_KEY, sanitizedEntry)
         return intent
     }
 
@@ -214,15 +267,8 @@ class MyEntryViewModel @Inject constructor(
             customEntryUseCases.removeUserEntriesUseCase()
             entries = LinkedList()
             filteredEntries = LinkedList()
-            _uiEvent.emit(CustomEntryUiEvent.UpdateEntries(entries))
-            _uiState.value = CustomEntryUiState.UpdateCount(getCount())
+            _entryListState.emit(CustomEntryListState.UpdateEntries(entries))
         }
-    }
-
-    private fun getCount(): String = if (isFilterDisplayed) {
-        Formatter.cleanNumber(filteredEntries.size, "Entry", "Entries")
-    } else {
-        Formatter.cleanNumber(entries.size, "Entry", "Entries")
     }
 
     private fun resetSelections() {
@@ -232,7 +278,7 @@ class MyEntryViewModel @Inject constructor(
 
     private fun ensureRealPosition(entry: String) {
         if (realPosition == -1) {
-            realPosition = entries.indexOfFirst { it.entry == entry }
+            realPosition = entries.indexOfFirst { it?.entry == entry }
         }
     }
 }
