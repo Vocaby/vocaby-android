@@ -38,7 +38,7 @@ object Formatter {
     }
 
     fun cleanText(text: String): String {
-        return text.trim { it <= ' ' }.replace(SPECIAL_CHARACTERS.toRegex(), "").lowercase()
+        return text.trim { it <= ' ' }.replace(SPECIAL_CHARACTERS.toRegex(), "").replace("`","'").lowercase()
     }
 
     fun firstLetterUpperCase(text: String): String {
