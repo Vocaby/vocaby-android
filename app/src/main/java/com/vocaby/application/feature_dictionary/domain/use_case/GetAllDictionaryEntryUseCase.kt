@@ -2,6 +2,7 @@ package com.vocaby.application.feature_dictionary.domain.use_case
 
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.presentation.search.DictionarySelectorState
@@ -27,15 +28,16 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
         val connectionEnabled = userRepository.isDictionaryUpdateEnabled()
         if (!isCached && connectionEnabled) {
             emit(SearchState.InProgress("Checking update..."))
-            val lastUpdated = currentEntryModel?.lastUpdated?.time
-                ?: Formatter.formatStringToDate("2022-01-01").time
-            val retrievedEntry = dictionaryRepository.checkAndGetEntryDataFromApi(
-                entry,
-                Formatter.formatDateToString(
-                    lastUpdated,
-                    precise=false
+
+            val retrievedEntry = currentEntryModel?.lastUpdated?.let {
+                dictionaryRepository.checkAndGetEntryDataFromApi(
+                    entry,
+                    Formatter.formatDateToString(
+                        it.time,
+                        precise=false
+                    )
                 )
-            )
+            }
 
             retrievedEntry?.let { newEntry ->
                 if (currentEntryModel == null) {
