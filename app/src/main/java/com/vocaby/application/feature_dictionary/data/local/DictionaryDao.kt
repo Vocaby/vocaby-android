@@ -14,6 +14,9 @@ interface DictionaryDao {
     suspend fun insertEntry(word: Word): Long
 
     @Insert
+    suspend fun insertEntries(words: List<Word>)
+
+    @Insert
     suspend fun insertDefinitions(wordDefinitions: List<Definition>)
 
     @Query("SELECT EXISTS(SELECT 1 FROM dictionary_word WHERE word = :entry)")

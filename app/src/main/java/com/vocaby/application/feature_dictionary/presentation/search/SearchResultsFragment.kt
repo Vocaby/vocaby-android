@@ -269,7 +269,7 @@ class SearchResultsFragment : Fragment() {
                 }
             }
 
-            return SearchResultsBodyFragment.newInstance(entryData.data)
+            return SearchResultsBodyFragment.newInstance(entryData.availableEntry)
         }
 
         override fun getItemCount(): Int {

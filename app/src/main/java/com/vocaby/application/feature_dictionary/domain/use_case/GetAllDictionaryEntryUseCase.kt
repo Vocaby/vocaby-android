@@ -2,7 +2,6 @@ package com.vocaby.application.feature_dictionary.domain.use_case
 
 import com.vocaby.application.R
 import com.vocaby.application.core.util.Formatter
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary.presentation.search.DictionarySelectorState

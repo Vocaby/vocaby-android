@@ -17,8 +17,8 @@ android {
         applicationId "com.vocaby.application"
         minSdkVersion 26
         targetSdkVersion 31
-        versionCode 11
-        versionName "0.19.7"
+        versionCode 12
+        versionName "0.19.8"
 
         testInstrumentationRunner "com.vocaby.application.core.HiltTestRunner"
 
@@ -119,7 +119,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     // ROOM
-    def roomVersion = "2.4.1"
+    def roomVersion = "2.4.2"
     implementation "androidx.room:room-runtime:$roomVersion"
     annotationProcessor "androidx.room:room-compiler:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
@@ -137,6 +137,7 @@ dependencies {
     // TESTS
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:1.1.3"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.38.1'
     androidTestImplementation "androidx.test:core:1.4.0"
     androidTestImplementation "androidx.test:core-ktx:1.4.0"

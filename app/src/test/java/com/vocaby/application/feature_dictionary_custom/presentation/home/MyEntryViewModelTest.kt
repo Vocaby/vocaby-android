@@ -1,6 +1,6 @@
 package com.vocaby.application.feature_dictionary_custom.presentation.home
 
-import com.vocaby.application.feature_dictionary_custom.data.FakeCustomDictionaryRepository
+import com.vocaby.application.feature_dictionary_custom.data.FakeCustomDictionaryRepositoryImpl
 import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.*
 import com.vocaby.application.feature_profile.data.FakeUserRepository
 import com.vocaby.application.feature_profile.domain.use_case.GetCurrentUserUseCase
@@ -14,7 +14,7 @@ class MyEntryViewModelTest {
 
     @Before
     fun setup() = runBlocking {
-        val customDictionaryRepository = FakeCustomDictionaryRepository()
+        val customDictionaryRepository = FakeCustomDictionaryRepositoryImpl()
         val userRepository = FakeUserRepository()
 
         val setupBaseUserUseCase = SetupBaseUserUseCase(userRepository)
@@ -25,6 +25,7 @@ class MyEntryViewModelTest {
         customEntryUseCases = CustomEntryUseCases(
             GetCustomEntriesUseCase(customDictionaryRepository),
             FilterCustomEntriesUseCase(userRepository, customDictionaryRepository),
+            GetCustomEntriesCountUseCase(customDictionaryRepository),
             RemoveCustomEntryUseCase(customDictionaryRepository),
             ValidateCustomEntryUseCase(),
             RemoveUserEntriesUseCase(userRepository, customDictionaryRepository)

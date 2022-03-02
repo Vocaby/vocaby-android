@@ -3,6 +3,7 @@ package com.vocaby.application.feature_dictionary.domain.use_case
 import com.google.common.truth.Truth.assertThat
 import com.vocaby.application.feature_dictionary.domain.model.SearchSuggestionItem
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
@@ -15,8 +16,7 @@ class GetSearchSuggestionsUseCaseTest {
     }
 
     @Test
-    fun `Search suggestions should have the correct items`() {
-        runBlocking {
+    fun `Search suggestions should have the correct items`() = runTest {
             val list = arrayListOf("a", "ab", "abc", "abra", "abraham", "d", "dagger", "dc", "king", "z")
             var searchSuggestions = getSearchSuggestionsUseCase.invoke("a", list, 4)
             assertThat(searchSuggestions).containsExactly(
@@ -61,6 +61,5 @@ class GetSearchSuggestionsUseCaseTest {
 
             searchSuggestions = getSearchSuggestionsUseCase.invoke("", list)
             assertThat(searchSuggestions).isEmpty()
-        }
     }
 }

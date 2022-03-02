@@ -7,7 +7,7 @@ data class DictionarySearchResult(var originalModel: EntryModel? = null, var cus
         else 1
     }
 
-    val data:EntryModel? get() {
+    val availableEntry:EntryModel? get() {
         return customModel ?: originalModel
     }
 

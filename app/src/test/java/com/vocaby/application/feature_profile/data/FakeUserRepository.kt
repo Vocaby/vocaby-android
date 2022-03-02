@@ -57,11 +57,9 @@ class FakeUserRepository: UserRepository {
     }
 
     override suspend fun recordVisit(userId: Int, entryId: Int) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun recordCustomVisit(userId: Int, entryId: Int) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun updateChartMode(mode: UserSettings.ChartMode) {

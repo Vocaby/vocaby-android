@@ -76,15 +76,13 @@ class MyEntryViewModel @Inject constructor(
             resetFilter()
             val userId = getCurrentUserUseCase().first()
             entries = customEntryUseCases.getCustomEntriesUseCase(userId, 0)
-            _entryListState.emit(CustomEntryListState.UpdateEntries(entries))
-            _uiEvent.emit(CustomEntryUiEvent.ResetFilter)
         }
     }
 
     fun loadMoreEntries(scroll: Boolean) {
         viewModelScope.launch {
             val userId = getCurrentUserUseCase().first()
-            // Ignore filtered
+            // TODO: Implement for filtered list
             if (!isFilterDisplayed && !isLoading && entries.size < entryCount) {
                 isLoading = true
                 entries.add(null)
@@ -107,9 +105,13 @@ class MyEntryViewModel @Inject constructor(
     }
 
     private fun resetFilter() {
-        filteredQuery = ""
-        isFilterDisplayed = false
-        filteredEntries = LinkedList()
+        viewModelScope.launch {
+            filteredQuery = ""
+            isFilterDisplayed = false
+            filteredEntries = LinkedList()
+            _entryListState.emit(CustomEntryListState.UpdateEntries(entries))
+            _uiEvent.emit(CustomEntryUiEvent.ResetFilter)
+        }
     }
 
     fun watchFilter(oldQuery: String, newQuery: String) {
@@ -117,7 +119,6 @@ class MyEntryViewModel @Inject constructor(
             viewModelScope.launch {
                 if (newQuery.isEmpty()) {
                     resetFilter()
-                    _entryListState.emit(CustomEntryListState.UpdateEntries(entries))
                 }
             }
         }
@@ -131,7 +132,6 @@ class MyEntryViewModel @Inject constructor(
 
                 if (newFilter.isEmpty()) {
                     resetFilter()
-                    _entryListState.emit(CustomEntryListState.UpdateEntries(entries))
                 } else {
                     isFilterDisplayed = true
                     filteredEntries = customEntryUseCases.filterCustomEntriesUseCase(newFilter)

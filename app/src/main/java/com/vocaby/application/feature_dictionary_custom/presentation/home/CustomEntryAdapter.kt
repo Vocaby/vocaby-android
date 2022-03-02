@@ -17,11 +17,11 @@ class CustomEntryAdapter(
     private val interaction: Interaction
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     private var customEntries: List<UserEntry?> = LinkedList()
-    private val VIEW_TYPE_LOADING = 0
-    private val VIEW_TYPE_ITEM = 1
+    private val loading = 0
+    private val item = 1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == VIEW_TYPE_ITEM) {
+        if (viewType == item) {
             return CustomEntryViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_custom_entry,
@@ -42,7 +42,7 @@ class CustomEntryAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (customEntries[position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
+        return if (customEntries[position] == null) loading else item
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -108,8 +108,7 @@ class CustomEntryAdapter(
     class CustomEntryLoadingViewHolder
     constructor(
         itemView: View,
-    ): RecyclerView.ViewHolder(itemView) {
-    }
+    ): RecyclerView.ViewHolder(itemView)
 
     interface Interaction {
         fun onItemUpdate(entry: String, position: Int)

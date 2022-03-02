@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".feature_dictionary_custom.presentation.home.MyEntryFragment"
-    android:orientation="vertical"
-    android:background="@color/very_light_gray">
+    android:orientation="vertical">
     <androidx.cardview.widget.CardView
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
@@ -101,6 +100,7 @@
             android:clipToPadding="false"
             android:orientation="vertical"
             android:paddingBottom="@dimen/container_gap_margin"
+            android:background="@color/very_light_gray"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

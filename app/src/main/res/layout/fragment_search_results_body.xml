@@ -27,9 +27,6 @@
             android:layout_marginStart="@dimen/definition_side_margin"
             android:layout_marginEnd="@dimen/definition_side_margin"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
             <TextView
                 android:id="@+id/pronunciation_header"
                 style="@style/Theme.VocabyAndroid.TextHeadline"

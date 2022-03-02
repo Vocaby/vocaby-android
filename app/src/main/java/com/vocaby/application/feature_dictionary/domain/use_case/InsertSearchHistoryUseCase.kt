@@ -11,7 +11,7 @@ class InsertSearchHistoryUseCase(
         return if (dictionaryResult.size == 0) {
             dictionaryRepository.writeToHistory(SimpleEntryModel(entry, "No definition was found"))
         } else {
-            val definition = dictionaryResult.data?.firstGroup?.let {
+            val definition = dictionaryResult.availableEntry?.firstGroup?.let {
                 it.definitionData[0].definition
             } ?: "No definition was found"
 
