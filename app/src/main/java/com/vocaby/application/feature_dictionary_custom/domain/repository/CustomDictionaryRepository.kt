@@ -24,6 +24,7 @@ interface CustomDictionaryRepository {
         userId: Int,
         entry: String,
         pronunciation: String,
+        description: String,
         groupChanges: ItemChangeState<DefinitionGroupModel>,
         definitionChangesMap: MutableMap<String, ItemChangeState<DefinitionModel>>,
         saveTime: Date

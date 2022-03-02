@@ -73,9 +73,9 @@ class MyEntryViewModel @Inject constructor(
 
     fun initializeCustomEntries() {
         viewModelScope.launch {
-            resetFilter()
             val userId = getCurrentUserUseCase().first()
             entries = customEntryUseCases.getCustomEntriesUseCase(userId, 0)
+            resetFilter()
         }
     }
 

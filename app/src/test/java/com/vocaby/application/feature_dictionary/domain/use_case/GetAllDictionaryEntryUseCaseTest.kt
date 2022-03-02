@@ -60,4 +60,64 @@ class GetAllDictionaryEntryUseCaseTest {
         Truth.assertThat(searchState.dictionarySelectorState.hideId).isEqualTo(R.id.selection_original)
         Truth.assertThat(searchState.dictionarySelectorState.displayId).isEqualTo(R.id.selection_custom)
     }
+
+    @Test
+    fun `Only original entry is displayed`() = runTest {
+        val userId = userRepository.getUser()
+
+        customDictionaryRepository.insertEntry(
+            userId,
+            "test",
+            "verb",
+            "this is a test",
+            ""
+        )
+
+        val searchState = getAllDictionaryEntryUseCase.invoke("galvanize").first() as SearchState.Fetched
+        Truth.assertThat(searchState.data.availableEntry).isNotNull()
+        Truth.assertThat(searchState.data.originalModel).isNotNull()
+        Truth.assertThat(searchState.data.customModel).isNull()
+        Truth.assertThat(searchState.data.availableEntry!!.definitionGroups).hasSize(1)
+        Truth.assertThat(searchState.data.availableEntry!!.definitionGroups.first().definitionData.first().definition).isEqualTo("shock or excite (someone) into taking action.")
+        Truth.assertThat(searchState.data.originalModel!!.definitionGroups.first().definitionData.first().definition).isEqualTo("shock or excite (someone) into taking action.")
+        Truth.assertThat(searchState.removeSave).isFalse()
+        Truth.assertThat(searchState.dictionarySelectorState.displayAll).isFalse()
+        Truth.assertThat(searchState.dictionarySelectorState.hideId).isEqualTo(R.id.selection_custom)
+        Truth.assertThat(searchState.dictionarySelectorState.displayId).isEqualTo(R.id.selection_original)
+    }
+
+    @Test
+    fun `Both entries are displayed`() = runTest {
+        val userId = userRepository.getUser()
+
+        customDictionaryRepository.insertEntry(
+            userId,
+            "enthusiasm",
+            "verb",
+            "this is a test",
+            ""
+        )
+
+        val searchState = getAllDictionaryEntryUseCase.invoke("enthusiasm").first() as SearchState.Fetched
+        Truth.assertThat(searchState.data.availableEntry).isNotNull()
+        Truth.assertThat(searchState.data.originalModel).isNotNull()
+        Truth.assertThat(searchState.data.customModel).isNotNull()
+        Truth.assertThat(searchState.data.availableEntry!!.definitionGroups).hasSize(1)
+        Truth.assertThat(searchState.data.availableEntry!!.definitionGroups.first().definitionData.first().definition).isEqualTo("this is a test")
+        Truth.assertThat(searchState.data.originalModel!!.definitionGroups.first().definitionData.first().definition).isEqualTo("intense and eager enjoyment, interest, or approval.")
+        Truth.assertThat(searchState.removeSave).isFalse()
+        Truth.assertThat(searchState.dictionarySelectorState.displayAll).isTrue()
+        Truth.assertThat(searchState.dictionarySelectorState.hideId).isEqualTo(R.id.selection_original)
+        Truth.assertThat(searchState.dictionarySelectorState.displayId).isEqualTo(R.id.selection_custom)
+    }
+
+    @Test
+    fun `No entry is displayed`() = runTest {
+        val searchState = getAllDictionaryEntryUseCase.invoke("testing").first() as SearchState.Fetched
+        Truth.assertThat(searchState.data.availableEntry).isNull()
+        Truth.assertThat(searchState.data.originalModel).isNull()
+        Truth.assertThat(searchState.data.customModel).isNull()
+        Truth.assertThat(searchState.removeSave).isTrue()
+        Truth.assertThat(searchState.dictionarySelectorState.displayAll).isFalse()
+    }
 }

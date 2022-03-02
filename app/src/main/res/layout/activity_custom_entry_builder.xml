@@ -137,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/container_side_margin"
                 android:orientation="vertical"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
                 android:background="@drawable/box_white_bottom_stroke_gray"
                 android:paddingStart="@dimen/container_side_margin"
                 android:paddingEnd="@dimen/container_side_margin">
@@ -149,19 +149,36 @@
                     android:textColor="@color/dark_gray"
                     android:textSize="12sp" />
                 <EditText
+                    style="@style/Theme.VocabyAndroid.TextInput"
                     android:id="@+id/pronunciation_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/container_gap_margin"
                     android:autofillHints="Enter a pronunciation"
-                    android:background="@drawable/text_input_box"
                     android:fontFamily="@font/sourcesanspro_regular"
                     android:hint="@string/enter_a_pronunciation"
                     android:imeOptions="actionDone"
-                    android:inputType="textMultiLine"
-                    android:padding="12dp"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:inputType="text" />
+
+                <TextView
+                    style="@style/Theme.VocabyAndroid.TextHeadline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/container_gap_margin"
+                    android:text="@string/description"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="12sp" />
+                <EditText
+                    style="@style/Theme.VocabyAndroid.TextInput"
+                    android:id="@+id/description_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/container_gap_margin"
+                    android:autofillHints="Enter a pronunciation"
+                    android:fontFamily="@font/sourcesanspro_regular"
+                    android:hint="@string/enter_a_description"
+                    android:imeOptions="actionDone"
+                    android:inputType="textMultiLine" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

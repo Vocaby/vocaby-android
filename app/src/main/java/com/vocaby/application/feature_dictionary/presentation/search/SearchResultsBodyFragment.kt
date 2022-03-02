@@ -22,9 +22,12 @@ class SearchResultsBodyFragment : Fragment() {
     private lateinit var pronunciation: TextView
     private lateinit var pronunciationScroll: LinearLayout
     private lateinit var pronunciationHeader: TextView
+    private lateinit var descriptionHeader: TextView
+    private lateinit var description: TextView
     private lateinit var noDefinitionAlert: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var entryBox: AppBarLayout
+    private lateinit var space: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +46,9 @@ class SearchResultsBodyFragment : Fragment() {
         entryBox = view.findViewById(R.id.entry_box)
         pronunciation = view.findViewById(R.id.pronunciation)
         pronunciationHeader = view.findViewById(R.id.pronunciation_header)
+        description = view.findViewById(R.id.description)
+        descriptionHeader = view.findViewById(R.id.description_header)
+        space = view.findViewById(R.id.spacer)
         pronunciationScroll = view.findViewById(R.id.pronunciation_scroll)
         noDefinitionAlert = view.findViewById(R.id.no_definition)
         recyclerView = view.findViewById(R.id.definitions_recycler_container)
@@ -71,16 +77,28 @@ class SearchResultsBodyFragment : Fragment() {
             pronunciation.visibility = View.VISIBLE
             pronunciationHeader.visibility = View.VISIBLE
             pronunciation.text = entryData.pronunciation
-            noDefinitionAlert.visibility = View.GONE
-        } else {
+        }
+
+        if (!entryData.description.isNullOrEmpty()) {
+            description.visibility = View.VISIBLE
+            descriptionHeader.visibility = View.VISIBLE
+            description.text = entryData.description
+        }
+
+        if (!entryData.pronunciation.isNullOrEmpty() && !entryData.description.isNullOrEmpty()) {
+            space.visibility = View.VISIBLE
+        } else if (entryData.pronunciation.isNullOrEmpty() && entryData.description.isNullOrEmpty()) {
             entryBox.setExpanded(false)
         }
+
+        noDefinitionAlert.visibility = View.GONE
     }
 
     private fun populateNoDefinition() {
         pronunciation.visibility = View.GONE
         pronunciationHeader.visibility = View.GONE
         recyclerView.visibility = View.GONE
+        space.visibility = View.GONE
         noDefinitionAlert.visibility = View.VISIBLE
     }
 

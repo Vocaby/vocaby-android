@@ -41,7 +41,7 @@ class DictionaryRepositoryImpl(
 
     override suspend fun replaceEntry(originalId: Int?, remote: EntryModel): Int = withContext(defaultDispatcher){
         originalId?.let {
-            dao.deleteEntry(Word(it))
+            dao.deleteEntry(Word(id = it))
         }
 
         val id = dao.insertEntry(Word(remote.entry, remote.pronunciation, remote.lastUpdated)).toInt()

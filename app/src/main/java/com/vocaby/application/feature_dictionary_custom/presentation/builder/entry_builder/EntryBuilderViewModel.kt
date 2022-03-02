@@ -73,6 +73,7 @@ class EntryBuilderViewModel @Inject constructor(
                 if (resultActionPayload.state == ItemState.ADD) "New Entry" else "Update Entry",
                 entryData.entry,
                 entryData.pronunciation ?: "",
+                entryData.description,
                 entryData.definitionGroups
             )
 
@@ -259,8 +260,9 @@ class EntryBuilderViewModel @Inject constructor(
     }
 
     // USER CLICKS SAVE
-    fun saveUserEntry(pronunciation: String) {
+    fun saveUserEntry(pronunciation: String, description: String) {
         val pronun = Formatter.cleanText(pronunciation)
+        val desc = Formatter.cleanText(description)
         checkForUpdatedItems()
 
         if (entryData.definitionGroups.isEmpty()) {
@@ -284,7 +286,11 @@ class EntryBuilderViewModel @Inject constructor(
                 }
             }
 
-            if (!groupChanges.hasChanges() && !definitionHasChanges && entryData.pronunciation == pronun) {
+            if (!groupChanges.hasChanges()
+                && !definitionHasChanges
+                && entryData.pronunciation == pronun
+                && entryData.description == desc
+            ) {
                 cancelBuilder()
             } else {
                 viewModelScope.launch {
@@ -294,6 +300,7 @@ class EntryBuilderViewModel @Inject constructor(
                         userId,
                         entryData.entry,
                         pronun,
+                        desc,
                         groupChanges,
                         definitionChangesMap,
                         saveTime

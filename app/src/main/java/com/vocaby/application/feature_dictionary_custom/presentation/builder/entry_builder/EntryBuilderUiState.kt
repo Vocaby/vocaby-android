@@ -8,6 +8,7 @@ sealed class EntryBuilderUiState {
         val header: String,
         val entry: String,
         val pronunciation: String,
+        val description: String?,
         val groups: List<DefinitionGroupModel>
     ): EntryBuilderUiState()
 }

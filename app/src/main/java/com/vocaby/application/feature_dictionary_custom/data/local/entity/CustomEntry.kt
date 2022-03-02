@@ -18,7 +18,8 @@ data class CustomEntry(
     @ColumnInfo(name = "user_id", index = true)
     var userId: Int,
     var entry: String,
-    var pronunciation: String?,
+    var pronunciation: String? = null,
+    var description: String? = null,
     @ColumnInfo(name = "last_updated")
     var lastUpdated: Date = Date(),
     @PrimaryKey(autoGenerate = true)

@@ -27,6 +27,9 @@
             android:layout_marginStart="@dimen/definition_side_margin"
             android:layout_marginEnd="@dimen/definition_side_margin"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
             <TextView
                 android:id="@+id/pronunciation_header"
                 style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -34,11 +37,35 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pronunciation"
                 android:visibility="gone"
-                android:textColor="@color/dark_gray"
-                android:textSize="10sp"
-                tools:ignore="SmallSp" />
+                android:textColor="@color/colorPrimary" />
             <TextView
                 android:id="@+id/pronunciation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:scrollIndicators="none"
+                android:scrollbars="none"
+                android:scrollbarThumbVertical="@null"
+                android:visibility="gone"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+            <Space
+                android:id="@+id/spacer"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/container_gap_margin"
+                android:background="@color/dark_gray"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/description_header"
+                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:visibility="gone"
+                android:textColor="@color/colorPrimary" />
+            <TextView
+                android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="6dp"

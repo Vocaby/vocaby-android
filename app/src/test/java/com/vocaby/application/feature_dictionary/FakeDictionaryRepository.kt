@@ -9,12 +9,12 @@ import java.util.*
 
 class FakeDictionaryRepository: DictionaryRepository {
     private val wordData = mutableListOf(
-        Word("enthusiasm", "", Date()),
-        Word("creativity", "", Date()),
-        Word("sacred", "", Date()),
-        Word("galvanize", "", Date()),
-        Word("fastidious", "", Date()),
-        Word("sage", "", Date()),
+        Word("enthusiasm", "", Date(), 1),
+        Word("creativity", "", Date(), 2),
+        Word("sacred", "", Date(), 3),
+        Word("galvanize", "", Date(), 4),
+        Word("fastidious", "", Date(), 5),
+        Word("sage", "", Date(), 6),
     )
 
     private val definitionData = mutableListOf(
@@ -27,8 +27,23 @@ class FakeDictionaryRepository: DictionaryRepository {
         Definition(6, "a profoundly wise man, especially one who features in ancient history or legend.", "\"the sayings of the numerous venerable sages\"", "adjective"),
     )
 
+    private fun convertToEntryModel( entry: String): EntryModel? {
+        var entryModel: EntryModel? = null
+        val cEntry = wordData.find { it.word == entry }
+        cEntry?.let {
+            entryModel = EntryModel(entry = it.word, pronunciation = it.pronunciation)
+            definitionData.forEach { data ->
+                if (data.wordId == cEntry.id) {
+                    entryModel!!.addDefinition(data.pos, data.definition, data.sentence)
+                }
+            }
+        }
+
+        return entryModel
+    }
+
     override suspend fun getEntryDataFromDatabase(entry: String): EntryModel? {
-        return null
+        return convertToEntryModel(entry)
     }
 
     override suspend fun getEntryIdFromDatabase(entry: String): Long? {

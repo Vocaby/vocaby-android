@@ -2,7 +2,6 @@ package com.vocaby.application.feature_dictionary.domain.use_case
 
 import com.google.common.truth.Truth.assertThat
 import com.vocaby.application.feature_dictionary.domain.model.SearchSuggestionItem
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test

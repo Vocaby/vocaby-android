@@ -171,6 +171,8 @@ class DataTransferRepositoryImpl(
                                 val item = i.asJsonObject
                                 val entry = item.getAsJsonPrimitive("entry").asString.lowercase().trim()
                                 val pronunciation = item.getAsJsonPrimitive("pronunciation").asString.trim()
+                                val description = if (item.getAsJsonPrimitive("description") == null) null
+                                    else item.getAsJsonPrimitive("description").asString.trim()
                                 val lastUpdated = item.getAsJsonPrimitive("lastUpdated").asString
 
                                 // Validations
@@ -192,7 +194,7 @@ class DataTransferRepositoryImpl(
                                 val exists = entryModels.any { it.entry == entry }
                                 val parsedGroups = mutableListOf<String>()
                                 if (!exists) {
-                                    val entryModel = EntryModel(entry = entry, pronunciation = pronunciation, lastUpdated = Formatter.formatStringToDate(lastUpdated))
+                                    val entryModel = EntryModel(entry = entry, pronunciation = pronunciation, description = description, lastUpdated = Formatter.formatStringToDate(lastUpdated))
                                     for (g in item.getAsJsonArray("definitionGroups")) {
                                         yield()
                                         val group = g.asJsonObject

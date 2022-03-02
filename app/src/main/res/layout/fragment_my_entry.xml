@@ -59,6 +59,15 @@
                 android:text="@string/entry_type_management"
                 app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap" />
         </com.google.android.material.appbar.AppBarLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/custom_entry_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/container_gap_margin"
+            android:background="@color/very_light_gray"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
         <LinearLayout
             android:id="@+id/empty_card"
             android:layout_width="match_parent"
@@ -92,17 +101,6 @@
             android:layout_marginTop="@dimen/container_side_margin"
             android:visibility="visible"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/custom_entry_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/container_gap_margin"
-            android:background="@color/very_light_gray"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/add_entry_button"
             style="@style/Widget.App.ExtendedFloatingActionButton"

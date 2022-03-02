@@ -52,17 +52,15 @@
         </LinearLayout>
 
         <EditText
+            style="@style/Theme.VocabyAndroid.TextInput"
             android:id="@+id/entry_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
             android:hint="@string/type_create_hint"
             android:importantForAutofill="no"
             android:imeOptions="actionDone"
             android:textColor="@color/black"
             android:fontFamily="@font/sourcesanspro_regular"
-            android:background="@drawable/text_input_box"
-            android:textSize="14sp"
             android:inputType="text"/>
 
         <androidx.appcompat.widget.AppCompatButton

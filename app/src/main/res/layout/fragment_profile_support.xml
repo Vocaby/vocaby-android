@@ -153,32 +153,27 @@
                         tools:ignore="Deprecated" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <EditText
+                    style="@style/Theme.VocabyAndroid.TextInput"
                     android:id="@+id/feedback_input_email"
-                    android:background="@drawable/text_input_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
                     android:imeOptions="actionDone"
                     android:hint="@string/feedback_input_email"
-                    android:padding="12dp"
-                    android:textSize="12sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/sourcesanspro_regular"
                     android:layout_marginTop="@dimen/container_gap_margin"
                     android:autofillHints="Enter a pronunciation" />
                 <EditText
+                    style="@style/Theme.VocabyAndroid.TextInput"
                     android:id="@+id/feedback_input_content"
-                    android:background="@drawable/text_input_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
                     android:imeOptions="actionDone"
                     android:hint="@string/enter_your_feedback_message"
                     android:gravity="start"
-                    android:padding="12dp"
                     android:lines="4"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
                     android:fontFamily="@font/sourcesanspro_regular"
                     android:layout_marginTop="@dimen/container_gap_margin"
                     android:autofillHints="Enter a pronunciation" />

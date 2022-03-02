@@ -1,6 +1,5 @@
 package com.vocaby.application.feature_dictionary_custom.data
 
-import com.google.common.truth.Truth
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionGroupModel
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
@@ -24,7 +23,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
         var entryModel: EntryModel? = null
         val cEntry = customEntry.find { it.entry == entry && it.userId == userId }
         cEntry?.let {
-            entryModel = EntryModel(it.entryId, it.entry, it.pronunciation, it.lastUpdated)
+            entryModel = EntryModel(it.entryId, it.entry, it.pronunciation, it.description, it.lastUpdated)
             val cGroups = customEntryGroup.filter { group -> group.entryId == cEntry.entryId }
             cGroups.forEach { g ->
                 val cDefinitions = customEntryDefinition.filter {
@@ -89,7 +88,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
             type to definitionChanges
         )
 
-        insertOrUpdateEntry(userId, entry, "", groupChanges, mutableMap, Date())
+        insertOrUpdateEntry(userId, entry, "", "", groupChanges, mutableMap, Date())
     }
 
     override suspend fun updateEntry(
@@ -110,7 +109,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
             group.type to definitionChanges
         )
 
-        insertOrUpdateEntry(userId, entryModel.entry, "", groupChanges, mutableMap, Date())
+        insertOrUpdateEntry(userId, entryModel.entry, "", "", groupChanges, mutableMap, Date())
     }
 
     override suspend fun replaceUser(newUserId: Int) {
@@ -178,6 +177,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
         userId: Int,
         entry: String,
         pronunciation: String,
+        description: String,
         groupChanges: ItemChangeState<DefinitionGroupModel>,
         definitionChangesMap: MutableMap<String, ItemChangeState<DefinitionModel>>,
         saveTime: Date
@@ -187,6 +187,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
                 userId,
                 entry,
                 pronunciation,
+                description,
                 saveTime,
                 customEntry.size+1
             )
@@ -199,6 +200,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
                 userId,
                 entry,
                 pronunciation,
+                description,
                 saveTime,
                 groupChanges.id
             )

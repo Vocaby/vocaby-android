@@ -14,6 +14,7 @@ object EntryConverter: EntityConverter<WordDefinitions, EntryModel> {
             entity.wordData.id,
             entity.wordData.word,
             pronunciation,
+            "",
             entity.wordData.lastUpdated
         )
 

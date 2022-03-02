@@ -7,15 +7,10 @@ import androidx.room.PrimaryKey
 import java.util.*
 
 @Entity(tableName = "dictionary_word", indices = [Index(value=["word", "id"])])
-data class Word constructor(@PrimaryKey(autoGenerate = true) var id: Int) {
-    var word = ""
-    var pronunciation:String? = null
+data class Word constructor(
+    var word: String = "",
+    var pronunciation:String? = null,
     @ColumnInfo(name = "last_updated")
-    var lastUpdated: Date = Date()
-
-    constructor(word: String, pronunciation: String?, lastUpdated: Date) : this(0) {
-        this.word = word
-        this.pronunciation = pronunciation
-        this.lastUpdated = lastUpdated
-    }
-}
+    var lastUpdated: Date = Date(),
+    @PrimaryKey(autoGenerate = true) var id: Int = 0
+)

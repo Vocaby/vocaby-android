@@ -11,6 +11,7 @@ data class EntryModel(
     var id: Int = -1,
     val entry: String = "",
     var pronunciation: String? = null,
+    var description: String? = null,
     var lastUpdated: Date = Date(),
     var definitionGroups: MutableList<DefinitionGroupModel> = ArrayList(),
 ) : Parcelable, Serializable {

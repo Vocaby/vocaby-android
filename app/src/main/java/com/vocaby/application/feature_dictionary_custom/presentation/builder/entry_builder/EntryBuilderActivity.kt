@@ -37,6 +37,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
     private lateinit var saveProgressBar: ProgressBar
     private lateinit var groupAlert: TextView
     private lateinit var pronunciationInput: EditText
+    private lateinit var descriptionInput: EditText
     private lateinit var helpDialogBuilder: BottomSheetDialog
     private lateinit var appBar: AppBarLayout
     private lateinit var emptyCard: LinearLayout
@@ -51,6 +52,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         editorHeader = findViewById(R.id.editor_header)
         groupAlert = findViewById(R.id.group_header_alert)
         pronunciationInput = findViewById(R.id.pronunciation_input)
+        descriptionInput = findViewById(R.id.description_input)
         emptyCard = findViewById(R.id.empty_card)
         appBar = findViewById(R.id.entry_app_bar)
 
@@ -90,6 +92,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
                     editorHeader.text = state.header
                     entryView.text = state.entry
                     pronunciationInput.setText(state.pronunciation, TextView.BufferType.EDITABLE)
+                    descriptionInput.setText(state.description, TextView.BufferType.EDITABLE)
                     customGroupAdapter.setList(state.groups)
                     updateEmptyCardVisibility()
                 }
@@ -184,7 +187,7 @@ class EntryBuilderActivity : AppCompatActivity(), DragStartListener,
         saveButton.setOnClickListener { button ->
             saveProgressBar.visibility = View.VISIBLE
             button.isEnabled = false
-            entryBuilderViewModel.saveUserEntry(pronunciationInput.text.toString())
+            entryBuilderViewModel.saveUserEntry(pronunciationInput.text.toString(), descriptionInput.text.toString())
         }
 
         // Add new group button

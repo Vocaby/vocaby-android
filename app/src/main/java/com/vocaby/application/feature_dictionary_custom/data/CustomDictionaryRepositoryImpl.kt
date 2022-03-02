@@ -65,6 +65,7 @@ class CustomDictionaryRepositoryImpl constructor(
         userId: Int,
         entry: String,
         pronunciation: String,
+        description: String,
         groupChanges: ItemChangeState<DefinitionGroupModel>,
         definitionChangesMap: MutableMap<String, ItemChangeState<DefinitionModel>>,
         saveTime: Date
@@ -75,6 +76,7 @@ class CustomDictionaryRepositoryImpl constructor(
                     userId,
                     entry,
                     pronunciation,
+                    description,
                     saveTime
                 )
             ).toInt()
@@ -84,6 +86,7 @@ class CustomDictionaryRepositoryImpl constructor(
                     userId,
                     entry,
                     pronunciation,
+                    description,
                     saveTime,
                     groupChanges.id
                 )
@@ -192,6 +195,7 @@ class CustomDictionaryRepositoryImpl constructor(
                     userId,
                     entryData.entry,
                     entryData.pronunciation,
+                    entryData.description,
                     entryData.lastUpdated
                 )
             )
@@ -243,6 +247,7 @@ class CustomDictionaryRepositoryImpl constructor(
                 data.customEntry.entryId,
                 data.customEntry.entry,
                 data.customEntry.pronunciation,
+                data.customEntry.description,
                 data.customEntry.lastUpdated
             )
 

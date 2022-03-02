@@ -49,16 +49,14 @@
         </LinearLayout>
 
         <EditText
+            style="@style/Theme.VocabyAndroid.TextInput"
             android:id="@+id/definition_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/text_input_box"
             android:fontFamily="@font/sourcesanspro_regular"
             android:hint="@string/enter_a_definition"
             android:importantForAutofill="no"
-            android:inputType="text"
-            android:padding="12dp"
-            android:textSize="14sp" />
+            android:inputType="text" />
 
         <TextView
             style="@style/Theme.VocabyAndroid.TextHeadline"
@@ -71,17 +69,15 @@
             android:text="@string/example_header" />
 
         <EditText
+            style="@style/Theme.VocabyAndroid.TextInput"
             android:id="@+id/example_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/enter_an_example_sentence"
             android:importantForAutofill="no"
             android:imeOptions="actionDone"
-            android:padding="12dp"
             android:inputType="text"
-            android:fontFamily="@font/sourcesanspro_regular"
-            android:background="@drawable/text_input_box"
-            android:textSize="14sp" />
+            android:fontFamily="@font/sourcesanspro_regular" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_definition_button"

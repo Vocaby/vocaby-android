@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c220164cc66fb2aa44b8d1984cd0ad72",
+    "identityHash": "fab47cfe579119a2ba2f8dedc93cad97",
     "entities": [
       {
         "tableName": "vocaby_user",
@@ -341,14 +341,8 @@
       },
       {
         "tableName": "dictionary_word",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `word` TEXT NOT NULL, `pronunciation` TEXT, `last_updated` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`word` TEXT NOT NULL, `pronunciation` TEXT, `last_updated` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "word",
             "columnName": "word",
@@ -365,6 +359,12 @@
             "fieldPath": "lastUpdated",
             "columnName": "last_updated",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -456,7 +456,7 @@
       },
       {
         "tableName": "custom_user_entry",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `entry` TEXT NOT NULL, `pronunciation` TEXT, `last_updated` TEXT NOT NULL, `custom_entry_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `vocaby_user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `entry` TEXT NOT NULL, `pronunciation` TEXT, `description` TEXT, `last_updated` TEXT NOT NULL, `custom_entry_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `vocaby_user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "userId",
@@ -473,6 +473,12 @@
           {
             "fieldPath": "pronunciation",
             "columnName": "pronunciation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -820,7 +826,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c220164cc66fb2aa44b8d1984cd0ad72')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fab47cfe579119a2ba2f8dedc93cad97')"
     ]
   }
 }

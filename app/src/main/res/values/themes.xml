@@ -59,14 +59,14 @@
 
     <style name="Theme.VocabyAndroid.TextInputEditText" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <!-- left and right padding -->
-        <item name="android:paddingStart">12dp</item>
-        <item name="android:paddingEnd">12dp</item>
-        <item name="android:paddingLeft">12dp</item>
-        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
 
         <!-- top and bottom padding -->
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
     </style>
 
     <style name="AlertDialogStyle" parent="ThemeOverlay.AppCompat.Dialog.Alert">
@@ -152,6 +152,13 @@
     <style name="Theme.VocabyAndroid.TextHeader" parent="Widget.AppCompat.TextView">
         <item name="android:fontFamily">@font/playfairdisplay_black</item>
         <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="Theme.VocabyAndroid.TextInput" parent="Widget.AppCompat.EditText">
+        <item name="android:padding">16dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@drawable/text_input_box</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="Theme.VocabyAndroid.Button" parent="Widget.AppCompat.Button.Borderless">
