@@ -157,6 +157,7 @@ class MyEntryViewModel @Inject constructor(
                         entries.add(0, payload.payload)
                     } else if (payload.state == ItemState.DELETE) {
                         if (updateFilteredList) filteredEntries.removeAt(filteredPosition)
+
                         if (realPosition != -1) {
                             entries.removeAt(realPosition)
                         } else {
@@ -216,11 +217,15 @@ class MyEntryViewModel @Inject constructor(
     fun createCustomEntry(entry:String) {
         val sanitizedEntry = Formatter.cleanText(entry)
         viewModelScope.launch {
-            when(val event = customEntryUseCases.validateCustomEntryUseCase(sanitizedEntry, entries)) {
+            when(val event = customEntryUseCases.validateCustomEntryUseCase(
+                sanitizedEntry,
+                if (isFilterDisplayed) filteredEntries else entries
+            )) {
                 is UserInputState.SameInput<*> -> {
                     if (event.data is Int){
-                        realPosition = event.data
-                        if (isFilterDisplayed) filteredPosition = filteredEntries.indexOfFirst { it?.entry == entry }
+                        if (isFilterDisplayed) filteredPosition = event.data
+                        else realPosition = event.data
+
                         _uiEvent.emit(CustomEntryUiEvent.OpenEntryBuilder(
                             sanitizedEntry,
                             if (isFilterDisplayed) filteredPosition else realPosition

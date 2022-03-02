@@ -38,7 +38,7 @@ class SupportRepositoryImpl(
             ),
             FaqModel(
                 "Why are some definitions wrong?",
-                "Vocaby initially derived definitions from wordnets and outdated public domain dictionaries. " +
+                "Vocaby initially derived definitions from Wordnets and public domain dictionaries. " +
                         "We are constantly updating the dictionary to provide you with the most up-to-date definitions. " +
                         "If you would like to help, please submit the form below!"
             ),
