@@ -108,7 +108,7 @@
             android:paddingBottom="@dimen/container_gap_margin"
             android:background="@drawable/box_white_bottom_stroke_gray"
             android:gravity="center"
-            app:elevation="1dp">
+            app:elevation="0dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

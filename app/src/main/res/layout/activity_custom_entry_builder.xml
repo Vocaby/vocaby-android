@@ -158,7 +158,7 @@
                     android:fontFamily="@font/sourcesanspro_regular"
                     android:hint="@string/enter_a_pronunciation"
                     android:imeOptions="actionDone"
-                    android:inputType="text"
+                    android:inputType="textMultiLine"
                     android:padding="12dp"
                     android:textColor="@color/black"
                     android:textSize="14sp" />

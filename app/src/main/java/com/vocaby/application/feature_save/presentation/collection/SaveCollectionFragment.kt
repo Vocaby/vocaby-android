@@ -170,7 +170,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private fun setupRecyclerView() {
         recyclerView.layoutManager = GridLayoutManager(requireActivity().applicationContext, 2)
         recyclerView.setHasFixedSize(true)
-        val margin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12f, requireActivity().applicationContext.resources.displayMetrics)
+        val margin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6f, requireActivity().applicationContext.resources.displayMetrics)
         recyclerView.addItemDecoration(GridItemDecoration(margin.toInt()))
         saveCollectionAdapter = SaveCollectionAdapter(this)
         dataObserver = object: RecyclerView.AdapterDataObserver() {

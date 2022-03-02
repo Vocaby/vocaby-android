@@ -150,6 +150,7 @@ class MyEntryViewModel @Inject constructor(
             payload?.let {
                 val containsFilterQuery = payload.payload.entry.startsWith(filteredQuery)
                 val updateFilteredList = containsFilterQuery && isFilterDisplayed
+
                 viewModelScope.launch {
                     if (payload.state == ItemState.ADD) {
                         if (updateFilteredList) filteredEntries.add(0, payload.payload)

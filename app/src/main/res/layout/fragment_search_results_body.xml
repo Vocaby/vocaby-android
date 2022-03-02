@@ -35,17 +35,18 @@
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/container_gap_margin"
                 android:text="@string/pronunciation"
                 android:visibility="gone"
-                android:textColor="@color/colorHeadline" />
+                android:textColor="@color/dark_gray"
+                android:textSize="10sp"
+                tools:ignore="SmallSp" />
             <TextView
                 android:id="@+id/pronunciation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/sourcesanspro_semibold"
+                android:paddingTop="6dp"
+                android:fontFamily="@font/sourcesanspro_regular"
                 android:scrollIndicators="none"
-                android:paddingTop="@dimen/container_gap_margin"
                 android:scrollbars="none"
                 android:scrollbarThumbVertical="@null"
                 android:visibility="gone"

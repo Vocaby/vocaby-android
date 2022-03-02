@@ -21,9 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin"
-            android:paddingBottom="@dimen/container_gap_margin"
+            android:paddingBottom="8dp"
             android:orientation="vertical">
-
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
