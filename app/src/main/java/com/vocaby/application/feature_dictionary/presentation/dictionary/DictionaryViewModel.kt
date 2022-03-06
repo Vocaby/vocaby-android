@@ -62,7 +62,7 @@ class DictionaryViewModel @Inject constructor(
 
     fun getSearchSuggestions(newQuery:String) {
         val query = newQuery.lowercase()
-        if (query.isEmpty() || entriesByCharacter.isNullOrEmpty()) {
+        if (query.isEmpty() || entriesByCharacter.isNullOrEmpty() || !newQuery.startsWith(entriesByCharacter.first().first())) {
             viewModelScope.launch {
                 dictionaryUseCases.getDictionaryEntriesByCharacter(query).collectLatest { result ->
                     when(result) {

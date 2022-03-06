@@ -2,8 +2,8 @@
 ![Tests](https://github.com/Vocaby/vocaby-android/actions/workflows/android_build.yml/badge.svg)
 
 ## Terms
-**Entry**: A entry or a phrase in the dictionary. \
-**Entry Group**: A collection of definitions that share the same type/part of speech for a given entry.
+**Entry**: A word or phrase in the dictionary. \
+**Entry Group**: A collection of definitions that share the same type/part of speech for an entry.
 
 ## MVP (v1.0.0)
 1. User can look up an entry in the Vocaby dictionary.

@@ -23,6 +23,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.button.MaterialButton
 import com.vocaby.application.R
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_datatransfer.presentation.DataTransferFragment
 import com.vocaby.application.feature_profile.presentation.setting.SettingFragment
@@ -84,6 +85,7 @@ class ProfileHomeFragment : Fragment() {
             setDrawGridLines(false)
             setDrawAxisLine(false)
             isGranularityEnabled = true
+            granularity = 1f
             textSize = 10f
             textColor = ContextCompat.getColor(ctx, R.color.dark_gray)
             typeface = ResourcesCompat.getFont(ctx, R.font.sourcesanspro_semibold)
@@ -119,6 +121,7 @@ class ProfileHomeFragment : Fragment() {
         profileViewModel.chartState.collectLatest { state ->
             when (state) {
                 is ChartState.Success -> {
+                    Logger.reportToDebug("Update Chart!")
                     chartContainer.visibility = View.VISIBLE
                     placeholder.visibility = View.GONE
 
@@ -145,9 +148,7 @@ class ProfileHomeFragment : Fragment() {
                         }
                     }
 
-                    val data = BarData(dataSet).apply {
-                        barWidth = 0.85f
-                    }
+                    val data = BarData(dataSet)
 
                     barChart.apply {
                         animateXY(600, 1000, Easing.EaseInOutQuad)
@@ -157,7 +158,6 @@ class ProfileHomeFragment : Fragment() {
                     barChart.data = data
                     barChart.xAxis.valueFormatter = AxisValueFormatter(state.chartData.values)
                     barChart.invalidate()
-
                     favoriteEntry.text = state.favourite
                 }
 
