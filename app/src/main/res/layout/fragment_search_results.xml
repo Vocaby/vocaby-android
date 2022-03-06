@@ -44,7 +44,8 @@
             app:layout_constraintVertical_bias="0.8">
             <RadioButton
                 android:id="@+id/selection_custom"
-                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:fontFamily="@font/sourcesanspro_black"
+                android:textAllCaps="true"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
@@ -59,7 +60,8 @@
 
             <RadioButton
                 android:id="@+id/selection_original"
-                style="@style/Theme.VocabyAndroid.TextHeadline"
+                android:fontFamily="@font/sourcesanspro_black"
+                android:textAllCaps="true"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"

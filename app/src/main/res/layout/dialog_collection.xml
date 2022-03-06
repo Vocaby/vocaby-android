@@ -30,17 +30,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
             android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/subheader_gap_margin"
             android:orientation="horizontal">
             <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
+                style="@style/Theme.VocabyAndroid.TextSubHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/dark_gray"
                 android:labelFor="@+id/definition_edit"
-                android:text="@string/collection_name_header"
-                android:textSize="12sp"/>
+                android:text="@string/collection_name_header" />
 
             <TextView
                 style="@style/Theme.VocabyAndroid.Alert"

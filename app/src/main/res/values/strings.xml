@@ -52,7 +52,6 @@
     <string name="pronunciation">Pronunciation</string>
     <string name="enter_a_pronunciation">Enter a pronunciation</string>
     <string name="enter_a_description">Enter a description</string>
-    <string name="type">Type</string>
     <string name="back">Back</string>
     <string name="data_management_export_save_backup">Export my save data as json</string>
     <string name="data_management_export_entry_backup">Export my entry data as json</string>
@@ -77,8 +76,8 @@
     <string name="data_export">Export Data</string>
     <string name="data_import">Import Backup Data</string>
     <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be replaced.</string>
-    <string name="background">background</string>
-    <string name="history">YOUR SEARCH HISTORY</string>
+    <string name="history">Search History</string>
+    <string name="eod">Entry of the day</string>
     <string name="wod_our_pick">Vocaby\'s Pick</string>
     <string name="wod_random_pick">Random Pick</string>
     <string name="entry_header">Entry</string>
@@ -95,14 +94,13 @@
     <string name="enter_an_example_sentence">Enter an example sentence</string>
     <string name="help">Help</string>
     <string name="card_instructions">Card Instructions</string>
-    <string name="touch_to_edit">touch to edit</string>
+    <string name="touch_to_edit">Touch to edit</string>
     <string name="chart_toggle_monthly">Monthly</string>
     <string name="chart_toggle_all">All</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="support_faq">Frequently Asked Questions</string>
     <string name="contact_us">Contact Us</string>
     <string name="contact_us_body">If you couldn’t find the answer you were looking for or just want send us some feedback, feel free to contact us! Although we are a small group of people, we will try our best to get back to you.</string>
-    <string name="vocaby_email">talkwith@vocaby.app</string>
+    <string name="vocaby_email">help@vocaby.app</string>
     <string name="support_vocaby">Help us improve Vocaby</string>
     <string name="support_vocaby_body">We are constantly trying to improve Vocaby. If you would like us to update an entry or add a feature, submit this form!</string>
     <string name="submit_feedback">Send Feedback</string>
@@ -142,9 +140,9 @@
     <string name="collection_rename">Rename this collection</string>
     <string name="collection_delete">Delete this collection</string>
     <string name="collection_update_name">Update collection name</string>
-    <string name="all_saves">All Saves</string>
+    <string name="all_saves">Saves</string>
     <string name="collections">Collections</string>
-    <string name="empty_saves">Empty Saves</string>
+    <string name="empty_saves">No Saved Entry</string>
     <string name="empty_collections">No Save Collection</string>
     <string name="remove_save">Remove Save</string>
     <string name="entry_type_management">Type Management</string>

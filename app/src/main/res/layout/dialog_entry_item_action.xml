@@ -38,17 +38,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/container_side_margin"
             android:layout_marginEnd="@dimen/container_side_margin"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="@dimen/subheader_gap_margin"
             android:layout_marginStart="@dimen/container_side_margin"
             android:orientation="horizontal">
             <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
+                style="@style/Theme.VocabyAndroid.TextSubHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/dark_gray"
                 android:labelFor="@+id/definition_edit"
-                android:text="@string/actions"
-                android:textSize="12sp"/>
+                android:text="@string/actions"/>
 
             <TextView
                 style="@style/Theme.VocabyAndroid.Alert"

@@ -5,8 +5,8 @@
     android:layout_marginTop="@dimen/container_gap_margin"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <TextView
-        android:id="@+id/part_of_speech"
-        style="@style/Theme.VocabyAndroid.TextHeadline"
+        android:id="@+id/definition_type"
+        style="@style/Theme.VocabyAndroid.TextSubHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimary" />

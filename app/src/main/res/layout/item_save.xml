@@ -25,13 +25,10 @@
             android:layout_marginEnd="32dp"
             android:orientation="vertical">
             <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
+                style="@style/Theme.VocabyAndroid.TextHelper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/entry"
-                android:textColor="@color/gray"
-                android:textSize="10sp"
-                autofit:ignore="SmallSp,TextContrastCheck" />
+                android:text="@string/entry" />
 
             <TextView
                 android:id="@+id/save_item"

@@ -24,7 +24,6 @@
             android:background="@drawable/box_gray_stroked_dash_gray"
             android:gravity="center"
             android:text="@string/empty_collections"
-            android:textAllCaps="true"
             android:textColor="@color/gray" />
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView

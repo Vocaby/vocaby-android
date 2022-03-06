@@ -2,12 +2,13 @@
 <resources>
     <dimen name="radius">4dp</dimen>
     <dimen name="container_gap_margin">12dp</dimen>
-    <dimen name="container_side_margin">24dp</dimen>
+    <dimen name="container_side_margin">26dp</dimen>
     <dimen name="icon_gap_margin">8dp</dimen>
+    <dimen name="subheader_gap_margin">4dp</dimen>
     <dimen name="definition_side_margin">36dp</dimen>
     <dimen name="custom_entry_card_height">60dp</dimen>
     <dimen name="card_content_margin">12dp</dimen>
-    <dimen name="card_elevation">6dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
     <dimen name="header_gap">12dp</dimen>
     <dimen name="nav_header_padding">16dp</dimen>
     <dimen name="profile_counter_size">14sp</dimen>

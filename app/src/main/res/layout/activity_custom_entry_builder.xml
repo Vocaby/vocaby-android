@@ -72,32 +72,6 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:layout_marginStart="@dimen/container_side_margin"
-        android:layout_marginEnd="@dimen/container_side_margin"
-        android:layout_marginTop="@dimen/container_gap_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/entry_header"
-            android:textColor="@color/dark_gray"
-            android:textSize="12sp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </LinearLayout>
     <me.grantland.widget.AutofitTextView
         xmlns:autofit="http://schemas.android.com/apk/res-auto"
         style="@style/Theme.VocabyAndroid.TextHeader"
@@ -111,9 +85,10 @@
         android:maxLines="3"
         android:textSize="28sp"
         autofit:minTextSize="14sp"
+        android:layout_marginTop="@dimen/container_gap_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -137,23 +112,21 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/container_side_margin"
                 android:orientation="vertical"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
                 android:background="@drawable/box_white_bottom_stroke_gray"
                 android:paddingStart="@dimen/container_side_margin"
                 android:paddingEnd="@dimen/container_side_margin">
                 <TextView
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
+                    style="@style/Theme.VocabyAndroid.TextSubHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/pronunciation"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="12sp" />
+                    android:layout_marginBottom="@dimen/subheader_gap_margin"
+                    android:text="@string/pronunciation" />
                 <EditText
                     style="@style/Theme.VocabyAndroid.TextInput"
                     android:id="@+id/pronunciation_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/container_gap_margin"
                     android:autofillHints="Enter a pronunciation"
                     android:fontFamily="@font/sourcesanspro_regular"
                     android:hint="@string/enter_a_pronunciation"
@@ -161,19 +134,17 @@
                     android:inputType="text" />
 
                 <TextView
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
+                    style="@style/Theme.VocabyAndroid.TextSubHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/container_gap_margin"
-                    android:text="@string/description"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="12sp" />
+                    android:layout_marginBottom="@dimen/subheader_gap_margin"
+                    android:text="@string/description" />
                 <EditText
                     style="@style/Theme.VocabyAndroid.TextInput"
                     android:id="@+id/description_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/container_gap_margin"
                     android:autofillHints="Enter a pronunciation"
                     android:fontFamily="@font/sourcesanspro_regular"
                     android:hint="@string/enter_a_description"
@@ -193,9 +164,7 @@
                     style="@style/Theme.VocabyAndroid.TextHeadline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/custom_definition_group_header"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="12sp" />
+                    android:text="@string/custom_definition_group_header" />
                 <TextView
                     android:id="@+id/group_header_alert"
                     android:layout_width="wrap_content"

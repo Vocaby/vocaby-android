@@ -15,12 +15,12 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/save_tab"
             android:layout_width="match_parent"
-            android:layout_height="46dp"
+            android:layout_height="50dp"
             app:tabTextColor="@color/white"
             app:tabBackground="@color/colorPrimaryAccent"
             app:tabIndicatorColor="@color/colorPrimary"
             app:tabSelectedTextColor="@color/white"
-            app:tabTextAppearance="@style/Theme.VocabyAndroid.TextHeadline">
+            app:tabTextAppearance="@style/Theme.VocabyAndroid.TextTab">
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

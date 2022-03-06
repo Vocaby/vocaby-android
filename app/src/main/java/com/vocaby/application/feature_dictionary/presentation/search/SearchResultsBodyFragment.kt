@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
-import com.vocaby.application.feature_dictionary.presentation.dictionary.DefinitionsAdapter
 
 
 class SearchResultsBodyFragment : Fragment() {

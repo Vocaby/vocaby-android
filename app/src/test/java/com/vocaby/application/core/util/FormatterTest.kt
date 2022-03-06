@@ -63,8 +63,11 @@ class FormatterTest {
 
     @Test
     fun firstLetterUpperCase() {
-        val formatted = Formatter.firstLetterUpperCase("abc")
+        var formatted = Formatter.firstLetterUpperCase("abc")
         assertThat(formatted).isEqualTo("Abc")
+
+        formatted = Formatter.firstLetterUpperCase("abc def    f")
+        assertThat(formatted).isEqualTo("Abc Def    F")
     }
 
     @Test

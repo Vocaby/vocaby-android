@@ -290,7 +290,6 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
             val querySectionLP: LayoutParams = mSearchBar.layoutParams as LayoutParams
             val dividerLP: LayoutParams = mDivider.layoutParams as LayoutParams
             val suggestListSectionLP: LinearLayout.LayoutParams = mSuggestionsSection.layoutParams as LinearLayout.LayoutParams
-            val cardPadding: Int = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT)
 
             querySectionLP.setMargins(
                 searchBarLeftMargin,
@@ -300,9 +299,9 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
             )
 
             dividerLP.setMargins(
-                searchBarLeftMargin + cardPadding + 2,
+                searchBarLeftMargin,
                 0,
-                searchBarRightMargin + cardPadding + 2,
+                searchBarRightMargin,
                 (mDivider.layoutParams as MarginLayoutParams).bottomMargin
             )
 
@@ -859,19 +858,18 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
         val cardTopBottomShadowPadding: Int = Util.dpToPx(
             SEARCH_CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT
         )
-        val cardRadiusSize: Int = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT)
+
         val visibleSuggestionHeight = calculateSuggestionItemsHeight(mSuggestionListContainer.height)
         val diff = mSuggestionListContainer.height - visibleSuggestionHeight
 
         val addedTranslationYForShadowOffsets =
             if (diff <= cardTopBottomShadowPadding) -(cardTopBottomShadowPadding - diff)
-            else if (diff < mSuggestionListContainer.height - cardTopBottomShadowPadding) cardRadiusSize
             else 0
 
         val newTranslationY =
             (-mSuggestionListContainer.height + visibleSuggestionHeight + addedTranslationYForShadowOffsets).toFloat()
 
-        val fullyInvisibleTranslationY = (-mSuggestionListContainer.height + cardRadiusSize).toFloat()
+        val fullyInvisibleTranslationY = (-mSuggestionListContainer.height).toFloat()
         ViewCompat.animate(mSuggestionListContainer).cancel()
 
         if (withAnim) {
@@ -1267,12 +1265,9 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
     companion object {
         private val TAG = SearchView::class.java.simpleName
 
-        //The CardView's top or bottom height used for its shadow
-        private const val CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT = 3
-
         //The CardView's (default) corner radius height
         private const val SEARCH_CARD_VIEW_CORNERS_HEIGHT = 4
-        private const val SEARCH_CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT = CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT + SEARCH_CARD_VIEW_CORNERS_HEIGHT
+        private const val SEARCH_CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT = SEARCH_CARD_VIEW_CORNERS_HEIGHT
 
         private const val CLEAR_BTN_FADE_ANIM_DURATION: Long = 500
         private const val BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED = 150

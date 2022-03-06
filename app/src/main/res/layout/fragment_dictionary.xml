@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="@color/white"
     tools:context=".feature_dictionary.presentation.dictionary.DictionaryFragment">
-
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
-        android:layout_height="104dp"
-        android:paddingTop="12dp"
+        android:layout_height="98dp"
+        android:paddingTop="@dimen/container_gap_margin"
+        android:orientation="vertical"
         android:background="@color/colorPrimaryAccent"
+        android:paddingStart="@dimen/container_side_margin"
+        android:paddingEnd="@dimen/container_side_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
+            style="@style/Theme.VocabyAndroid.TextNavHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/container_side_margin"
             android:gravity="center"
             android:text="@string/dictionary_header"
             android:textColor="@color/white"
-            android:textSize="14sp"
             android:drawablePadding="8dp"
             app:drawableStartCompat="@drawable/ic_vocaby_logo_sm" />
-    </FrameLayout>
+    </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/dictionary_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/very_light_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +50,7 @@
         app:dimBackground="true"
         app:searchBarMarginLeft="@dimen/container_side_margin"
         app:searchBarMarginRight="@dimen/container_side_margin"
-        app:searchBarMarginTop="38dp"
+        app:searchBarMarginTop="42dp"
         app:searchHint="@string/search_hint"
         app:suggestionsListAnimDuration="200"
         app:layout_constraintBottom_toBottomOf="parent"

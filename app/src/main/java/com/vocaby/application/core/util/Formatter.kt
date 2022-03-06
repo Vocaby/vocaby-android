@@ -44,7 +44,9 @@ object Formatter {
     fun firstLetterUpperCase(text: String): String {
         var newString: String = text
         if (text.length == 1) newString =  text.uppercase(Locale.getDefault())
-        else if (text.length > 1) newString = text.substring(0, 1).uppercase(Locale.getDefault()) + text.substring(1).lowercase()
+        else if (text.length > 1) {
+            newString = text.split(" ").joinToString(" ") { it.replaceFirstChar { it.uppercase() } }
+        }
 
         return newString
     }

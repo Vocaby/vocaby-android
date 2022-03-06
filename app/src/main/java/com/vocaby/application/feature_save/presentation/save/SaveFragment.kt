@@ -44,7 +44,7 @@ class SaveFragment : Fragment() {
             if (position == 0) {
                 tab.text = "COLLECTIONS"
             } else {
-                tab.text = "ALL SAVES"
+                tab.text = getString(R.string.all_saves)
             }
         }.attach()
     }

@@ -18,13 +18,13 @@
         app:cardCornerRadius="0dp">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="104dp"
+            android:layout_height="98dp"
             android:background="@drawable/header_background_custom_dictionary"
             android:orientation="horizontal"
-            android:paddingTop="12dp">
+            android:paddingTop="@dimen/container_gap_margin">
 
             <TextView
-                style="@style/Theme.VocabyAndroid.TextHeadline"
+                style="@style/Theme.VocabyAndroid.TextNavHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/container_side_margin"
@@ -32,7 +32,6 @@
                 android:gravity="center"
                 android:text="@string/nav_custom_entries"
                 android:textColor="@color/white"
-                android:textSize="14sp"
                 app:drawableStartCompat="@drawable/ic_vocaby_logo_sm" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -86,7 +85,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_custom_entry"
-                android:textAllCaps="true"
                 android:textColor="@color/gray" />
         </LinearLayout>
         <ProgressBar
@@ -132,7 +130,7 @@
         app:dimBackground="false"
         app:searchBarMarginLeft="@dimen/container_side_margin"
         app:searchBarMarginRight="@dimen/container_side_margin"
-        app:searchBarMarginTop="38dp"
+        app:searchBarMarginTop="42dp"
         app:searchHint="@string/search_custom_entry_hint"
         app:suggestionsListAnimDuration="200"
         app:layout_constraintBottom_toBottomOf="parent"

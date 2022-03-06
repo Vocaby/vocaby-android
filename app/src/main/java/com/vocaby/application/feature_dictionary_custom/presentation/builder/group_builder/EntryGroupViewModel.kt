@@ -52,7 +52,7 @@ class EntryGroupViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.emit(EntryGroupBuilderUiState.UpdateUiState(
                 definitionGroup.type,
-                Formatter.firstLetterUpperCase(definitionGroup.type) + " Group",
+                Formatter.firstLetterUpperCase(definitionGroup.type),
                 definitionGroup.definitionData
             ))
         }

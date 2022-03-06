@@ -74,31 +74,21 @@
             tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <TextView
-        style="@style/Theme.VocabyAndroid.TextHeadline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/container_gap_margin"
-        android:layout_marginStart="@dimen/container_side_margin"
-        android:layout_marginEnd="@dimen/container_side_margin"
-        android:text="@string/type"
-        android:textColor="@color/dark_gray"
-        android:textSize="12sp" />
-
-    <TextView
         style="@style/Theme.VocabyAndroid.TextHeader"
         android:id="@+id/type_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/container_side_margin"
         android:layout_marginEnd="@dimen/container_side_margin"
+        android:layout_marginTop="@dimen/container_gap_margin"
         android:textColor="@color/black"
         android:textSize="34sp"
         android:textAllCaps="true" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="@dimen/container_gap_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -124,9 +114,7 @@
                     style="@style/Theme.VocabyAndroid.TextHeadline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/definition_header_plural"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="12sp" />
+                    android:text="@string/definition_header_plural" />
 
                 <TextView
                     android:id="@+id/definition_add_alert"
@@ -157,7 +145,6 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="@string/empty_definition_group"
-                android:textAllCaps="true"
                 android:textColor="@color/gray" />
         </LinearLayout>
 

@@ -1,4 +1,4 @@
-package com.vocaby.application.feature_dictionary.presentation.dictionary
+package com.vocaby.application.feature_dictionary.presentation.search
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vocaby.application.R
 import com.vocaby.application.feature_dictionary.domain.model.DefinitionModel
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
-import com.vocaby.application.feature_dictionary.presentation.dictionary.DefinitionsAdapter.DefinitionsViewHolder
+import com.vocaby.application.feature_dictionary.presentation.search.DefinitionsAdapter.DefinitionsViewHolder
 
 class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<DefinitionsViewHolder>() {
     private var entryData: EntryModel = EntryModel(entry = "Vocaby")
@@ -32,7 +32,7 @@ class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<Defini
     override fun onBindViewHolder(holder: DefinitionsViewHolder, position: Int) {
         val group = entryData.definitionGroups[position]
         val definitions: List<DefinitionModel> = group.definitionData
-        holder.pos.text = group.type
+        holder.type.text = group.type
         val inflater = LayoutInflater.from(ctx)
 
         for (i in definitions.indices) {
@@ -69,7 +69,7 @@ class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<Defini
     }
 
     class DefinitionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var pos: TextView = itemView.findViewById(R.id.part_of_speech)
+        var type: TextView = itemView.findViewById(R.id.definition_type)
         var definitionContainer: LinearLayout = itemView.findViewById(R.id.definitions_card_container)
     }
 }

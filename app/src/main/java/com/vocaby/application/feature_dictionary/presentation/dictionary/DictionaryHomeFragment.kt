@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -22,14 +21,14 @@ import java.util.*
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener {
     private lateinit var ctx: Context
     private lateinit var wordView: TextView
-    private lateinit var posView: TextView
+    private lateinit var typeView: TextView
     private lateinit var definition: TextView
     private lateinit var sentence: TextView
     private lateinit var wordBox: View
     private lateinit var wordBoxTag: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
-    private lateinit var emptyCard: LinearLayout
+    private lateinit var emptyCard: TextView
     private lateinit var dateView: TextView
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
@@ -44,22 +43,20 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_dictionary_main, container, false)
-
-        dateView = view.findViewById(R.id.date)
-
         // Random Entry of the Day
         wordView = view.findViewById(R.id.entry_header)
-        posView = view.findViewById(R.id.pos)
+        typeView = view.findViewById(R.id.type)
         definition = view.findViewById(R.id.card_definition)
         sentence = view.findViewById(R.id.card_sentence)
         wordBox = view.findViewById(R.id.word_box)
         progressBar = view.findViewById(R.id.randomword_progress)
         wordBoxTag = view.findViewById(R.id.word_box_tag)
+        dateView = view.findViewById(R.id.date)
 
         progressBar.visibility = View.VISIBLE
         definition.visibility = View.GONE
         sentence.visibility = View.GONE
-        posView.visibility = View.GONE
+        typeView.visibility = View.GONE
 
         emptyCard = view.findViewById(R.id.empty_card)
 
@@ -78,7 +75,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
                         wordView.visibility = View.INVISIBLE
                         wordBoxTag.visibility = View.GONE
                         definition.visibility = View.GONE
-                        posView.visibility = View.GONE
+                        typeView.visibility = View.GONE
                         sentence.visibility = View.GONE
                         progressBar.visibility = View.VISIBLE
                     }
@@ -86,12 +83,12 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
                         wordView.visibility = View.VISIBLE
                         wordBoxTag.visibility = View.VISIBLE
                         definition.visibility = View.VISIBLE
-                        posView.visibility = View.VISIBLE
+                        typeView.visibility = View.VISIBLE
                         progressBar.visibility = View.GONE
 
                         val dailyPick = dailyPickState.pick
                         wordView.text = dailyPick.entry
-                        posView.text =  dailyPick.pos
+                        typeView.text =  dailyPick.type
                         definition.text = dailyPick.definition
 
                         dailyPick.example?.let {
