@@ -4,7 +4,7 @@ import androidx.test.filters.SmallTest
 import com.google.common.truth.Truth
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.feature_dictionary.data.local.entity.Definition
-import com.vocaby.application.feature_dictionary.data.local.entity.Word
+import com.vocaby.application.feature_dictionary.data.local.entity.Entry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,8 +41,8 @@ class DictionaryDaoTest {
     @Test
     fun insertEntries() = runTest {
         val words = listOf(
-            Word("enthusiasm", "", Date()),
-            Word("creativity", "", Date()),
+            Entry("enthusiasm", "", "", Date()),
+            Entry("creativity", "", "", Date()),
         )
 
         dao.insertEntries(words)
@@ -57,12 +57,12 @@ class DictionaryDaoTest {
     @Test
     fun insertDefinitions() = runTest {
         val words = listOf(
-            Word("enthusiasm", "", Date()),
-            Word("creativity", "", Date()),
-            Word("sacred", "", Date()),
-            Word("galvanize", "", Date()),
-            Word("fastidious", "", Date()),
-            Word("sage", "", Date()),
+            Entry("enthusiasm", "", "", Date()),
+            Entry("creativity", "", "", Date()),
+            Entry("sacred", "", "", Date()),
+            Entry("galvanize", "", "", Date()),
+            Entry("fastidious", "", "", Date()),
+            Entry("sage", "", "", Date()),
         )
 
         val definitions = listOf(
@@ -87,19 +87,19 @@ class DictionaryDaoTest {
         Truth.assertThat(entry).isNotNull()
         Truth.assertThat(entry!!.definitions).hasSize(2)
         Truth.assertThat(entry.definitions.first().definition).isEqualTo("shock or excite (someone) into taking action.")
-        Truth.assertThat(entry.definitions.last().sentence).isEqualTo("\"they promised they would galvanize the iron railings to prevent rusting\"")
+        Truth.assertThat(entry.definitions.last().example).isEqualTo("\"they promised they would galvanize the iron railings to prevent rusting\"")
     }
 
     @Test
     fun getEntriesByCharacter() = runTest {
         val words = listOf(
-            Word("enthusiasm", "", Date()),
-            Word("creativity", "", Date()),
-            Word("sage", "", Date()),
-            Word("sacred", "", Date()),
-            Word("galvanize", "", Date()),
-            Word("fastidious", "", Date()),
-            Word("saga", "", Date()),
+            Entry("enthusiasm", "", "", Date()),
+            Entry("creativity", "", "", Date()),
+            Entry("sage", "", "", Date()),
+            Entry("sacred", "", "", Date()),
+            Entry("galvanize", "", "", Date()),
+            Entry("fastidious", "", "", Date()),
+            Entry("saga", "", "", Date()),
         )
 
         dao.insertEntries(words)
@@ -117,7 +117,7 @@ class DictionaryDaoTest {
     @Test
     fun getRandomWord() = runTest {
         val words = listOf("enthusiasm", "creativity", "sacred", "galvanize", "fastidious", "sage")
-        val wordstoInsert = words.map { Word(it, "", Date()) }
+        val wordstoInsert = words.map { Entry(it, "", "", Date()) }
 
         val definitions = listOf(
             Definition(1, "intense and eager enjoyment, interest, or approval.", "\"her energy and enthusiasm for life\"", "noun"),
@@ -133,12 +133,12 @@ class DictionaryDaoTest {
         dao.insertDefinitions(definitions)
 
         var randomEntry = dao.getRandomWord()
-        Truth.assertThat(randomEntry.wordData.word).isIn(words)
+        Truth.assertThat(randomEntry.entryData.entry).isIn(words)
 
         randomEntry = dao.getRandomWord()
-        Truth.assertThat(randomEntry.wordData.word).isIn(words)
+        Truth.assertThat(randomEntry.entryData.entry).isIn(words)
 
         randomEntry = dao.getRandomWord()
-        Truth.assertThat(randomEntry.wordData.word).isIn(words)
+        Truth.assertThat(randomEntry.entryData.entry).isIn(words)
     }
 }

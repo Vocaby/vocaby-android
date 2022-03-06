@@ -2,48 +2,48 @@ package com.vocaby.application.feature_dictionary.data.local
 
 import androidx.room.*
 import com.vocaby.application.feature_dictionary.data.local.entity.Definition
-import com.vocaby.application.feature_dictionary.data.local.entity.Word
-import com.vocaby.application.feature_dictionary.data.local.entity.WordDefinitions
+import com.vocaby.application.feature_dictionary.data.local.entity.Entry
+import com.vocaby.application.feature_dictionary.data.local.entity.EntryDefinitions
 
 @Dao
 interface DictionaryDao {
     @Delete
-    suspend fun deleteEntry(word: Word)
+    suspend fun deleteEntry(entry: Entry)
 
     @Insert
-    suspend fun insertEntry(word: Word): Long
+    suspend fun insertEntry(entry: Entry): Long
 
     @Insert
-    suspend fun insertEntries(words: List<Word>)
+    suspend fun insertEntries(entries: List<Entry>)
 
     @Insert
     suspend fun insertDefinitions(wordDefinitions: List<Definition>)
 
-    @Query("SELECT EXISTS(SELECT 1 FROM dictionary_word WHERE word = :entry)")
+    @Query("SELECT EXISTS(SELECT 1 FROM dictionary_entry WHERE entry = :entry)")
     suspend fun checkEntryExistence(entry: String): Boolean
 
-    @Query("SELECT id FROM dictionary_word WHERE word = :entry")
+    @Query("SELECT id FROM dictionary_entry WHERE entry = :entry")
     suspend fun getEntryId(entry: String): Long?
 
     @Query(
-        "SELECT word FROM dictionary_word WHERE word LIKE :firstLetter||'%' UNION " +
+        "SELECT entry FROM dictionary_entry WHERE entry LIKE :firstLetter||'%' UNION " +
                 "SELECT entry FROM custom_user_entry WHERE entry LIKE :firstLetter||'%' " +
-                "ORDER BY word ASC"
+                "ORDER BY entry ASC"
     )
     suspend fun getDictionaryEntriesByCharacter(firstLetter: String): List<String>
 
     @Transaction
-    @Query("SELECT * FROM dictionary_word WHERE word = :entry")
-    suspend fun getEntryData(entry: String): WordDefinitions?
+    @Query("SELECT * FROM dictionary_entry WHERE entry = :entry")
+    suspend fun getEntryData(entry: String): EntryDefinitions?
 
     @Transaction
-    @Query("SELECT * FROM dictionary_word WHERE id = :entryId")
-    suspend fun getEntryDataWithId(entryId: Int): WordDefinitions?
+    @Query("SELECT * FROM dictionary_entry WHERE id = :entryId")
+    suspend fun getEntryDataWithId(entryId: Int): EntryDefinitions?
 
     @Transaction
     @Query(
-        "SELECT * FROM dictionary_word WHERE id = " +
-                "(SELECT id FROM dictionary_word ORDER BY RANDOM() LIMIT 1)"
+        "SELECT * FROM dictionary_entry WHERE id = " +
+                "(SELECT id FROM dictionary_entry ORDER BY RANDOM() LIMIT 1)"
     )
-    suspend fun getRandomWord(): WordDefinitions
+    suspend fun getRandomWord(): EntryDefinitions
 }

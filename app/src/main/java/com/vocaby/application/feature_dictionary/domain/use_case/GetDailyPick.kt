@@ -1,7 +1,6 @@
 package com.vocaby.application.feature_dictionary.domain.use_case
 
 import com.vocaby.application.core.domain.repository.ApplicationRepository
-
 import com.vocaby.application.feature_dictionary.domain.model.DailyPick
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository

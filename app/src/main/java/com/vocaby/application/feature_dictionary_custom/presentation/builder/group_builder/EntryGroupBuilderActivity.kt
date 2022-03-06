@@ -92,6 +92,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
                                     customDefAdapter.notifyItemRemoved(event.position)
                                     updateEmptyCardVisibility()
                                 }
+                                else -> {}
                             }
 
                             definitionBuilderDialog.dismiss()

@@ -47,7 +47,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
 
         dateView = view.findViewById(R.id.date)
 
-        // Random Word of the Day
+        // Random Entry of the Day
         wordView = view.findViewById(R.id.entry_header)
         posView = view.findViewById(R.id.pos)
         definition = view.findViewById(R.id.card_definition)

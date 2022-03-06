@@ -24,16 +24,6 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="6dp"
         android:orientation="vertical">
-
-        <TextView
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/definition_header_singular"
-            android:textSize="10sp"
-            android:textColor="@color/dark_gray"
-            tools:ignore="SmallSp" />
-
         <TextView
             android:id="@+id/definition"
             android:layout_width="match_parent"

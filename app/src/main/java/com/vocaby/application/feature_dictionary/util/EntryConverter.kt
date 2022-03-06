@@ -1,26 +1,26 @@
 package com.vocaby.application.feature_dictionary.util
 
 import com.vocaby.application.core.util.EntityConverter
-import com.vocaby.application.feature_dictionary.data.local.entity.WordDefinitions
+import com.vocaby.application.feature_dictionary.data.local.entity.EntryDefinitions
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 
-object EntryConverter: EntityConverter<WordDefinitions, EntryModel> {
-    override suspend fun convertFromEntity(entity: WordDefinitions): EntryModel {
+object EntryConverter: EntityConverter<EntryDefinitions, EntryModel> {
+    override suspend fun convertFromEntity(entity: EntryDefinitions): EntryModel {
         val pronunciation =
-            entity.wordData.pronunciation?.let { entity.wordData.pronunciation }
+            entity.entryData.pronunciation?.let { entity.entryData.pronunciation }
                 ?: ""
 
         val wordData = EntryModel(
-            entity.wordData.id,
-            entity.wordData.word,
+            entity.entryData.id,
+            entity.entryData.entry,
             pronunciation,
             "",
-            entity.wordData.lastUpdated
+            entity.entryData.lastUpdated
         )
 
         for (data in entity.definitions) {
             if (data.definition.isNotEmpty())
-                wordData.addDefinition(data.pos, data.definition, data.sentence)
+                wordData.addDefinition(data.type, data.definition, data.example)
         }
 
         return wordData

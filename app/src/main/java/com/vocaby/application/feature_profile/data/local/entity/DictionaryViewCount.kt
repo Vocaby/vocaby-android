@@ -1,7 +1,7 @@
 package com.vocaby.application.feature_profile.data.local.entity
 
 import androidx.room.*
-import com.vocaby.application.feature_dictionary.data.local.entity.Word
+import com.vocaby.application.feature_dictionary.data.local.entity.Entry
 
 @Entity(
     tableName = "dictionary_view_count",
@@ -12,7 +12,7 @@ import com.vocaby.application.feature_dictionary.data.local.entity.Word
         childColumns = ["user_id"]
     ), ForeignKey(
         onDelete = ForeignKey.CASCADE,
-        entity = Word::class,
+        entity = Entry::class,
         parentColumns = ["id"],
         childColumns = ["entry_id"]
     )],

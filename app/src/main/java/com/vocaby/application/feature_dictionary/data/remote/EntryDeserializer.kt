@@ -16,10 +16,11 @@ class EntryDeserializer: JsonDeserializer<EntryModel> {
         context: JsonDeserializationContext?
     ): EntryModel {
         val jsonObject = json.asJsonObject
-        val word: String = jsonObject.get("word").asString
-        val entryData = EntryModel(entry = word)
+        val entry: String = jsonObject.get("entry").asString
+        val entryData = EntryModel(entry = entry)
         entryData.lastUpdated = Formatter.formatStringToDate(jsonObject.get("last_updated").asString)
         entryData.pronunciation = jsonObject.get("pronunciation").asString
+        entryData.description = jsonObject.get("description").asString
         val data: JsonObject = jsonObject.get("definitions").asJsonObject
 
         for (type in data.keySet()) {
@@ -27,8 +28,8 @@ class EntryDeserializer: JsonDeserializer<EntryModel> {
             for (jsonElement in definitions) {
                 val itemJsonObject = jsonElement.asJsonObject
                 val definition = itemJsonObject["definition"].asString
-                val sentence = itemJsonObject["sentence"].asString
-                entryData.addDefinition(type, definition, sentence)
+                val example = itemJsonObject["example"].asString
+                entryData.addDefinition(type, definition, example)
             }
         }
 

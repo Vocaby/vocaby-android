@@ -137,6 +137,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
                                     customEntryAdapter.addEntry()
                                     recyclerView.smoothScrollToPosition(0)
                                 }
+                                else -> {}
                             }
 
                             entryUpdateDialog.dismiss()

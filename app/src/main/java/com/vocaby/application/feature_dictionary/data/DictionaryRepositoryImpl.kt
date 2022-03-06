@@ -5,7 +5,7 @@ import com.vocaby.app.DictionaryCache
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.feature_dictionary.data.local.DictionaryDao
 import com.vocaby.application.feature_dictionary.data.local.entity.Definition
-import com.vocaby.application.feature_dictionary.data.local.entity.Word
+import com.vocaby.application.feature_dictionary.data.local.entity.Entry
 import com.vocaby.application.feature_dictionary.data.remote.DictionaryApi
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
@@ -41,10 +41,10 @@ class DictionaryRepositoryImpl(
 
     override suspend fun replaceEntry(originalId: Int?, remote: EntryModel): Int = withContext(defaultDispatcher){
         originalId?.let {
-            dao.deleteEntry(Word(id = it))
+            dao.deleteEntry(Entry(id = it))
         }
 
-        val id = dao.insertEntry(Word(remote.entry, remote.pronunciation, remote.lastUpdated)).toInt()
+        val id = dao.insertEntry(Entry(remote.entry, remote.pronunciation, remote.description, remote.lastUpdated)).toInt()
         val definitions = mutableListOf<Definition>()
         for(groupData in remote.definitionGroups) {
             for (definitionData in groupData.definitionData) {
@@ -102,6 +102,7 @@ class DictionaryRepositoryImpl(
                 null
             }
         } catch (e: Throwable) {
+            e.printStackTrace()
             null
         }
     }

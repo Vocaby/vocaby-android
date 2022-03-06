@@ -8,8 +8,8 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.vocaby.application.feature_dictionary.data.local.DictionaryDao
 import com.vocaby.application.feature_dictionary.data.local.entity.Definition
+import com.vocaby.application.feature_dictionary.data.local.entity.Entry
 import com.vocaby.application.feature_dictionary.data.local.entity.Type
-import com.vocaby.application.feature_dictionary.data.local.entity.Word
 import com.vocaby.application.feature_dictionary_custom.data.local.CustomDictionaryDao
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomDefinition
 import com.vocaby.application.feature_dictionary_custom.data.local.entity.CustomEntry
@@ -28,7 +28,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 @Database(entities = [User::class, UserSave::class, SaveCollection::class, SaveCollectionItem::class,
-    Type::class, Word::class, Definition::class, CustomEntry::class, CustomDefinition::class,
+    Type::class, Entry::class, Definition::class, CustomEntry::class, CustomDefinition::class,
     CustomEntryGroup::class, DictionaryViewCount::class, CustomDictionaryViewCount::class],
     version = 1,
     exportSchema = true,
@@ -46,7 +46,7 @@ abstract class VocabyDatabase : RoomDatabase() {
                 context,
                 VocabyDatabase::class.java,
                 "database"
-            ).createFromAsset("databases/base_dictionary.db")
+            ).createFromAsset("databases/base_dict.db")
             .setJournalMode(JournalMode.AUTOMATIC)
             .addCallback(object: Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {

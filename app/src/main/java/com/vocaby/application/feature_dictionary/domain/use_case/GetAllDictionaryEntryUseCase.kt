@@ -40,9 +40,9 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
 
             retrievedEntry?.let { newEntry ->
                 if (currentEntryModel == null) {
-                    emit(SearchState.InProgress("Updating entry..."))
-                } else {
                     emit(SearchState.InProgress("Adding entry..."))
+                } else {
+                    emit(SearchState.InProgress("Updating entry..."))
                 }
 
                 newEntry.id = dictionaryRepository.replaceEntry(currentEntryModel?.id, newEntry)

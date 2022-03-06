@@ -1,7 +1,7 @@
 package com.vocaby.application.feature_dictionary
 
 import com.vocaby.application.feature_dictionary.data.local.entity.Definition
-import com.vocaby.application.feature_dictionary.data.local.entity.Word
+import com.vocaby.application.feature_dictionary.data.local.entity.Entry
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
@@ -9,12 +9,12 @@ import java.util.*
 
 class FakeDictionaryRepository: DictionaryRepository {
     private val wordData = mutableListOf(
-        Word("enthusiasm", "", Date(), 1),
-        Word("creativity", "", Date(), 2),
-        Word("sacred", "", Date(), 3),
-        Word("galvanize", "", Date(), 4),
-        Word("fastidious", "", Date(), 5),
-        Word("sage", "", Date(), 6),
+        Entry("enthusiasm", "", "", Date(), 1),
+        Entry("creativity", "", "", Date(), 2),
+        Entry("sacred", "", "", Date(), 3),
+        Entry("galvanize", "", "", Date(), 4),
+        Entry("fastidious", "", "", Date(), 5),
+        Entry("sage", "", "", Date(), 6),
     )
 
     private val definitionData = mutableListOf(
@@ -29,12 +29,12 @@ class FakeDictionaryRepository: DictionaryRepository {
 
     private fun convertToEntryModel( entry: String): EntryModel? {
         var entryModel: EntryModel? = null
-        val cEntry = wordData.find { it.word == entry }
+        val cEntry = wordData.find { it.entry == entry }
         cEntry?.let {
-            entryModel = EntryModel(entry = it.word, pronunciation = it.pronunciation)
+            entryModel = EntryModel(entry = it.entry, pronunciation = it.pronunciation)
             definitionData.forEach { data ->
-                if (data.wordId == cEntry.id) {
-                    entryModel!!.addDefinition(data.pos, data.definition, data.sentence)
+                if (data.entryId == cEntry.id) {
+                    entryModel!!.addDefinition(data.type, data.definition, data.example)
                 }
             }
         }

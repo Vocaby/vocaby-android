@@ -9,6 +9,6 @@ interface DictionaryApi {
     @GET("dictionary/get/{entry}/{date}/")
     suspend fun checkAndGetDefinitions(@Path("entry") entry: String, @Path("date") date: String): Response<EntryModel>
 
-    @GET("wod/get/{date}/")
+    @GET("eod/get/{date}/")
     suspend fun getWoD(@Path("date") date: String): Response<EntryModel>
 }
