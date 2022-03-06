@@ -218,20 +218,8 @@ class MyEntryViewModel @Inject constructor(
         val sanitizedEntry = Formatter.cleanText(entry)
         viewModelScope.launch {
             when(val event = customEntryUseCases.validateCustomEntryUseCase(
-                sanitizedEntry,
-                if (isFilterDisplayed) filteredEntries else entries
+                sanitizedEntry
             )) {
-                is UserInputState.SameInput<*> -> {
-                    if (event.data is Int){
-                        if (isFilterDisplayed) filteredPosition = event.data
-                        else realPosition = event.data
-
-                        _uiEvent.emit(CustomEntryUiEvent.OpenEntryBuilder(
-                            sanitizedEntry,
-                            if (isFilterDisplayed) filteredPosition else realPosition
-                        ))
-                    }
-                }
                 is UserInputState.LongInput -> {
                     _uiEvent.emit(CustomEntryUiEvent.ShowAlert("This entry is too long"))
                 }
@@ -247,9 +235,9 @@ class MyEntryViewModel @Inject constructor(
                 is UserInputState.Valid<*> -> {
                     if (event.data is String){
                         _uiEvent.emit(CustomEntryUiEvent.OpenEntryBuilder(event.data))
-                        resetSelections()
                     }
                 }
+                else -> {}
             }
         }
     }
@@ -261,6 +249,13 @@ class MyEntryViewModel @Inject constructor(
                 filteredPosition = position
             } else {
                 realPosition = position
+            }
+        } else {
+            if (isFilterDisplayed) {
+                filteredPosition = filteredEntries.indexOfFirst { it?.entry == sanitizedEntry }
+                ensureRealPosition(sanitizedEntry)
+            } else {
+                ensureRealPosition(sanitizedEntry)
             }
         }
 

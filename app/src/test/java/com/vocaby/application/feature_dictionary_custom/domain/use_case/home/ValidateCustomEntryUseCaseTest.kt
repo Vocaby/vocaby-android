@@ -29,34 +29,25 @@ class ValidateCustomEntryUseCaseTest {
 
     @Test
     fun `Validator returns empty input state when given empty entry`() {
-        val state = validateCustomEntry.invoke("", listToTest)
+        val state = validateCustomEntry.invoke("")
         assertTrue(state is UserInputState.EmptyInput)
     }
 
     @Test
     fun `Validator returns invalid state when entry has special characters`() {
-        val state = validateCustomEntry.invoke("\\", listToTest)
+        val state = validateCustomEntry.invoke("\\")
         assertTrue(state is UserInputState.InvalidInput)
     }
 
     @Test
     fun `Validator returns long input state when entry is too long`() {
-        val state = validateCustomEntry.invoke("A".repeat(101), listToTest)
+        val state = validateCustomEntry.invoke("A".repeat(101))
         assertTrue(state is UserInputState.LongInput)
     }
 
     @Test
-    fun `Validator returns same input state and correct index when entry exists`() {
-        var state = validateCustomEntry.invoke("g", listToTest)
-        assertTrue(state is UserInputState.SameInput<*>)
-        state = state as UserInputState.SameInput<*>
-        assertTrue(state.data is Int)
-        assertTrue(state.data == 6)
-    }
-
-    @Test
     fun `Validator returns valid state and correct entry when given legal entry`() {
-        var state = validateCustomEntry.invoke("ab", listToTest)
+        var state = validateCustomEntry.invoke("ab")
         assertTrue(state is UserInputState.Valid<*>)
         state = state as UserInputState.Valid<*>
         assertTrue(state.data is String)
