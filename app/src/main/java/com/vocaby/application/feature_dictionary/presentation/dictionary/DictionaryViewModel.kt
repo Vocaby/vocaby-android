@@ -62,7 +62,12 @@ class DictionaryViewModel @Inject constructor(
 
     fun getSearchSuggestions(newQuery:String) {
         val query = newQuery.lowercase()
-        if (query.isEmpty() || entriesByCharacter.isNullOrEmpty() || !newQuery.startsWith(entriesByCharacter.first().first())) {
+        if (newQuery.isEmpty()) {
+            viewModelScope.launch {
+                resetSearchSuggestion()
+                _searchSuggestions.emit(GenericState.Success(ArrayList()))
+            }
+        } else if (entriesByCharacter.isNullOrEmpty() || !newQuery.startsWith(entriesByCharacter.first().first())) {
             viewModelScope.launch {
                 dictionaryUseCases.getDictionaryEntriesByCharacter(query).collectLatest { result ->
                     when(result) {
@@ -85,11 +90,13 @@ class DictionaryViewModel @Inject constructor(
     }
 
     private fun setSearchSuggestionItems(searchQuery: String) {
-        suggestionJob?.cancel()
+        viewModelScope.launch {
+            suggestionJob?.cancelAndJoin()
 
-        suggestionJob = suggestionScope.launch {
-            val newSuggestions = dictionaryUseCases.getSearchSuggestionsUseCase(searchQuery, entriesByCharacter)
-            _searchSuggestions.emit(GenericState.Success(newSuggestions))
+            suggestionJob = suggestionScope.launch {
+                val newSuggestions = dictionaryUseCases.getSearchSuggestionsUseCase(searchQuery, entriesByCharacter)
+                _searchSuggestions.emit(GenericState.Success(newSuggestions))
+            }
         }
     }
 
