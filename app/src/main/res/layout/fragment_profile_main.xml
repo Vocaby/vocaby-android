@@ -24,7 +24,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginStart="@dimen/container_side_margin"
-                android:layout_marginEnd="@dimen/container_side_margin">
+                android:layout_marginEnd="@dimen/container_side_margin"
+                android:paddingBottom="8dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -67,15 +68,13 @@
                     app:autoSizeStepGranularity="1sp"
                     app:autoSizeTextType="uniform"/>
             </LinearLayout>
-            <include layout="@layout/chart_placeholder" />
-            <LinearLayout
-                android:id="@+id/chart_container"
-                android:visibility="gone"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
+                <include layout="@layout/chart_placeholder" />
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/bar_chart"
+                    android:visibility="invisible"
                     android:layout_width="match_parent"
                     android:layout_height="130dp"
                     android:layout_gravity="center"
@@ -83,7 +82,7 @@
                     android:clipChildren="false"
                     android:layout_marginStart="@dimen/container_side_margin"
                     android:layout_marginEnd="@dimen/container_side_margin" />
-            </LinearLayout>
+            </FrameLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
