@@ -66,14 +66,14 @@ open class MainActivity : AppCompatActivity() {
         viewPager.adapter = FragmentAdapter(this)
         viewPager.isUserInputEnabled = false
         viewPager.offscreenPageLimit = 1
+
         navigationView = findViewById(R.id.navigation_view)
         navigationView.bringToFront()
         navigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
-                R.id.profileFragment -> viewPager.setCurrentItem(3, false)
-                R.id.customEntryFragment -> viewPager.setCurrentItem(2, false)
-                R.id.savesFragment -> viewPager.setCurrentItem(1, false)
-                else -> viewPager.setCurrentItem(0, false)
+                R.id.profileFragment -> viewPager.setCurrentItem(2, false)
+                R.id.savesFragment -> viewPager.setCurrentItem(0, false)
+                else -> viewPager.setCurrentItem(1, false)
             }
 
             true
@@ -85,11 +85,13 @@ open class MainActivity : AppCompatActivity() {
                 navigationView.menu.getItem(position).isChecked = true
             }
         })
+
+        viewPager.currentItem = 1
     }
 
 
     fun showDefinition(entry: String) {
-        viewPager.currentItem = 0
+        viewPager.currentItem = 1
         dictionaryViewModel.search(entry)
     }
 }

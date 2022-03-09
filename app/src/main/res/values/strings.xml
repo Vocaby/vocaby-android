@@ -16,8 +16,6 @@
     <!-- Strings used for fragments for navigation -->
 
     <string name="notifications">Notifications</string>
-    <string name="zero">0</string>
-    <string name="nav_custom_entries">My Entries</string>
     <string name="add_dictionary_entry">New Entry</string>
     <string name="definition_add_alert">You must add a definition</string>
     <string name="example_header">Example</string>
@@ -89,7 +87,6 @@
     <string name="chart_placeholder_alert">Need more data</string>
     <string name="chart_placeholder_fetching">Fetching your data…</string>
     <string name="chart_placeholder_error">Something went wrong…</string>
-    <string name="entry_character_limit">/ 100</string>
     <string name="enter_a_definition">Enter a definition</string>
     <string name="enter_an_example_sentence">Enter an example sentence</string>
     <string name="help">Help</string>
@@ -164,4 +161,7 @@
     <string name="user_entries">User Entries</string>
     <string name="loading_data">Loading data…</string>
     <string name="description">Description</string>
+    <string name="add_entry">Add Dictionary Entry</string>
+    <string name="edit_dictionary">Edit Dictionary</string>
+    <string name="custom_dictionary">Custom Dictionary</string>
 </resources>

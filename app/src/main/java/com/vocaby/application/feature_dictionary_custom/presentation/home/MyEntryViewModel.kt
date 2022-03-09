@@ -226,9 +226,6 @@ class MyEntryViewModel @Inject constructor(
                 is UserInputState.EmptyInput -> {
                     _uiEvent.emit(CustomEntryUiEvent.ShowAlert("Please enter a word or phrase"))
                 }
-                is UserInputState.NoInput -> {
-                    _uiEvent.emit(CustomEntryUiEvent.ShowAlert("Please enter a new name"))
-                }
                 is UserInputState.InvalidInput -> {
                     _uiEvent.emit(CustomEntryUiEvent.ShowAlert("The entry contains special characters"))
                 }

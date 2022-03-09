@@ -1,40 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".feature_dictionary_custom.presentation.home.MyEntryFragment"
-    android:orientation="vertical">
-    <androidx.cardview.widget.CardView
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".feature_dictionary_custom.presentation.home.MyEntryActivity"
+android:orientation="vertical">
+    <FrameLayout
         android:id="@+id/vocaby_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="112dp"
+        android:background="@drawable/box_white_bottom_stroke_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:cardElevation="4dp"
         app:cardCornerRadius="0dp">
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="98dp"
-            android:background="@drawable/header_background_custom_dictionary"
+            android:layout_height="60dp"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/container_gap_margin">
-
-            <TextView
-                style="@style/Theme.VocabyAndroid.TextNavHeader"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/container_side_margin"
+            android:paddingEnd="@dimen/container_side_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/back_button"
+                style="@style/Theme.VocabyAndroid.NavButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/container_side_margin"
-                android:drawablePadding="8dp"
-                android:gravity="center"
-                android:text="@string/nav_custom_entries"
-                android:textColor="@color/white"
-                app:drawableStartCompat="@drawable/ic_vocaby_logo_sm" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+                android:paddingTop="@dimen/container_gap_margin"
+                android:paddingBottom="@dimen/container_gap_margin"
+                android:text="@string/nav_close"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="TouchTargetSizeCheck" />
+            <TextView
+                android:id="@+id/editor_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sourcesanspro_semibold"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:text="@string/custom_dictionary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -130,8 +148,9 @@
         app:dimBackground="false"
         app:searchBarMarginLeft="@dimen/container_side_margin"
         app:searchBarMarginRight="@dimen/container_side_margin"
-        app:searchBarMarginTop="42dp"
+        app:searchBarMarginTop="56dp"
         app:searchHint="@string/search_custom_entry_hint"
+        app:backgroundColor="@color/light_gray"
         app:suggestionsListAnimDuration="200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

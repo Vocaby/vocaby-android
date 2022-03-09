@@ -2,19 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:icon="@drawable/ic_search"
-            android:title="@string/nav_search"
-            android:checked="true" />
-
-        <item
             android:id="@+id/savesFragment"
             android:icon="@drawable/nav_saves"
             android:title="@string/nav_saves" />
 
         <item
-            android:id="@+id/customEntryFragment"
-            android:icon="@drawable/ic_entry"
-            android:title="@string/nav_custom_entries" />
+            android:icon="@drawable/ic_search"
+            android:title="@string/nav_search"
+            android:checked="true" />
 
         <item
             android:id="@+id/profileFragment"

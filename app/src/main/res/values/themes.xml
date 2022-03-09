@@ -49,7 +49,7 @@
     <style name="Theme.VocabyAndroid.SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
         <item name="android:textColor">@color/white</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
     </style>
 

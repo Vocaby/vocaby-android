@@ -2,47 +2,37 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.vocaby.application">
-    <supports-screens
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:smallScreens="false"
-        android:xlargeScreens="false" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-permission android:name="android.permission.SET_ALARM" />
     <application
         android:name=".core.VocabyApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="false"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="sensorPortrait"
+        android:supportsRtl="false"
         android:theme="@style/Theme.VocabyAndroid.Starting">
+        <activity
+            android:name=".feature_dictionary_custom.presentation.home.MyEntryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.VocabyAndroid" />
         <activity
             android:name=".feature_dictionary_custom.presentation.type.TypeManagementActivity"
             android:exported="false"
-            android:theme="@style/Theme.VocabyAndroid"/>
-
+            android:theme="@style/Theme.VocabyAndroid" />
         <activity
             android:name=".feature_datatransfer.presentation.DataTransferActivity"
             android:exported="false"
             android:theme="@style/Theme.VocabyAndroid" />
-
         <activity
             android:name=".feature_dictionary_custom.presentation.builder.group_builder.EntryGroupBuilderActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.VocabyAndroid" />
+            android:theme="@style/Theme.VocabyAndroid"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.VocabyAndroid" />
+            android:theme="@style/Theme.VocabyAndroid"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".core.presentation.MainActivity"
             android:exported="true"
@@ -56,6 +46,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.bugsnag.android.API_KEY"
             android:value="c50224dde34b12f79fe666d9b1b80910" />
@@ -83,4 +74,19 @@
             </intent-filter>
         </receiver>
     </application>
+
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="false"
+        android:xlargeScreens="false" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SET_ALARM" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 </manifest>

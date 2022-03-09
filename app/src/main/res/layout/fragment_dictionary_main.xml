@@ -1,104 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
-        android:id="@+id/eod_container"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/container_side_margin"
-        android:paddingBottom="@dimen/container_side_margin"
-        android:background="@drawable/box_white_bottom_stroke_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@color/white"
+        android:theme="@style/Theme.VocabyAndroid"
+        app:elevation="0dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_boxed_pick"
-                android:layout_marginEnd="@dimen/container_gap_margin"
-                android:contentDescription="@string/wod_random_pick" />
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/eod" />
-                <TextView
-                    android:id="@+id/date"
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="10sp"
-                    android:textColor="@color/dark_gray"
-                    tools:ignore="SmallSp" />
-            </LinearLayout>
-        </LinearLayout>
-        <include layout="@layout/card_eod" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/container_side_margin"
-        android:paddingBottom="@dimen/container_side_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eod_container">
-        <TextView
-            android:id="@+id/textView"
-            style="@style/Theme.VocabyAndroid.TextHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/container_side_margin"
-            android:layout_marginEnd="@dimen/container_side_margin"
-            android:layout_marginBottom="@dimen/header_gap"
-            android:text="@string/history" />
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/empty_card"
-                style="@style/Theme.VocabyAndroid.TextHeadline"
-                android:layout_width="150dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="@dimen/container_side_margin"
-                android:layout_marginEnd="@dimen/container_side_margin"
-                android:background="@drawable/box_gray_stroked_dash_gray"
-                android:gravity="center"
-                android:text="@string/empty_history"
-                android:textColor="@color/gray" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/search_history_container"
+            android:background="@drawable/box_white_bottom_stroke_gray"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/add_entry_button"
+                style="@style/Theme.VocabyAndroid.ProfileButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/container_side_margin"
-                android:paddingEnd="@dimen/container_side_margin"
-                android:paddingBottom="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
-        </FrameLayout>
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+                android:drawableStart="@drawable/ic_boxed_add"
+                android:text="@string/add_entry" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/edit_dictionary_button"
+                style="@style/Theme.VocabyAndroid.ProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_boxed_edit"
+                android:text="@string/edit_dictionary" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/container_side_margin">
+                <TextView
+                    style="@style/Theme.VocabyAndroid.TextHeadline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/container_side_margin"
+                    android:layout_marginEnd="@dimen/container_side_margin"
+                    android:layout_marginBottom="@dimen/header_gap"
+                    android:text="@string/history" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/empty_card"
+                        style="@style/Theme.VocabyAndroid.TextHeadline"
+                        android:layout_width="150dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="@dimen/container_side_margin"
+                        android:layout_marginEnd="@dimen/container_side_margin"
+                        android:background="@drawable/box_gray_stroked_dash_gray"
+                        android:gravity="center"
+                        android:text="@string/empty_history"
+                        android:textColor="@color/gray" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/search_history_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/container_side_margin"
+                        android:paddingEnd="@dimen/container_side_margin"
+                        android:paddingBottom="12dp" />
+                </FrameLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/container_gap_margin"
+                android:paddingBottom="@dimen/container_side_margin">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/container_side_margin"
+                    android:layout_marginEnd="@dimen/container_side_margin"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+                    <TextView
+                        style="@style/Theme.VocabyAndroid.TextHeadline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/eod" />
+                    <TextView
+                        android:id="@+id/date"
+                        style="@style/Theme.VocabyAndroid.TextHeadline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="10sp"
+                        tools:ignore="SmallSp" />
+                </LinearLayout>
+                <include layout="@layout/card_eod" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

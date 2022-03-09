@@ -6,14 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    android:background="#ffffff"
     card_view:cardCornerRadius="@dimen/search_view_corner_radius"
     card_view:cardElevation="0dp">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="#ffffff"
         android:orientation="horizontal">
 
         <FrameLayout

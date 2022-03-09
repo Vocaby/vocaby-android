@@ -2,11 +2,14 @@ package com.vocaby.application.feature_dictionary.presentation.dictionary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vocaby.application.core.states.UserInputState
+import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.model.SearchSuggestionItem
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.domain.use_case.DictionaryUseCases
+import com.vocaby.application.feature_dictionary_custom.domain.use_case.home.ValidateCustomEntryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -14,12 +17,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DictionaryViewModel @Inject constructor(
-    private val dictionaryUseCases: DictionaryUseCases
+    private val dictionaryUseCases: DictionaryUseCases,
+    private val validateCustomEntryUseCase: ValidateCustomEntryUseCase
 ) : ViewModel() {
     private var entriesByCharacter: List<String> = ArrayList()
     private val suggestionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var suggestionJob: Job? = null
 
+    private val _uiEvent = MutableSharedFlow<DictionaryHomeUiEvent>()
     private val _searchedEntry = MutableSharedFlow<String>()
     private val _dailyPick = MutableStateFlow<DailyPickState>(DailyPickState.InProgress)
     private val _searchSuggestions = MutableSharedFlow<GenericState<List<SearchSuggestionItem>>>()
@@ -31,6 +36,7 @@ class DictionaryViewModel @Inject constructor(
     val searchSuggestions get() = _searchSuggestions.asSharedFlow()
     val searchHistory get() = _searchHistory.asSharedFlow()
     val dictionaryIsReady get() = _dictionaryIsReady
+    val uiEvent get() = _uiEvent.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -58,6 +64,32 @@ class DictionaryViewModel @Inject constructor(
     // notify observer of history selection
     fun getHistoryDefinition(position: Int) {
         search(dictionaryUseCases.getSearchHistoryItemUseCase(position) ?: "")
+    }
+
+    fun createCustomEntry(entry:String) {
+        val sanitizedEntry = Formatter.cleanText(entry)
+
+        viewModelScope.launch {
+            when(val event = validateCustomEntryUseCase(
+                sanitizedEntry
+            )) {
+                is UserInputState.LongInput -> {
+                    _uiEvent.emit(DictionaryHomeUiEvent.ShowAlert("This entry is too long"))
+                }
+                is UserInputState.EmptyInput -> {
+                    _uiEvent.emit(DictionaryHomeUiEvent.ShowAlert("Please enter a word or phrase"))
+                }
+                is UserInputState.InvalidInput -> {
+                    _uiEvent.emit(DictionaryHomeUiEvent.ShowAlert("The entry contains special characters"))
+                }
+                is UserInputState.Valid<*> -> {
+                    if (event.data is String){
+                        _uiEvent.emit(DictionaryHomeUiEvent.OpenEntryBuilder(event.data))
+                    }
+                }
+                else -> {}
+            }
+        }
     }
 
     fun getSearchSuggestions(newQuery:String) {

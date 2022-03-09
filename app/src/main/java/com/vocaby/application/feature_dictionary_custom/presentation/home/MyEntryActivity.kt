@@ -2,17 +2,13 @@ package com.vocaby.application.feature_dictionary_custom.presentation.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.widget.*
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,9 +27,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-// TODO: Create custom swipe refresh layout for entry pagination
 @AndroidEntryPoint
-class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
+class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
     private lateinit var customEntryAdapter: CustomEntryAdapter
     private lateinit var addFab: ExtendedFloatingActionButton
     private lateinit var emptyCard: LinearLayout
@@ -47,43 +42,31 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     private lateinit var recyclerView: RecyclerView
     private lateinit var fetchProgress: ProgressBar
     private lateinit var alertDialogBuilder: MaterialAlertDialogBuilder
-    private lateinit var counter: TextView
     private lateinit var appBarLayout: AppBarLayout
 
-    private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
-    private val entryViewModel: MyEntryViewModel by activityViewModels()
+    private val dictionaryViewModel: DictionaryViewModel by viewModels()
+    private val entryViewModel: MyEntryViewModel by viewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_my_entry, container, false)
-        alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
-        emptyCard = view.findViewById(R.id.empty_card)
-        fetchProgress = view.findViewById(R.id.fetch_progress)
-        searchView = view.findViewById(R.id.vocaby_search)
-        appBarLayout = view.findViewById(R.id.app_layout)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_my_entry)
+
+        alertDialogBuilder = MaterialAlertDialogBuilder(this)
+        emptyCard = findViewById(R.id.empty_card)
+        fetchProgress = findViewById(R.id.fetch_progress)
+        searchView = findViewById(R.id.vocaby_search)
+        appBarLayout = findViewById(R.id.app_layout)
         searchView.apply {
             setOnQueryChangeListener(queryChangeListener)
             setOnSearchListener(searchListener)
         }
 
-        val typeManagementButton = view.findViewById<Button>(R.id.type_management_button)
-        typeManagementButton.setOnClickListener {
-            val intent = Intent(requireActivity(), TypeManagementActivity::class.java)
-            startActivity(intent)
-        }
-
-        setupButtons(view)
+        setupButtons()
         setupEntryBuilderDialog()
         setupEntryUpdateDialog()
-        setupRecyclerView(view)
-        return view
-    }
+        setupRecyclerView()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        lifecycleScope.launchWhenStarted {
             // Just suspend and do not unsubscribe onStop
             // onResume is called when coming back from entry builder,
             // unnecessarily resubmitting the list
@@ -159,8 +142,8 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         }
     }
 
-    private fun setupRecyclerView(view: View) {
-        recyclerView = view.findViewById(R.id.custom_entry_container)
+    private fun setupRecyclerView() {
+        recyclerView = findViewById(R.id.custom_entry_container)
         recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 if (!recyclerView.canScrollVertically(-1)
@@ -176,7 +159,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
         customEntryAdapter = CustomEntryAdapter( this)
         recyclerView.adapter = customEntryAdapter
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -187,14 +170,25 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         })
     }
 
-    private fun setupButtons(view: View) {
-        addFab = view.findViewById(R.id.add_entry_button)
+    private fun setupButtons() {
+        val typeManagementButton = findViewById<Button>(R.id.type_management_button)
+        typeManagementButton.setOnClickListener {
+            val intent = Intent(this, TypeManagementActivity::class.java)
+            startActivity(intent)
+        }
+
+        val backButton = findViewById<Button>(R.id.back_button)
+        backButton.setOnClickListener {
+            finish()
+        }
+
+        addFab = findViewById(R.id.add_entry_button)
         addFab.setOnClickListener { entryCreateDialog.show() }
     }
 
     private fun setupEntryBuilderDialog() {
         entryCreateDialog =
-            BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
+            BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
         entryCreateDialog.setContentView(R.layout.dialog_custom_entry_create)
         entryEdit = entryCreateDialog.findViewById(R.id.entry_edit)!!
         entryAlert = entryCreateDialog.findViewById(R.id.entry_header_alert)!!
@@ -212,20 +206,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
             entryEdit.text?.clear()
             entryAlert.visibility = View.INVISIBLE
         }
-
-        counter = entryCreateDialog.findViewById(R.id.character_counter)!!
-        entryEdit.addTextChangedListener(textWatcher)
-    }
-
-    private val textWatcher: TextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-        }
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            counter.text = s.length.toString()
-        }
-
-        override fun afterTextChanged(s: Editable) {}
     }
 
     private fun updateEmptyCardVisibility() {
@@ -235,7 +215,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     private fun setupEntryUpdateDialog() {
         entryUpdateDialog =
-            BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
+            BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
         entryUpdateDialog.setContentView(R.layout.dialog_entry_item_action)
 
         entryEditButton = entryUpdateDialog.findViewById(R.id.edit_entry_button)!!
@@ -247,7 +227,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
         }
     }
 
-    private val entryBuilderActivity = registerForActivityResult(StartActivityForResult()) {
+    private val entryBuilderActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result: ActivityResult? ->
         entryViewModel.handleResult(result!!)
     }
@@ -272,7 +252,7 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
     }
 
     private fun openEditor(entry: String, position: Int = -1) {
-        var startEntryBuilderIntent = Intent(requireActivity(), EntryBuilderActivity::class.java)
+        var startEntryBuilderIntent = Intent(this, EntryBuilderActivity::class.java)
         startEntryBuilderIntent =
             entryViewModel.addEntryDataToIntentForBuilder(startEntryBuilderIntent, entry, position)
         entryBuilderActivity.launch(startEntryBuilderIntent)
@@ -302,7 +282,6 @@ class MyEntryFragment : Fragment(), CustomEntryAdapter.Interaction {
 
     override fun onDestroy() {
         recyclerView.clearOnScrollListeners()
-        entryEdit.removeTextChangedListener(textWatcher)
         super.onDestroy()
     }
 }
