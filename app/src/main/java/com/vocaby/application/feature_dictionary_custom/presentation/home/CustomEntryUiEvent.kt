@@ -5,7 +5,6 @@ import com.vocaby.application.core.states.ItemState
 
 sealed class CustomEntryUiEvent {
     object ResetFilter: CustomEntryUiEvent()
-    object SetResult: CustomEntryUiEvent()
     data class ShowMoreProgress(val scroll: Boolean = false): CustomEntryUiEvent()
     data class AddMoreEntries(val low: Int, val high: Int): CustomEntryUiEvent()
     data class ShowAlert(val message: String): CustomEntryUiEvent()

@@ -71,14 +71,6 @@ class MyEntryViewModel @Inject constructor(
         }
     }
 
-    fun initializeCustomEntries() {
-        viewModelScope.launch {
-            val userId = getCurrentUserUseCase().first()
-            entries = customEntryUseCases.getCustomEntriesUseCase(userId, 0)
-            resetFilter()
-        }
-    }
-
     fun loadMoreEntries(scroll: Boolean) {
         viewModelScope.launch {
             val userId = getCurrentUserUseCase().first()
@@ -150,12 +142,10 @@ class MyEntryViewModel @Inject constructor(
             payload?.let {
                 val containsFilterQuery = payload.payload.entry.startsWith(filteredQuery)
                 val updateFilteredList = containsFilterQuery && isFilterDisplayed
-
                 viewModelScope.launch {
                     if (payload.state == ItemState.ADD) {
                         if (updateFilteredList) filteredEntries.add(0, payload.payload)
                         entries.add(0, payload.payload)
-                        _uiEvent.emit(CustomEntryUiEvent.SetResult)
                     } else if (payload.state == ItemState.DELETE) {
                         if (updateFilteredList) filteredEntries.removeAt(filteredPosition)
 
@@ -166,7 +156,6 @@ class MyEntryViewModel @Inject constructor(
                         }
 
                         checkEntryLimit()
-                        _uiEvent.emit(CustomEntryUiEvent.SetResult)
                     } else if (payload.state == ItemState.UPDATE) {
                         if (updateFilteredList) {
                             filteredEntries.removeAt(filteredPosition)
@@ -211,7 +200,6 @@ class MyEntryViewModel @Inject constructor(
                 checkEntryLimit()
             }
 
-            _uiEvent.emit(CustomEntryUiEvent.SetResult)
             _uiEvent.emit(CustomEntryUiEvent.UpdateAdapter(position, ItemState.DELETE))
             resetSelections()
         }

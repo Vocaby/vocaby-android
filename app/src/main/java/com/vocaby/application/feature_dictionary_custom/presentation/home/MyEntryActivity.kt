@@ -109,12 +109,14 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
                                 ItemState.DELETE -> {
                                     customEntryAdapter.deleteEntry(event.position)
                                     updateEmptyCardVisibility()
+                                    setResult(RESULT_OK)
                                 }
                                 ItemState.ADD -> {
                                     customEntryAdapter.addEntry()
                                     recyclerView.smoothScrollToPosition(0)
                                     appBarLayout.setExpanded(true)
                                     updateEmptyCardVisibility()
+                                    setResult(RESULT_OK)
                                 }
                                 ItemState.UPDATE -> {
                                     customEntryAdapter.deleteEntry(event.position)
@@ -136,9 +138,6 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
                         }
                         is CustomEntryUiEvent.AddMoreEntries -> {
                             customEntryAdapter.addEntryRange(event.low, event.high)
-                        }
-                        is CustomEntryUiEvent.SetResult -> {
-                            setResult(RESULT_OK)
                         }
                     }
                 }
