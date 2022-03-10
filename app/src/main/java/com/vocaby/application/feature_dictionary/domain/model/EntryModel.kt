@@ -54,7 +54,10 @@ data class EntryModel(
     }
 
     val firstGroup: DefinitionGroupModel?
-        get() = try { definitionGroups.first() } catch (e: NoSuchElementException) { null }
+        get() = definitionGroups.firstOrNull()
+
+    val definitionModelWithExample: DefinitionModel?
+        get() = definitionGroups.firstNotNullOfOrNull { it.definitionModelWithExample }
 
     fun getDefinitionGroup(index: Int): DefinitionGroupModel {
         return definitionGroups[index]

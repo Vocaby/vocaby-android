@@ -19,6 +19,6 @@ class FragmentAdapter (
     }
 
     override fun getItemCount(): Int {
-        return 4
+        return 3
     }
 }

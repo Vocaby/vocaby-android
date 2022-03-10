@@ -6,4 +6,6 @@ message DictionaryCache {
   repeated string api_cache = 1;
   string daily_pick_entry_api = 2;
   string daily_pick_entry_random = 3;
+  string prev_pick_api = 4;
+  string prev_pick_random = 5;
 }

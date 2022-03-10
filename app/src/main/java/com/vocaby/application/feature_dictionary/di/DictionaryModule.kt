@@ -72,6 +72,7 @@ class DictionaryModule {
         GetDictionaryEntriesByCharacter(dictionaryRepository),
         GetSearchSuggestionsUseCase(),
         GetDailyPick(dictionaryRepository, applicationRepository),
+        GetPrevPick(dictionaryRepository),
         EraseSearchHistoryUserCase(dictionaryRepository),
         InsertSearchHistoryUseCase(dictionaryRepository),
         ClearDictionaryCacheUseCase(dictionaryRepository)

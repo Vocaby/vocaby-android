@@ -44,7 +44,7 @@ interface DictionaryDao {
     @Query(
         "SELECT * FROM dictionary_entry ode WHERE id = " +
                 "(SELECT de.id FROM dictionary_entry de INNER JOIN dictionary_definition dd " +
-                "ON de.id = dd.entry_id AND LENGTH(de.entry) < 16  AND dd.example != '' " +
+                "ON de.id = dd.entry_id AND LENGTH(de.entry) < 16  AND LENGTH(de.entry) > 5 AND dd.example != '' " +
                 "ORDER BY RANDOM() LIMIT 1)"
     )
     suspend fun getRandomWord(): EntryDefinitions

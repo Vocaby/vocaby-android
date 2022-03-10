@@ -77,7 +77,8 @@
                         android:clipToPadding="false"
                         android:orientation="horizontal"
                         android:paddingStart="@dimen/container_side_margin"
-                        android:paddingEnd="@dimen/container_side_margin" />
+                        android:paddingEnd="@dimen/container_side_margin"
+                        android:overScrollMode="never"/>
                 </FrameLayout>
             </LinearLayout>
             <LinearLayout
@@ -126,27 +127,43 @@
                         android:paddingStart="@dimen/container_side_margin"
                         android:paddingEnd="@dimen/container_side_margin"
                         android:visibility="invisible"
-                        android:nestedScrollingEnabled="false"/>
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"/>
                 </FrameLayout>
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:background="@drawable/box_gray_stroked_gray"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:layout_marginTop="@dimen/container_gap_margin"
                     android:layout_marginStart="@dimen/container_side_margin"
                     android:layout_marginEnd="@dimen/container_side_margin">
                     <TextView
-                        android:id="@+id/previous_selection_empty_text"
                         style="@style/Theme.VocabyAndroid.TextSubHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/header_gap"
+                        android:text="@string/previous_selection" />
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="@string/no_previous_selection" />
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/previous_selection_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </FrameLayout>
+                        android:layout_height="wrap_content"
+                        android:minHeight="44dp"
+                        android:background="@drawable/box_gray_stroked_gray">
+                        <TextView
+                            android:id="@+id/previous_selection_empty_text"
+                            style="@style/Theme.VocabyAndroid.TextHeadline"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textColor="@color/gray"
+                            android:text="@string/no_previous_selection" />
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/previous_selection_recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            android:overScrollMode="never"/>
+                    </FrameLayout>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

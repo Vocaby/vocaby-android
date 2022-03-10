@@ -13,7 +13,9 @@ import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRep
 import com.vocaby.application.feature_dictionary.util.EntryConverter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -82,10 +84,19 @@ class DictionaryRepositoryImpl(
         return dictionaryCache.data.first().apiCacheList.contains(entry)
     }
 
-    override suspend fun clearDictionaryCache() {
+    override suspend fun clearDictionaryApiCache() {
         dictionaryCache.updateData { cache ->
             cache.toBuilder()
                 .clearApiCache()
+                .build()
+        }
+    }
+
+    override suspend fun clearDailyPickCache() {
+        dictionaryCache.updateData { cache ->
+            cache.toBuilder()
+                .clearDailyPickEntryApi()
+                .clearDailyPickEntryRandom()
                 .build()
         }
     }
@@ -121,6 +132,19 @@ class DictionaryRepositoryImpl(
                 .setDailyPickEntryRandom(randomPick)
                 .build()
         }
+    }
+
+    override suspend fun cachePrevPick(apiPick: String, randomPick: String) {
+        dictionaryCache.updateData { cache ->
+            cache.toBuilder()
+                .setPrevPickApi(apiPick)
+                .setPrevPickRandom(randomPick)
+                .build()
+        }
+    }
+
+    override fun getPrevPick(): Flow<Pair<String, String>> {
+        return dictionaryCache.data.transform { emit(Pair(it.prevPickApi, it.prevPickRandom)) }
     }
 
 

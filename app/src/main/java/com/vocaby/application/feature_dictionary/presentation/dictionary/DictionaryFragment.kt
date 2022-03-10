@@ -14,10 +14,12 @@ import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary.presentation.search.SearchResultsFragment
 import com.vocaby.vocabywidgets.searchview.SearchView
 import com.vocaby.vocabywidgets.searchview.suggestions.model.SearchSuggestion
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class DictionaryFragment : Fragment() {
     private lateinit var backPressedCallback: OnBackPressedCallback
     private lateinit var searchView: SearchView
@@ -39,13 +41,6 @@ class DictionaryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_dictionary, container, false)
-
-        if (savedInstanceState == null) {
-            childFragmentManager.beginTransaction().replace(
-                R.id.dictionary_fragment_container,
-                DictionaryHomeFragment()
-            ).commit()
-        }
 
         backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

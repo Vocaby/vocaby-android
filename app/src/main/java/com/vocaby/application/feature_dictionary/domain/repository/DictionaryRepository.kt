@@ -2,6 +2,7 @@ package com.vocaby.application.feature_dictionary.domain.repository
 
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
+import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 interface DictionaryRepository {
@@ -12,10 +13,13 @@ interface DictionaryRepository {
     suspend fun replaceEntry(originalId: Int?, remote: EntryModel): Int
     suspend fun checkAndGetEntryDataFromApi(entry: String, date: String): EntryModel?
     suspend fun checkApiCache(entry: String): Boolean
-    suspend fun clearDictionaryCache()
+    suspend fun clearDictionaryApiCache()
+    suspend fun clearDailyPickCache()
 
     suspend fun getDailyPickFromApi(): EntryModel?
     suspend fun cacheDailyPick(apiPick: String, randomPick: String)
+    suspend fun cachePrevPick(apiPick: String, randomPick: String)
+    fun getPrevPick(): Flow<Pair<String, String>>
     suspend fun getCachedPick(): Pair<String, String>
 
     /** --------------------- HISTORY -------------------- **/

@@ -18,7 +18,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.core.states.ItemState
-import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.vocabywidgets.searchview.SearchView
@@ -44,7 +43,6 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
     private lateinit var alertDialogBuilder: MaterialAlertDialogBuilder
     private lateinit var appBarLayout: AppBarLayout
 
-    private val dictionaryViewModel: DictionaryViewModel by viewModels()
     private val entryViewModel: MyEntryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,7 +122,6 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
                             }
 
                             entryUpdateDialog.dismiss()
-                            dictionaryViewModel.resetSearchSuggestion()
                         }
                         is CustomEntryUiEvent.ResetFilter -> {
                             searchView.clearQuery()

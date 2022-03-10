@@ -27,12 +27,14 @@ class DictionaryViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<DictionaryHomeUiEvent>()
     private val _searchedEntry = MutableSharedFlow<String>()
     private val _dailyPick = MutableStateFlow<DailyPickState>(DailyPickState.InProgress)
+    private val _prevPicks = MutableStateFlow<List<String>>(ArrayList())
     private val _searchSuggestions = MutableSharedFlow<GenericState<List<SearchSuggestionItem>>>()
     private val _searchHistory = MutableSharedFlow<List<SimpleEntryModel>?>(replay=1)
     private var _dictionaryIsReady: Boolean = false
 
     val searchedEntry get() = _searchedEntry.asSharedFlow().distinctUntilChanged().filter { it.isNotEmpty() }
-    val dailyPick get() = _dailyPick.asSharedFlow()
+    val dailyPick get() = _dailyPick.asStateFlow()
+    val prevPicks get() = _prevPicks.asStateFlow()
     val searchSuggestions get() = _searchSuggestions.asSharedFlow()
     val searchHistory get() = _searchHistory.asSharedFlow()
     val dictionaryIsReady get() = _dictionaryIsReady
@@ -42,6 +44,22 @@ class DictionaryViewModel @Inject constructor(
         viewModelScope.launch {
             dictionaryUseCases.clearDictionaryCacheUseCase()
             _dictionaryIsReady = true
+        }
+
+        viewModelScope.launch {
+            dictionaryUseCases.getPrevPick().collect { picks ->
+                val prevPicks = mutableListOf<String>()
+                val (api, random) = picks
+                if (api.isNotEmpty()) prevPicks.add(api)
+                if (random.isNotEmpty()) prevPicks.add(random)
+                if (prevPicks.isNotEmpty()) _prevPicks.emit(prevPicks)
+            }
+        }
+
+        viewModelScope.launch {
+            dictionaryUseCases.getDailyPick().collect {
+                _dailyPick.value = it
+            }
         }
 
         getHistory()
@@ -134,14 +152,6 @@ class DictionaryViewModel @Inject constructor(
 
     fun resetSearchSuggestion() {
         entriesByCharacter = ArrayList()
-    }
-
-    fun updateDailyPick() {
-        viewModelScope.launch {
-            dictionaryUseCases.getDailyPick().collect {
-                _dailyPick.value = it
-            }
-        }
     }
 
     fun clearHistory() {

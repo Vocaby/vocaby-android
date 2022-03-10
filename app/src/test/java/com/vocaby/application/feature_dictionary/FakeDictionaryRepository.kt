@@ -5,6 +5,7 @@ import com.vocaby.application.feature_dictionary.data.local.entity.Entry
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
+import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 class FakeDictionaryRepository: DictionaryRepository {
@@ -70,7 +71,11 @@ class FakeDictionaryRepository: DictionaryRepository {
         return true
     }
 
-    override suspend fun clearDictionaryCache() {
+    override suspend fun clearDictionaryApiCache() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun clearDailyPickCache() {
         TODO("Not yet implemented")
     }
 
@@ -78,11 +83,19 @@ class FakeDictionaryRepository: DictionaryRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun cacheDailyPick(entry: String, random: Boolean) {
+    override suspend fun cacheDailyPick(apiPick: String, randomPick: String) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getCachedPick(): Pair<String, Boolean> {
+    override suspend fun cachePrevPick(apiPick: String, randomPick: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getPrevPick(): Flow<Pair<String, String>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getCachedPick(): Pair<String, String> {
         TODO("Not yet implemented")
     }
 

@@ -1,7 +1,6 @@
 package com.vocaby.application.feature_dictionary.domain.use_case
 
 import com.vocaby.application.core.domain.repository.ApplicationRepository
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.DailyPick
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
@@ -23,6 +22,10 @@ class GetDailyPick(
         val picks = mutableListOf<DailyPick>()
 
         if (today != lastTimeStarted) {
+            val (api, random) = dictionaryRepository.getCachedPick()
+            dictionaryRepository.cachePrevPick(api, random)
+            dictionaryRepository.clearDailyPickCache()
+
             val apiPick = getApiPick(today)
             val randomPick = getRandomPick()
             dictionaryRepository.cacheDailyPick(apiPick?.entry ?: "", randomPick.entry)
@@ -31,6 +34,7 @@ class GetDailyPick(
         } else {
             applicationRepository.setLastStarted(today)
             val (apiPick, randomPick) = dictionaryRepository.getCachedPick()
+
             if (apiPick.isNotEmpty()) {
                 val apiPickEntryModel = dictionaryRepository.getEntryDataFromDatabase(apiPick)
                 apiPickEntryModel?.firstGroup?.let {
@@ -52,8 +56,8 @@ class GetDailyPick(
                     DailyPick(
                         randomPickEntryModel.entry,
                         it.type,
-                        randomPickEntryModel.firstGroup!!.definitionModelWithExample!!.definition,
-                        randomPickEntryModel.firstGroup!!.definitionModelWithExample!!.example,
+                        randomPickEntryModel.definitionModelWithExample!!.definition,
+                        randomPickEntryModel.definitionModelWithExample!!.example,
                         true
                     )
                 )
@@ -86,9 +90,9 @@ class GetDailyPick(
         } else {
             DailyPick(
                 randomPick.entry,
-                randomPick.firstGroup!!.type,
-                randomPick.firstGroup!!.definitionModelWithExample!!.definition,
-                randomPick.firstGroup!!.definitionModelWithExample!!.example,
+                randomPick.definitionModelWithExample!!.type,
+                randomPick.definitionModelWithExample!!.definition,
+                randomPick.definitionModelWithExample!!.example,
                 true
             )
         }

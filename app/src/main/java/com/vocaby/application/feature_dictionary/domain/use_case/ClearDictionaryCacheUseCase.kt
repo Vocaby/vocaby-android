@@ -6,6 +6,6 @@ class ClearDictionaryCacheUseCase (
     private val dictionaryRepository: DictionaryRepository
 ) {
     suspend operator fun invoke() {
-        dictionaryRepository.clearDictionaryCache()
+        dictionaryRepository.clearDictionaryApiCache()
     }
 }

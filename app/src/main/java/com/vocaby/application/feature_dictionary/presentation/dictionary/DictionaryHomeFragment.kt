@@ -32,6 +32,7 @@ import com.vocaby.application.feature_dictionary_custom.presentation.home.MyEntr
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener, EodListAdapter.Interaction {
@@ -45,6 +46,9 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     private lateinit var eodAdapter: EodListAdapter
     private lateinit var eodPlaceholder: ShimmerFrameLayout
     private lateinit var eodAlert: TextView
+    private lateinit var prevPickRecyclerView: RecyclerView
+    private lateinit var prevPickAdapter: PrevPickAdapter
+    private lateinit var prevPickAlert: TextView
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
 
@@ -62,62 +66,92 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         eodRecyclerView = view.findViewById(R.id.eod_recycler_view)
         eodPlaceholder = view.findViewById(R.id.placeholder_eod)
         eodAlert = view.findViewById(R.id.daily_pick_alert)
+        prevPickRecyclerView = view.findViewById(R.id.previous_selection_recycler_view)
+        prevPickAlert = view.findViewById(R.id.previous_selection_empty_text)
 
         setupEntryBuilderDialog()
         setupButtons(view)
         setUpHistoryRecyclerView(view)
         setupEodRecyclerView()
-        dictionaryViewModel.updateDailyPick()
+        setupPrevPickRecyclerView()
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         launchAndRepeatWithViewLifecycle {
-            dictionaryViewModel.dailyPick.collectLatest { dailyPickState ->
-                when (dailyPickState) {
-                    is DailyPickState.InProgress -> {
-                        eodAlert.visibility = View.VISIBLE
-                        eodPlaceholder.visibility = View.VISIBLE
-                    }
-                    is DailyPickState.Picked -> {
-                        eodAlert.visibility = View.INVISIBLE
-                        eodPlaceholder.visibility = View.GONE
+            launch {
+                collectDailyPick()
+            }
 
-                        val show = AlphaAnimation(0.0f, 1.0f)
-                        show.duration = 300
-                        eodRecyclerView.startAnimation(show)
-                        eodRecyclerView.visibility = View.VISIBLE
+            launch {
+                collectPrevPick()
+            }
 
-                        eodAdapter.submitList(dailyPickState.picks)
-                    }
+            launch {
+                collectSearchHistory()
+            }
+
+            launch {
+                collectUiEvent()
+            }
+        }
+    }
+
+    private suspend fun collectPrevPick() {
+        dictionaryViewModel.prevPicks.collect { prevPicks ->
+            if (!prevPicks.isNullOrEmpty()) {
+                prevPickAlert.visibility = View.INVISIBLE
+                prevPickAdapter.submitList(prevPicks)
+            }
+        }
+    }
+
+    private suspend fun collectUiEvent() {
+        dictionaryViewModel.uiEvent.collect { event ->
+            when(event) {
+                is DictionaryHomeUiEvent.OpenEntryBuilder -> {
+                    val intent = Intent(requireActivity(), EntryBuilderActivity::class.java)
+                    intent.putExtra(Constants.ENTRY_KEY, event.entry)
+                    entryBuilderActivity.launch(intent)
+                }
+                is DictionaryHomeUiEvent.ShowAlert -> {
+                    entryAlert.text = event.message
+                    entryAlert.visibility = View.VISIBLE
                 }
             }
         }
+    }
 
-        launchAndRepeatWithViewLifecycle {
-            dictionaryViewModel.searchHistory.collectLatest { searchHistory ->
-                searchHistory?.let {
-                    searchHistoryAdapter.updateSearchHistory(searchHistory)
+    private suspend fun collectSearchHistory() {
+        dictionaryViewModel.searchHistory.collectLatest { searchHistory ->
+            searchHistory?.let {
+                searchHistoryAdapter.updateSearchHistory(searchHistory)
 
-                    if (searchHistory.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
-                    else emptyCard.visibility = View.VISIBLE
-                }
+                if (searchHistory.isNotEmpty()) emptyCard.visibility = View.INVISIBLE
+                else emptyCard.visibility = View.VISIBLE
             }
         }
+    }
 
-        launchAndRepeatWithViewLifecycle {
-            dictionaryViewModel.uiEvent.collect { event ->
-                when(event) {
-                    is DictionaryHomeUiEvent.OpenEntryBuilder -> {
-                        val intent = Intent(requireActivity(), EntryBuilderActivity::class.java)
-                        intent.putExtra(Constants.ENTRY_KEY, event.entry)
-                        entryBuilderActivity.launch(intent)
-                    }
-                    is DictionaryHomeUiEvent.ShowAlert -> {
-                        entryAlert.text = event.message
-                        entryAlert.visibility = View.VISIBLE
-                    }
+    private suspend fun collectDailyPick() {
+        dictionaryViewModel.dailyPick.collectLatest { dailyPickState ->
+            when (dailyPickState) {
+                is DailyPickState.InProgress -> {
+                    eodAlert.visibility = View.VISIBLE
+                    eodPlaceholder.visibility = View.VISIBLE
+                }
+                is DailyPickState.Picked -> {
+                    eodAlert.visibility = View.INVISIBLE
+                    eodPlaceholder.visibility = View.GONE
+
+                    val show = AlphaAnimation(0.0f, 1.0f)
+                    show.duration = 300
+                    eodRecyclerView.startAnimation(show)
+                    eodRecyclerView.visibility = View.VISIBLE
+
+                    eodAdapter.submitList(dailyPickState.picks)
                 }
             }
         }
@@ -137,6 +171,12 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
 
         val pagerSnapHelper = PagerSnapHelper()
         pagerSnapHelper.attachToRecyclerView(eodRecyclerView)
+    }
+
+    private fun setupPrevPickRecyclerView() {
+        prevPickAdapter = PrevPickAdapter(ctx)
+        prevPickRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        prevPickRecyclerView.adapter = prevPickAdapter
     }
 
     private fun setupButtons(view: View) {

@@ -166,4 +166,5 @@
     <string name="custom_dictionary">Custom Dictionary</string>
     <string name="no_previous_selection">No Previous Selection</string>
     <string name="picking_an_entry">Picking an entry…</string>
+    <string name="previous_selection">Previously Picked</string>
 </resources>
