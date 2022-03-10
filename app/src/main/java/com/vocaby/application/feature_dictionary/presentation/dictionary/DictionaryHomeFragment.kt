@@ -3,12 +3,13 @@ package com.vocaby.application.feature_dictionary.presentation.dictionary
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,10 +18,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.core.Constants
+import com.vocaby.application.core.util.HorizontalItemDecoration
+import com.vocaby.application.core.util.RecyclerViewPagerDecoration
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.feature_dictionary_custom.presentation.home.MyEntryActivity
@@ -29,20 +34,17 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener {
+class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener, EodListAdapter.Interaction {
     private lateinit var ctx: Context
-    private lateinit var wordView: TextView
-    private lateinit var typeView: TextView
-    private lateinit var definition: TextView
-    private lateinit var sentence: TextView
-    private lateinit var wordBox: View
-    private lateinit var wordBoxTag: TextView
-    private lateinit var progressBar: ProgressBar
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
     private lateinit var emptyCard: TextView
     private lateinit var entryCreateDialog: BottomSheetDialog
     private lateinit var entryEdit: EditText
     private lateinit var entryAlert: TextView
+    private lateinit var eodRecyclerView: RecyclerView
+    private lateinit var eodAdapter: EodListAdapter
+    private lateinit var eodPlaceholder: ShimmerFrameLayout
+    private lateinit var eodAlert: TextView
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
 
@@ -56,25 +58,15 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_dictionary_main, container, false)
-        // Random Entry of the Day
-        wordView = view.findViewById(R.id.entry_header)
-        typeView = view.findViewById(R.id.type)
-        definition = view.findViewById(R.id.card_definition)
-        sentence = view.findViewById(R.id.card_sentence)
-        wordBox = view.findViewById(R.id.word_box)
-        progressBar = view.findViewById(R.id.randomword_progress)
-        wordBoxTag = view.findViewById(R.id.word_box_tag)
-
-        progressBar.visibility = View.VISIBLE
-        definition.visibility = View.GONE
-        sentence.visibility = View.GONE
-        typeView.visibility = View.GONE
-
         emptyCard = view.findViewById(R.id.empty_card)
+        eodRecyclerView = view.findViewById(R.id.eod_recycler_view)
+        eodPlaceholder = view.findViewById(R.id.placeholder_eod)
+        eodAlert = view.findViewById(R.id.daily_pick_alert)
 
         setupEntryBuilderDialog()
         setupButtons(view)
         setUpHistoryRecyclerView(view)
+        setupEodRecyclerView()
         dictionaryViewModel.updateDailyPick()
         return view
     }
@@ -85,43 +77,19 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
             dictionaryViewModel.dailyPick.collectLatest { dailyPickState ->
                 when (dailyPickState) {
                     is DailyPickState.InProgress -> {
-                        wordView.visibility = View.INVISIBLE
-                        wordBoxTag.visibility = View.GONE
-                        definition.visibility = View.GONE
-                        typeView.visibility = View.GONE
-                        sentence.visibility = View.GONE
-                        progressBar.visibility = View.VISIBLE
+                        eodAlert.visibility = View.VISIBLE
+                        eodPlaceholder.visibility = View.VISIBLE
                     }
                     is DailyPickState.Picked -> {
-                        wordView.visibility = View.VISIBLE
-                        wordBoxTag.visibility = View.VISIBLE
-                        definition.visibility = View.VISIBLE
-                        typeView.visibility = View.VISIBLE
-                        progressBar.visibility = View.GONE
+                        eodAlert.visibility = View.INVISIBLE
+                        eodPlaceholder.visibility = View.GONE
 
-                        val dailyPick = dailyPickState.pick
-                        wordView.text = dailyPick.entry
-                        typeView.text =  dailyPick.type
-                        definition.text = dailyPick.definition
+                        val show = AlphaAnimation(0.0f, 1.0f)
+                        show.duration = 300
+                        eodRecyclerView.startAnimation(show)
+                        eodRecyclerView.visibility = View.VISIBLE
 
-                        dailyPick.example?.let {
-                            if (it.isNotEmpty()) {
-                                sentence.visibility = View.VISIBLE
-                                sentence.text = it
-                            }
-                        }
-
-                        if (dailyPick.random) {
-                            wordBoxTag.text = getString(R.string.wod_random_pick)
-                            wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorHeadline))
-                            wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorHeadlineSoft))
-                        } else {
-                            wordBoxTag.text = getString(R.string.wod_our_pick)
-                            wordBoxTag.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimaryAccent))
-                            wordBoxTag.background.setTint(ContextCompat.getColor(ctx, R.color.colorSecondary))
-                        }
-
-                        wordBox.setOnClickListener { dictionaryViewModel.search(dailyPick.entry) }
+                        eodAdapter.submitList(dailyPickState.picks)
                     }
                 }
             }
@@ -153,6 +121,22 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
                 }
             }
         }
+    }
+
+    private fun setupEodRecyclerView() {
+        eodAdapter = EodListAdapter(ctx, this)
+        val layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+        eodRecyclerView.layoutManager = layoutManager
+        eodRecyclerView.addItemDecoration(RecyclerViewPagerDecoration(
+            ContextCompat.getColor(ctx, R.color.colorPrimary),
+            ContextCompat.getColor(ctx, R.color.gray)
+        ))
+        val margin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12f, ctx.resources.displayMetrics)
+        eodRecyclerView.addItemDecoration(HorizontalItemDecoration(margin.toInt()))
+        eodRecyclerView.adapter = eodAdapter
+
+        val pagerSnapHelper = PagerSnapHelper()
+        pagerSnapHelper.attachToRecyclerView(eodRecyclerView)
     }
 
     private fun setupButtons(view: View) {
@@ -205,5 +189,9 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
 
     override fun onItemTouch(position: Int) {
         dictionaryViewModel.getHistoryDefinition(position)
+    }
+
+    override fun onItemTouch(entry: String) {
+        dictionaryViewModel.search(entry)
     }
 }

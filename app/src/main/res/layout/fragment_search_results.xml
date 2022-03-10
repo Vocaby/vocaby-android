@@ -150,8 +150,7 @@
             android:fontFamily="@font/sourcesanspro_regular"
             android:textSize="11sp"
             android:layout_marginTop="16dp"
-            android:textColor="@color/colorPrimary">
-        </TextView>
+            android:textColor="@color/colorPrimary"/>
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/search_results_body_pager"
             android:layout_width="match_parent"

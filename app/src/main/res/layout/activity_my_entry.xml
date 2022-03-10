@@ -102,7 +102,7 @@ android:orientation="vertical">
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/empty_custom_entry"
+                android:text="@string/empty_custom_dictionary"
                 android:textColor="@color/gray" />
         </LinearLayout>
         <ProgressBar

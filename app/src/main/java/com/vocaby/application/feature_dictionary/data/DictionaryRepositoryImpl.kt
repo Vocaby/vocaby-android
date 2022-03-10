@@ -107,18 +107,18 @@ class DictionaryRepositoryImpl(
         }
     }
 
-    override suspend fun getCachedPick(): Pair<String, Boolean> {
+    override suspend fun getCachedPick(): Pair<String, String> {
         val cache = dictionaryCache.data.first()
-        val pick = cache.dailyPickEntry
-        val isRandom = cache.dailyPickRandom
-        return Pair(pick, isRandom)
+        val apiPick = cache.dailyPickEntryApi
+        val randomPick = cache.dailyPickEntryRandom
+        return Pair(apiPick, randomPick)
     }
 
-    override suspend fun cacheDailyPick(entry: String, random: Boolean) {
+    override suspend fun cacheDailyPick(apiPick: String, randomPick: String) {
         dictionaryCache.updateData { cache ->
             cache.toBuilder()
-                .setDailyPickEntry(entry)
-                .setDailyPickRandom(random)
+                .setDailyPickEntryApi(apiPick)
+                .setDailyPickEntryRandom(randomPick)
                 .build()
         }
     }

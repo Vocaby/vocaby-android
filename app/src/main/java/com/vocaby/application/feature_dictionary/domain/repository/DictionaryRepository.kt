@@ -15,8 +15,8 @@ interface DictionaryRepository {
     suspend fun clearDictionaryCache()
 
     suspend fun getDailyPickFromApi(): EntryModel?
-    suspend fun cacheDailyPick(entry: String, random: Boolean)
-    suspend fun getCachedPick(): Pair<String, Boolean>
+    suspend fun cacheDailyPick(apiPick: String, randomPick: String)
+    suspend fun getCachedPick(): Pair<String, String>
 
     /** --------------------- HISTORY -------------------- **/
     fun writeToHistory(entry: SimpleEntryModel): List<SimpleEntryModel>?

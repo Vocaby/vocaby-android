@@ -2,7 +2,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_layout"
         android:layout_width="match_parent"
@@ -72,11 +73,11 @@
                         android:id="@+id/search_history_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
                         android:clipToPadding="false"
                         android:orientation="horizontal"
                         android:paddingStart="@dimen/container_side_margin"
-                        android:paddingEnd="@dimen/container_side_margin"
-                        android:paddingBottom="12dp" />
+                        android:paddingEnd="@dimen/container_side_margin" />
                 </FrameLayout>
             </LinearLayout>
             <LinearLayout
@@ -85,22 +86,51 @@
                 android:orientation="vertical"
                 android:paddingTop="@dimen/container_side_margin"
                 android:paddingBottom="@dimen/container_side_margin">
-                <TextView
-                    style="@style/Theme.VocabyAndroid.TextHeadline"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:layout_marginStart="@dimen/container_side_margin"
                     android:layout_marginEnd="@dimen/container_side_margin"
-                    android:layout_marginBottom="@dimen/header_gap"
-                    android:text="@string/eod" />
-                <include layout="@layout/card_eod" />
-<!--                <androidx.recyclerview.widget.RecyclerView-->
-<!--                    android:id="@+id/eod_recycler_view"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content" />-->
+                    android:layout_marginBottom="@dimen/header_gap">
+                    <TextView
+                        style="@style/Theme.VocabyAndroid.TextHeadline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/eod" />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:id="@+id/daily_pick_alert"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/sourcesanspro_semibold"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="10sp"
+                        android:visibility="invisible"
+                        android:text="@string/picking_an_entry"
+                        tools:ignore="SmallSp" />
+                </LinearLayout>
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
+                    android:layout_height="wrap_content">
+                    <include layout="@layout/placeholder_eod" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/eod_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingStart="@dimen/container_side_margin"
+                        android:paddingEnd="@dimen/container_side_margin"
+                        android:visibility="invisible"
+                        android:nestedScrollingEnabled="false"/>
+                </FrameLayout>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
                     android:background="@drawable/box_gray_stroked_gray"
                     android:layout_marginTop="@dimen/container_gap_margin"
                     android:layout_marginStart="@dimen/container_side_margin"

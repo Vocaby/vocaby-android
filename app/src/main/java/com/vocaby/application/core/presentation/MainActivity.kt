@@ -65,7 +65,6 @@ open class MainActivity : AppCompatActivity() {
         viewPager = findViewById(R.id.fragment_container)
         viewPager.adapter = FragmentAdapter(this)
         viewPager.isUserInputEnabled = false
-        viewPager.offscreenPageLimit = 1
 
         navigationView = findViewById(R.id.navigation_view)
         navigationView.bringToFront()

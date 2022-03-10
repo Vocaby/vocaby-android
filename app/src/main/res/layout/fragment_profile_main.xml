@@ -71,7 +71,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <include layout="@layout/chart_placeholder" />
+                <include layout="@layout/placeholder_chart" />
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/bar_chart"
                     android:visibility="invisible"

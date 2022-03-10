@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/word_box"
-    android:layout_width="match_parent"
+    android:layout_width="360dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:layout_marginStart="@dimen/container_side_margin"
-    android:layout_marginEnd="@dimen/container_side_margin"
     app:cardCornerRadius="@dimen/radius"
     app:cardElevation="@dimen/card_elevation"
     app:cardUseCompatPadding="true">
@@ -46,19 +44,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="140dp"
+            android:minHeight="160dp"
             android:orientation="vertical">
-
-            <ProgressBar
-                android:id="@+id/randomword_progress"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:indeterminateTint="@color/colorPrimary"
-                android:visibility="gone" />
-
             <TextView
                 android:id="@+id/type"
                 style="@style/Theme.VocabyAndroid.TextSubHeader"
@@ -76,7 +63,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="@dimen/card_content_margin"
                 android:ellipsize="end"
-                android:maxLines="4"
+                android:maxLines="3"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 
@@ -115,7 +102,6 @@
                 android:textAllCaps="true"
                 android:textColor="@color/colorPrimaryAccent"
                 android:textSize="10sp"
-                android:visibility="gone"
                 tools:ignore="SmallSp" />
         </LinearLayout>
     </LinearLayout>

@@ -4,6 +4,6 @@ option java_multiple_files = true;
 
 message DictionaryCache {
   repeated string api_cache = 1;
-  string daily_pick_entry = 2;
-  bool daily_pick_random = 3;
+  string daily_pick_entry_api = 2;
+  string daily_pick_entry_random = 3;
 }

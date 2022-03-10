@@ -44,7 +44,7 @@
     <string name="nav_setting">Settings</string>
     <string name="nav_support">Support</string>
     <string name="nav_danger_zone">Danger Zone</string>
-    <string name="empty_custom_entry">Empty Custom Entry</string>
+    <string name="empty_custom_dictionary">Empty Custom Dictionary</string>
     <string name="drag_to_rearrange">Drag to rearrange</string>
     <string name="swipe_to_delete">Swipe to delete</string>
     <string name="pronunciation">Pronunciation</string>
@@ -75,7 +75,7 @@
     <string name="data_import">Import Backup Data</string>
     <string name="data_management_import_warning">Warning: Imports overwrite existing data. Your current saves or entries will be replaced.</string>
     <string name="history">Search History</string>
-    <string name="eod">Entry of the day</string>
+    <string name="eod">Entry of the Day</string>
     <string name="wod_our_pick">Vocaby\'s Pick</string>
     <string name="wod_random_pick">Random Pick</string>
     <string name="entry_header">Entry</string>
@@ -165,4 +165,5 @@
     <string name="edit_dictionary">Edit Dictionary</string>
     <string name="custom_dictionary">Custom Dictionary</string>
     <string name="no_previous_selection">No Previous Selection</string>
+    <string name="picking_an_entry">Picking an entry…</string>
 </resources>

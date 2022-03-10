@@ -138,7 +138,9 @@ class DictionaryViewModel @Inject constructor(
 
     fun updateDailyPick() {
         viewModelScope.launch {
-            _dailyPick.value = dictionaryUseCases.getDailyPick()
+            dictionaryUseCases.getDailyPick().collect {
+                _dailyPick.value = it
+            }
         }
     }
 
