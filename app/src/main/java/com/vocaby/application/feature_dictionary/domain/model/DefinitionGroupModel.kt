@@ -15,6 +15,8 @@ data class DefinitionGroupModel(
 ) : Parcelable, Serializable, Comparable<DefinitionGroupModel> {
     val isNew get() = groupId == -1
 
+    val definitionModelWithExample get() = definitionData.firstOrNull { !it.example.isNullOrEmpty() }
+
     fun addNewDefinition(definition: String, example: String?): DefinitionModel {
         val definitionToAdd = DefinitionModel(type, definition, example, definitionData.size)
         definitionData.add(definitionToAdd)

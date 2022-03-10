@@ -1,6 +1,7 @@
 package com.vocaby.application.feature_dictionary.domain.use_case
 
 import com.vocaby.application.core.domain.repository.ApplicationRepository
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.DailyPick
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
@@ -51,8 +52,8 @@ class GetDailyPick(
                     DailyPick(
                         randomPickEntryModel.entry,
                         it.type,
-                        it.definitionData[0].definition,
-                        it.definitionData[0].example,
+                        randomPickEntryModel.firstGroup!!.definitionModelWithExample!!.definition,
+                        randomPickEntryModel.firstGroup!!.definitionModelWithExample!!.example,
                         true
                     )
                 )
@@ -86,8 +87,8 @@ class GetDailyPick(
             DailyPick(
                 randomPick.entry,
                 randomPick.firstGroup!!.type,
-                randomPick.firstGroup!!.definitionData[0].definition,
-                randomPick.firstGroup!!.definitionData[0].example,
+                randomPick.firstGroup!!.definitionModelWithExample!!.definition,
+                randomPick.firstGroup!!.definitionModelWithExample!!.example,
                 true
             )
         }
