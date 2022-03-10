@@ -1,5 +1,7 @@
 package com.vocaby.application.feature_dictionary.presentation.dictionary
 
+import android.app.Activity
+import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.core.states.UserInputState
@@ -150,7 +152,7 @@ class DictionaryViewModel @Inject constructor(
         }
     }
 
-    fun resetSearchSuggestion() {
+    private fun resetSearchSuggestion() {
         entriesByCharacter = ArrayList()
     }
 
@@ -169,6 +171,12 @@ class DictionaryViewModel @Inject constructor(
     fun resetSearch() {
         viewModelScope.launch {
             _searchedEntry.emit("")
+        }
+    }
+
+    fun handleResult(result: ActivityResult) {
+        if (result.resultCode == Activity.RESULT_OK) {
+            resetSearchSuggestion()
         }
     }
 

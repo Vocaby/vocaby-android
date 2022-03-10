@@ -3,12 +3,14 @@ package com.vocaby.application.feature_dictionary_custom.presentation.home
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -133,6 +135,9 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
                         is CustomEntryUiEvent.AddMoreEntries -> {
                             customEntryAdapter.addEntryRange(event.low, event.high)
                         }
+                        is CustomEntryUiEvent.SetResult -> {
+                            setResult(RESULT_OK)
+                        }
                     }
                 }
             }
@@ -174,8 +179,8 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
             startActivity(intent)
         }
 
-        val backButton = findViewById<Button>(R.id.back_button)
-        backButton.setOnClickListener {
+        val closeButton = findViewById<Button>(R.id.close_button)
+        closeButton.setOnClickListener {
             finish()
         }
 
@@ -186,6 +191,7 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
     private fun setupEntryBuilderDialog() {
         entryCreateDialog =
             BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        entryCreateDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         entryCreateDialog.setContentView(R.layout.dialog_custom_entry_create)
         entryEdit = entryCreateDialog.findViewById(R.id.entry_edit)!!
         entryAlert = entryCreateDialog.findViewById(R.id.entry_header_alert)!!
@@ -195,6 +201,11 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
         createButton?.setText(R.string.create)
         createButton?.setOnClickListener {
             entryViewModel.createCustomEntry(entryEdit.text.toString())
+        }
+
+        val counter = entryCreateDialog.findViewById<TextView>(R.id.counter)!!
+        entryEdit.addTextChangedListener {
+            counter.text = it?.length.toString()
         }
 
         // Clear content on show

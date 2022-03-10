@@ -3,6 +3,7 @@ package com.vocaby.application.feature_dictionary_custom.presentation.builder.gr
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -16,7 +17,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
@@ -129,7 +129,7 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
         definitionBuilderDialog = BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog).apply {
             setContentView(R.layout.dialog_custom_entry_definition_builder)
         }
-
+        definitionBuilderDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         dialogDefinitionInput = definitionBuilderDialog.findViewById(R.id.definition_edit)!!
         dialogExampleInput = definitionBuilderDialog.findViewById(R.id.example_edit)!!
         definitionAlertView = definitionBuilderDialog.findViewById(R.id.definition_header_alert)!!
@@ -139,7 +139,6 @@ class EntryGroupBuilderActivity : AppCompatActivity(), DragStartListener,
             definitionAlertView.text = ""
             dialogDefinitionInput.clearFocus()
             dialogExampleInput.clearFocus()
-            definitionBuilderDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         definitionBuilderDialog.findViewById<LinearLayout>(R.id.dialog_container)?.setOnClickListener {

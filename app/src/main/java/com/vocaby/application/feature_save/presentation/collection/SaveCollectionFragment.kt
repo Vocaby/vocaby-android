@@ -5,6 +5,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -124,6 +125,7 @@ class SaveCollectionFragment : Fragment(), SaveCollectionAdapter.Interaction {
     private fun setupCollectionDialog() {
         collectionDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        collectionDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         collectionDialog.setContentView(R.layout.dialog_collection)
         collectionEdit = collectionDialog.findViewById(R.id.collection_name_input)!!
         collectionAlert = collectionDialog.findViewById(R.id.collection_header_alert)!!

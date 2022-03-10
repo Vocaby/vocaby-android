@@ -2,6 +2,7 @@ package com.vocaby.application.feature_dictionary_custom.presentation.type
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -113,6 +114,7 @@ class TypeManagementActivity : AppCompatActivity(), DragStartListener, TypeAdapt
     private fun setupTypeCreationDialog() {
         typeCreationDialog =
             BottomSheetDialog(this, R.style.Theme_VocabyAndroid_BottomSheetDialog)
+        typeCreationDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         typeCreationDialog.setContentView(R.layout.dialog_type_create)
         typeNameEdit = typeCreationDialog.findViewById(R.id.entry_edit)!!
         typeCreationAlert = typeCreationDialog.findViewById(R.id.entry_header_alert)!!

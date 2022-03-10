@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.widget.Button
 import android.widget.EditText
@@ -15,6 +16,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener, EodListAdapter.Interaction {
@@ -182,7 +185,8 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     private fun setupButtons(view: View) {
         val editDictionary = view.findViewById<AppCompatButton>(R.id.edit_dictionary_button)
         editDictionary.setOnClickListener {
-            startActivity(Intent(requireActivity(), MyEntryActivity::class.java))
+            val intent = Intent(requireActivity(), MyEntryActivity::class.java)
+            myEntryActivity.launch(intent)
         }
 
         val addEntry = view.findViewById<AppCompatButton>(R.id.add_entry_button)
@@ -195,6 +199,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         entryCreateDialog =
             BottomSheetDialog(requireActivity(), R.style.Theme_VocabyAndroid_BottomSheetDialog)
         entryCreateDialog.setContentView(R.layout.dialog_custom_entry_create)
+        entryCreateDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         entryEdit = entryCreateDialog.findViewById(R.id.entry_edit)!!
         entryAlert = entryCreateDialog.findViewById(R.id.entry_header_alert)!!
 
@@ -203,6 +208,11 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         createButton?.setText(R.string.create)
         createButton?.setOnClickListener {
             dictionaryViewModel.createCustomEntry(entryEdit.text.toString())
+        }
+
+        val counter = entryCreateDialog.findViewById<TextView>(R.id.counter)!!
+        entryEdit.addTextChangedListener {
+            counter.text = it?.length.toString()
         }
 
         // Clear content on show
@@ -222,8 +232,14 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     }
 
     private val entryBuilderActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            result: ActivityResult? ->
+            result: ActivityResult ->
         entryCreateDialog.dismiss()
+        dictionaryViewModel.handleResult(result)
+    }
+
+    private val myEntryActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result: ActivityResult ->
+        dictionaryViewModel.handleResult(result)
     }
 
 

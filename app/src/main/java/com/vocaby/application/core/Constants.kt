@@ -6,7 +6,7 @@ object Constants {
     const val ITEM_PAYLOAD_KEY = "CUSTOM_ENTRY_PAYLOAD"
     const val VOCABY_API_BASE_URL = "https://api.vocaby.app/"
 
-    const val ENTRY_MAX_LENGTH = 100
+    const val ENTRY_MAX_LENGTH = 70
 
     const val SPECIAL_CHARACTERS = "[\\\\{}]"
 }

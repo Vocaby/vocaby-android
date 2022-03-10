@@ -155,6 +155,7 @@ class MyEntryViewModel @Inject constructor(
                     if (payload.state == ItemState.ADD) {
                         if (updateFilteredList) filteredEntries.add(0, payload.payload)
                         entries.add(0, payload.payload)
+                        _uiEvent.emit(CustomEntryUiEvent.SetResult)
                     } else if (payload.state == ItemState.DELETE) {
                         if (updateFilteredList) filteredEntries.removeAt(filteredPosition)
 
@@ -165,6 +166,7 @@ class MyEntryViewModel @Inject constructor(
                         }
 
                         checkEntryLimit()
+                        _uiEvent.emit(CustomEntryUiEvent.SetResult)
                     } else if (payload.state == ItemState.UPDATE) {
                         if (updateFilteredList) {
                             filteredEntries.removeAt(filteredPosition)
@@ -209,6 +211,7 @@ class MyEntryViewModel @Inject constructor(
                 checkEntryLimit()
             }
 
+            _uiEvent.emit(CustomEntryUiEvent.SetResult)
             _uiEvent.emit(CustomEntryUiEvent.UpdateAdapter(position, ItemState.DELETE))
             resetSelections()
         }

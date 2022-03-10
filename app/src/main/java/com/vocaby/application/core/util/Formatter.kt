@@ -48,7 +48,7 @@ object Formatter {
         var newString: String = text
         if (text.length == 1) newString =  text.uppercase(Locale.getDefault())
         else if (text.length > 1) {
-            newString = text.split(" ").joinToString(" ") { it.replaceFirstChar { it.uppercase() } }
+            newString = text.split(" ").joinToString(" ") { it -> it.replaceFirstChar { it.uppercase() } }
         }
 
         return newString

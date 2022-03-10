@@ -57,6 +57,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
     var isSearchBarFocused = false
     private var mFocusChangeListener: OnFocusChangeListener? = null
     private var mDismissFocusOnItemSelection = ATTRS_DISMISS_FOCUS_ON_ITEM_SELECTION_DEFAULT
+    private lateinit var mSearchContainer: LinearLayout
     private lateinit var mSearchBar: CardView
     private var mSearchListener: OnSearchListener? = null
     private lateinit var mSearchInput: SearchInputView
@@ -188,6 +189,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
 
         mMainLayout = layoutInflater.inflate(R.layout.search_view_floating_search_layout, this)
         mSearchViewBackgroundDrawable = ColorDrawable(Color.BLACK)
+        mSearchContainer = findViewById(R.id.search_bar)
         mSearchBar = findViewById(R.id.search_query_section)
         mClearButton = findViewById(R.id.clear_btn)
         mSearchInput = findViewById(R.id.search_bar_text)
@@ -674,9 +676,11 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
 
     private fun refreshDimBackground() {
         if (mDimBackground && isSearchBarFocused) {
+            mSearchContainer.isClickable = true
             mSearchViewBackgroundDrawable.alpha = BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED
             isClickable = true
         } else {
+            mSearchContainer.isClickable = false
             mSearchViewBackgroundDrawable.alpha = BACKGROUND_DRAWABLE_ALPHA_SEARCH_NOT_FOCUSED
             isClickable = false
         }

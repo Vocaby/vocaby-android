@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
+    android:layout_marginStart="@dimen/container_side_margin"
+    android:layout_marginEnd="@dimen/container_side_margin"
     xmlns:shimmer="http://schemas.android.com/apk/res-auto"
     shimmer:shimmer_auto_start="true"
     shimmer:shimmer_duration="3000"
@@ -15,7 +17,7 @@
     shimmer:shimmer_intensity="0.45"
     shimmer:shimmer_direction="bottom_to_top">
     <FrameLayout
-        android:layout_width="360dp"
+        android:layout_width="match_parent"
         android:layout_height="220dp"
         android:orientation="vertical"
         android:layout_gravity="center"

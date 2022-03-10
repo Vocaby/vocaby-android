@@ -6,15 +6,15 @@ import javax.inject.Inject
 
 class ValidateCustomEntryUseCase @Inject constructor() {
     operator fun invoke(entry: String): UserInputState {
-        when {
+        return when {
             entry.isEmpty() -> {
-                return UserInputState.EmptyInput
+                UserInputState.EmptyInput
             }
             Validator.containsSpecialCharacter(entry) -> {
-                return UserInputState.InvalidInput
+                UserInputState.InvalidInput
             }
             else -> {
-                return if (entry.length > com.vocaby.application.core.Constants.ENTRY_MAX_LENGTH) {
+                if (entry.length > com.vocaby.application.core.Constants.ENTRY_MAX_LENGTH) {
                     UserInputState.LongInput
                 } else {
                     UserInputState.Valid(entry)
