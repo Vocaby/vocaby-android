@@ -113,11 +113,13 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
                                 ItemState.ADD -> {
                                     customEntryAdapter.addEntry()
                                     recyclerView.smoothScrollToPosition(0)
+                                    appBarLayout.setExpanded(true)
                                     updateEmptyCardVisibility()
                                 }
                                 ItemState.UPDATE -> {
                                     customEntryAdapter.deleteEntry(event.position)
                                     customEntryAdapter.addEntry()
+                                    appBarLayout.setExpanded(true)
                                     recyclerView.smoothScrollToPosition(0)
                                 }
                                 else -> {}

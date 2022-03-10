@@ -63,7 +63,7 @@ class DataTransferRepositoryImpl(
                         for (i in allSaves) {
                             yield()
                             val item = i.asJsonObject
-                            val entry = item.getAsJsonPrimitive("entry").asString.lowercase().trim()
+                            val entry = Formatter.cleanText(item.getAsJsonPrimitive("entry").asString)
                             val lastUpdated = item.getAsJsonPrimitive("lastSaved").asString
 
                             if (!Validator.dateIsValid(lastUpdated)) {
@@ -95,7 +95,7 @@ class DataTransferRepositoryImpl(
                             for (i in collections.getAsJsonArray(collection)) {
                                 yield()
                                 val collectionItem = i.asJsonObject
-                                val entry = collectionItem.getAsJsonPrimitive("entry").asString.lowercase().trim()
+                                val entry = Formatter.cleanText(collectionItem.getAsJsonPrimitive("entry").asString)
                                 val lastAdded = collectionItem.getAsJsonPrimitive("lastAdded").asString
 
                                 val entryIsValid = Validator.entryIsValid(entry)
@@ -169,10 +169,10 @@ class DataTransferRepositoryImpl(
                             for (i in data.getAsJsonArray("customEntries")) {
                                 yield()
                                 val item = i.asJsonObject
-                                val entry = item.getAsJsonPrimitive("entry").asString.lowercase().trim()
-                                val pronunciation = item.getAsJsonPrimitive("pronunciation").asString.trim()
+                                val entry = Formatter.cleanText(item.getAsJsonPrimitive("entry").asString)
+                                val pronunciation = Formatter.cleanText(item.getAsJsonPrimitive("pronunciation").asString, false)
                                 val description = if (item.getAsJsonPrimitive("description") == null) null
-                                    else item.getAsJsonPrimitive("description").asString.trim()
+                                    else Formatter.cleanText(item.getAsJsonPrimitive("description").asString, false)
                                 val lastUpdated = item.getAsJsonPrimitive("lastUpdated").asString
 
                                 // Validations
@@ -198,7 +198,7 @@ class DataTransferRepositoryImpl(
                                     for (g in item.getAsJsonArray("definitionGroups")) {
                                         yield()
                                         val group = g.asJsonObject
-                                        val type = group.getAsJsonPrimitive("type").asString.lowercase().trim()
+                                        val type = Formatter.cleanText(group.getAsJsonPrimitive("type").asString)
                                         val order = group.getAsJsonPrimitive("order").asInt
                                         val groupModel = DefinitionGroupModel(type, order)
 
@@ -208,13 +208,13 @@ class DataTransferRepositoryImpl(
                                                 yield()
                                                 val definitionData = d.asJsonObject
                                                 val definition =
-                                                    definitionData.getAsJsonPrimitive("definition").asString.trim()
+                                                    Formatter.cleanText(definitionData.getAsJsonPrimitive("definition").asString, false)
 
                                                 val exampleJsonPrimitive =
                                                     definitionData.getAsJsonPrimitive("example")
                                                 val example: String? =
                                                     if (exampleJsonPrimitive.isString) {
-                                                        exampleJsonPrimitive.asString.trim()
+                                                        Formatter.cleanText(exampleJsonPrimitive.asString, false)
                                                     } else null
 
                                                 val definitionOrder =
