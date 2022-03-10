@@ -27,7 +27,7 @@ class AxisValueFormatter(
                 formattedDateCache[value] ?: extraSpace
             } else {
                 val characterAverageWidth = Paint().measureText(values[index]) / values[index].length
-                val max = (width * 0.48 / characterAverageWidth).toInt()
+                val max = (width * 0.5 / characterAverageWidth).toInt()
                 if (max > 3) {
                     formattedDateCache[value] = max
                     max

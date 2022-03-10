@@ -21,14 +21,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vocaby.application.R
 import com.vocaby.application.core.Constants
-import com.vocaby.application.core.util.Formatter.formatDateToString
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.feature_dictionary_custom.presentation.home.MyEntryActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import java.util.*
 
+@AndroidEntryPoint
 class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListener {
     private lateinit var ctx: Context
     private lateinit var wordView: TextView
@@ -40,7 +40,6 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     private lateinit var progressBar: ProgressBar
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
     private lateinit var emptyCard: TextView
-    private lateinit var dateView: TextView
     private lateinit var entryCreateDialog: BottomSheetDialog
     private lateinit var entryEdit: EditText
     private lateinit var entryAlert: TextView
@@ -65,7 +64,6 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         wordBox = view.findViewById(R.id.word_box)
         progressBar = view.findViewById(R.id.randomword_progress)
         wordBoxTag = view.findViewById(R.id.word_box_tag)
-        dateView = view.findViewById(R.id.date)
 
         progressBar.visibility = View.VISIBLE
         definition.visibility = View.GONE
@@ -85,7 +83,6 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         super.onViewCreated(view, savedInstanceState)
         launchAndRepeatWithViewLifecycle {
             dictionaryViewModel.dailyPick.collectLatest { dailyPickState ->
-                dateView.text = formatDateToString(Date().time, true, showDay = true)
                 when (dailyPickState) {
                     is DailyPickState.InProgress -> {
                         wordView.visibility = View.INVISIBLE

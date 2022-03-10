@@ -164,4 +164,5 @@
     <string name="add_entry">Add Dictionary Entry</string>
     <string name="edit_dictionary">Edit Dictionary</string>
     <string name="custom_dictionary">Custom Dictionary</string>
+    <string name="no_previous_selection">No Previous Selection</string>
 </resources>

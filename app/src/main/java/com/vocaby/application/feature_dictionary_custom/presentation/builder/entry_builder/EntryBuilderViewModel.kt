@@ -261,8 +261,8 @@ class EntryBuilderViewModel @Inject constructor(
 
     // USER CLICKS SAVE
     fun saveUserEntry(pronunciation: String, description: String) {
-        val pronun = Formatter.cleanText(pronunciation)
-        val desc = Formatter.cleanText(description)
+        val pronun = Formatter.cleanText(pronunciation, false)
+        val desc = Formatter.cleanText(description, false)
         checkForUpdatedItems()
 
         if (entryData.definitionGroups.isEmpty()) {

@@ -17,7 +17,7 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val customDictionaryRepository: CustomDictionaryRepository,
 ) {
-    suspend operator fun invoke(entry: String): Flow<SearchState> = flow {
+    suspend operator fun invoke(entry: String, isOnline: Boolean = false): Flow<SearchState> = flow {
         val userId = userRepository.getUser()
 
         var currentEntryModel = dictionaryRepository.getEntryDataFromDatabase(entry)
@@ -25,7 +25,7 @@ class GetAllDictionaryEntryUseCase @Inject constructor(
 
         val isCached = dictionaryRepository.checkApiCache(entry)
         val connectionEnabled = userRepository.isDictionaryUpdateEnabled()
-        if (!isCached && connectionEnabled) {
+        if (isOnline && !isCached && connectionEnabled) {
             emit(SearchState.InProgress("Checking update..."))
 
             val retrievedEntry = currentEntryModel?.lastUpdated?.let {

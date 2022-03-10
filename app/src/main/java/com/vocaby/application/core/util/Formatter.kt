@@ -37,8 +37,11 @@ object Formatter {
         }
     }
 
-    fun cleanText(text: String): String {
-        return text.trim { it <= ' ' }.replace(SPECIAL_CHARACTERS.toRegex(), "").replace("`","'").lowercase()
+    fun cleanText(text: String, lowercase: Boolean = true): String {
+        val sanitized = text.trim { it <= ' ' }.replace(SPECIAL_CHARACTERS.toRegex(), "").replace("`","'")
+
+        return if (lowercase) sanitized.lowercase()
+        else sanitized
     }
 
     fun firstLetterUpperCase(text: String): String {

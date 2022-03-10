@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
 import com.vocaby.application.core.util.GenericState
+import com.vocaby.application.core.util.Network
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary.presentation.search.SearchResultsFragment
 import com.vocaby.vocabywidgets.searchview.SearchView
@@ -106,7 +107,7 @@ class DictionaryFragment : Fragment() {
                 R.anim.exit_top_to_bottom
             ).add(
                 R.id.dictionary_fragment_container,
-                SearchResultsFragment.newInstance(search)
+                SearchResultsFragment.newInstance(search, Network.isOnline(requireActivity().applicationContext))
             ).addToBackStack(null).commit()
 
         backPressedCallback.isEnabled = true

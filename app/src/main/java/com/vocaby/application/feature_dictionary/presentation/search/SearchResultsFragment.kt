@@ -46,11 +46,14 @@ class SearchResultsFragment : Fragment() {
 
     companion object {
         const val ENTRY = "PASSED_ENTRY_KEY"
+        const val IS_ONLINE = "IS_ONLINE_KEY"
+
         @JvmStatic
-        fun newInstance(passedWord: String?): SearchResultsFragment {
+        fun newInstance(passedWord: String?, isOnline: Boolean): SearchResultsFragment {
             val fragment = SearchResultsFragment()
             val args = Bundle()
             args.putString(ENTRY, passedWord)
+            args.putBoolean(IS_ONLINE, isOnline)
             fragment.arguments = args
             return fragment
         }
@@ -58,6 +61,7 @@ class SearchResultsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         if (arguments != null) {
             searchedEntry = requireArguments().getString(ENTRY).toString()
         }

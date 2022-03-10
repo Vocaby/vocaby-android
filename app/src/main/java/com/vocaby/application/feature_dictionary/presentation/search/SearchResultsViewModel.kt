@@ -33,6 +33,7 @@ class SearchResultsViewModel @Inject constructor(
     private val getCurrentUserUserCase: GetCurrentUserUseCase
 ): ViewModel() {
     private val entry: String = savedStateHandle.get(SearchResultsFragment.ENTRY)!!
+    private val isOnline: Boolean = savedStateHandle.get(SearchResultsFragment.IS_ONLINE)!!
     private var saveCollections: List<UpdateSaveCollectionModel> = ArrayList()
     private var saveModel: SaveModel? = null
 
@@ -57,7 +58,7 @@ class SearchResultsViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            getAllDictionaryEntryUseCase(entry).collect { state ->
+            getAllDictionaryEntryUseCase(entry, isOnline).collect { state ->
                 when (state) {
                     is SearchState.InProgress -> {
                         _entryData.value = ResourceState.InProgress(UiText(
