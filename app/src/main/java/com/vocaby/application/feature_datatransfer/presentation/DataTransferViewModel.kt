@@ -86,6 +86,10 @@ class DataTransferViewModel @Inject constructor(
         return intent
     }
 
+    fun completeJob() {
+        transferScope.cancel()
+    }
+
     fun handleResult(result: Intent?) {
         result?.let {
             if (actionType != -1) {
@@ -98,10 +102,6 @@ class DataTransferViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun addResult(): Intent {
-        return Intent().putExtra("TYPE", actionType)
     }
 
     private fun importSaves(uri: Uri) {

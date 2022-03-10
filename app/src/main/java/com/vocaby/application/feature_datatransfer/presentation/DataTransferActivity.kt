@@ -30,7 +30,7 @@ class DataTransferActivity : AppCompatActivity() {
         closeButton = findViewById(R.id.close_button)
         closeButton.setOnClickListener {
             dataTransferViewModel.cancelJob()
-            setResult(Activity.RESULT_CANCELED, dataTransferViewModel.addResult())
+            setResult(Activity.RESULT_CANCELED)
             finish()
         }
 
@@ -56,8 +56,10 @@ class DataTransferActivity : AppCompatActivity() {
                         transferState.message.text?.let { progressText.text = it }
                             ?: transferState.message.textResource?.let { progressText.setText(it) }
 
+                        dataTransferViewModel.completeJob()
+
                         closeButton.setOnClickListener {
-                            setResult(Activity.RESULT_OK, dataTransferViewModel.addResult())
+                            setResult(Activity.RESULT_OK)
                             finish()
                         }
                     }
@@ -91,9 +93,15 @@ class DataTransferActivity : AppCompatActivity() {
 
     private val directorySelector = registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
-            setResult(Activity.RESULT_OK, dataTransferViewModel.addResult())
+            setResult(Activity.RESULT_OK)
             dataTransferViewModel.handleResult(result.data)
         }
         else finish()
+    }
+
+    override fun onBackPressed() {
+        dataTransferViewModel.cancelJob()
+
+        super.onBackPressed()
     }
 }

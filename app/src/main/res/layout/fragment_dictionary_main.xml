@@ -62,7 +62,7 @@
                     <TextView
                         android:id="@+id/empty_card"
                         style="@style/Theme.VocabyAndroid.TextHeadline"
-                        android:layout_width="150dp"
+                        android:layout_width="200dp"
                         android:layout_height="60dp"
                         android:layout_marginStart="@dimen/container_side_margin"
                         android:layout_marginEnd="@dimen/container_side_margin"
