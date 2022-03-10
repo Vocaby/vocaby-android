@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.core.Constants
 import com.vocaby.application.core.util.HorizontalItemDecoration
@@ -52,6 +53,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     private lateinit var prevPickRecyclerView: RecyclerView
     private lateinit var prevPickAdapter: PrevPickAdapter
     private lateinit var prevPickAlert: TextView
+    private lateinit var searchButton: ExtendedFloatingActionButton
 
     private val dictionaryViewModel: DictionaryViewModel by activityViewModels()
 
@@ -71,6 +73,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         eodAlert = view.findViewById(R.id.daily_pick_alert)
         prevPickRecyclerView = view.findViewById(R.id.previous_selection_recycler_view)
         prevPickAlert = view.findViewById(R.id.previous_selection_empty_text)
+        searchButton = view.findViewById(R.id.search_button)
 
         setupEntryBuilderDialog()
         setupButtons(view)
@@ -192,6 +195,10 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         val addEntry = view.findViewById<AppCompatButton>(R.id.add_entry_button)
         addEntry.setOnClickListener {
             entryCreateDialog.show()
+        }
+
+        searchButton.setOnClickListener {
+            (parentFragment as DictionaryFragment).focusSearchBar()
         }
     }
 

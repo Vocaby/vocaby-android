@@ -33,7 +33,25 @@
                 android:text="@string/edit_dictionary" />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/search_button"
+        style="@style/Widget.App.ExtendedFloatingActionButton"
+        android:layout_width="94dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/search"
+        android:theme="@style/Theme.VocabyAndroid"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="1dp"
+        app:icon="@drawable/ic_search"
+        app:iconPadding="0dp"
+        app:iconTint="@color/white"
+        app:layout_anchor="@id/dictionary_home_container"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.VocabyAndroid.FAB" />
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/dictionary_home_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"

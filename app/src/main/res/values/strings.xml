@@ -169,4 +169,5 @@
     <string name="previous_selection">Previously Picked</string>
     <string name="custom_entry_max">/ 70</string>
     <string name="zero">0</string>
+    <string name="search">Search</string>
 </resources>

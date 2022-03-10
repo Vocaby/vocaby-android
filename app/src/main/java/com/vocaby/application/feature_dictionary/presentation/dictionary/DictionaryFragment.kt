@@ -112,6 +112,10 @@ class DictionaryFragment : Fragment() {
         dictionaryViewModel.search(entry)
     }
 
+    fun focusSearchBar() {
+        searchView.setSearchFocused(true)
+    }
+
     private val searchListener: SearchView.OnSearchListener = object :
         SearchView.OnSearchListener {
         override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
