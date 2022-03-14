@@ -20,6 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.core.states.ItemState
+import com.vocaby.application.feature_dictionary_custom.common.Constants
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.feature_dictionary_custom.presentation.type.TypeManagementActivity
 import com.vocaby.vocabywidgets.searchview.SearchView
@@ -208,6 +209,9 @@ class MyEntryActivity : AppCompatActivity(), CustomEntryAdapter.Interaction {
         entryEdit.addTextChangedListener {
             counter.text = it?.length.toString()
         }
+
+        val entryMax = entryCreateDialog.findViewById<TextView>(R.id.custom_entry_max)!!
+        entryMax.text = Constants.ENTRY_MAX_LENGTH.toString()
 
         // Clear content on show
         entryCreateDialog.setOnShowListener {

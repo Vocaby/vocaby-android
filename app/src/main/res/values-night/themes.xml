@@ -189,7 +189,7 @@
 
     <style name="Theme.VocabyAndroid.Button" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:background">@drawable/button_background</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:padding">12dp</item>
@@ -199,7 +199,7 @@
     <style name="Theme.VocabyAndroid.Button.Positive" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:background">@drawable/button_background</item>
         <item name="android:backgroundTint">@color/white</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:padding">12dp</item>
@@ -209,7 +209,7 @@
     <style name="Theme.VocabyAndroid.Button.Negative" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:background">@drawable/button_background</item>
         <item name="android:backgroundTint">@color/white</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:padding">12dp</item>
@@ -218,7 +218,7 @@
 
     <style name="Theme.VocabyAndroid.Button.Neutral" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:background">@drawable/button_background_neutral</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:padding">12dp</item>
@@ -244,7 +244,7 @@
         <item name="android:background">@color/white</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:minWidth">0dp</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">@font/sourcesanspro_black</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/black</item>
@@ -268,7 +268,7 @@
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="iconTint">@color/colorPrimaryAccent</item>
         <item name="android:fontFamily">@font/sourcesanspro_semibold</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingStart">@dimen/container_side_margin</item>

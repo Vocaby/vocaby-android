@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -27,9 +28,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.vocaby.application.R
 import com.vocaby.application.core.Constants
+import com.vocaby.application.core.util.GridItemDecoration
 import com.vocaby.application.core.util.HorizontalItemDecoration
 import com.vocaby.application.core.util.RecyclerViewPagerDecoration
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
+import com.vocaby.application.feature_dictionary_custom.common.Constants.ENTRY_MAX_LENGTH
 import com.vocaby.application.feature_dictionary_custom.presentation.builder.entry_builder.EntryBuilderActivity
 import com.vocaby.application.feature_dictionary_custom.presentation.home.MyEntryActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -153,7 +156,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
                     eodPlaceholder.visibility = View.GONE
 
                     val show = AlphaAnimation(0.0f, 1.0f)
-                    show.duration = 300
+                    show.duration = 200
                     eodRecyclerView.startAnimation(show)
                     eodRecyclerView.visibility = View.VISIBLE
 
@@ -222,6 +225,9 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
             counter.text = it?.length.toString()
         }
 
+        val entryMax = entryCreateDialog.findViewById<TextView>(R.id.custom_entry_max)!!
+        entryMax.text = ENTRY_MAX_LENGTH.toString()
+
         // Clear content on show
         entryCreateDialog.setOnShowListener {
             entryEdit.clearFocus()
@@ -234,8 +240,9 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
         val historyContainer: RecyclerView = view.findViewById(R.id.search_history_container)
         searchHistoryAdapter = SearchHistoryAdapter(ctx, this)
         historyContainer.adapter = searchHistoryAdapter
-        historyContainer.layoutManager =
-            LinearLayoutManager(ctx, LinearLayoutManager.HORIZONTAL, false)
+        historyContainer.layoutManager = GridLayoutManager(ctx, 2)
+        val margin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6f, requireActivity().applicationContext.resources.displayMetrics)
+        historyContainer.addItemDecoration(GridItemDecoration(margin.toInt()))
     }
 
     private val entryBuilderActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

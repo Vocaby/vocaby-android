@@ -3,10 +3,8 @@ package com.vocaby.vocabywidgets
 import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 

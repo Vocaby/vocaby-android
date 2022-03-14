@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:orientation="horizontal"
-        android:background="@drawable/box_white_bottom_straight">
+        android:background="@color/white">
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/back_button"
             style="@style/Theme.VocabyAndroid.NavButton"

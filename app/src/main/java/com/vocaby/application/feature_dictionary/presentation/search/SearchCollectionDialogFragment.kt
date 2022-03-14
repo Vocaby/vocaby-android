@@ -24,6 +24,7 @@ class SearchCollectionDialogFragment: DialogFragment() {
     private val searchCollectionDialogViewModel: SearchCollectionDialogViewModel by viewModels()
     private lateinit var saveCollectionButton: Button
     private lateinit var removeSaveButton: Button
+    private lateinit var divider: View
     private lateinit var chipGroup: ChipGroup
 
     companion object {
@@ -60,6 +61,7 @@ class SearchCollectionDialogFragment: DialogFragment() {
         chipGroup = view.findViewById(R.id.collection_chip_group)
         saveCollectionButton = view.findViewById(R.id.save_button)
         removeSaveButton = view.findViewById(R.id.remove_button)
+        divider = view.findViewById(R.id.divider)
         removeSaveButton.setOnClickListener {
             setFragmentResult(TAG, bundleOf(REMOVE_ALL to true))
             dismiss()
@@ -72,6 +74,7 @@ class SearchCollectionDialogFragment: DialogFragment() {
                         is DialogUiState.UpdateUi -> {
                             if (state.updateMode) {
                                 removeSaveButton.visibility = View.VISIBLE
+                                divider.visibility = View.VISIBLE
                                 saveCollectionButton.setText(R.string.collection_update)
                             }
 

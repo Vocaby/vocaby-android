@@ -3,6 +3,7 @@ package com.vocaby.application.feature_dictionary_custom.presentation.type
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AlphaAnimation
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -105,6 +106,19 @@ class TypeManagementActivity : AppCompatActivity(), DragStartListener, TypeAdapt
         recyclerView.layoutManager = LinearLayoutManager(this)
         typeAdapter = TypeAdapter(this, this, this)
         recyclerView.adapter = typeAdapter
+
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (!recyclerView.canScrollVertically(-1)
+                    && newState==RecyclerView.SCROLL_STATE_IDLE
+                    && addTypeButton.translationY > 100f) {
+                    val show = AlphaAnimation(0f, 1.0f)
+                    show.duration = 300
+                    addTypeButton.startAnimation(show)
+                    addTypeButton.translationY = 0f
+                }
+            }
+        })
 
         val callback: ItemTouchHelper.Callback = ItemTouchCallback(typeAdapter)
         itemTouchHelper = ItemTouchHelper(callback)

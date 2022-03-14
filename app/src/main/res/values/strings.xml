@@ -96,7 +96,7 @@
     <string name="chart_toggle_all">All</string>
     <string name="support_faq">Frequently Asked Questions</string>
     <string name="contact_us">Contact Us</string>
-    <string name="contact_us_body">If you couldn’t find the answer you were looking for or just want send us some feedback, feel free to contact us! Although we are a small group of people, we will try our best to get back to you.</string>
+    <string name="contact_us_body">If you couldn’t find the answer you were looking for or just want send us some feedback, feel free to contact us! Although we are a small team, we will try our best to get back to you.</string>
     <string name="vocaby_email">help@vocaby.app</string>
     <string name="support_vocaby">Help us improve Vocaby</string>
     <string name="support_vocaby_body">We are constantly trying to improve Vocaby. If you would like us to update an entry or add a feature, submit this form!</string>
@@ -167,7 +167,7 @@
     <string name="no_previous_selection">No Previous Selection</string>
     <string name="picking_an_entry">Picking an entry…</string>
     <string name="previous_selection">Previously Picked</string>
-    <string name="custom_entry_max">/ 70</string>
     <string name="zero">0</string>
     <string name="search">Search</string>
+    <string name="slash">/</string>
 </resources>

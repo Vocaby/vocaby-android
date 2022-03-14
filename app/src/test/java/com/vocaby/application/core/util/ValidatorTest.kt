@@ -2,6 +2,7 @@ package com.vocaby.application.core.util
 
 import com.google.common.truth.Truth.assertThat
 import com.vocaby.application.core.Constants
+import com.vocaby.application.feature_dictionary_custom.common.Constants.ENTRY_MAX_LENGTH
 import org.junit.Test
 
 class ValidatorTest {
@@ -29,13 +30,13 @@ class ValidatorTest {
 
     @Test
     fun validateEntry() {
-        var string = "a".repeat(Constants.ENTRY_MAX_LENGTH)
+        var string = "a".repeat(ENTRY_MAX_LENGTH)
         assertThat(Validator.entryIsValid(string)).isTrue()
 
-        "{".repeat(Constants.ENTRY_MAX_LENGTH)
+        "{".repeat(ENTRY_MAX_LENGTH)
         assertThat(Validator.entryIsValid(string)).isTrue()
 
-        string = "a".repeat(Constants.ENTRY_MAX_LENGTH + 1)
+        string = "a".repeat(ENTRY_MAX_LENGTH + 1)
         assertThat(Validator.entryIsValid(string)).isFalse()
 
     }

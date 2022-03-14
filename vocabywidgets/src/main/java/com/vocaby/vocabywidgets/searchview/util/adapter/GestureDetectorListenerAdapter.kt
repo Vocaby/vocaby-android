@@ -33,6 +33,5 @@ abstract class GestureDetectorListenerAdapter : GestureDetector.OnGestureListene
     }
 
     companion object {
-        private const val TAG = "GestureDetectorListenerAdapter"
     }
 }

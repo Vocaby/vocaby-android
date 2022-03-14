@@ -60,7 +60,7 @@ class SearchSuggestionsAdapter(
     ): RecyclerView.ViewHolder(v) {
         var body: TextView = v.findViewById<View>(R.id.body) as TextView
         var leftIcon: ImageView = v.findViewById<View>(R.id.left_icon) as ImageView
-        var rightIcon: ImageView = v.findViewById<View>(R.id.right_icon) as ImageView
+        private var rightIcon: ImageView = v.findViewById<View>(R.id.right_icon) as ImageView
 
         interface Listener {
             fun onItemClicked(adapterPosition: Int)

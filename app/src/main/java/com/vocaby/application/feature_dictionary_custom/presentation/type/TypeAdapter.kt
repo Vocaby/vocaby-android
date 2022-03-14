@@ -42,8 +42,6 @@ class TypeAdapter(
         }
     }
 
-    private val differ = AsyncListDiffer(this, diffCallback)
-
     interface ItemInteractionListener {
         fun onItemRemoved(position: Int)
     }

@@ -29,18 +29,17 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewPropertyAnimatorListenerAdapter
 import androidx.core.view.children
-import androidx.core.view.marginEnd
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator
 import com.vocaby.vocabywidgets.R
 import com.vocaby.vocabywidgets.searchview.suggestions.SearchSuggestionsAdapter
 import com.vocaby.vocabywidgets.searchview.suggestions.model.SearchSuggestion
-import com.vocaby.vocabywidgets.searchview.util.afterMeasured
-import com.vocaby.vocabywidgets.searchview.util.view.SearchInputView
 import com.vocaby.vocabywidgets.searchview.util.Util
 import com.vocaby.vocabywidgets.searchview.util.adapter.GestureDetectorListenerAdapter
 import com.vocaby.vocabywidgets.searchview.util.adapter.OnItemTouchListenerAdapter
+import com.vocaby.vocabywidgets.searchview.util.afterMeasured
+import com.vocaby.vocabywidgets.searchview.util.view.SearchInputView
 import kotlin.math.abs
 
 /**
@@ -468,13 +467,11 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
             }
         })
 
-        mSearchInput.onFocusChangeListener = object : View.OnFocusChangeListener {
-            override fun onFocusChange(v: View, hasFocus: Boolean) {
-                if (mSkipQueryFocusChangeEvent) {
-                    mSkipQueryFocusChangeEvent = false
-                } else if (hasFocus != isSearchBarFocused) {
-                    setSearchFocusedInternal(hasFocus)
-                }
+        mSearchInput.onFocusChangeListener = OnFocusChangeListener { v, hasFocus ->
+            if (mSkipQueryFocusChangeEvent) {
+                mSkipQueryFocusChangeEvent = false
+            } else if (hasFocus != isSearchBarFocused) {
+                setSearchFocusedInternal(hasFocus)
             }
         }
 
@@ -521,7 +518,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
      * @param color the color to be applied to the
      * clear button.
      */
-    fun setClearBtnColor(color: Int) {
+    private fun setClearBtnColor(color: Int) {
         mClearBtnColor = color
         DrawableCompat.setTint(mIconClear, mClearBtnColor)
     }
@@ -544,7 +541,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
      *
      * @param dismissFocusOnItemSelection
      */
-    fun setDismissFocusOnItemSelection(dismissFocusOnItemSelection: Boolean) {
+    private fun setDismissFocusOnItemSelection(dismissFocusOnItemSelection: Boolean) {
         mDismissFocusOnItemSelection = dismissFocusOnItemSelection
     }
 
@@ -563,7 +560,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
      *
      * @param color
      */
-    fun setQueryTextColor(color: Int) {
+    private fun setQueryTextColor(color: Int) {
         mSearchInputTextColor = color
         mSearchInput.setTextColor(mSearchInputTextColor)
     }
@@ -574,7 +571,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
      *
      * @param color the color to be applied to the search hint.
      */
-    fun setHintTextColor(color: Int) {
+    private fun setHintTextColor(color: Int) {
         mSearchInputHintColor = color
         mSearchInput.setHintTextColor(color)
     }
@@ -584,7 +581,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
      *
      * @param color
      */
-    fun setLeftIconColor(color: Int) {
+    private fun setLeftIconColor(color: Int) {
         DrawableCompat.setTint(mIconBackArrow, color)
         DrawableCompat.setTint(mIconSearch, color)
     }
@@ -631,7 +628,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
      *
      * @param searchHint
      */
-    fun setSearchHint(searchHint: String?) {
+    private fun setSearchHint(searchHint: String?) {
         mSearchHint = searchHint ?: resources.getString(R.string.abc_search_hint)
         mSearchInput.hint = mSearchHint
     }
@@ -642,7 +639,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
      *
      * @param closeSearchOnKeyboardDismiss
      */
-    fun setCloseSearchOnKeyboardDismiss(closeSearchOnKeyboardDismiss: Boolean) {
+    private fun setCloseSearchOnKeyboardDismiss(closeSearchOnKeyboardDismiss: Boolean) {
         mCloseSearchOnSofteKeyboardDismiss = closeSearchOnKeyboardDismiss
     }
 
@@ -669,7 +666,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
      *
      * @param dimEnabled True to show dim
      */
-    fun setDimBackground(dimEnabled: Boolean) {
+    private fun setDimBackground(dimEnabled: Boolean) {
         mDimBackground = dimEnabled
         refreshDimBackground()
     }
@@ -1176,19 +1173,19 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
         var suggestions: List<SearchSuggestion> = ArrayList()
         var isFocused = false
         var query: String = ""
-        var suggestionTextSize = 0
+        private var suggestionTextSize = 0
         var searchHint: String? = null
         var dismissOnOutsideClick = false
         var showMoveSuggestionUpBtn = false
-        var showSearchKey = false
+        private var showSearchKey = false
         var isTitleSet = false
         var backgroundColor = 0
-        var suggestionsTextColor = 0
+        private var suggestionsTextColor = 0
         var queryTextColor = 0
         var searchHintTextColor = 0
         var clearBtnColor = 0
-        var dividerColor = 0
-        var menuId = 0
+        private var dividerColor = 0
+        private var menuId = 0
         var dimBackground = false
         var suggestionsSectionAnimSuration: Long = 0
         var dismissOnSoftKeyboardDismiss = false

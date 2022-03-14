@@ -45,6 +45,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/collection_save" />
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_gray"
+            android:visibility="gone"/>
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/remove_button"
             style="@style/Theme.VocabyAndroid.Button.Negative"
