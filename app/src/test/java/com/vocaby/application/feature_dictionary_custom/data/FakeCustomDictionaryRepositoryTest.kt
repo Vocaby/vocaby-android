@@ -2,6 +2,7 @@ package com.vocaby.application.feature_dictionary_custom.data
 
 
 import com.google.common.truth.Truth
+import com.vocaby.application.feature_dictionary.data.local.entity.Type
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -134,5 +135,81 @@ class FakeCustomDictionaryRepositoryTest {
             Truth.assertThat(entryModel.definitionGroups.first().definitionData).hasSize(1)
             Truth.assertThat(entryModel.definitionGroups.first().definitionData.first().definition).isEqualTo("This is a new definition")
         }
+    }
+
+    @Test
+    fun `Types are properly inserted`() = runTest {
+        val factoryTypes = listOf(
+            Type("noun", 0),
+            Type("verb", 1),
+            Type("adjective", 2),
+            Type("adverb", 3),
+        )
+
+        customDictionaryRepository.insertTypes(factoryTypes)
+        val typesDb = customDictionaryRepository.getTypes().first()
+        Truth.assertThat(typesDb).hasSize(4)
+        Truth.assertThat(typesDb).containsExactly(
+            Type("noun", 0, false, 1),
+            Type("verb", 1, false , 2),
+            Type("adjective", 2, false, 3),
+            Type("adverb", 3, false, 4),
+        )
+    }
+
+    @Test
+    fun `Types are properly removed`() = runTest {
+        val factoryTypes = listOf(
+            Type("noun", 0),
+            Type("verb", 1),
+            Type("adjective", 2),
+            Type("adverb", 3),
+        )
+
+        customDictionaryRepository.insertTypes(factoryTypes)
+
+        val typesToRemove = listOf(
+            Type("noun", 0, false, 1),
+            Type("verb", 1, false, 2),
+        )
+
+        customDictionaryRepository.removeTypes(typesToRemove)
+        val typesDb = customDictionaryRepository.getTypes().first()
+
+        Truth.assertThat(typesDb).hasSize(2)
+        Truth.assertThat(typesDb).containsExactly(
+            Type("adjective", 2, false, 3),
+            Type("adverb", 3, false, 4),
+        )
+    }
+
+    @Test
+    fun `Types are properly updated`() = runTest {
+        val factoryTypes = listOf(
+            Type("noun", 0),
+            Type("verb", 1),
+            Type("adjective", 2),
+            Type("adverb", 3),
+        )
+
+        customDictionaryRepository.insertTypes(factoryTypes)
+
+        val typesToUpdate = listOf(
+            Type("noun", 0, false, 1),
+            Type("verb", 2, false, 2),
+            Type("adjective", 3, false, 3),
+            Type("adverb", 1, false, 4),
+        )
+
+        customDictionaryRepository.updateTypes(typesToUpdate)
+        val typesDb = customDictionaryRepository.getTypes().first()
+
+        Truth.assertThat(typesDb).hasSize(4)
+        Truth.assertThat(typesDb).containsExactly(
+            Type("noun", 0, false, 1),
+            Type("verb", 2, false, 2),
+            Type("adjective", 3, false, 3),
+            Type("adverb", 1, false, 4),
+        )
     }
 }

@@ -24,7 +24,7 @@
             android:backgroundTint="@color/colorSecondary"/>
         <TextView
             android:id="@+id/history_item"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:layout_marginTop="4dp"
@@ -36,13 +36,14 @@
 
         <TextView
             android:id="@+id/history_definition"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:fontFamily="@font/sourcesanspro_regular"
             android:layout_marginTop="4dp"
             android:textSize="12sp"
-            android:maxLines="1"
+            android:maxLines="2"
+            android:lines="2"
             android:ellipsize="end" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

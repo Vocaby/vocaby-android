@@ -15,18 +15,19 @@ import kotlinx.coroutines.flow.flow
 import java.util.*
 
 class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
-    private val customEntry = mutableListOf<CustomEntry>()
-    private val customEntryGroup = mutableListOf<CustomEntryGroup>()
-    private val customEntryDefinition = mutableListOf<CustomDefinition>()
+    private val customEntryDb = mutableListOf<CustomEntry>()
+    private val customEntryGroupDb = mutableListOf<CustomEntryGroup>()
+    private val customEntryDefinitionDb = mutableListOf<CustomDefinition>()
+    private val typesDb = mutableListOf<Type>()
 
     private fun convertToEntryModel(userId: Int, entry: String): EntryModel? {
         var entryModel: EntryModel? = null
-        val cEntry = customEntry.find { it.entry == entry && it.userId == userId }
+        val cEntry = customEntryDb.find { it.entry == entry && it.userId == userId }
         cEntry?.let {
             entryModel = EntryModel(it.entryId, it.entry, it.pronunciation, it.description, it.lastUpdated)
-            val cGroups = customEntryGroup.filter { group -> group.entryId == cEntry.entryId }
+            val cGroups = customEntryGroupDb.filter { group -> group.entryId == cEntry.entryId }
             cGroups.forEach { g ->
-                val cDefinitions = customEntryDefinition.filter {
+                val cDefinitions = customEntryDefinitionDb.filter {
                         definition -> definition.groupId == g.groupId
                 }
 
@@ -129,7 +130,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
     }
 
     override fun getUserEntriesCount(userId: Int): Flow<Int> = flow {
-        emit(customEntry.size)
+        emit(customEntryDb.size)
     }
 
     override suspend fun getUserEntryId(userId: Int, entry: String): Int? {
@@ -145,12 +146,12 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
     }
 
     override suspend fun removeUserEntry(entry: String) {
-        val index = customEntry.indexOfFirst { it.entry == entry }
+        val index = customEntryDb.indexOfFirst { it.entry == entry }
         if (index != -1) {
-            val custom = customEntry.removeAt(index)
+            val custom = customEntryDb.removeAt(index)
 
             val deletedGroups = mutableListOf<CustomEntryGroup>()
-            val iterator = customEntryGroup.iterator()
+            val iterator = customEntryGroupDb.iterator()
             while(iterator.hasNext()){
                 val group = iterator.next()
                 if (group.entryId == custom.entryId) {
@@ -160,7 +161,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
             }
 
             deletedGroups.forEach { group ->
-                customEntryDefinition.removeAll { it.groupId == group.groupId }
+                customEntryDefinitionDb.removeAll { it.groupId == group.groupId }
             }
         }
     }
@@ -170,7 +171,7 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
     }
 
     override suspend fun getAllUserEntries(userId: Int): List<EntryModel> {
-        return customEntry.filter { it.userId == userId }.map { convertToEntryModel(userId, it.entry)!! }
+        return customEntryDb.filter { it.userId == userId }.map { convertToEntryModel(userId, it.entry)!! }
     }
 
     override suspend fun insertOrUpdateEntry(
@@ -189,14 +190,14 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
                 pronunciation,
                 description,
                 saveTime,
-                customEntry.size+1
+                customEntryDb.size+1
             )
 
-            customEntry.add(newEntry)
+            customEntryDb.add(newEntry)
             newEntry.entryId
         } else {
-            val index = customEntry.indexOfFirst { it.entryId == groupChanges.id }
-            customEntry[index] = CustomEntry(
+            val index = customEntryDb.indexOfFirst { it.entryId == groupChanges.id }
+            customEntryDb[index] = CustomEntry(
                 userId,
                 entry,
                 pronunciation,
@@ -209,13 +210,13 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
         }
 
         for (group in groupChanges.deletedItems) {
-            customEntryGroup.removeIf { it.groupId == group.groupId }
+            customEntryGroupDb.removeIf { it.groupId == group.groupId }
         }
 
         for (group in groupChanges.updatedItems) {
-            val index = customEntryGroup.indexOfFirst { it.groupId == group.groupId }
+            val index = customEntryGroupDb.indexOfFirst { it.groupId == group.groupId }
             if (index != -1) {
-                customEntryGroup[index] =
+                customEntryGroupDb[index] =
                     CustomEntryGroup(
                         group.groupId,
                         entryId,
@@ -227,10 +228,10 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
 
         val addedGroupIds = mutableListOf<Int>()
         for (group in groupChanges.addedItems) {
-            addedGroupIds.add(customEntryGroup.size + 1)
-            customEntryGroup.add(
+            addedGroupIds.add(customEntryGroupDb.size + 1)
+            customEntryGroupDb.add(
                 CustomEntryGroup(
-                    groupId = customEntryGroup.size + 1,
+                    groupId = customEntryGroupDb.size + 1,
                     entryId,
                     group.type,
                     group.order
@@ -240,15 +241,15 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
 
         for (definitionChanges in definitionChangesMap.values) {
             for (definitionModel in definitionChanges.deletedItems) {
-                customEntryDefinition.removeIf { it.definitionId == definitionModel.id }
+                customEntryDefinitionDb.removeIf { it.definitionId == definitionModel.id }
             }
         }
 
         for (definitionChanges in definitionChangesMap.values) {
             for (definitionModel in definitionChanges.updatedItems) {
-                val index = customEntryDefinition.indexOfFirst { it.definitionId == definitionModel.id }
+                val index = customEntryDefinitionDb.indexOfFirst { it.definitionId == definitionModel.id }
                 if (index != -1) {
-                    customEntryDefinition[index] =
+                    customEntryDefinitionDb[index] =
                         CustomDefinition(
                             definitionModel.id,
                             definitionChanges.id,
@@ -269,9 +270,9 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
 
         for (definitionChanges in definitionChangesMap.values) {
             for (definitionModel in definitionChanges.addedItems) {
-                customEntryDefinition.add(
+                customEntryDefinitionDb.add(
                     CustomDefinition(
-                        definitionId = customEntryDefinition.size + 1,
+                        definitionId = customEntryDefinitionDb.size + 1,
                         groupId = definitionChanges.id,
                         definitionModel.definition,
                         definitionModel.example,
@@ -289,22 +290,28 @@ class FakeCustomDictionaryRepositoryImpl: FakeCustomDictionaryRepository {
     }
 
     override suspend fun insertTypes(types: List<Type>) {
-        TODO("Not yet implemented")
+        for (typeModel in types) {
+            typeModel.typeId = typesDb.size + 1
+            typesDb.add(typeModel)
+        }
     }
 
     override suspend fun removeTypes(types: List<Type>) {
-        TODO("Not yet implemented")
+        types.forEach { typeModel -> typesDb.removeIf { it.typeId == typeModel.typeId } }
     }
 
     override suspend fun updateTypes(types: List<Type>) {
-        TODO("Not yet implemented")
+        types.forEach { typeModel ->
+            val type = typesDb.find { it.typeId == typeModel.typeId }
+            type?.let { it.order = typeModel.order }
+        }
     }
 
     override suspend fun clearTypes() {
-        TODO("Not yet implemented")
+        typesDb.clear()
     }
 
-    override fun getTypes(): Flow<List<Type>> {
-        TODO("Not yet implemented")
+    override fun getTypes(): Flow<List<Type>> = flow {
+        emit(typesDb)
     }
 }

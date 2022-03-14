@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.vocaby.application.R
@@ -22,14 +24,32 @@ class TypeAdapter(
     private var dragStartListener: DragStartListener,
     private var itemInteractionListener: ItemInteractionListener
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
-    private var types: LinkedList<Type> = LinkedList()
+    private var types: List<Type> = ArrayList()
+
+    private val diffCallback = object : DiffUtil.ItemCallback<Type>() {
+        override fun areItemsTheSame(
+            oldItem: Type,
+            newItem: Type
+        ): Boolean {
+            return oldItem.type == newItem.type
+        }
+
+        override fun areContentsTheSame(
+            oldItem: Type,
+            newItem: Type
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private val differ = AsyncListDiffer(this, diffCallback)
 
     interface ItemInteractionListener {
         fun onItemRemoved(position: Int)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun submitList(newTypes: LinkedList<Type>) {
+    fun submitList(newTypes: List<Type>) {
         types = newTypes
         notifyDataSetChanged()
     }

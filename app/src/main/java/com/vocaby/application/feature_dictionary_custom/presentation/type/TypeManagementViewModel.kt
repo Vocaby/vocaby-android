@@ -24,16 +24,21 @@ class TypeManagementViewModel @Inject constructor(
     private val modifyTypesUseCase: ModifyTypesUseCase
 ) : ViewModel() {
     private var initTypes: HashMap<String, Type> = HashMap()
-    private val typeChangeState: ItemChangeState<Type> = ItemChangeState()
+    val typeChangeState: ItemChangeState<Type> = ItemChangeState()
 
-    private val _typeState = MutableStateFlow<LinkedList<Type>>(LinkedList())
+    private val _typeState = MutableStateFlow<MutableList<Type>>(ArrayList())
     private val _uiEvent = MutableSharedFlow<TypeUiEvent>()
 
     val typeState get() = _typeState.asStateFlow()
     val uiEvent get() = _uiEvent.asSharedFlow()
 
     init {
+        getTypes()
+    }
+
+    fun getTypes() {
         viewModelScope.launch {
+            initTypes = HashMap()
             val types = getTypesUseCase().first()
             types.forEach { typeModel -> initTypes[typeModel.type] = typeModel.copy() }
             _typeState.value = LinkedList(types)
@@ -72,6 +77,7 @@ class TypeManagementViewModel @Inject constructor(
 
                     _typeState.value.add(0, typeToAdd)
                     _typeState.value.forEachIndexed{ i, typeModel -> typeModel.order = i}
+
                     _uiEvent.emit(TypeUiEvent.UpdateAdapter(0, ItemState.ADD))
                 }
                 else -> {}
@@ -81,13 +87,13 @@ class TypeManagementViewModel @Inject constructor(
 
     fun removeType(position: Int) {
         viewModelScope.launch {
-            val typeToRemove = _typeState.value[position]
-            _typeState.value.removeAt(position)
+            val typeToRemove = _typeState.value.removeAt(position)
+
             for (i in position until _typeState.value.size) {
                 _typeState.value[i].order = i
             }
 
-            if (typeToRemove.typeId == -1) typeChangeState.removeNew(typeToRemove.type)
+            if (typeToRemove.typeId == 0) typeChangeState.removeNew(typeToRemove.type)
             else typeChangeState.removeExisting(typeToRemove.typeId, typeToRemove)
 
             _uiEvent.emit(TypeUiEvent.UpdateAdapter(position, ItemState.DELETE))
@@ -98,6 +104,7 @@ class TypeManagementViewModel @Inject constructor(
         viewModelScope.launch {
             fixOrdering()
             checkForUpdatedItems()
+
             val hasChanges = typeChangeState.hasChanges()
             if (hasChanges) {
                 modifyTypesUseCase(typeChangeState)
