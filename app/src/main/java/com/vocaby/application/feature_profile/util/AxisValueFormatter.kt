@@ -8,10 +8,11 @@ import kotlin.math.roundToInt
 class AxisValueFormatter(
     private val values: List<String>,
     private val width: Double,
+    private val size: Float,
     private val minLength: Int = Constants.PROFILE_CHART_LABEL_MIN_LENGTH,
     private val maxLength: Int = Constants.PROFILE_CHART_LABEL_MAX_LENGTH
 ): ValueFormatter() {
-    private val formattedDateCache: MutableMap<Float, Int> = mutableMapOf()
+    private val calculatedMaxCache: MutableMap<Float, Int> = mutableMapOf()
     private val count = values.size
 
     override fun getFormattedValue(value: Float): String {
@@ -23,13 +24,15 @@ class AxisValueFormatter(
             val extraSpace =
                 ((maxLength - minLength) / (Constants.MAX_BARS - Constants.MIN_BARS)) * (Constants.MAX_BARS - count)
 
-            val allowedLength = if (formattedDateCache.containsKey(value)) {
-                formattedDateCache[value] ?: extraSpace
+            val allowedLength = if (calculatedMaxCache.containsKey(value)) {
+                calculatedMaxCache[value]!!
             } else {
-                val characterAverageWidth = Paint().measureText(values[index]) / values[index].length
-                val max = (width * 0.5 / characterAverageWidth).toInt()
+                val paint = Paint().apply { textSize = size }
+                val characterAverageWidth = paint.measureText(values[index]) / values[index].length
+                val max = (width / characterAverageWidth).toInt()
+
                 if (max > 3) {
-                    formattedDateCache[value] = max
+                    calculatedMaxCache[value] = max
                     max
                 } else {
                     minLength + extraSpace

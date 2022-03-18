@@ -3,6 +3,7 @@ package com.vocaby.application.feature_profile.presentation.profile
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -155,9 +156,10 @@ class ProfileHomeFragment : Fragment() {
                         xAxis.labelCount = state.chartData.values.size
                     }
 
+                    val labelTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10f, ctx.resources.displayMetrics)
                     val transformer: Transformer = barChart.getTransformer(YAxis.AxisDependency.LEFT)
                     val barWidthInPixels = transformer.getPixelForValues(barChart.barData.barWidth, 0f).x - transformer.getPixelForValues(0f, 0f).x
-                    barChart.xAxis.valueFormatter = AxisValueFormatter(state.chartData.values, barWidthInPixels)
+                    barChart.xAxis.valueFormatter = AxisValueFormatter(state.chartData.values, barWidthInPixels, labelTextSize)
                     barChart.invalidate()
                 }
 

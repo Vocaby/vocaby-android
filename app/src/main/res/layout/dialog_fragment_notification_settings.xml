@@ -44,8 +44,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:paddingBottom="1dp"
-        android:background="@drawable/nav_header">
+        android:paddingBottom="1dp">
         <com.vocaby.vocabywidgets.ChipGroup
             android:id="@+id/types_chip_group"
             android:theme="@style/Theme.VocabyAndroid"
@@ -58,6 +57,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/white">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/nav_border"/>
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/update_settings_button"
             style="@style/Theme.VocabyAndroid.Button.Positive"

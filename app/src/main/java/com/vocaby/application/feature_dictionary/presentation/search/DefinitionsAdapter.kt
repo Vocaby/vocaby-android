@@ -47,7 +47,7 @@ class DefinitionsAdapter(private val ctx: Context) : RecyclerView.Adapter<Defini
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT
             )
 
-            layoutParams.setMargins(12, 8, 12, 8)
+            layoutParams.setMargins(12, 12, 12, 0)
             card.layoutParams = layoutParams
 
             if (!sen.isNullOrEmpty()) {

@@ -9,6 +9,7 @@
     <color name="standby">#FF6D3F</color>
     <color name="very_light_gray">#FAFAFA</color>
     <color name="light_gray">#EFEFEF</color>
+    <color name="nav_border">#EFEFEF</color>
     <color name="gray">#C1C1C1</color>
     <color name="dark_gray">#777777</color>
     <color name="black">#404040</color>

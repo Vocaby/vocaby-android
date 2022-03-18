@@ -1,7 +1,6 @@
 package com.vocaby.application.core.util
 
 import com.google.common.truth.Truth.assertThat
-import com.vocaby.application.core.Constants
 import com.vocaby.application.feature_dictionary_custom.common.Constants.ENTRY_MAX_LENGTH
 import org.junit.Test
 
