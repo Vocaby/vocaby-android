@@ -2,8 +2,10 @@ package com.vocaby.application.feature_dictionary.presentation.dictionary
 
 import android.app.Activity
 import androidx.activity.result.ActivityResult
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.states.UserInputState
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.GenericState
@@ -19,6 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DictionaryViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val dictionaryUseCases: DictionaryUseCases,
     private val validateCustomEntryUseCase: ValidateCustomEntryUseCase
 ) : ViewModel() {
@@ -65,6 +68,15 @@ class DictionaryViewModel @Inject constructor(
         }
 
         getHistory()
+        checkNotification()
+    }
+
+    private fun checkNotification() {
+        val receivedEntry = savedStateHandle.get<String>(MainActivity.NOTIFICATION_SEARCH)
+
+        receivedEntry?.let {
+            search(it)
+        }
     }
 
     private fun getHistory() {

@@ -29,6 +29,10 @@ open class MainActivity : AppCompatActivity() {
     private val dictionaryViewModel: DictionaryViewModel by viewModels()
     private val settingViewModel: SettingViewModel by viewModels()
 
+    companion object {
+        const val NOTIFICATION_SEARCH = "NOTIFICATION_SEARCH_KEY"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         val content: View = findViewById(android.R.id.content)
@@ -88,7 +92,6 @@ open class MainActivity : AppCompatActivity() {
 
         viewPager.setCurrentItem(1, false)
     }
-
 
     fun showDefinition(entry: String) {
         viewPager.currentItem = 1

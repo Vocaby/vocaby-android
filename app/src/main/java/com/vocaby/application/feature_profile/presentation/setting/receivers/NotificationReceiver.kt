@@ -112,7 +112,8 @@ class NotificationReceiver : BroadcastReceiver() {
         createNotificationChannel(notificationManager)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         val resultIntent = Intent(context, MainActivity::class.java)
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        resultIntent.putExtra(MainActivity.NOTIFICATION_SEARCH, title)
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         val resultPendingIntent = PendingIntent.getActivity(
             context, 0,
             resultIntent, PendingIntent.FLAG_IMMUTABLE
