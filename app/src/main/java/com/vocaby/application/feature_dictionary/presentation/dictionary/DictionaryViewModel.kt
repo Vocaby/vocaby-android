@@ -1,6 +1,7 @@
 package com.vocaby.application.feature_dictionary.presentation.dictionary
 
 import android.app.Activity
+import android.content.Intent
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.states.UserInputState
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.GenericState
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.model.SearchSuggestionItem
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
@@ -67,15 +69,23 @@ class DictionaryViewModel @Inject constructor(
             }
         }
 
-        getHistory()
         checkNotification()
+        getHistory()
+    }
+
+    fun checkNotification(intent: Intent?) {
+        val receivedEntry = intent?.getStringExtra(MainActivity.NOTIFICATION_SEARCH)
+
+        receivedEntry?.let {
+            search(it)
+        }
     }
 
     private fun checkNotification() {
         val receivedEntry = savedStateHandle.get<String>(MainActivity.NOTIFICATION_SEARCH)
-
+        Logger.reportToDebug("Checking notification... $receivedEntry")
         receivedEntry?.let {
-            search(it)
+            search(receivedEntry)
         }
     }
 
@@ -131,7 +141,7 @@ class DictionaryViewModel @Inject constructor(
                 resetSearchSuggestion()
                 _searchSuggestions.emit(GenericState.Success(ArrayList()))
             }
-        } else if (entriesByCharacter.isNullOrEmpty() || !newQuery.startsWith(entriesByCharacter.first().first())) {
+        } else if (entriesByCharacter.isEmpty() || !newQuery.startsWith(entriesByCharacter.first().first())) {
             viewModelScope.launch {
                 dictionaryUseCases.getDictionaryEntriesByCharacter(query).collectLatest { result ->
                     when(result) {

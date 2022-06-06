@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.util.Generators.generateRandomInt
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
@@ -104,7 +105,7 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun createNotification(
         context: Context,
         notificationManager: NotificationManager,
-        title: String,
+        entry: String,
         isFromCollection: Boolean,
         collection: SaveCollectionModel?,
         message: String
@@ -112,11 +113,14 @@ class NotificationReceiver : BroadcastReceiver() {
         createNotificationChannel(notificationManager)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         val resultIntent = Intent(context, MainActivity::class.java)
-        resultIntent.putExtra(MainActivity.NOTIFICATION_SEARCH, title)
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        Logger.reportToDebug("Sending intent: $entry")
+        resultIntent.putExtra(MainActivity.NOTIFICATION_SEARCH, entry)
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val resultPendingIntent = PendingIntent.getActivity(
-            context, 0,
-            resultIntent, PendingIntent.FLAG_IMMUTABLE
+            context,
+            0,
+            resultIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         if (isFromCollection && collection != null) {
@@ -125,7 +129,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
         builder.setSmallIcon(R.drawable.ic_notification_white)
             .setColor(context.getColor(R.color.colorPrimary))
-            .setContentTitle(title)
+            .setContentTitle(entry)
             .setContentIntent(resultPendingIntent)
             .setStyle(
                 NotificationCompat.BigTextStyle()

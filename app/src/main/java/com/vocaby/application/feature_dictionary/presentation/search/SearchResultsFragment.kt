@@ -19,6 +19,7 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.snackbar.Snackbar
 import com.vocaby.application.R
 import com.vocaby.application.core.util.ResourceState
+import com.vocaby.application.core.util.UiHelper
 import com.vocaby.application.core.util.config
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
@@ -191,26 +192,18 @@ class SearchResultsFragment : Fragment() {
         }
     }
 
-    private fun showSnackBar(message: String, showAction: Boolean = false) {
-        val snackbar = Snackbar.make(
-            contextView,
-            message,
-            Snackbar.LENGTH_LONG
-        )
-
-        if (showAction) snackbar.setAction(R.string.snackbar_collection_action) {
-            searchResultsViewModel.saveToCollections()
-        }
-
-        snackbar.config(ctx, R.drawable.snackbar_background)
-        snackbar.show()
-    }
-
     private suspend fun collectUiEvent() {
         searchResultsViewModel.uiEvent.collect { event ->
             when(event) {
                 is SearchUiEvent.ShowSnackBar -> {
-                    showSnackBar(event.message, event.showAction)
+                    UiHelper.showSnackBar(
+                        contextView,
+                        ctx,
+                        event.message,
+                        event.showAction,
+                        R.string.snackbar_collection_action,
+                        searchResultsViewModel::saveToCollections
+                    )
                 }
                 is SearchUiEvent.ShowCollectionDialog -> {
                     val dialogFragment = SearchCollectionDialogFragment.newInstance(
@@ -231,7 +224,12 @@ class SearchResultsFragment : Fragment() {
                 searchResultsViewModel.removeSavedEntry(true)
             } else {
                 val showSnackbar = bundle.getBoolean(SearchCollectionDialogFragment.SHOW_SNACKBAR)
-                if (showSnackbar) showSnackBar("Collections have been updated")
+                if (showSnackbar) UiHelper.showSnackBar(
+                    contextView,
+                    ctx,
+                    "Collections have been updated",
+                    false
+                )
             }
         }
     }

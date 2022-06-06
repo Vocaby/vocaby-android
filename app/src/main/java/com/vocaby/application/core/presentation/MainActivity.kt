@@ -1,5 +1,6 @@
 package com.vocaby.application.core.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -13,6 +14,7 @@ import com.bugsnag.android.Bugsnag
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.adapter.FragmentAdapter
+import com.vocaby.application.core.util.Logger
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel
 import com.vocaby.application.feature_profile.presentation.profile.ProfileViewModel
@@ -55,6 +57,12 @@ open class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setupNavigation()
         collect()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        dictionaryViewModel.checkNotification(intent)
+        Logger.reportToDebug(intent?.getStringExtra(NOTIFICATION_SEARCH))
     }
 
     private fun collect() {
