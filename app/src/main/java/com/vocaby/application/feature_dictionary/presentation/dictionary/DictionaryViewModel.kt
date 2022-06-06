@@ -10,7 +10,6 @@ import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.states.UserInputState
 import com.vocaby.application.core.util.Formatter
 import com.vocaby.application.core.util.GenericState
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.domain.model.SearchSuggestionItem
 import com.vocaby.application.feature_dictionary.domain.model.SimpleEntryModel
@@ -83,7 +82,7 @@ class DictionaryViewModel @Inject constructor(
 
     private fun checkNotification() {
         val receivedEntry = savedStateHandle.get<String>(MainActivity.NOTIFICATION_SEARCH)
-        Logger.reportToDebug("Checking notification... $receivedEntry")
+
         receivedEntry?.let {
             search(receivedEntry)
         }

@@ -16,11 +16,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.GONE
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.google.android.material.snackbar.Snackbar
 import com.vocaby.application.R
 import com.vocaby.application.core.util.ResourceState
 import com.vocaby.application.core.util.UiHelper
-import com.vocaby.application.core.util.config
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_dictionary.domain.model.DictionarySearchResult
 import com.vocaby.application.feature_dictionary.presentation.dictionary.DictionaryViewModel

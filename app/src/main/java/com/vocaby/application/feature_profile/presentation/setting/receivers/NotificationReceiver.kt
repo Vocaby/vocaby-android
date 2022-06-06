@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import com.vocaby.application.R
 import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.util.Generators.generateRandomInt
-import com.vocaby.application.core.util.Logger
 import com.vocaby.application.feature_dictionary.domain.model.EntryModel
 import com.vocaby.application.feature_dictionary.domain.repository.DictionaryRepository
 import com.vocaby.application.feature_dictionary_custom.domain.repository.CustomDictionaryRepository
@@ -113,7 +112,7 @@ class NotificationReceiver : BroadcastReceiver() {
         createNotificationChannel(notificationManager)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         val resultIntent = Intent(context, MainActivity::class.java)
-        Logger.reportToDebug("Sending intent: $entry")
+
         resultIntent.putExtra(MainActivity.NOTIFICATION_SEARCH, entry)
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val resultPendingIntent = PendingIntent.getActivity(

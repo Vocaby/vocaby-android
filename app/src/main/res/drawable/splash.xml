@@ -6,7 +6,6 @@
         </shape>
     </item>
     <item
-        android:top="-100dp"
         android:gravity="center"
         android:drawable="@drawable/ic_vocaby_logo" />
 </layer-list>
