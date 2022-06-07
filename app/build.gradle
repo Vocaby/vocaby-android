@@ -17,7 +17,7 @@ android {
         applicationId "com.vocaby.application"
         minSdkVersion 26
         targetSdkVersion 32
-        versionCode 15
+        versionCode 16
         versionName "1.0.1"
 
         testInstrumentationRunner "com.vocaby.application.core.HiltTestRunner"
