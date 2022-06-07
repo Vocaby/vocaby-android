@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.vocaby.application.R
+import com.vocaby.application.core.presentation.MainActivity
 import com.vocaby.application.core.util.GenericState
 import com.vocaby.application.core.util.Network
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
@@ -83,6 +84,16 @@ class DictionaryFragment : Fragment() {
                         is GenericState.Error -> {
                             searchView.clearSuggestions()
                             searchView.hideProgress()
+                        }
+                    }
+                }
+            }
+
+            launch {
+                dictionaryViewModel.dictionaryUiEvent.collect { event ->
+                    when(event) {
+                        is DictionaryUiEvent.ShowDefinitionPage -> {
+                            (requireActivity() as (MainActivity)).showDefinitionPage()
                         }
                     }
                 }

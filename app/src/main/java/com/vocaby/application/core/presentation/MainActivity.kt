@@ -20,6 +20,7 @@ import com.vocaby.application.feature_profile.presentation.profile.ProfileViewMo
 import com.vocaby.application.feature_profile.presentation.setting.SettingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 open class MainActivity : AppCompatActivity() {
@@ -65,8 +66,10 @@ open class MainActivity : AppCompatActivity() {
 
     private fun collect() {
         launchAndRepeatWithViewLifecycle {
-            settingViewModel.dataSettings.collect { enabled ->
-                if (enabled) Bugsnag.start(this@MainActivity)
+            launch {
+                settingViewModel.dataSettings.collect { enabled ->
+                    if (enabled) Bugsnag.start(this@MainActivity)
+                }
             }
         }
     }
@@ -102,5 +105,9 @@ open class MainActivity : AppCompatActivity() {
     fun showDefinition(entry: String) {
         viewPager.currentItem = 1
         dictionaryViewModel.search(entry)
+    }
+
+    fun showDefinitionPage() {
+        if (viewPager.currentItem != 1) viewPager.currentItem = 1
     }
 }

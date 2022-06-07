@@ -30,7 +30,8 @@ class DictionaryViewModel @Inject constructor(
     private val suggestionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var suggestionJob: Job? = null
 
-    private val _uiEvent = MutableSharedFlow<DictionaryHomeUiEvent>()
+    private val _dictionaryHomeUiEvent = MutableSharedFlow<DictionaryHomeUiEvent>()
+    private val _dictionaryUiEvent = MutableSharedFlow<DictionaryUiEvent>()
     private val _searchedEntry = MutableSharedFlow<String>()
     private val _dailyPick = MutableStateFlow<DailyPickState>(DailyPickState.InProgress)
     private val _prevPicks = MutableStateFlow<List<String>>(ArrayList())
@@ -44,7 +45,8 @@ class DictionaryViewModel @Inject constructor(
     val searchSuggestions get() = _searchSuggestions.asSharedFlow()
     val searchHistory get() = _searchHistory.asSharedFlow()
     val dictionaryIsReady get() = _dictionaryIsReady
-    val uiEvent get() = _uiEvent.asSharedFlow()
+    val dictionaryHomeUiEvent get() = _dictionaryHomeUiEvent.asSharedFlow()
+    val dictionaryUiEvent get() = _dictionaryUiEvent.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -76,6 +78,10 @@ class DictionaryViewModel @Inject constructor(
         val receivedEntry = intent?.getStringExtra(MainActivity.NOTIFICATION_SEARCH)
 
         receivedEntry?.let {
+            viewModelScope.launch {
+                _dictionaryUiEvent.emit(DictionaryUiEvent.ShowDefinitionPage)
+            }
+
             search(it)
         }
     }
@@ -84,6 +90,10 @@ class DictionaryViewModel @Inject constructor(
         val receivedEntry = savedStateHandle.get<String>(MainActivity.NOTIFICATION_SEARCH)
 
         receivedEntry?.let {
+            viewModelScope.launch {
+                _dictionaryUiEvent.emit(DictionaryUiEvent.ShowDefinitionPage)
+            }
+
             search(receivedEntry)
         }
     }
@@ -115,17 +125,17 @@ class DictionaryViewModel @Inject constructor(
                 sanitizedEntry
             )) {
                 is UserInputState.LongInput -> {
-                    _uiEvent.emit(DictionaryHomeUiEvent.ShowAlert("This entry is too long"))
+                    _dictionaryHomeUiEvent.emit(DictionaryHomeUiEvent.ShowAlert("This entry is too long"))
                 }
                 is UserInputState.EmptyInput -> {
-                    _uiEvent.emit(DictionaryHomeUiEvent.ShowAlert("Please enter a word or phrase"))
+                    _dictionaryHomeUiEvent.emit(DictionaryHomeUiEvent.ShowAlert("Please enter a word or phrase"))
                 }
                 is UserInputState.InvalidInput -> {
-                    _uiEvent.emit(DictionaryHomeUiEvent.ShowAlert("The entry contains special characters"))
+                    _dictionaryHomeUiEvent.emit(DictionaryHomeUiEvent.ShowAlert("The entry contains special characters"))
                 }
                 is UserInputState.Valid<*> -> {
                     if (event.data is String){
-                        _uiEvent.emit(DictionaryHomeUiEvent.OpenEntryBuilder(event.data))
+                        _dictionaryHomeUiEvent.emit(DictionaryHomeUiEvent.OpenEntryBuilder(event.data))
                     }
                 }
                 else -> {}

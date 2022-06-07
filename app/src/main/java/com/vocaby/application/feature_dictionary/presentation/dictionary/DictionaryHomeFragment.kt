@@ -110,7 +110,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
 
     private suspend fun collectPrevPick() {
         dictionaryViewModel.prevPicks.collect { prevPicks ->
-            if (!prevPicks.isNullOrEmpty()) {
+            if (prevPicks.isNotEmpty()) {
                 prevPickAlert.visibility = View.INVISIBLE
                 prevPickAdapter.submitList(prevPicks)
             }
@@ -118,7 +118,7 @@ class DictionaryHomeFragment : Fragment(), SearchHistoryAdapter.OnItemTouchListe
     }
 
     private suspend fun collectUiEvent() {
-        dictionaryViewModel.uiEvent.collect { event ->
+        dictionaryViewModel.dictionaryHomeUiEvent.collect { event ->
             when(event) {
                 is DictionaryHomeUiEvent.OpenEntryBuilder -> {
                     val intent = Intent(requireActivity(), EntryBuilderActivity::class.java)
