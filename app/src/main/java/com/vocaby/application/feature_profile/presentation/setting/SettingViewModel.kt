@@ -49,6 +49,7 @@ class SettingViewModel @Inject constructor(
                     settings.notificationEnabled,
                     selectedCollection.collectionName,
                     selectedFrequency.uiText,
+                    "High",
                     settings.updateDictionaryEnabled,
                     settings.reportErrorEnabled
                 )
@@ -122,6 +123,20 @@ class SettingViewModel @Inject constructor(
     }
 
     fun getNotificationFrequencies(enabled: Boolean) {
+        if (enabled) {
+            viewModelScope.launch {
+                notificationFrequencies = settingsUseCases.getNotificationFrequenciesUseCase()
+                notificationFrequencies?.let {
+                    _uiEvent.emit(SettingsUiEvent.ShowNotificationFrequencyDialog(
+                        title = "Select a notification frequency",
+                        items = ArrayList(it.map { model -> model.uiText })
+                    ))
+                }
+            }
+        }
+    }
+
+    fun getNotificationPriority(enabled: Boolean) {
         if (enabled) {
             viewModelScope.launch {
                 notificationFrequencies = settingsUseCases.getNotificationFrequenciesUseCase()

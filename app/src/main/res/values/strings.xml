@@ -119,6 +119,7 @@
     <string name="notification_toggle_header">Get Saves Notification</string>
     <string name="notification_toggle_body">Get notified of the entries that you saved for periodic review.</string>
     <string name="notification_frequency_header">Notification Frequency</string>
+    <string name="notification_priority_header">Notification Priority</string>
     <string name="notification_save_collection">Save Collection</string>
     <string name="data_transfer">Data Transfer</string>
     <string name="collection_name_header">Collection Name</string>

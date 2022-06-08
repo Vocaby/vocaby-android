@@ -40,6 +40,8 @@ class NotificationReceiver : BroadcastReceiver() {
         val scope = CoroutineScope(Dispatchers.Main.immediate)
         val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
 
+        // TODO: get notification priority from settings
+
         scope.launch(Dispatchers.Default) {
             val userId = userRepository.getUser()
             val settings = userRepository.settingsFlow.first()
