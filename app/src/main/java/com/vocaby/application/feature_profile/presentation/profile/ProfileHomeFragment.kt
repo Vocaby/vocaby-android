@@ -48,6 +48,9 @@ class ProfileHomeFragment : Fragment() {
     private lateinit var saveCounter: TextView
     private lateinit var collectionCounter: TextView
     private lateinit var entryCounter: TextView
+    private lateinit var settingsButton: Button
+    private lateinit var dataTransferButton: Button
+    private lateinit var supportButton: Button
 
     private val profileViewModel: ProfileViewModel by activityViewModels()
     private val settingsViewModel: SettingViewModel by activityViewModels()
@@ -67,6 +70,9 @@ class ProfileHomeFragment : Fragment() {
         saveCounter = view.findViewById(R.id.save_counter)
         collectionCounter = view.findViewById(R.id.collection_counter)
         entryCounter = view.findViewById(R.id.entry_counter)
+        settingsButton = view.findViewById(R.id.settings_button)
+        supportButton = view.findViewById(R.id.support_button)
+        dataTransferButton = view.findViewById(R.id.data_management_button)
 
         barChart.apply {
             setTouchEnabled(false)
@@ -98,7 +104,13 @@ class ProfileHomeFragment : Fragment() {
             text = ""
         }
 
-        setupButtons(view)
+        setupButtons()
+
+        parentFragmentManager.addOnBackStackChangedListener {
+            if (parentFragmentManager.backStackEntryCount == 0) {
+                enableNav()
+            }
+        }
 
         launchAndRepeatWithViewLifecycle {
             launch {
@@ -205,14 +217,14 @@ class ProfileHomeFragment : Fragment() {
         }
     }
 
-    private fun setupButtons(view: View) {
+    private fun setupButtons() {
         chartToggleButton.addOnCheckedChangeListener { _: MaterialButton, checked: Boolean ->
             settingsViewModel.changeChartMode(checked)
         }
 
-        // NOTIFICATION
-        val notificationButton = view.findViewById<Button>(R.id.notification_button)
-        notificationButton.setOnClickListener {
+        // SETTINGS
+        settingsButton.setOnClickListener {
+            disableNav()
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     R.anim.enter_right_to_left,
@@ -225,8 +237,8 @@ class ProfileHomeFragment : Fragment() {
         }
 
         // DATA TRANSFER
-        val dataButton = view.findViewById<Button>(R.id.data_management_button)
-        dataButton.setOnClickListener {
+        dataTransferButton.setOnClickListener {
+            disableNav()
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     R.anim.enter_right_to_left,
@@ -238,8 +250,8 @@ class ProfileHomeFragment : Fragment() {
                 .commit()
         }
 
-        val supportButton = view.findViewById<Button>(R.id.support_button)
         supportButton.setOnClickListener {
+            disableNav()
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     R.anim.enter_right_to_left,
@@ -250,5 +262,18 @@ class ProfileHomeFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+    }
+
+
+    private fun disableNav() {
+        settingsButton.isEnabled = false
+        dataTransferButton.isEnabled = false
+        supportButton.isEnabled = false
+    }
+
+    private fun enableNav() {
+        settingsButton.isEnabled = true
+        dataTransferButton.isEnabled = true
+        supportButton.isEnabled = true
     }
 }

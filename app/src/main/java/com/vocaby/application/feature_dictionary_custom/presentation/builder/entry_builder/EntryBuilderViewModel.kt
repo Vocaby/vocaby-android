@@ -289,8 +289,8 @@ class EntryBuilderViewModel @Inject constructor(
 
             if (!groupChanges.hasChanges()
                 && !definitionHasChanges
-                && entryData.pronunciation ?: "" == pronun
-                && entryData.description ?: "" == desc
+                && (entryData.pronunciation ?: "") == pronun
+                && (entryData.description ?: "") == desc
             ) {
                 cancelBuilder()
             } else {
