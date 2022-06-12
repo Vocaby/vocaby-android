@@ -16,7 +16,7 @@ class GetSearchSuggestionsUseCase {
         defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     ): List<SearchSuggestionItem> = withContext(defaultDispatcher) {
         val searchSuggestionItems = ArrayList<SearchSuggestionItem>()
-        if (!entries.isEmpty()) {
+        if (!entries.isNullOrEmpty()) {
             var index = VocabyAlgo.binarySearchPrefix(entries, searchQuery)
             if (index > -1 && index < entries.size) {
                 val it = entries.listIterator(index)

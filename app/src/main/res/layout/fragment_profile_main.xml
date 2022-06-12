@@ -231,7 +231,7 @@
             android:paddingBottom="@dimen/container_gap_margin"
             android:orientation="vertical">
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/settings_button"
+                android:id="@+id/notification_button"
                 style="@style/Theme.VocabyAndroid.ProfileButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
