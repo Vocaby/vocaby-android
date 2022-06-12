@@ -53,6 +53,10 @@ class DescriptiveButtonView: LinearLayoutCompat {
         descriptionView.text = description
     }
 
+    fun getDescription(): String {
+        return descriptionView.text.toString()
+    }
+
     override fun setOnClickListener(l: OnClickListener?) {
         super.setOnClickListener(l)
         mOnClickListener = l
