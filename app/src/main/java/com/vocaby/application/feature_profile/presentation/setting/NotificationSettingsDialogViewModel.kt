@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.chip.ChipGroup
+import com.vocaby.application.feature_profile.domain.model.NotificationSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,17 +20,19 @@ class NotificationSettingsDialogViewModel @Inject constructor(
 ): ViewModel() {
     private var _dialogUiState = MutableStateFlow<DialogUiState>(DialogUiState.InProgress)
     private var _dialogUiEvent = MutableSharedFlow<DialogUiEvent>()
+    private val title: String =
+        savedStateHandle.get(NotificationSettingsDialogFragment.TITLE)!!
     private val items: ArrayList<String> =
         savedStateHandle.get(NotificationSettingsDialogFragment.NOTIFICATION_LIST)!!
-    private val isCollection: Boolean =
-        savedStateHandle.get(NotificationSettingsDialogFragment.UPDATE_COLLECTION)!!
+    private val type: NotificationSettings =
+        savedStateHandle.get(NotificationSettingsDialogFragment.TYPE)!!
 
     val uiState get() = _dialogUiState.asStateFlow()
     val uiEvent get() = _dialogUiEvent.asSharedFlow()
 
     init {
         _dialogUiState.value = DialogUiState.UpdateUi(
-            if (isCollection) "Select a save collection" else "Update notification frequency",
+            title,
             items
         )
     }
@@ -38,7 +41,7 @@ class NotificationSettingsDialogViewModel @Inject constructor(
         viewModelScope.launch {
             if (id != View.NO_ID) {
                 val selected = chipGroup.indexOfChild(chipGroup.findViewById(id))
-                _dialogUiEvent.emit(DialogUiEvent.CloseDialog(selected, isCollection))
+                _dialogUiEvent.emit(DialogUiEvent.CloseDialog(selected, type))
             } else {
                 _dialogUiEvent.emit(DialogUiEvent.ShowAlert)
             }

@@ -40,8 +40,6 @@ class NotificationReceiver : BroadcastReceiver() {
         val scope = CoroutineScope(Dispatchers.Main.immediate)
         val sp = context.getSharedPreferences("SAVES", Context.MODE_PRIVATE)
 
-        // TODO: get notification priority from settings
-
         scope.launch(Dispatchers.Default) {
             val userId = userRepository.getUser()
             val settings = userRepository.settingsFlow.first()
@@ -64,6 +62,7 @@ class NotificationReceiver : BroadcastReceiver() {
                 createNotification(
                     context,
                     notificationManager,
+                    settings.notificationPriority,
                     title,
                     isFromCollection,
                     collection,
@@ -94,6 +93,7 @@ class NotificationReceiver : BroadcastReceiver() {
                 createNotification(
                     context,
                     notificationManager,
+                    settings.notificationPriority,
                     entry,
                     isFromCollection,
                     collection,
@@ -106,12 +106,13 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun createNotification(
         context: Context,
         notificationManager: NotificationManager,
+        priority: Int,
         entry: String,
         isFromCollection: Boolean,
         collection: SaveCollectionModel?,
         message: String
     ) {
-        createNotificationChannel(notificationManager)
+        createNotificationChannel(notificationManager, priority)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         val resultIntent = Intent(context, MainActivity::class.java)
 
@@ -141,11 +142,10 @@ class NotificationReceiver : BroadcastReceiver() {
         notificationManager.notify(313, builder.build())
     }
 
-    private fun createNotificationChannel(notificationManager: NotificationManager) {
+    private fun createNotificationChannel(notificationManager: NotificationManager, priority: Int) {
         val name: CharSequence = "Vocaby Notification"
         val description = "Vocaby Notification"
-        val importance = NotificationManager.IMPORTANCE_LOW
-        val channel = NotificationChannel(CHANNEL_ID, name, importance)
+        val channel = NotificationChannel(CHANNEL_ID, name, priority)
         channel.description = description
         notificationManager.createNotificationChannel(channel)
     }

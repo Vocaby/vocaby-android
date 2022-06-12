@@ -9,6 +9,7 @@ import com.vocaby.application.feature_profile.data.local.entity.CustomDictionary
 import com.vocaby.application.feature_profile.data.local.entity.DictionaryViewCount
 import com.vocaby.application.feature_profile.data.local.entity.User
 import com.vocaby.application.feature_profile.domain.model.NotificationFrequency
+import com.vocaby.application.feature_profile.domain.model.NotificationPriority
 import com.vocaby.application.feature_profile.domain.model.ProfileModel
 import com.vocaby.application.feature_profile.domain.model.VisitData
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
@@ -45,6 +46,7 @@ class UserRepositoryImpl constructor(
                     .setChartMode(UserSettings.ChartMode.MONTHLY)
                     .setNotificationCollectionId(-1)
                     .setNotificationFrequency(NotificationFrequency.FIFTEEN_MINUTES.value)
+                    .setNotificationFrequency(NotificationPriority.LOW.value)
                     .setNotificationEnabled(false)
                     .build()
             }
@@ -123,6 +125,12 @@ class UserRepositoryImpl constructor(
     override suspend fun setNotificationFrequency(seconds: Int) {
         userSettingsDataStore.updateData { preferences ->
             preferences.toBuilder().setNotificationFrequency(seconds).build()
+        }
+    }
+
+    override suspend fun setNotificationPriority(priority: Int) {
+        userSettingsDataStore.updateData { preferences ->
+            preferences.toBuilder().setNotificationPriority(priority).build()
         }
     }
 }

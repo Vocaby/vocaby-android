@@ -467,7 +467,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null): FrameLayout(con
             }
         })
 
-        mSearchInput.onFocusChangeListener = OnFocusChangeListener { v, hasFocus ->
+        mSearchInput.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
             if (mSkipQueryFocusChangeEvent) {
                 mSkipQueryFocusChangeEvent = false
             } else if (hasFocus != isSearchBarFocused) {

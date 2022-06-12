@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vocaby.application.feature_profile.domain.model.NotificationFrequency
 import com.vocaby.application.feature_profile.domain.model.NotificationModel
+import com.vocaby.application.feature_profile.domain.model.NotificationPriority
+import com.vocaby.application.feature_profile.domain.model.NotificationSettings
 import com.vocaby.application.feature_profile.domain.use_case.SettingsUseCases
 import com.vocaby.application.feature_save.domain.model.SaveCollectionModel
 import com.vocaby.application.feature_save.domain.use_cases.collection.GetAllCollectionsUseCase
@@ -23,6 +25,7 @@ class SettingViewModel @Inject constructor(
 ): ViewModel() {
     private var notificationCollections: List<SaveCollectionModel>? = null
     private var notificationFrequencies: List<NotificationFrequency>? = null
+    private var notificationPriorities: List<NotificationPriority>? = null
 
 
     private val _notificationSettings = MutableSharedFlow<NotificationModel>()
@@ -44,12 +47,13 @@ class SettingViewModel @Inject constructor(
                 val settings = settingsUseCases.getUserSettingsUseCase().first()
                 val selectedCollection = settingsUseCases.getSelectedNotificationCollectionUseCase(settings.notificationCollectionId)
                 val selectedFrequency  = settingsUseCases.getSelectedNotificationFrequencyUseCase(settings.notificationFrequency)
+                val priority = settingsUseCases.getSelectedNotificationPriorityUseCase(settings.notificationPriority)
 
                 val initSettings = SettingsUiEvent.UpdateSettings(
                     settings.notificationEnabled,
                     selectedCollection.collectionName,
                     selectedFrequency.uiText,
-                    "High",
+                    priority.uiText,
                     settings.updateDictionaryEnabled,
                     settings.reportErrorEnabled
                 )
@@ -80,6 +84,17 @@ class SettingViewModel @Inject constructor(
                 settingsUseCases.updateNotificationFrequencyUseCase(position, notificationFrequencies)
                 val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
                 _uiEvent.emit(SettingsUiEvent.UpdateNotificationFrequency(it[position].uiText))
+                _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
+            }
+        }
+    }
+
+    private fun setNotificationPriority(position: Int) {
+        viewModelScope.launch {
+            notificationPriorities?.let {
+                settingsUseCases.updateNotificationPriorityUseCase(position, notificationPriorities)
+                val initModel = settingsUseCases.getNotificationSettingsUseCase().first()
+                _uiEvent.emit(SettingsUiEvent.UpdateNotificationPriority(it[position].uiText))
                 _uiEvent.emit(SettingsUiEvent.UpdateNotification(initModel.enabled, initModel.minutes))
             }
         }
@@ -139,10 +154,10 @@ class SettingViewModel @Inject constructor(
     fun getNotificationPriority(enabled: Boolean) {
         if (enabled) {
             viewModelScope.launch {
-                notificationFrequencies = settingsUseCases.getNotificationFrequenciesUseCase()
-                notificationFrequencies?.let {
-                    _uiEvent.emit(SettingsUiEvent.ShowNotificationFrequencyDialog(
-                        title = "Select a notification frequency",
+                notificationPriorities = settingsUseCases.getNotificationPrioritiesUseCase()
+                notificationPriorities?.let {
+                    _uiEvent.emit(SettingsUiEvent.ShowNotificationPriorityDialog(
+                        title = "Select a notification priority",
                         items = ArrayList(it.map { model -> model.uiText })
                     ))
                 }
@@ -152,12 +167,17 @@ class SettingViewModel @Inject constructor(
 
     fun handleDialogResult(bundle: Bundle) {
         val selectedPosition = bundle.getInt(NotificationSettingsDialogFragment.SELECTED_POSITION)
-        val updateCollection = bundle.getBoolean(NotificationSettingsDialogFragment.UPDATE_COLLECTION)
 
-        if (updateCollection) {
-            setNotificationCollection(selectedPosition)
-        } else {
-            setNotificationFrequency(selectedPosition)
+        when(bundle.getSerializable(NotificationSettingsDialogFragment.TYPE) as NotificationSettings) {
+            NotificationSettings.COLLECTION -> {
+                setNotificationCollection(selectedPosition)
+            }
+            NotificationSettings.FREQUENCY -> {
+                setNotificationFrequency(selectedPosition)
+            }
+            NotificationSettings.PRIORITY -> {
+                setNotificationPriority(selectedPosition)
+            }
         }
     }
 }

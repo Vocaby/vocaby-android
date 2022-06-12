@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.chip.Chip
 import com.vocaby.application.R
+import com.vocaby.application.feature_profile.domain.model.NotificationSettings
 import com.vocaby.vocabywidgets.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -27,19 +28,22 @@ class NotificationSettingsDialogFragment: DialogFragment() {
 
     companion object {
         const val TAG = "NotificationSettingsDialogFragment"
+        const val TITLE = "NotificationSettingsDialogTitle"
+        const val TYPE = "NotificationSettingsDialogType"
         const val NOTIFICATION_LIST = "NOTIFICATION_LIST"
-        const val UPDATE_COLLECTION = "UPDATE_COLLECTION"
         const val SELECTED_POSITION = "SELECTED_POSITION"
 
         @JvmStatic
         fun newInstance(
+            title: String,
             list: ArrayList<String>,
-            updateCollection: Boolean,
+            type: NotificationSettings,
         ): NotificationSettingsDialogFragment {
             val fragment = NotificationSettingsDialogFragment()
             val args = Bundle()
+            args.putString(TITLE, title)
             args.putStringArrayList(NOTIFICATION_LIST, list)
-            args.putBoolean(UPDATE_COLLECTION, updateCollection)
+            args.putSerializable(TYPE, type)
             fragment.arguments = args
 
             return fragment
@@ -97,7 +101,7 @@ class NotificationSettingsDialogFragment: DialogFragment() {
                         is DialogUiEvent.CloseDialog -> {
                             val bundle = Bundle()
                             bundle.putInt(SELECTED_POSITION, event.selected)
-                            bundle.putBoolean(UPDATE_COLLECTION, event.updateCollection)
+                            bundle.putSerializable(TYPE, event.type)
 
                             setFragmentResult(TAG, bundle)
                             dismiss()
