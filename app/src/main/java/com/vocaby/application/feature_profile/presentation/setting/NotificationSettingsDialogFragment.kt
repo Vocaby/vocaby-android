@@ -30,6 +30,7 @@ class NotificationSettingsDialogFragment: DialogFragment() {
         const val TAG = "NotificationSettingsDialogFragment"
         const val TITLE = "NotificationSettingsDialogTitle"
         const val TYPE = "NotificationSettingsDialogType"
+        const val SELECTEDINDEX = "NotificationSettingsDialogSelected"
         const val NOTIFICATION_LIST = "NOTIFICATION_LIST"
         const val SELECTED_POSITION = "SELECTED_POSITION"
 
@@ -37,6 +38,7 @@ class NotificationSettingsDialogFragment: DialogFragment() {
         fun newInstance(
             title: String,
             list: ArrayList<String>,
+            selected: Int,
             type: NotificationSettings,
         ): NotificationSettingsDialogFragment {
             val fragment = NotificationSettingsDialogFragment()
@@ -44,6 +46,7 @@ class NotificationSettingsDialogFragment: DialogFragment() {
             args.putString(TITLE, title)
             args.putStringArrayList(NOTIFICATION_LIST, list)
             args.putSerializable(TYPE, type)
+            args.putInt(SELECTEDINDEX, selected)
             fragment.arguments = args
 
             return fragment
@@ -73,7 +76,7 @@ class NotificationSettingsDialogFragment: DialogFragment() {
                             header.text = state.header
 
                             chipGroup.removeAllViews()
-                            for (item in state.items) {
+                            for ((index, item) in state.items.withIndex()) {
                                 val chip = layoutInflater.inflate(
                                     R.layout.chip_notification,
                                     chipGroup,
@@ -81,6 +84,7 @@ class NotificationSettingsDialogFragment: DialogFragment() {
                                 ) as Chip
 
                                 chip.text = item
+                                if (index == state.selectedIndex) chip.isChecked = true
                                 chipGroup.addView(chip)
                             }
                         }

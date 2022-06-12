@@ -26,6 +26,8 @@ class NotificationSettingsDialogViewModel @Inject constructor(
         savedStateHandle.get(NotificationSettingsDialogFragment.NOTIFICATION_LIST)!!
     private val type: NotificationSettings =
         savedStateHandle.get(NotificationSettingsDialogFragment.TYPE)!!
+    private val selectedIndex: Int =
+        savedStateHandle.get(NotificationSettingsDialogFragment.SELECTEDINDEX)!!
 
     val uiState get() = _dialogUiState.asStateFlow()
     val uiEvent get() = _dialogUiEvent.asSharedFlow()
@@ -33,7 +35,8 @@ class NotificationSettingsDialogViewModel @Inject constructor(
     init {
         _dialogUiState.value = DialogUiState.UpdateUi(
             title,
-            items
+            items,
+            selectedIndex,
         )
     }
 

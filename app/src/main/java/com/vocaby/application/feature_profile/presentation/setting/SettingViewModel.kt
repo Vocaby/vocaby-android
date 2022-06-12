@@ -123,42 +123,48 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun getSaveCollections(enabled: Boolean) {
+    fun getSaveCollections(enabled: Boolean, selected: String) {
         if (enabled) {
             viewModelScope.launch {
                 notificationCollections = getAllCollectionsUseCase()
                 notificationCollections?.let {
+                    val index = it.indexOfFirst { value -> value.collectionName == selected }
                     _uiEvent.emit(SettingsUiEvent.ShowNotificationCollectionDialog(
                         title = "Select a save collection",
-                        items = ArrayList(it.map { model -> model.collectionName })
+                        items = ArrayList(it.map { model -> model.collectionName }),
+                        selectedIndex = index
                     ))
                 }
             }
         }
     }
 
-    fun getNotificationFrequencies(enabled: Boolean) {
+    fun getNotificationFrequencies(enabled: Boolean, selected: String) {
         if (enabled) {
             viewModelScope.launch {
                 notificationFrequencies = settingsUseCases.getNotificationFrequenciesUseCase()
                 notificationFrequencies?.let {
+                    val index = it.indexOfFirst { value -> value.uiText == selected }
                     _uiEvent.emit(SettingsUiEvent.ShowNotificationFrequencyDialog(
                         title = "Select a notification frequency",
-                        items = ArrayList(it.map { model -> model.uiText })
+                        items = ArrayList(it.map { model -> model.uiText }),
+                        selectedIndex = index
                     ))
                 }
             }
         }
     }
 
-    fun getNotificationPriority(enabled: Boolean) {
+    fun getNotificationPriority(enabled: Boolean, selected: String) {
         if (enabled) {
             viewModelScope.launch {
                 notificationPriorities = settingsUseCases.getNotificationPrioritiesUseCase()
                 notificationPriorities?.let {
+                    val index = it.indexOfFirst { value -> value.uiText == selected }
                     _uiEvent.emit(SettingsUiEvent.ShowNotificationPriorityDialog(
                         title = "Select a notification priority",
-                        items = ArrayList(it.map { model -> model.uiText })
+                        items = ArrayList(it.map { model -> model.uiText }),
+                        selectedIndex = index
                     ))
                 }
             }

@@ -5,6 +5,7 @@ sealed class DialogUiState {
     object ShowAlert: DialogUiState()
     data class UpdateUi(
         val header: String,
-        val items: List<String>
+        val items: List<String>,
+        val selectedIndex: Int,
     ): DialogUiState()
 }
