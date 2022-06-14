@@ -33,6 +33,7 @@ open class MainActivity : AppCompatActivity() {
 
     companion object {
         const val NOTIFICATION_SEARCH = "NOTIFICATION_SEARCH_KEY"
+        const val NOTIFICATION_SAVE_EMPTY = "NOTIFICATION_SAVE_EMPTY"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -76,25 +76,35 @@ class DictionaryViewModel @Inject constructor(
 
     fun checkNotification(intent: Intent?) {
         val receivedEntry = intent?.getStringExtra(MainActivity.NOTIFICATION_SEARCH)
+        val saveEmpty = intent?.getBooleanExtra(MainActivity.NOTIFICATION_SAVE_EMPTY, false)
 
-        receivedEntry?.let {
-            viewModelScope.launch {
-                _dictionaryUiEvent.emit(DictionaryUiEvent.ShowDefinitionPage)
+        saveEmpty?.let {
+            if (!it) {
+                receivedEntry?.let {
+                    viewModelScope.launch {
+                        _dictionaryUiEvent.emit(DictionaryUiEvent.ShowDefinitionPage)
+                    }
+
+                    search(receivedEntry)
+                }
             }
-
-            search(it)
         }
     }
 
     private fun checkNotification() {
         val receivedEntry = savedStateHandle.get<String>(MainActivity.NOTIFICATION_SEARCH)
+        val saveEmpty = savedStateHandle.get<Boolean>(MainActivity.NOTIFICATION_SAVE_EMPTY)
 
-        receivedEntry?.let {
-            viewModelScope.launch {
-                _dictionaryUiEvent.emit(DictionaryUiEvent.ShowDefinitionPage)
+        saveEmpty?.let {
+            if (!it) {
+                receivedEntry?.let {
+                    viewModelScope.launch {
+                        _dictionaryUiEvent.emit(DictionaryUiEvent.ShowDefinitionPage)
+                    }
+
+                    search(receivedEntry)
+                }
             }
-
-            search(receivedEntry)
         }
     }
 

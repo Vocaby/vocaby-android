@@ -1,9 +1,7 @@
 package com.vocaby.application.feature_profile.presentation.setting
 
 import android.app.AlarmManager
-import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -84,6 +82,7 @@ class SettingFragment : Fragment() {
                 putExtra(Settings.EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
                 putExtra(Settings.EXTRA_CHANNEL_ID, NotificationReceiver.CHANNEL_ID)
             }
+
             startActivity(intent)
         }
 
@@ -138,10 +137,12 @@ class SettingFragment : Fragment() {
                         if (event.enabled) {
                             alarmManager.setRepeating(
                                 AlarmManager.RTC_WAKEUP,
-                                System.currentTimeMillis(),
+                                System.currentTimeMillis() + 1000L * 60 * event.minutes,
                                 1000L * 60 * event.minutes,
                                 pendingIntent
                             )
+
+                            requireActivity().sendBroadcast(notificationIntent)
                         } else {
                             alarmManager.cancel(pendingIntent)
                             pendingIntent.cancel()

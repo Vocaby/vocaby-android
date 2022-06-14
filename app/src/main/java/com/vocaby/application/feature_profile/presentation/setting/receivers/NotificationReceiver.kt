@@ -56,7 +56,6 @@ class NotificationReceiver : BroadcastReceiver() {
                 val editor = sp.edit()
                 editor.putString("NOTIF_PREV_SELECT", "")
                 editor.apply()
-
                 val title = "No Saved Words"
                 val message = "Save words in the app to display in the notification"
                 createNotification(
@@ -64,6 +63,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     notificationManager,
                     title,
                     isFromCollection,
+                    saves.isEmpty(),
                     collection,
                     message
                 )
@@ -94,6 +94,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     notificationManager,
                     entry,
                     isFromCollection,
+                    saves.isEmpty(),
                     collection,
                     message
                 )
@@ -106,6 +107,7 @@ class NotificationReceiver : BroadcastReceiver() {
         notificationManager: NotificationManager,
         entry: String,
         isFromCollection: Boolean,
+        savesEmpty: Boolean,
         collection: SaveCollectionModel?,
         message: String
     ) {
@@ -114,7 +116,9 @@ class NotificationReceiver : BroadcastReceiver() {
         val resultIntent = Intent(context, MainActivity::class.java)
 
         resultIntent.putExtra(MainActivity.NOTIFICATION_SEARCH, entry)
+        resultIntent.putExtra(MainActivity.NOTIFICATION_SAVE_EMPTY, savesEmpty)
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
         val resultPendingIntent = PendingIntent.getActivity(
             context,
             0,
