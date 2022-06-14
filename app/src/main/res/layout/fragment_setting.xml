@@ -114,14 +114,15 @@
                 app:descriptionText="15 minutes"
                 app:headerColor="@color/button_header_color"
                 app:descriptionColor="@color/button_description_color" />
-            <com.vocaby.vocabywidgets.DescriptiveButtonView
-                android:id="@+id/notification_priority_button"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/notification_options_button"
+                style="@style/Theme.VocabyAndroid.SingleButton"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:headerText="@string/notification_priority_header"
-                app:descriptionText="High"
-                app:headerColor="@color/button_header_color"
-                app:descriptionColor="@color/button_description_color" />
+                android:layout_height="wrap_content"
+                android:text="@string/notification_options_header"
+                android:textSize="14sp"
+                android:enabled="false"
+                android:drawableEnd="@drawable/ic_chevron_right"/>
             <TextView
                 style="@style/Theme.VocabyAndroid.TextHeadline"
                 android:layout_width="match_parent"

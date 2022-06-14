@@ -62,7 +62,6 @@ class NotificationReceiver : BroadcastReceiver() {
                 createNotification(
                     context,
                     notificationManager,
-                    settings.notificationPriority,
                     title,
                     isFromCollection,
                     collection,
@@ -93,7 +92,6 @@ class NotificationReceiver : BroadcastReceiver() {
                 createNotification(
                     context,
                     notificationManager,
-                    settings.notificationPriority,
                     entry,
                     isFromCollection,
                     collection,
@@ -106,13 +104,12 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun createNotification(
         context: Context,
         notificationManager: NotificationManager,
-        priority: Int,
         entry: String,
         isFromCollection: Boolean,
         collection: SaveCollectionModel?,
         message: String
     ) {
-        createNotificationChannel(notificationManager, priority)
+        createNotificationChannel(notificationManager)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         val resultIntent = Intent(context, MainActivity::class.java)
 
@@ -142,15 +139,15 @@ class NotificationReceiver : BroadcastReceiver() {
         notificationManager.notify(313, builder.build())
     }
 
-    private fun createNotificationChannel(notificationManager: NotificationManager, priority: Int) {
+    private fun createNotificationChannel(notificationManager: NotificationManager) {
         val name: CharSequence = "Vocaby Notification"
         val description = "Vocaby Notification"
-        val channel = NotificationChannel(CHANNEL_ID, name, priority)
+        val channel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH)
         channel.description = description
         notificationManager.createNotificationChannel(channel)
     }
 
     companion object {
-        private const val CHANNEL_ID = "VOCABY_CHANNEL"
+        const val CHANNEL_ID = "VOCABY_CHANNEL"
     }
 }

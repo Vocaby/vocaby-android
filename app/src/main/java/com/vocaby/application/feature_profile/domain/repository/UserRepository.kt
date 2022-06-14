@@ -29,5 +29,4 @@ interface UserRepository {
     suspend fun setDataShareSettings(enabled: Boolean)
     suspend fun setNotificationCollection(id: Int)
     suspend fun setNotificationFrequency(seconds: Int)
-    suspend fun setNotificationPriority(priority: Int)
 }

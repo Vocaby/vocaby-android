@@ -1,9 +1,12 @@
 package com.vocaby.application.feature_profile.presentation.setting
 
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.vocaby.application.BuildConfig
 import com.vocaby.application.R
 import com.vocaby.application.core.util.launchAndRepeatWithViewLifecycle
 import com.vocaby.application.feature_profile.domain.model.NotificationSettings
@@ -26,7 +30,7 @@ class SettingFragment : Fragment() {
     private val settingsViewModel: SettingViewModel by viewModels()
     private lateinit var notificationCollectionButton: DescriptiveButtonView
     private lateinit var notificationFrequencyButton: DescriptiveButtonView
-    private lateinit var notificationPriorityButton: DescriptiveButtonView
+    private lateinit var notificationOptionsButton: Button
     private lateinit var dictionaryUpdaterSwitch: SwitchMaterial
     private lateinit var dataShareSwitch: SwitchMaterial
     private lateinit var notificationSwitch: SwitchMaterial
@@ -38,7 +42,7 @@ class SettingFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_setting, container, false)
         notificationCollectionButton = view.findViewById(R.id.notification_collection_button)
         notificationFrequencyButton = view.findViewById(R.id.notification_frequency_button)
-        notificationPriorityButton = view.findViewById(R.id.notification_priority_button)
+        notificationOptionsButton = view.findViewById(R.id.notification_options_button)
 
         dictionaryUpdaterSwitch = view.findViewById(R.id.connections_switch)
         dataShareSwitch = view.findViewById(R.id.data_share_switch)
@@ -49,7 +53,7 @@ class SettingFragment : Fragment() {
         notificationSwitch.setOnCheckedChangeListener { _, enabled ->
             notificationCollectionButton.isEnabled = enabled
             notificationFrequencyButton.isEnabled = enabled
-            notificationPriorityButton.isEnabled = enabled
+            notificationOptionsButton.isEnabled = enabled
         }
 
         notificationSwitch.setOnClickListener {
@@ -75,8 +79,12 @@ class SettingFragment : Fragment() {
             settingsViewModel.getNotificationFrequencies(notificationSwitch.isEnabled, notificationFrequencyButton.getDescription())
         }
 
-        notificationPriorityButton.setOnClickListener {
-            settingsViewModel.getNotificationPriority(notificationSwitch.isEnabled, notificationPriorityButton.getDescription())
+        notificationOptionsButton.setOnClickListener {
+            val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+                putExtra(Settings.EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
+                putExtra(Settings.EXTRA_CHANNEL_ID, NotificationReceiver.CHANNEL_ID)
+            }
+            startActivity(intent)
         }
 
         // DANGER ZONE
@@ -100,7 +108,6 @@ class SettingFragment : Fragment() {
                         notificationSwitch.isChecked = event.notificationEnabled
                         notificationCollectionButton.setDescription(event.notificationCollection)
                         notificationFrequencyButton.setDescription(event.notificationFrequency)
-                        notificationPriorityButton.setDescription(event.notificationPriority)
                         dictionaryUpdaterSwitch.isChecked = event.autoUpdateEnabled
                         dataShareSwitch.isChecked = event.dataShareEnabled
                     }
@@ -112,18 +119,11 @@ class SettingFragment : Fragment() {
                         val dialogFragment = NotificationSettingsDialogFragment.newInstance(event.title, event.items, event.selectedIndex, NotificationSettings.FREQUENCY)
                         dialogFragment.show(childFragmentManager, NotificationSettingsDialogFragment.TAG)
                     }
-                    is SettingsUiEvent.ShowNotificationPriorityDialog -> {
-                        val dialogFragment = NotificationSettingsDialogFragment.newInstance(event.title, event.items, event.selectedIndex, NotificationSettings.PRIORITY)
-                        dialogFragment.show(childFragmentManager, NotificationSettingsDialogFragment.TAG)
-                    }
                     is SettingsUiEvent.UpdateNotificationCollection -> {
                         notificationCollectionButton.setDescription(event.collectionName)
                     }
                     is SettingsUiEvent.UpdateNotificationFrequency -> {
                         notificationFrequencyButton.setDescription(event.frequency)
-                    }
-                    is SettingsUiEvent.UpdateNotificationPriority -> {
-                        notificationPriorityButton.setDescription(event.priority)
                     }
                     is SettingsUiEvent.UpdateNotification -> {
                         val alarmManager = requireActivity().getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager

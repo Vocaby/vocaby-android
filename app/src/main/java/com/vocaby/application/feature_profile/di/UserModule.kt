@@ -8,7 +8,6 @@ import com.vocaby.app.UserSettings
 import com.vocaby.application.core.data.VocabyDatabase
 import com.vocaby.application.feature_profile.data.UserRepositoryImpl
 import com.vocaby.application.feature_profile.domain.model.NotificationFrequency
-import com.vocaby.application.feature_profile.domain.model.NotificationPriority
 import com.vocaby.application.feature_profile.domain.repository.UserRepository
 import com.vocaby.application.feature_profile.domain.use_case.*
 import com.vocaby.application.feature_profile.presentation.setting.UserSettingsSerializer
@@ -71,20 +70,16 @@ class UserModule {
         userRepository: UserRepository,
         saveRepository: SaveRepository,
         notificationFrequencies: Array<NotificationFrequency>,
-        notificationPriorities: Array<NotificationPriority>
     ): SettingsUseCases = SettingsUseCases(
         GetUserSettingsUseCase(userRepository),
         UpdateChartModeUseCase(userRepository),
         GetNotificationSettingsUseCase(userRepository),
         GetNotificationFrequenciesUseCase(notificationFrequencies),
-        GetNotificationPrioritiesUseCase(notificationPriorities),
         GetSelectedNotificationCollectionUseCase(saveRepository),
         GetSelectedNotificationFrequencyUseCase(),
-        GetSelectedNotificationPriorityUseCase(),
         UpdateNotificationSettingsUseCase(userRepository),
         UpdateNotificationCollectionUseCase(userRepository),
         UpdateNotificationFrequencyUseCase(userRepository),
-        UpdateNotificationPriorityUseCase(userRepository),
         UpdateConnectionSettingsUseCase(userRepository),
         UpdateDataShareSettingsUseCase(userRepository)
     )
@@ -92,10 +87,6 @@ class UserModule {
     @Provides
     @Singleton
     fun provideNotificationFrequencies(): Array<NotificationFrequency> = NotificationFrequency.values()
-
-    @Provides
-    @Singleton
-    fun provideNotificationPriorities(): Array<NotificationPriority> = NotificationPriority.values()
 
     @Provides
     @Singleton
